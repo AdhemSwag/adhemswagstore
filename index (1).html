@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AdhemSwag — Turn Watch Time Into Real Rewards</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#05070a;
+    --bg-panel:#0b0f12;
+    --bg-panel-2:#0e1316;
+    --cyan:#11d9f7;
+    --cyan-dim:#0a8fa3;
+    --white:#eaf6f8;
+    --muted:#6b7a80;
+    --danger:#ff3b3b;
+    --line:rgba(17,217,247,0.14);
+    --grid:rgba(17,217,247,0.045);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{background:var(--bg); color:var(--white); font-family:'Inter',sans-serif; overflow-x:hidden;}
+  body{
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 42px 42px;
+    background-position: center top;
+    min-height:100vh;
+    position:relative;
+  }
+  body::before{
+    content:"";
+    position:fixed; inset:0;
+    background: radial-gradient(ellipse at 20% 10%, rgba(17,217,247,0.05), transparent 55%),
+                radial-gradient(ellipse at 100% 100%, rgba(17,217,247,0.04), transparent 50%);
+    pointer-events:none;
+  }
+
+  .eyebrow{
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px;
+    letter-spacing:0.22em;
+    text-transform:uppercase;
+    color:var(--cyan-dim);
+  }
+
+  /* ---- bracket frame utility ---- */
+  .bracket{ position:relative; }
+  .bracket::before, .bracket::after,
+  .bracket .bc-tr, .bracket .bc-bl{
+    content:""; position:absolute; width:14px; height:14px;
+    border-color:var(--cyan); border-style:solid; opacity:0.85;
+  }
+  .bracket::before{ top:-1px; left:-1px; border-width:2px 0 0 2px; }
+  .bracket::after{ bottom:-1px; right:-1px; border-width:0 2px 2px 0; }
+  .bracket .bc-tr{ top:-1px; right:-1px; border-width:2px 2px 0 0; }
+  .bracket .bc-bl{ bottom:-1px; left:-1px; border-width:0 0 2px 2px; }
+
+  /* ---- top bar ---- */
+  header{
+    position:relative; z-index:2;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:22px clamp(20px,5vw,64px);
+    border-bottom:1px solid var(--line);
+  }
+  .brand{ display:flex; align-items:center; gap:10px; }
+  .brand-mark{
+    width:10px; height:10px; background:var(--cyan);
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+    box-shadow:0 0 8px var(--cyan);
+  }
+  .brand-name{ font-family:'JetBrains Mono', monospace; font-size:13px; letter-spacing:0.12em; color:var(--white); }
+  .brand-name span{ color:var(--cyan); }
+
+  .socials{ display:flex; gap:10px; }
+  .socials a{
+    width:38px; height:38px; display:flex; align-items:center; justify-content:center;
+    border:1px solid var(--line); color:var(--cyan); text-decoration:none;
+    transition: all .2s ease; position:relative;
+  }
+  .socials a:hover{ background:rgba(17,217,247,0.08); border-color:var(--cyan); box-shadow:0 0 14px rgba(17,217,247,0.25); }
+  .socials svg{ width:17px; height:17px; fill:currentColor; }
+
+  /* ---- hero ---- */
+  main{ position:relative; z-index:2; max-width:1180px; margin:0 auto; padding: clamp(40px,7vw,90px) clamp(20px,5vw,64px) 60px; }
+  .hero-grid{ display:grid; grid-template-columns: 1.05fr 0.95fr; gap:48px; align-items:start; }
+  @media (max-width: 880px){ .hero-grid{ grid-template-columns:1fr; } }
+
+  .hero-top-row{ display:flex; align-items:center; gap:14px; margin-bottom:22px; }
+
+  .radar-wrap{
+    width:52px; height:52px; border-radius:50%; flex-shrink:0;
+    border:1px solid var(--line);
+    display:flex; align-items:center; justify-content:center;
+    position:relative;
+    background: radial-gradient(circle, rgba(17,217,247,0.05) 0%, transparent 70%);
+  }
+  .radar-wrap::before{
+    content:""; position:absolute; inset:8px; border-radius:50%; border:1px solid var(--line);
+  }
+  .radar-sweep{
+    position:absolute; inset:0; border-radius:50%;
+    background: conic-gradient(from 0deg, rgba(17,217,247,0.35), transparent 28%);
+    animation: spin 4.5s linear infinite;
+    mask-image: radial-gradient(circle, black 60%, transparent 61%);
+    -webkit-mask-image: radial-gradient(circle, black 60%, transparent 61%);
+  }
+  @keyframes spin{ to{ transform: rotate(360deg); } }
+  .skull{ width:24px; height:24px; position:relative; z-index:2; filter: drop-shadow(0 0 6px rgba(17,217,247,0.5)); }
+
+  h1{
+    font-family:'Rajdhani', sans-serif;
+    font-weight:700;
+    text-transform:uppercase;
+    font-size: clamp(34px, 4.6vw, 54px);
+    line-height:1.04;
+    letter-spacing:0.01em;
+    margin-bottom:18px;
+  }
+  h1 .hl{ color:var(--cyan); text-shadow:0 0 22px rgba(17,217,247,0.45); }
+
+  .lede{ color:var(--muted); font-size:15.5px; line-height:1.65; max-width:440px; margin-bottom:30px; }
+
+  .cta-row{ display:flex; gap:14px; flex-wrap:wrap; margin-bottom:44px; }
+  .btn{
+    font-family:'JetBrains Mono', monospace; font-size:13px; letter-spacing:0.06em; text-transform:uppercase;
+    padding:15px 26px; text-decoration:none; display:inline-flex; align-items:center; gap:10px;
+    position:relative; overflow:hidden; transition: transform .15s ease;
+  }
+  .btn:active{ transform: scale(0.98); }
+  .btn-primary{ background:var(--cyan); color:#03181c; font-weight:600; }
+  .btn-primary:hover{ box-shadow:0 0 24px rgba(17,217,247,0.5); }
+  .btn-outline{ border:1px solid var(--cyan); color:var(--cyan); background:rgba(17,217,247,0.03); }
+  .btn-outline:hover{ background:rgba(17,217,247,0.1); }
+  .btn::after{
+    content:""; position:absolute; top:0; left:-60%; width:40%; height:100%;
+    background:linear-gradient(120deg, transparent, rgba(255,255,255,0.35), transparent);
+    transform: skewX(-20deg);
+    transition: left .5s ease;
+  }
+  .btn:hover::after{ left:130%; }
+
+  /* faq panel */
+  .panel{ background:var(--bg-panel); border:1px solid var(--line); padding:22px; }
+  .faq-panel{ max-width:440px; }
+  .panel-label{ display:flex; align-items:center; gap:10px; font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.1em; text-transform:uppercase; color:var(--cyan); }
+  .panel-label svg{ width:15px; height:15px; }
+  .panel-sub{ color:var(--muted); font-size:12.5px; margin-top:8px; line-height:1.5; }
+
+  .faq-list{ margin-top:14px; }
+  .faq-item{ border-top:1px solid var(--line); }
+  .faq-item:last-child{ border-bottom:1px solid var(--line); }
+  .faq-q{
+    width:100%; background:none; border:none; cursor:pointer; text-align:left;
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+    padding:14px 2px; color:var(--white); font-family:'Inter',sans-serif; font-size:13.5px; font-weight:500;
+  }
+  .faq-q:hover{ color:var(--cyan); }
+  .faq-icon{
+    font-family:'JetBrains Mono', monospace; color:var(--cyan); font-size:15px; flex-shrink:0;
+    transition: transform .2s ease;
+  }
+  .faq-item.open .faq-icon{ transform: rotate(45deg); }
+  .faq-a{
+    max-height:0; overflow:hidden; transition: max-height .25s ease;
+  }
+  .faq-a p{ color:var(--muted); font-size:12.5px; line-height:1.6; padding:0 2px 16px; }
+  .faq-item.open .faq-a{ max-height:220px; }
+
+  /* ---- twitch card ---- */
+  .stream-card{ background:var(--bg-panel); border:1px solid var(--line); padding:0; }
+  .stream-top{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 18px; border-bottom:1px solid var(--line);
+  }
+  .live-tag{ display:flex; align-items:center; gap:8px; font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.1em; color:var(--danger); }
+  .live-dot{ width:7px; height:7px; border-radius:50%; background:var(--danger); box-shadow:0 0 8px var(--danger); animation:pulse 1.4s ease-in-out infinite; }
+  @keyframes pulse{ 0%,100%{ opacity:1;} 50%{ opacity:0.35; } }
+  .live-dot.offline{ background:var(--muted); box-shadow:none; animation:none; }
+  .live-tag.offline{ color:var(--muted); }
+  .platform-tag{ font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--muted); letter-spacing:0.08em; }
+
+  .stream-body{
+    height:280px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px;
+    position:relative; overflow:hidden; background:#000;
+  }
+  .stream-body svg{ width:52px; height:52px; color:var(--cyan); opacity:0.9; }
+  .stream-url{ font-family:'JetBrains Mono', monospace; font-size:15px; color:var(--white); }
+  .stream-url span{ color:var(--cyan); }
+
+  .stream-foot{
+    display:flex; justify-content:space-between; padding:14px 18px; border-top:1px solid var(--line);
+    font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--muted); letter-spacing:0.06em;
+  }
+  .stream-foot b{ color:var(--cyan); font-weight:600; }
+
+  /* points strip */
+  .points-strip{
+    margin-top:22px; display:grid; grid-template-columns: repeat(3,1fr); border:1px solid var(--line);
+  }
+  .points-cell{ padding:16px 18px; border-right:1px solid var(--line); }
+  .points-cell:last-child{ border-right:none; }
+  .points-cell .num{ font-family:'Rajdhani', sans-serif; font-weight:700; font-size:22px; color:var(--cyan); }
+  .points-cell .lbl{ font-family:'JetBrains Mono', monospace; font-size:10px; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-top:2px; }
+
+  footer{
+    position:relative; z-index:2; text-align:center; padding:34px 20px 40px;
+    border-top:1px solid var(--line);
+    font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--muted); letter-spacing:0.05em;
+  }
+  footer a{ color:var(--cyan); text-decoration:none; }
+  footer .row{ margin-top:6px; }
+
+  ::selection{ background:rgba(17,217,247,0.3); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="brand-mark"></div>
+    <div class="brand-name">ADHEM<span>SWAG</span>.COM</div>
+  </div>
+  <div class="socials">
+    <a href="https://twitch.tv/AdhemSwag" target="_blank" aria-label="Twitch"><svg viewBox="0 0 24 24"><path d="M3 2 1 6.5V19h6v3l3-3h4l6-6V2H3zm14 10-3 3h-4l-3 3v-3H4V4h13v8z"/><path d="M14 7h2v4h-2zM9 7h2v4H9z"/></svg></a>
+    <a href="https://kick.com/adhemswag918" target="_blank" aria-label="Kick"><svg viewBox="0 0 24 24"><path d="M2 2h6v6h2V6h2V4h2V2h6v6h-2v2h-2v2h-2v2h2v2h2v2h2v6h-6v-2h-2v-2h-2v-2H8v6H2V2z"/></svg></a>
+    <a href="#" target="_blank" aria-label="Instagram"><svg viewBox="0 0 24 24"><path d="M12 2c2.7 0 3.06.01 4.12.06 1.06.05 1.79.22 2.43.47.66.26 1.22.6 1.77 1.15.55.55.89 1.11 1.15 1.77.25.64.42 1.37.47 2.43.05 1.06.06 1.42.06 4.12s-.01 3.06-.06 4.12c-.05 1.06-.22 1.79-.47 2.43a4.9 4.9 0 0 1-1.15 1.77 4.9 4.9 0 0 1-1.77 1.15c-.64.25-1.37.42-2.43.47-1.06.05-1.42.06-4.12.06s-3.06-.01-4.12-.06c-1.06-.05-1.79-.22-2.43-.47a4.9 4.9 0 0 1-1.77-1.15 4.9 4.9 0 0 1-1.15-1.77c-.25-.64-.42-1.37-.47-2.43C2.01 15.06 2 14.7 2 12s.01-3.06.06-4.12c.05-1.06.22-1.79.47-2.43.26-.66.6-1.22 1.15-1.77A4.9 4.9 0 0 1 5.45 2.53c.64-.25 1.37-.42 2.43-.47C8.94 2.01 9.3 2 12 2zm0 5a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 8.2a3.2 3.2 0 1 1 0-6.4 3.2 3.2 0 0 1 0 6.4zm5.4-8.4a1.2 1.2 0 1 1-2.4 0 1.2 1.2 0 0 1 2.4 0z"/></svg></a>
+    <a href="#" target="_blank" aria-label="Telegram"><svg viewBox="0 0 24 24"><path d="M21.9 4.3 2.7 11.7c-1.2.5-1.2 1.2-.2 1.5l4.9 1.5 1.9 5.8c.2.6.4.8.9.8s.7-.2 1-.5l2.3-2.2 4.8 3.5c.9.5 1.5.2 1.7-.8L23.7 5.6c.3-1.3-.5-1.9-1.8-1.3zM8.6 14l9.5-6.1c.5-.3.9-.1.5.2l-8 7.4-.3 3.3-1.7-4.8z"/></svg></a>
+    <a href="#" target="_blank" aria-label="X"><svg viewBox="0 0 24 24"><path d="M17.5 3h3.3l-7.3 8.3L22 21h-6.7l-5.2-6.8L4 21H.7l7.8-8.9L2 3h6.9l4.7 6.3L17.5 3zm-1.2 16h1.8L7.7 5H5.8l10.5 14z"/></svg></a>
+    <a href="#" target="_blank" aria-label="TikTok"><svg viewBox="0 0 24 24"><path d="M14 2h3.1c.2 1.6 1.1 3 2.9 3.4v3.1c-1.4 0-2.6-.4-3.6-1.1v6.7c0 3.4-2.4 5.9-5.7 5.9-3.2 0-5.7-2.5-5.7-5.7 0-3.3 2.6-5.8 6-5.7v3.2c-1.5-.2-2.8.9-2.8 2.4 0 1.4 1.1 2.5 2.5 2.5 1.5 0 2.7-1.1 2.7-2.7V2z"/></svg></a>
+    <a href="https://discord.gg/cMRS6E2" target="_blank" aria-label="Discord"><svg viewBox="0 0 24 24"><path d="M20.3 5.4A17.6 17.6 0 0 0 15.9 4l-.3.5c1.7.4 2.7 1 3.7 1.7-1.6-.8-3.2-1.2-4.8-1.2s-3.2.4-4.8 1.2c1-.7 2.2-1.4 3.7-1.7L13.1 4a17.6 17.6 0 0 0-4.4 1.4C6.5 8.3 5.7 11.2 6 14c1.4 1 2.7 1.6 4 2l.5-.9c-.7-.3-1.4-.6-2-1.1.2.1.3.2.5.3 2 1 4.2 1.5 6.9 1.5s4.9-.5 6.9-1.5c.2-.1.3-.2.5-.3-.6.5-1.3.8-2 1.1l.5.9c1.3-.4 2.6-1 4-2 .4-3.4-.6-6.3-2.4-8.6zM9.7 12.7c-.7 0-1.3-.7-1.3-1.5s.6-1.5 1.3-1.5 1.3.7 1.3 1.5-.6 1.5-1.3 1.5zm4.6 0c-.7 0-1.3-.7-1.3-1.5s.6-1.5 1.3-1.5 1.3.7 1.3 1.5-.6 1.5-1.3 1.5z"/></svg></a>
+  </div>
+</header>
+
+<main>
+  <div class="hero-grid">
+
+    <!-- LEFT COLUMN -->
+    <div>
+      <div class="hero-top-row">
+        <div class="radar-wrap">
+          <div class="radar-sweep"></div>
+          <svg class="skull" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="1.4">
+            <path d="M12 2C7 2 4 5.5 4 10c0 2.6 1.1 4.4 2.5 5.7V19c0 .6.4 1 1 1h1v-2h1v2h5v-2h1v2h1c.6 0 1-.4 1-1v-3.3C18.9 14.4 20 12.6 20 10c0-4.5-3-8-8-8z"/>
+            <circle cx="9" cy="10" r="1.6" fill="var(--cyan)" stroke="none"/>
+            <circle cx="15" cy="10" r="1.6" fill="var(--cyan)" stroke="none"/>
+            <path d="M11 13.5h2l-.5 1.5h-1z" fill="var(--cyan)" stroke="none"/>
+          </svg>
+        </div>
+        <div class="eyebrow">// tracking watch time<br>· earning rewards</div>
+      </div>
+      <h1>Turn watch time<br>into <span class="hl">real rewards</span></h1>
+      <p class="lede">Watch AdhemSwag live, earn points every minute, and redeem exclusive rewards directly — gear, shoutouts, and perks built for the squad.</p>
+
+      <div class="cta-row">
+        <a href="https://twitch.tv/AdhemSwag" class="btn btn-primary">▶ Watch Live</a>
+        <a href="https://streamelements.com/AdhemSwag/store" target="_blank" class="btn btn-outline">⛁ Store</a>
+      </div>
+
+      <div class="panel faq-panel bracket">
+        <span class="bc-tr"></span><span class="bc-bl"></span>
+        <div class="panel-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 17V7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H8l-4 4v-4z"/></svg> FAQ — FNC Points</div>
+
+        <div class="faq-list">
+          <div class="faq-item">
+            <button class="faq-q">
+              <span>How do I earn FNC Points?</span>
+              <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-a">
+              <p>You earn 1 FNC Point for every minute you watch the stream live on Twitch. You need to be an active viewer — just having the tab open in the background won't count.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-q">
+              <span>What can I redeem points for?</span>
+              <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-a">
+              <p>FNC Points unlock exclusive rewards in the store — shoutouts, gear, custom perks, and limited drops. New rewards get added regularly.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-q">
+              <span>What's the difference between FNC Points and XP?</span>
+              <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-a">
+              <p>FNC Points are your spendable currency for the store. XP is a separate track that reflects your overall standing in the community and unlocks status over time — it doesn't get spent.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-q">
+              <span>Do I need to be subscribed to earn points?</span>
+              <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-a">
+              <p>No subscription required. Just watch live and stay active in chat or on stream — that's enough to start earning.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-q">
+              <span>Where do I check my point balance?</span>
+              <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-a">
+              <p>Your balance shows up in the store when you log in with your Twitch account. Redemptions are tracked there in real time.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div>
+      <div class="stream-card bracket">
+        <span class="bc-tr"></span><span class="bc-bl"></span>
+        <div class="stream-top">
+          <div class="live-tag" id="liveTag"><span class="live-dot" id="liveDot"></span> <span id="liveText">CHECKING…</span></div>
+          <div class="platform-tag">TWITCH</div>
+        </div>
+        <div class="stream-body">
+          <iframe
+            src="https://player.twitch.tv/?channel=adhemswag&parent=aswaggdhem.carrd.co&parent=AdhemSwag.github.io&muted=true"
+            frameborder="0"
+            allowfullscreen="true"
+            scrolling="no"
+            style="width:100%; height:100%; position:absolute; inset:0;">
+          </iframe>
+        </div>
+        <div class="stream-foot">
+          <span>STATUS: <b id="statusText">STANDBY</b></span>
+          <span>CS2 · COMPETITIVE</span>
+        </div>
+      </div>
+
+      <div class="points-strip">
+        <div class="points-cell">
+          <div class="num">+1</div>
+          <div class="lbl">FNC / min watched</div>
+        </div>
+        <div class="points-cell">
+          <div class="num">XP</div>
+          <div class="lbl">Separate rank track</div>
+        </div>
+        <div class="points-cell">
+          <div class="num">24/7</div>
+          <div class="lbl">Store access</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<footer>
+  <div class="row">© 2026 AdhemSwag.com — All Rights Reserved</div>
+  <div class="row">Collaboration: <a href="mailto:adhemswag@yahoo.com">adhemswag@yahoo.com</a></div>
+</footer>
+
+<script>
+  document.querySelectorAll('.faq-item').forEach(item => {
+    item.querySelector('.faq-q').addEventListener('click', () => {
+      const wasOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+      if(!wasOpen) item.classList.add('open');
+    });
+  });
+
+  // Twitch live status check (DecAPI)
+  fetch('https://decapi.me/twitch/uptime/adhemswag')
+    .then(r => r.text())
+    .then(text => {
+      const tag = document.getElementById('liveTag');
+      const dot = document.getElementById('liveDot');
+      const label = document.getElementById('liveText');
+      const status = document.getElementById('statusText');
+      const isOffline = text.toLowerCase().includes('offline');
+      if (isOffline) {
+        tag.classList.add('offline');
+        dot.classList.add('offline');
+        label.textContent = 'OFFLINE';
+        status.textContent = 'OFFLINE';
+      } else {
+        label.textContent = 'LIVE NOW';
+        status.textContent = 'LIVE';
+      }
+    })
+    .catch(() => {
+      document.getElementById('liveText').textContent = 'LIVE FEED';
+    });
+</script>
+</body>
+</html>
