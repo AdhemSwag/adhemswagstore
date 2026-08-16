@@ -89,6 +89,23 @@
   .hero-grid{ display:grid; grid-template-columns: 1.05fr 0.95fr; gap:48px; align-items:start; }
   @media (max-width: 880px){ .hero-grid{ grid-template-columns:1fr; } }
 
+  @media (max-width: 640px){
+    header{ flex-wrap:wrap; justify-content:center; gap:16px; text-align:center; padding:18px 20px; }
+    .socials{ flex-wrap:wrap; justify-content:center; }
+    .points-strip{ grid-template-columns:1fr; }
+    .points-cell{ border-right:none; border-bottom:1px solid var(--line); text-align:center; }
+    .points-cell:last-child{ border-bottom:none; }
+    .cta-row{ justify-content:center; }
+    .cta-row .btn{ flex:1 1 auto; text-align:center; justify-content:center; }
+    .fnc-faq-btn{ width:100%; justify-content:center; }
+  }
+
+  @media (max-width: 420px){
+    .socials a{ width:34px; height:34px; }
+    .socials svg{ width:15px; height:15px; }
+    h1{ font-size:clamp(28px, 8vw, 40px); }
+  }
+
   .hero-top-row{ display:flex; align-items:center; gap:14px; margin-bottom:22px; }
 
   .radar-wrap{
@@ -150,26 +167,6 @@
   .panel-label svg{ width:15px; height:15px; }
   .panel-sub{ color:var(--muted); font-size:12.5px; margin-top:8px; line-height:1.5; }
 
-  .faq-list{ margin-top:14px; }
-  .faq-item{ border-top:1px solid var(--line); }
-  .faq-item:last-child{ border-bottom:1px solid var(--line); }
-  .faq-q{
-    width:100%; background:none; border:none; cursor:pointer; text-align:left;
-    display:flex; align-items:center; justify-content:space-between; gap:12px;
-    padding:14px 2px; color:var(--white); font-family:'Inter',sans-serif; font-size:13.5px; font-weight:500;
-  }
-  .faq-q:hover{ color:var(--cyan); }
-  .faq-icon{
-    font-family:'JetBrains Mono', monospace; color:var(--cyan); font-size:15px; flex-shrink:0;
-    transition: transform .2s ease;
-  }
-  .faq-item.open .faq-icon{ transform: rotate(45deg); }
-  .faq-a{
-    max-height:0; overflow:hidden; transition: max-height .25s ease;
-  }
-  .faq-a p{ color:var(--muted); font-size:12.5px; line-height:1.6; padding:0 2px 16px; }
-  .faq-item.open .faq-a{ max-height:220px; }
-
   /* ---- twitch card ---- */
   .stream-card{ background:var(--bg-panel); border:1px solid var(--line); padding:0; }
   .stream-top{
@@ -215,22 +212,208 @@
   footer .row{ margin-top:6px; }
 
   ::selection{ background:rgba(17,217,247,0.3); }
+
+  /* ---- FNC Points FAQ (button + popup) ---- */
+  .fnc-faq-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: #11D9F7;
+    color: #05070a;
+    border: none;
+    padding: 15px 26px;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: 0 0 16px rgba(17, 217, 247, 0.45);
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .fnc-faq-btn:hover {
+    background: #4de6ff;
+    box-shadow: 0 0 24px rgba(17, 217, 247, 0.75);
+    transform: translateY(-1px);
+  }
+  .fnc-faq-btn::after{
+    content:""; position:absolute; top:0; left:-60%; width:40%; height:100%;
+    background:linear-gradient(120deg, transparent, rgba(255,255,255,0.5), transparent);
+    transform: skewX(-20deg);
+    transition: left .5s ease;
+  }
+  .fnc-faq-btn:hover::after{ left:130%; }
+  .fnc-faq-btn-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #05070a;
+    color: #11D9F7;
+    font-size: 12px;
+    font-weight: 900;
+    flex-shrink: 0;
+  }
+
+  .fnc-faq-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(3px);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .fnc-faq-overlay.open {
+    display: flex;
+  }
+
+  .fnc-faq-modal {
+    background: linear-gradient(180deg, #0c0e13 0%, #05060a 100%);
+    border: 1px solid rgba(17, 217, 247, 0.4);
+    border-radius: 14px;
+    max-width: 640px;
+    width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 28px 24px 20px;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #e8f9ff;
+    position: relative;
+    box-shadow: 0 0 40px rgba(17, 217, 247, 0.25);
+  }
+  .fnc-faq-modal::-webkit-scrollbar { width: 6px; }
+  .fnc-faq-modal::-webkit-scrollbar-thumb { background: rgba(17,217,247,0.4); border-radius: 3px; }
+
+  .fnc-faq-close {
+    position: absolute;
+    top: 16px;
+    right: 18px;
+    background: none;
+    border: none;
+    color: #11D9F7;
+    font-size: 22px;
+    cursor: pointer;
+    line-height: 1;
+  }
+  .fnc-faq-close:hover { color: #ffffff; }
+
+  .fnc-faq-title {
+    font-size: 24px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 0 0 4px;
+    color: #ffffff;
+  }
+  .fnc-faq-title span { color: #11D9F7; }
+
+  .fnc-faq-sub {
+    font-size: 13px;
+    color: #8fb8c4;
+    margin: 0 0 22px;
+  }
+
+  .fnc-faq-section-label {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #11D9F7;
+    margin: 22px 0 10px;
+    opacity: 0.85;
+  }
+  .fnc-faq-section-label:first-of-type { margin-top: 0; }
+
+  .fnc-faq-item {
+    border: 1px solid rgba(17, 217, 247, 0.18);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    overflow: hidden;
+    background: rgba(17, 217, 247, 0.03);
+  }
+
+  .fnc-faq-q {
+    width: 100%;
+    background: none;
+    border: none;
+    text-align: left;
+    color: #e8f9ff;
+    font-size: 14.5px;
+    font-weight: 600;
+    padding: 13px 16px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+  .fnc-faq-q:hover { color: #11D9F7; }
+
+  .fnc-faq-icon {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #11D9F7;
+    transition: transform 0.25s ease;
+    font-size: 16px;
+  }
+  .fnc-faq-item.active .fnc-faq-icon { transform: rotate(45deg); }
+
+  .fnc-faq-a {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.25s ease, padding 0.25s ease;
+    padding: 0 16px;
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: #b9d6de;
+  }
+  .fnc-faq-item.active .fnc-faq-a {
+    max-height: 400px;
+    padding: 0 16px 15px;
+  }
+
+  .fnc-faq-a ul { margin: 6px 0 0; padding-left: 18px; }
+  .fnc-faq-a li { margin-bottom: 4px; }
+  .fnc-faq-a strong { color: #11D9F7; }
+
+  .fnc-faq-footer {
+    margin-top: 20px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(17, 217, 247, 0.15);
+    font-size: 12.5px;
+    color: #7fa3ac;
+    text-align: center;
+  }
+  .fnc-faq-footer a { color: #11D9F7; text-decoration: none; font-weight: 600; }
+  .fnc-faq-footer a:hover { text-decoration: underline; }
 </style>
 </head>
 <body>
 
 <header>
-  <div class="brand">
+  <a href="https://adhemswag.com/" class="brand" style="text-decoration:none;">
     <div class="brand-mark"></div>
     <div class="brand-name">ADHEM<span>SWAG</span>.COM</div>
-  </div>
+  </a>
   <div class="socials">
     <a href="https://twitch.tv/AdhemSwag" target="_blank" aria-label="Twitch"><svg viewBox="0 0 24 24"><path d="M3 2 1 6.5V19h6v3l3-3h4l6-6V2H3zm14 10-3 3h-4l-3 3v-3H4V4h13v8z"/><path d="M14 7h2v4h-2zM9 7h2v4H9z"/></svg></a>
     <a href="https://kick.com/adhemswag918" target="_blank" aria-label="Kick"><svg viewBox="0 0 24 24"><path d="M2 2h6v6h2V6h2V4h2V2h6v6h-2v2h-2v2h-2v2h2v2h2v2h2v6h-6v-2h-2v-2h-2v-2H8v6H2V2z"/></svg></a>
-    <a href="https://instagram.com/AdhemSwag" target="_blank" aria-label="Instagram"><svg viewBox="0 0 24 24"><path d="M12 2c2.7 0 3.06.01 4.12.06 1.06.05 1.79.22 2.43.47.66.26 1.22.6 1.77 1.15.55.55.89 1.11 1.15 1.77.25.64.42 1.37.47 2.43.05 1.06.06 1.42.06 4.12s-.01 3.06-.06 4.12c-.05 1.06-.22 1.79-.47 2.43a4.9 4.9 0 0 1-1.15 1.77 4.9 4.9 0 0 1-1.77 1.15c-.64.25-1.37.42-2.43.47-1.06.05-1.42.06-4.12.06s-3.06-.01-4.12-.06c-1.06-.05-1.79-.22-2.43-.47a4.9 4.9 0 0 1-1.77-1.15 4.9 4.9 0 0 1-1.15-1.77c-.25-.64-.42-1.37-.47-2.43C2.01 15.06 2 14.7 2 12s.01-3.06.06-4.12c.05-1.06.22-1.79.47-2.43.26-.66.6-1.22 1.15-1.77A4.9 4.9 0 0 1 5.45 2.53c.64-.25 1.37-.42 2.43-.47C8.94 2.01 9.3 2 12 2zm0 5a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 8.2a3.2 3.2 0 1 1 0-6.4 3.2 3.2 0 0 1 0 6.4zm5.4-8.4a1.2 1.2 0 1 1-2.4 0 1.2 1.2 0 0 1 2.4 0z"/></svg></a>
-    <a href="#" target="_blank" aria-label="Telegram"><svg viewBox="0 0 24 24"><path d="M21.9 4.3 2.7 11.7c-1.2.5-1.2 1.2-.2 1.5l4.9 1.5 1.9 5.8c.2.6.4.8.9.8s.7-.2 1-.5l2.3-2.2 4.8 3.5c.9.5 1.5.2 1.7-.8L23.7 5.6c.3-1.3-.5-1.9-1.8-1.3zM8.6 14l9.5-6.1c.5-.3.9-.1.5.2l-8 7.4-.3 3.3-1.7-4.8z"/></svg></a>
-    <a href="#" target="_blank" aria-label="X"><svg viewBox="0 0 24 24"><path d="M17.5 3h3.3l-7.3 8.3L22 21h-6.7l-5.2-6.8L4 21H.7l7.8-8.9L2 3h6.9l4.7 6.3L17.5 3zm-1.2 16h1.8L7.7 5H5.8l10.5 14z"/></svg></a>
-    <a href="#" target="_blank" aria-label="TikTok"><svg viewBox="0 0 24 24"><path d="M14 2h3.1c.2 1.6 1.1 3 2.9 3.4v3.1c-1.4 0-2.6-.4-3.6-1.1v6.7c0 3.4-2.4 5.9-5.7 5.9-3.2 0-5.7-2.5-5.7-5.7 0-3.3 2.6-5.8 6-5.7v3.2c-1.5-.2-2.8.9-2.8 2.4 0 1.4 1.1 2.5 2.5 2.5 1.5 0 2.7-1.1 2.7-2.7V2z"/></svg></a>
+    <a href="https://www.instagram.com/adhemswag/" target="_blank" aria-label="Instagram"><svg viewBox="0 0 24 24"><path d="M12 2c2.7 0 3.06.01 4.12.06 1.06.05 1.79.22 2.43.47.66.26 1.22.6 1.77 1.15.55.55.89 1.11 1.15 1.77.25.64.42 1.37.47 2.43.05 1.06.06 1.42.06 4.12s-.01 3.06-.06 4.12c-.05 1.06-.22 1.79-.47 2.43a4.9 4.9 0 0 1-1.15 1.77 4.9 4.9 0 0 1-1.77 1.15c-.64.25-1.37.42-2.43.47-1.06.05-1.42.06-4.12.06s-3.06-.01-4.12-.06c-1.06-.05-1.79-.22-2.43-.47a4.9 4.9 0 0 1-1.77-1.15 4.9 4.9 0 0 1-1.15-1.77c-.25-.64-.42-1.37-.47-2.43C2.01 15.06 2 14.7 2 12s.01-3.06.06-4.12c.05-1.06.22-1.79.47-2.43.26-.66.6-1.22 1.15-1.77A4.9 4.9 0 0 1 5.45 2.53c.64-.25 1.37-.42 2.43-.47C8.94 2.01 9.3 2 12 2zm0 5a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 8.2a3.2 3.2 0 1 1 0-6.4 3.2 3.2 0 0 1 0 6.4zm5.4-8.4a1.2 1.2 0 1 1-2.4 0 1.2 1.2 0 0 1 2.4 0z"/></svg></a>
+    <a href="https://t.me/adhemswag" target="_blank" aria-label="Telegram"><svg viewBox="0 0 24 24"><path d="M21.9 4.3 2.7 11.7c-1.2.5-1.2 1.2-.2 1.5l4.9 1.5 1.9 5.8c.2.6.4.8.9.8s.7-.2 1-.5l2.3-2.2 4.8 3.5c.9.5 1.5.2 1.7-.8L23.7 5.6c.3-1.3-.5-1.9-1.8-1.3zM8.6 14l9.5-6.1c.5-.3.9-.1.5.2l-8 7.4-.3 3.3-1.7-4.8z"/></svg></a>
+    <a href="https://x.com/AdhemSwag" target="_blank" aria-label="X"><svg viewBox="0 0 24 24"><path d="M17.5 3h3.3l-7.3 8.3L22 21h-6.7l-5.2-6.8L4 21H.7l7.8-8.9L2 3h6.9l4.7 6.3L17.5 3zm-1.2 16h1.8L7.7 5H5.8l10.5 14z"/></svg></a>
+    <a href="https://www.tiktok.com/@adhemswagg" target="_blank" aria-label="TikTok"><svg viewBox="0 0 24 24"><path d="M14 2h3.1c.2 1.6 1.1 3 2.9 3.4v3.1c-1.4 0-2.6-.4-3.6-1.1v6.7c0 3.4-2.4 5.9-5.7 5.9-3.2 0-5.7-2.5-5.7-5.7 0-3.3 2.6-5.8 6-5.7v3.2c-1.5-.2-2.8.9-2.8 2.4 0 1.4 1.1 2.5 2.5 2.5 1.5 0 2.7-1.1 2.7-2.7V2z"/></svg></a>
     <a href="https://discord.gg/cMRS6E2" target="_blank" aria-label="Discord"><svg viewBox="0 0 24 24"><path d="M20.3 5.4A17.6 17.6 0 0 0 15.9 4l-.3.5c1.7.4 2.7 1 3.7 1.7-1.6-.8-3.2-1.2-4.8-1.2s-3.2.4-4.8 1.2c1-.7 2.2-1.4 3.7-1.7L13.1 4a17.6 17.6 0 0 0-4.4 1.4C6.5 8.3 5.7 11.2 6 14c1.4 1 2.7 1.6 4 2l.5-.9c-.7-.3-1.4-.6-2-1.1.2.1.3.2.5.3 2 1 4.2 1.5 6.9 1.5s4.9-.5 6.9-1.5c.2-.1.3-.2.5-.3-.6.5-1.3.8-2 1.1l.5.9c1.3-.4 2.6-1 4-2 .4-3.4-.6-6.3-2.4-8.6zM9.7 12.7c-.7 0-1.3-.7-1.3-1.5s.6-1.5 1.3-1.5 1.3.7 1.3 1.5-.6 1.5-1.3 1.5zm4.6 0c-.7 0-1.3-.7-1.3-1.5s.6-1.5 1.3-1.5 1.3.7 1.3 1.5-.6 1.5-1.3 1.5z"/></svg></a>
   </div>
 </header>
@@ -253,66 +436,116 @@
         <div class="eyebrow">// tracking watch time<br>· earning rewards</div>
       </div>
       <h1>Turn watch time<br>into <span class="hl">real rewards</span></h1>
-      <p class="lede">Watch AdhemSwag live, earn points every minute, and redeem exclusive rewards directly — gear, shoutouts, and perks built for the squad.</p>
+      <p class="lede">Watch AdhemSwag live, earn points every minute, and redeem exclusive rewards directly — CS2 skins, gear, shoutouts, perks, and more, built for the squad.</p>
 
       <div class="cta-row">
-        <a href="https://twitch.tv/AdhemSwag" target="_blank" class="btn btn-primary">▶ Watch Live</a>
+        <a href="https://twitch.tv/AdhemSwag" class="btn btn-primary">▶ Watch Live</a>
         <a href="https://streamelements.com/AdhemSwag/store" target="_blank" class="btn btn-outline">⛁ Store</a>
       </div>
 
-      <div class="panel faq-panel bracket">
-        <span class="bc-tr"></span><span class="bc-bl"></span>
-        <div class="panel-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 17V7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H8l-4 4v-4z"/></svg> FAQ — FNC Points</div>
+      <button class="fnc-faq-btn" onclick="document.getElementById('fncFaqOverlay').classList.add('open')">
+        <span class="fnc-faq-btn-icon">?</span>FAQ
+      </button>
 
-        <div class="faq-list">
-          <div class="faq-item">
-            <button class="faq-q">
-              <span>How do I earn FNC Points?</span>
-              <span class="faq-icon">+</span>
+      <div class="fnc-faq-overlay" id="fncFaqOverlay">
+        <div class="fnc-faq-modal">
+          <button class="fnc-faq-close" onclick="document.getElementById('fncFaqOverlay').classList.remove('open')">×</button>
+          <h2 class="fnc-faq-title">FNC POINTS <span>FAQ</span></h2>
+          <p class="fnc-faq-sub">Everything you need to know about earning and redeeming FNC Points.</p>
+
+          <div class="fnc-faq-section-label">Earning FNC Points</div>
+
+          <div class="fnc-faq-item">
+            <button class="fnc-faq-q" onclick="this.parentElement.classList.toggle('active')">
+              How do viewers earn points? <span class="fnc-faq-icon">+</span>
             </button>
-            <div class="faq-a">
-              <p>You earn 1 FNC Point for every minute you watch the stream live on Twitch. You need to be an active viewer — just having the tab open in the background won't count.</p>
+            <div class="fnc-faq-a">Every viewer watching the stream live on Twitch earns <strong>10 FNC every 10 minutes</strong>.</div>
+          </div>
+
+          <div class="fnc-faq-item">
+            <button class="fnc-faq-q" onclick="this.parentElement.classList.toggle('active')">
+              Do subscribers earn more? <span class="fnc-faq-icon">+</span>
+            </button>
+            <div class="fnc-faq-a">Yes. Active subscribers earn <strong>30 FNC every 10 minutes</strong> while watching live, on top of the one-time subscribe bonus below.</div>
+          </div>
+
+          <div class="fnc-faq-item">
+            <button class="fnc-faq-q" onclick="this.parentElement.classList.toggle('active')">
+              How much do Bits and Subs give me? <span class="fnc-faq-icon">+</span>
+            </button>
+            <div class="fnc-faq-a">
+              <ul>
+                <li><strong>Cheering:</strong> 100 FNC per 100 Bits</li>
+                <li><strong>Subscribing:</strong> 500 FNC instantly when you subscribe</li>
+              </ul>
             </div>
           </div>
 
-          <div class="faq-item">
-            <button class="faq-q">
-              <span>What can I redeem points for?</span>
-              <span class="faq-icon">+</span>
+          <div class="fnc-faq-item">
+            <button class="fnc-faq-q" onclick="this.parentElement.classList.toggle('active')">
+              Do tips and raids give points too? <span class="fnc-faq-icon">+</span>
             </button>
-            <div class="faq-a">
-              <p>FNC Points unlock exclusive rewards in the store — shoutouts, gear, custom perks, and limited drops. New rewards get added regularly.</p>
+            <div class="fnc-faq-a">
+              <ul>
+                <li><strong>Tipping:</strong> 100 FNC per $1 tipped (non-anonymous tips only)</li>
+                <li><strong>Raiding:</strong> 100 FNC for every raider</li>
+              </ul>
             </div>
           </div>
 
-          <div class="faq-item">
-            <button class="faq-q">
-              <span>What's the difference between FNC Points and XP?</span>
-              <span class="faq-icon">+</span>
+          <div class="fnc-faq-item">
+            <button class="fnc-faq-q" onclick="this.parentElement.classList.toggle('active')">
+              Do I earn points if the stream is offline? <span class="fnc-faq-icon">+</span>
             </button>
-            <div class="faq-a">
-              <p>FNC Points are your spendable currency for the store. XP is a separate track that reflects your overall standing in the community and unlocks status over time — it doesn't get spent.</p>
-            </div>
+            <div class="fnc-faq-a">No. Points only accumulate while you're actively watching a <strong>live</strong> stream on Twitch.</div>
           </div>
 
-          <div class="faq-item">
-            <button class="faq-q">
-              <span>Do I need to be subscribed to earn points?</span>
-              <span class="faq-icon">+</span>
+          <div class="fnc-faq-section-label">Redemption Rules</div>
+
+          <div class="fnc-faq-item">
+            <button class="fnc-faq-q" onclick="this.parentElement.classList.toggle('active')">
+              Can I use multiple accounts? <span class="fnc-faq-icon">+</span>
             </button>
-            <div class="faq-a">
-              <p>No subscription required. Just watch live and stay active in chat or on stream — that's enough to start earning.</p>
-            </div>
+            <div class="fnc-faq-a">No, multi-accounting to farm extra points is <strong>not allowed</strong> and may result in disqualification.</div>
           </div>
 
-          <div class="faq-item">
-            <button class="faq-q">
-              <span>Where do I check my point balance?</span>
-              <span class="faq-icon">+</span>
+          <div class="fnc-faq-item">
+            <button class="fnc-faq-q" onclick="this.parentElement.classList.toggle('active')">
+              Do I need to be active in chat? <span class="fnc-faq-icon">+</span>
             </button>
-            <div class="faq-a">
-              <p>Your balance shows up in the store when you log in with your Twitch account. Redemptions are tracked there in real time.</p>
-            </div>
+            <div class="fnc-faq-a">You're expected to genuinely <strong>engage in live streams</strong> — passive/bot viewing doesn't count toward rewards.</div>
+          </div>
+
+          <div class="fnc-faq-item">
+            <button class="fnc-faq-q" onclick="this.parentElement.classList.toggle('active')">
+              Can I transfer or sell my points? <span class="fnc-faq-icon">+</span>
+            </button>
+            <div class="fnc-faq-a">No, FNC Points are <strong>non-transferable</strong> between accounts and have no cash value.</div>
+          </div>
+
+          <div class="fnc-faq-item">
+            <button class="fnc-faq-q" onclick="this.parentElement.classList.toggle('active')">
+              How long does delivery take? <span class="fnc-faq-icon">+</span>
+            </button>
+            <div class="fnc-faq-a">Redeemed rewards are delivered within <strong>1 week</strong> of your order.</div>
+          </div>
+
+          <div class="fnc-faq-item">
+            <button class="fnc-faq-q" onclick="this.parentElement.classList.toggle('active')">
+              My reward hasn't arrived after a week — what do I do? <span class="fnc-faq-icon">+</span>
+            </button>
+            <div class="fnc-faq-a">Reach out on Discord with your order details and it'll be sorted out as soon as possible.</div>
+          </div>
+
+          <div class="fnc-faq-item">
+            <button class="fnc-faq-q" onclick="this.parentElement.classList.toggle('active')">
+              Where do I redeem my points? <span class="fnc-faq-icon">+</span>
+            </button>
+            <div class="fnc-faq-a">Head to the SWAG STORE linked on the site to browse and redeem rewards with your FNC Points balance.</div>
+          </div>
+
+          <div class="fnc-faq-footer">
+            Still need help? Join the <a href="https://discord.gg/cMRS6E2" target="_blank" rel="noopener">Discord</a>
           </div>
         </div>
       </div>
@@ -328,7 +561,7 @@
         </div>
         <div class="stream-body">
           <iframe
-            src="https://player.twitch.tv/?channel=adhemswag&parent=store.adhemswag.com&parent=AdhemSwag.github.io&muted=true"
+            src="https://player.twitch.tv/?channel=adhemswag&parent=aswaggdhem.carrd.co&parent=adhemswag.github.io&muted=true"
             frameborder="0"
             allowfullscreen="true"
             scrolling="no"
@@ -344,11 +577,11 @@
       <div class="points-strip">
         <div class="points-cell">
           <div class="num">+1</div>
-          <div class="lbl">FNC / min watched</div>
+          <div class="lbl">FNC / min — viewers</div>
         </div>
         <div class="points-cell">
-          <div class="num">XP</div>
-          <div class="lbl">Separate rank track</div>
+          <div class="num">+3</div>
+          <div class="lbl">FNC / min — subscribers</div>
         </div>
         <div class="points-cell">
           <div class="num">24/7</div>
@@ -366,14 +599,6 @@
 </footer>
 
 <script>
-  document.querySelectorAll('.faq-item').forEach(item => {
-    item.querySelector('.faq-q').addEventListener('click', () => {
-      const wasOpen = item.classList.contains('open');
-      document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
-      if(!wasOpen) item.classList.add('open');
-    });
-  });
-
   // Twitch live status check (DecAPI)
   fetch('https://decapi.me/twitch/uptime/adhemswag')
     .then(r => r.text())
