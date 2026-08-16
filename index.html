@@ -449,6 +449,18 @@
     letter-spacing:0.06em; text-transform:uppercase; transition:all .2s ease;
   }
   .partner-popup-cta:hover{ box-shadow:0 0 20px rgba(17,217,247,0.5); }
+
+  .promo-code-btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:8px;
+    margin-top:6px; padding:10px 18px; background:rgba(17,217,247,0.08);
+    border:1px dashed rgba(17,217,247,0.5); color:var(--white);
+    font-family:'JetBrains Mono', monospace; font-size:13px; font-weight:600; letter-spacing:0.04em;
+    cursor:pointer; transition: all .2s ease; width:100%;
+  }
+  .promo-code-btn:hover{ background:rgba(17,217,247,0.15); border-color:var(--cyan); }
+  .promo-code-btn .promo-label{ color:var(--muted); font-weight:400; }
+  .promo-code-btn .promo-copy-icon{ color:var(--cyan); font-size:14px; }
+  .promo-code-btn.copied{ border-color:var(--cyan); border-style:solid; color:var(--cyan); }
 </style>
 </head>
 <body>
@@ -670,7 +682,9 @@
         <a href="#home" class="partner-popup-close">&times;</a>
         <img src="https://i.ibb.co/9Hbx9QqX/White.png" class="partner-popup-img">
         <h2>ExitLag — Level up your connection with 50% OFF + 3 months free.</h2>
-        <p>GET A BONUS: <strong>AdhemSwag</strong></p>
+        <button class="promo-code-btn" onclick="copyPromoCode(this, 'AdhemSwag')">
+          <span class="promo-label">Code:</span> AdhemSwag <span class="promo-copy-icon">⧉</span>
+        </button>
         <a href="https://www.exitlag.com/refer/ADHEMSWAG" target="_blank" rel="noopener" class="partner-popup-cta">Go to page</a>
       </div>
     </div>
@@ -691,7 +705,9 @@
         <a href="#home" class="partner-popup-close">&times;</a>
         <img src="https://i.ibb.co/hFM0Kv8Z/ggdrop-2.png" class="partner-popup-img">
         <h2>Boost your skins! +7% Deposit &amp; FREE Spin on GGDROP!</h2>
-        <p>Code promo: <strong>Adhem</strong></p>
+        <button class="promo-code-btn" onclick="copyPromoCode(this, 'Adhem')">
+          <span class="promo-label">Code:</span> Adhem <span class="promo-copy-icon">⧉</span>
+        </button>
         <a href="https://ggdrop.art/Adhem" target="_blank" rel="noopener" class="partner-popup-cta">Go to page</a>
       </div>
     </div>
@@ -714,6 +730,18 @@
 </footer>
 
 <script>
+  function copyPromoCode(btn, code) {
+    navigator.clipboard.writeText(code).then(() => {
+      const original = btn.innerHTML;
+      btn.classList.add('copied');
+      btn.innerHTML = '<span class="promo-copy-icon">✓</span> Copied!';
+      setTimeout(() => {
+        btn.classList.remove('copied');
+        btn.innerHTML = original;
+      }, 1500);
+    });
+  }
+
   // Twitch live status check (DecAPI)
   fetch('https://decapi.me/twitch/uptime/adhemswag')
     .then(r => r.text())
