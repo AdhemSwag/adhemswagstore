@@ -75,6 +75,14 @@
   .brand-name{ font-family:'JetBrains Mono', monospace; font-size:13px; letter-spacing:0.12em; color:var(--white); }
   .brand-name span{ color:var(--cyan); }
 
+  .nav-menu{ display:flex; gap:10px; }
+  .nav-menu a{
+    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase;
+    color:var(--cyan); text-decoration:none; border:1px solid var(--line); padding:8px 16px;
+    transition: all .2s ease;
+  }
+  .nav-menu a:hover{ background:rgba(17,217,247,0.08); border-color:var(--cyan); box-shadow:0 0 12px rgba(17,217,247,0.2); }
+
   .socials{ display:flex; gap:10px; }
   .socials a{
     width:38px; height:38px; display:flex; align-items:center; justify-content:center;
@@ -91,6 +99,7 @@
 
   @media (max-width: 640px){
     header{ flex-wrap:wrap; justify-content:center; gap:16px; text-align:center; padding:18px 20px; }
+    .nav-menu{ flex-wrap:wrap; justify-content:center; }
     .socials{ flex-wrap:wrap; justify-content:center; }
     .points-strip{ grid-template-columns:1fr; }
     .points-cell{ border-right:none; border-bottom:1px solid var(--line); text-align:center; }
@@ -407,6 +416,9 @@
     <div class="brand-mark"></div>
     <div class="brand-name">ADHEM<span>SWAG</span>.COM</div>
   </a>
+  <nav class="nav-menu">
+    <a href="donation.html" target="_blank" rel="noopener">Donate</a>
+  </nav>
   <div class="socials">
     <a href="https://twitch.tv/AdhemSwag" target="_blank" aria-label="Twitch"><svg viewBox="0 0 24 24"><path d="M3 2 1 6.5V19h6v3l3-3h4l6-6V2H3zm14 10-3 3h-4l-3 3v-3H4V4h13v8z"/><path d="M14 7h2v4h-2zM9 7h2v4H9z"/></svg></a>
     <a href="https://kick.com/adhemswag918" target="_blank" aria-label="Kick"><svg viewBox="0 0 24 24"><path d="M2 2h6v6h2V6h2V4h2V2h6v6h-2v2h-2v2h-2v2h2v2h2v2h2v6h-6v-2h-2v-2h-2v-2H8v6H2V2z"/></svg></a>
@@ -561,7 +573,7 @@
         </div>
         <div class="stream-body">
           <iframe
-            src="https://player.twitch.tv/?channel=adhemswag&parent=aswaggdhem.carrd.co&parent=adhemswag.github.io&muted=true"
+            src="https://player.twitch.tv/?channel=adhemswag&parent=aswaggdhem.carrd.co&parent=adhemswag.github.io&parent=live.adhemswag.com&muted=true"
             frameborder="0"
             allowfullscreen="true"
             scrolling="no"
