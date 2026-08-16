@@ -731,7 +731,7 @@
 
 <script>
   function copyPromoCode(btn, code) {
-    navigator.clipboard.writeText(code).then(() => {
+    const showCopied = () => {
       const original = btn.innerHTML;
       btn.classList.add('copied');
       btn.innerHTML = '<span class="promo-copy-icon">✓</span> Copied!';
@@ -739,7 +739,30 @@
         btn.classList.remove('copied');
         btn.innerHTML = original;
       }, 1500);
-    });
+    };
+
+    const fallbackCopy = () => {
+      const textarea = document.createElement('textarea');
+      textarea.value = code;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.focus();
+      textarea.select();
+      try {
+        document.execCommand('copy');
+        showCopied();
+      } catch (err) {
+        prompt('Copy this code:', code);
+      }
+      document.body.removeChild(textarea);
+    };
+
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(code).then(showCopied).catch(fallbackCopy);
+    } else {
+      fallbackCopy();
+    }
   }
 
   // Twitch live status check (DecAPI)
