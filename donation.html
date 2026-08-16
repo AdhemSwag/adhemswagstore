@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AdhemSwag — Support</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#05070a;
+    --bg-panel:#0b0f12;
+    --cyan:#11d9f7;
+    --white:#eaf6f8;
+    --muted:#6b7a80;
+    --line:rgba(17,217,247,0.14);
+    --grid:rgba(17,217,247,0.045);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{
+    background:var(--bg); color:var(--white); font-family:'JetBrains Mono', monospace;
+    min-height:100vh;
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 42px 42px;
+  }
+
+  main{
+    min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding: 40px 20px; gap:38px;
+  }
+
+  .back{
+    position:fixed; top:24px; left:24px;
+    font-size:12px; letter-spacing:0.08em; text-transform:uppercase;
+    color:var(--cyan); text-decoration:none; opacity:0.8;
+  }
+  .back:hover{ opacity:1; }
+
+  .heading{ text-align:center; }
+  h1{
+    font-family:'Rajdhani', sans-serif; font-weight:700; text-transform:uppercase;
+    font-size: clamp(28px, 5vw, 40px); letter-spacing:0.02em; color:var(--white);
+    margin-bottom:8px;
+  }
+  h1 span{ color:var(--cyan); text-shadow:0 0 20px rgba(17,217,247,0.45); }
+  .sub{ color:var(--muted); font-size:13px; letter-spacing:0.04em; }
+
+  .btn-stack{ display:flex; flex-direction:column; gap:18px; width:100%; max-width:420px; }
+
+  .support-btn{
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;
+    text-decoration:none; padding:22px 24px; border:1px solid var(--line);
+    background:var(--bg-panel); position:relative; overflow:hidden;
+    transition: all .2s ease;
+  }
+  .support-btn::before, .support-btn::after{
+    content:""; position:absolute; width:14px; height:14px; border-color:var(--cyan); border-style:solid; opacity:0.85;
+  }
+  .support-btn::before{ top:-1px; left:-1px; border-width:2px 0 0 2px; }
+  .support-btn::after{ bottom:-1px; right:-1px; border-width:0 2px 2px 0; }
+
+  .support-btn .label{
+    font-family:'Rajdhani', sans-serif; font-weight:700; font-size:20px; text-transform:uppercase;
+    letter-spacing:0.04em; color:var(--white);
+  }
+  .support-btn .tag{ font-size:11px; color:var(--cyan); letter-spacing:0.1em; }
+
+  .support-btn:hover{
+    border-color:var(--cyan); box-shadow:0 0 24px rgba(17,217,247,0.25);
+    transform:translateY(-2px);
+    background:rgba(17,217,247,0.05);
+  }
+
+  .support-btn.primary{ background:var(--cyan); border-color:var(--cyan); }
+  .support-btn.primary .label, .support-btn.primary .tag{ color:#05070a; }
+  .support-btn.primary:hover{ box-shadow:0 0 28px rgba(17,217,247,0.55); }
+
+  footer{
+    color:var(--muted); font-size:11px; letter-spacing:0.05em; text-align:center;
+  }
+  footer a{ color:var(--cyan); text-decoration:none; }
+</style>
+</head>
+<body>
+
+<a href="https://adhemswag.com/" class="back">← Back to site</a>
+
+<main>
+  <div class="heading">
+    <h1>Support <span>AdhemSwag</span></h1>
+    <p class="sub">// choose your region or send skins directly</p>
+  </div>
+
+  <div class="btn-stack">
+    <a href="https://streamlabs.com/adhemswag/tip/" target="_blank" rel="noopener" class="support-btn primary">
+      <span class="label">Donate — EU</span>
+      <span class="tag">via Streamlabs</span>
+    </a>
+
+    <a href="https://www.da3amni.com/adhemswag/tip/" target="_blank" rel="noopener" class="support-btn">
+      <span class="label">Donate — DZ</span>
+      <span class="tag">via Da3amni</span>
+    </a>
+
+    <a href="https://steamcommunity.com/tradeoffer/new/?partner=135309859&token=I0ExUKzX/" target="_blank" rel="noopener" class="support-btn">
+      <span class="label">Send Skins — CS2</span>
+      <span class="tag">via Steam Trade Offer</span>
+    </a>
+  </div>
+
+  <footer>Every bit of support keeps the stream running. Thank you.</footer>
+</main>
+
+</body>
+</html>
