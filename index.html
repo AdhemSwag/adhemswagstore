@@ -488,10 +488,14 @@
     z-index:9999; align-items:center; justify-content:center; padding:20px;
   }
   .partner-popup:target{ display:flex; }
+  .partner-popup-backdrop{
+    position:absolute; inset:0; z-index:1;
+  }
   .partner-popup-box{
+    position:relative; z-index:2;
     background: linear-gradient(180deg, #0c0e13 0%, #05060a 100%);
     border:1px solid rgba(17,217,247,0.4); max-width:400px; width:100%;
-    padding:30px; text-align:center; position:relative; color:var(--white);
+    padding:30px; text-align:center; color:var(--white);
     box-shadow:0 0 40px rgba(17,217,247,0.25);
   }
   .partner-popup-close{
@@ -636,7 +640,7 @@
       <span class="fnc-faq-btn-icon">?</span>FAQ
     </button>
 
-    <div class="fnc-faq-overlay" id="fncFaqOverlay">
+    <div class="fnc-faq-overlay" id="fncFaqOverlay" onclick="if(event.target===this) this.classList.remove('open')">
       <div class="fnc-faq-modal">
           <button class="fnc-faq-close" onclick="document.getElementById('fncFaqOverlay').classList.remove('open')">×</button>
           <h2 class="fnc-faq-title">FNC POINTS <span>FAQ</span></h2>
@@ -752,7 +756,7 @@
     </div>
 
     <!-- PARTNER POPUPS -->
-    <div id="exitlag-popup" class="partner-popup">
+    <div id="exitlag-popup" class="partner-popup"><a href="#home" class="partner-popup-backdrop"></a>
       <div class="partner-popup-box bracket">
         <span class="bc-tr"></span><span class="bc-bl"></span>
         <a href="#home" class="partner-popup-close">&times;</a>
@@ -772,7 +776,7 @@
       </div>
     </div>
 
-    <div id="noping-popup" class="partner-popup">
+    <div id="noping-popup" class="partner-popup"><a href="#home" class="partner-popup-backdrop"></a>
       <div class="partner-popup-box bracket">
         <span class="bc-tr"></span><span class="bc-bl"></span>
         <a href="#home" class="partner-popup-close">&times;</a>
@@ -789,7 +793,7 @@
       </div>
     </div>
 
-    <div id="ggdrop-popup" class="partner-popup">
+    <div id="ggdrop-popup" class="partner-popup"><a href="#home" class="partner-popup-backdrop"></a>
       <div class="partner-popup-box bracket">
         <span class="bc-tr"></span><span class="bc-bl"></span>
         <a href="#home" class="partner-popup-close">&times;</a>
@@ -809,7 +813,7 @@
       </div>
     </div>
 
-    <div id="esea-popup" class="partner-popup">
+    <div id="esea-popup" class="partner-popup"><a href="#home" class="partner-popup-backdrop"></a>
       <div class="partner-popup-box bracket">
         <span class="bc-tr"></span><span class="bc-bl"></span>
         <a href="#home" class="partner-popup-close">&times;</a>
