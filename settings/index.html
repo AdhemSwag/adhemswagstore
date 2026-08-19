@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CS2 Settings|AdhemSwag</title>
+<title>AdhemSwag — CS2 Settings</title>
 <meta name="description" content="AdhemSwag's CS2 settings — mouse, crosshair, viewmodel and HUD configuration.">
 <meta name="robots" content="index, follow">
 <meta property="og:title" content="AdhemSwag — CS2 Settings">
 <meta property="og:description" content="Mouse, crosshair, viewmodel and HUD configuration.">
 <meta property="og:image" content="https://adhemswag.com/og-image.jpg">
-<meta property="og:url" content="https://adhemswag.com/settings">
+<meta property="og:url" content="https://adhemswag.com/settings.html">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" type="image/x-icon" href="/favicon.ico">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -84,7 +84,23 @@
     font-size: clamp(28px, 4vw, 42px); letter-spacing:0.02em; color:var(--white);
   }
   h1 span{ color:var(--cyan); text-shadow:0 0 20px rgba(17,217,247,0.45); }
-  .page-sub{ color:var(--muted); font-size:13px; margin-bottom:36px; }
+  .page-sub{ color:var(--muted); font-size:13px; margin-bottom:36px; max-width:600px; line-height:1.6; }
+
+  .status-card{
+    background:var(--bg-panel); border:1px solid var(--line); padding:18px 22px; max-width:420px;
+  }
+  .status-row{ display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+  .status-dot{
+    width:9px; height:9px; border-radius:50%; background:var(--cyan); box-shadow:0 0 8px var(--cyan);
+    animation: statusPulse 1.4s ease-in-out infinite;
+  }
+  @keyframes statusPulse{ 0%,100%{ opacity:1; } 50%{ opacity:0.35; } }
+  .status-label{
+    font-family:'JetBrains Mono', monospace; font-size:12px; letter-spacing:0.1em; text-transform:uppercase; color:var(--cyan); font-weight:600;
+  }
+  .status-sub{
+    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.06em; text-transform:uppercase; color:var(--muted);
+  }
   .page-sub a{ color:var(--cyan); text-decoration:none; }
 
   .grid{ display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:20px; margin-bottom:20px; }
@@ -108,6 +124,14 @@
     background:rgba(17,217,247,0.05); border:1px solid var(--line); padding:12px 14px;
     word-break:break-all; line-height:1.6;
   }
+  .code-block.copyable{
+    display:flex; align-items:center; justify-content:space-between; gap:10px; cursor:pointer;
+    transition: all .2s ease;
+  }
+  .code-block.copyable:hover{ border-color:var(--cyan); background:rgba(17,217,247,0.1); }
+  .code-block.copyable .copy-icon{ flex-shrink:0; color:var(--cyan); }
+  .code-block.copyable.copied{ border-color:var(--cyan); }
+  .code-block.copyable.copied .code-text::after{ content:" ✓ copied"; color:var(--cyan); font-weight:600; }
 
   .binds-grid{ display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:0 24px; }
   .binds-grid .stat-row{ font-size:12.5px; }
@@ -153,15 +177,28 @@
 </header>
 
 <main>
+  <div class="eyebrow" style="margin-bottom:10px;">// AdhemSwag Official Setup</div>
   <div class="page-title">
     <h1>CS2 <span>Settings</span></h1>
   </div>
-  <p class="page-sub">Mouse, crosshair, viewmodel and HUD configuration</p>
+  <p class="page-sub">Everything I use in CS2 is listed here. Video, crosshair, viewmodel, radar, mouse settings, gear and PC specs.</p>
 
-  <div class="grid">
+  <div class="status-card bracket">
+    <span class="bc-tr"></span><span class="bc-bl"></span>
+    <div class="status-row">
+      <span class="status-dot"></span>
+      <span class="status-label">Updated Today</span>
+    </div>
+    <div class="status-sub">Current settings used on stream</div>
+  </div>
+
+  <div class="grid" style="margin-top:30px;">
     <div class="panel bracket">
       <div class="panel-label">Crosshair</div>
-      <div class="code-block">CSGO-xwNCF-PXanP-NKEdi-iPtMC-xpjjD</div>
+      <div class="code-block copyable" onclick="copyCode(this, 'CSGO-xwNCF-PXanP-NKEdi-iPtMC-xpjjD')">
+        <span class="code-text">CSGO-xwNCF-PXanP-NKEdi-iPtMC-xpjjD</span>
+        <svg class="copy-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+      </div>
     </div>
 
     <div class="panel bracket">
@@ -212,11 +249,6 @@
     </div>
   </div>
 
-  <div class="panel bracket full-span" style="margin-bottom:20px;">
-    <div class="panel-label">Launch Options</div>
-    <div class="code-block">-novid -tickrate 128 -allow_third_party_software -high +fps_max 0</div>
-  </div>
-
   <div class="panel bracket">
     <div class="panel-label">Key Binds</div>
     <div class="binds-grid">
@@ -259,5 +291,34 @@
   <div style="margin-top:6px;">Collaboration: <a href="mailto:adhemswag@yahoo.com">adhemswag@yahoo.com</a></div>
 </footer>
 
+<script>
+  function copyCode(el, code) {
+    const showCopied = () => {
+      el.classList.add('copied');
+      setTimeout(() => el.classList.remove('copied'), 1500);
+    };
+    const fallbackCopy = () => {
+      const textarea = document.createElement('textarea');
+      textarea.value = code;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.focus();
+      textarea.select();
+      try {
+        document.execCommand('copy');
+        showCopied();
+      } catch (err) {
+        prompt('Copy this code:', code);
+      }
+      document.body.removeChild(textarea);
+    };
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(code).then(showCopied).catch(fallbackCopy);
+    } else {
+      fallbackCopy();
+    }
+  }
+</script>
 </body>
 </html>
