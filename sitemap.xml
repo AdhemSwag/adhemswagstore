@@ -6,12 +6,17 @@
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://adhemswag.com/donation.html</loc>
+    <loc>https://adhemswag.com/bonuses</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://adhemswag.com/donate</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://adhemswag.com/settings.html</loc>
+    <loc>https://adhemswag.com/settings</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
