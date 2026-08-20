@@ -36,8 +36,21 @@
     background-size: 42px 42px;
   }
 
+  header{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:22px clamp(20px,5vw,64px); border-bottom:1px solid var(--line); flex-wrap:wrap; gap:14px;
+  }
+  .brand{ display:flex; align-items:center; gap:10px; text-decoration:none; }
+  .brand-mark{
+    width:10px; height:10px; background:var(--cyan);
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+    box-shadow:0 0 8px var(--cyan);
+  }
+  .brand-name{ font-family:'JetBrains Mono', monospace; font-size:13px; letter-spacing:0.12em; color:var(--white); }
+  .brand-name span{ color:var(--cyan); }
+
   main{
-    min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    min-height:calc(100vh - 90px); display:flex; flex-direction:column; align-items:center; justify-content:center;
     padding: 40px 20px; gap:38px;
   }
 
@@ -88,15 +101,55 @@
   .support-btn.primary:hover{ box-shadow:0 0 28px rgba(17,217,247,0.55); }
 
   footer{
-    color:var(--muted); font-size:11px; letter-spacing:0.05em; text-align:center;
+    text-align:center; padding:34px 20px 40px; border-top:1px solid var(--line);
+    font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--muted); letter-spacing:0.05em;
   }
   footer a{ color:var(--cyan); text-decoration:none; }
+  footer .row{ margin-top:6px; }
+
+  .nav-menu{ display:flex; gap:10px; }
+  .nav-menu a{
+    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase;
+    color:var(--cyan); text-decoration:none; border:1px solid var(--line); padding:8px 16px;
+    transition: all .2s ease;
+  }
+  .nav-menu a:hover{ background:rgba(17,217,247,0.08); border-color:var(--cyan); box-shadow:0 0 12px rgba(17,217,247,0.2); }
+  .socials{ display:flex; gap:10px; }
+  .socials a{
+    width:34px; height:34px; display:flex; align-items:center; justify-content:center;
+    border:1px solid var(--line); color:var(--cyan); text-decoration:none;
+    transition: all .2s ease;
+  }
+  .socials a:hover{ background:rgba(17,217,247,0.08); border-color:var(--cyan); box-shadow:0 0 12px rgba(17,217,247,0.25); }
+  .socials svg{ width:15px; height:15px; fill:currentColor; }
+
+  @media (max-width: 640px){
+    .nav-menu{ flex-wrap:wrap; justify-content:center; }
+    .socials{ flex-wrap:wrap; justify-content:center; }
+  }
 </style>
 </head>
 <body>
-
-<a href="https://adhemswag.com/" class="back">← Back to site</a>
-
+<header>
+  <a href="https://adhemswag.com/" class="brand">
+    <div class="brand-mark"></div>
+    <div class="brand-name">ADHEM<span>SWAG</span>.COM</div>
+  </a>
+  <nav class="nav-menu">
+    <a href="/bonuses"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px; margin-right:5px;"><rect x="3" y="8" width="18" height="4"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8"/><path d="M16.5 8a2.5 2.5 0 0 0 0-5C13 3 12 8 12 8"/></svg>Bonuses</a>
+    <a href="/settings"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px; margin-right:5px;"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings</a>
+    <a href="https://www.faceit.com/en/club/df590edc-e868-4c06-9541-f0751a167417/" target="_blank" rel="noopener"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAA6klEQVR4nO3VMUpDQRAA0PdDCIoEXFsFsbOIKQXR1sJO0DLgCdKIlYJaWHgFvYEXsdLKak+yrcVHWL4hTeZ3mW53YB6zzO6yjiWRcnlteix+jM9egJTLCN+YDPoAcI8JhHeQcjnCF0YQ2kHKZYC3v+LhAG5xUm+EHVHK5QA/2Kr3QzpIuTR47xaHJuXygfGKxhhnixJNymUfL7jC5orQf6BepFxmuMO0mwsBKmgbj7jBTjjQwc7xgFMMw4EKGmrnfI69cKCDTfGMC2yEAx1spn3cDhfVi7zJu9rBuFYNRl//wSWetF2tY3n8AoMgMQ8Xs3EOAAAAAElFTkSuQmCC" width="13" height="13" style="vertical-align:-2px; margin-right:5px;" alt="">Faceit Club</a>
+  </nav>
+  <div class="socials">
+    <a href="https://twitch.tv/AdhemSwag" target="_blank" aria-label="Twitch"><svg viewBox="0 0 24 24"><path d="M3 2 1 6.5V19h6v3l3-3h4l6-6V2H3zm14 10-3 3h-4l-3 3v-3H4V4h13v8z"/><path d="M14 7h2v4h-2zM9 7h2v4H9z"/></svg></a>
+    <a href="https://kick.com/adhemswag918" target="_blank" aria-label="Kick"><svg viewBox="0 0 24 24"><path d="M2 2h6v6h2V6h2V4h2V2h6v6h-2v2h-2v2h-2v2h2v2h2v2h2v6h-6v-2h-2v-2h-2v-2H8v6H2V2z"/></svg></a>
+    <a href="https://www.instagram.com/adhemswag/" target="_blank" aria-label="Instagram"><svg viewBox="0 0 24 24"><path d="M12 2c2.7 0 3.06.01 4.12.06 1.06.05 1.79.22 2.43.47.66.26 1.22.6 1.77 1.15.55.55.89 1.11 1.15 1.77.25.64.42 1.37.47 2.43.05 1.06.06 1.42.06 4.12s-.01 3.06-.06 4.12c-.05 1.06-.22 1.79-.47 2.43a4.9 4.9 0 0 1-1.15 1.77 4.9 4.9 0 0 1-1.77 1.15c-.64.25-1.37.42-2.43.47-1.06.05-1.42.06-4.12.06s-3.06-.01-4.12-.06c-1.06-.05-1.79-.22-2.43-.47a4.9 4.9 0 0 1-1.77-1.15 4.9 4.9 0 0 1-1.15-1.77c-.25-.64-.42-1.37-.47-2.43C2.01 15.06 2 14.7 2 12s.01-3.06.06-4.12c.05-1.06.22-1.79.47-2.43.26-.66.6-1.22 1.15-1.77A4.9 4.9 0 0 1 5.45 2.53c.64-.25 1.37-.42 2.43-.47C8.94 2.01 9.3 2 12 2zm0 5a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 8.2a3.2 3.2 0 1 1 0-6.4 3.2 3.2 0 0 1 0 6.4zm5.4-8.4a1.2 1.2 0 1 1-2.4 0 1.2 1.2 0 0 1 2.4 0z"/></svg></a>
+    <a href="https://t.me/adhemswag" target="_blank" aria-label="Telegram"><svg viewBox="0 0 24 24"><path d="M21.9 4.3 2.7 11.7c-1.2.5-1.2 1.2-.2 1.5l4.9 1.5 1.9 5.8c.2.6.4.8.9.8s.7-.2 1-.5l2.3-2.2 4.8 3.5c.9.5 1.5.2 1.7-.8L23.7 5.6c.3-1.3-.5-1.9-1.8-1.3zM8.6 14l9.5-6.1c.5-.3.9-.1.5.2l-8 7.4-.3 3.3-1.7-4.8z"/></svg></a>
+    <a href="https://x.com/AdhemSwag" target="_blank" aria-label="X"><svg viewBox="0 0 24 24"><path d="M17.5 3h3.3l-7.3 8.3L22 21h-6.7l-5.2-6.8L4 21H.7l7.8-8.9L2 3h6.9l4.7 6.3L17.5 3zm-1.2 16h1.8L7.7 5H5.8l10.5 14z"/></svg></a>
+    <a href="https://www.tiktok.com/@adhemswagg" target="_blank" aria-label="TikTok"><svg viewBox="0 0 24 24"><path d="M14 2h3.1c.2 1.6 1.1 3 2.9 3.4v3.1c-1.4 0-2.6-.4-3.6-1.1v6.7c0 3.4-2.4 5.9-5.7 5.9-3.2 0-5.7-2.5-5.7-5.7 0-3.3 2.6-5.8 6-5.7v3.2c-1.5-.2-2.8.9-2.8 2.4 0 1.4 1.1 2.5 2.5 2.5 1.5 0 2.7-1.1 2.7-2.7V2z"/></svg></a>
+    <a href="https://discord.gg/cMRS6E2" target="_blank" aria-label="Discord"><svg viewBox="0 0 24 24"><path d="M20.3 5.4A17.6 17.6 0 0 0 15.9 4l-.3.5c1.7.4 2.7 1 3.7 1.7-1.6-.8-3.2-1.2-4.8-1.2s-3.2.4-4.8 1.2c1-.7 2.2-1.4 3.7-1.7L13.1 4a17.6 17.6 0 0 0-4.4 1.4C6.5 8.3 5.7 11.2 6 14c1.4 1 2.7 1.6 4 2l.5-.9c-.7-.3-1.4-.6-2-1.1.2.1.3.2.5.3 2 1 4.2 1.5 6.9 1.5s4.9-.5 6.9-1.5c.2-.1.3-.2.5-.3-.6.5-1.3.8-2 1.1l.5.9c1.3-.4 2.6-1 4-2 .4-3.4-.6-6.3-2.4-8.6zM9.7 12.7c-.7 0-1.3-.7-1.3-1.5s.6-1.5 1.3-1.5 1.3.7 1.3 1.5-.6 1.5-1.3 1.5zm4.6 0c-.7 0-1.3-.7-1.3-1.5s.6-1.5 1.3-1.5 1.3.7 1.3 1.5-.6 1.5-1.3 1.5z"/></svg></a>
+  </div>
+</header>
 <main>
   <div class="heading">
     <h1>Support <span>AdhemSwag</span></h1>
@@ -120,7 +173,10 @@
     </a>
   </div>
 
-  <footer>Every bit of support keeps the stream running. Thank you.</footer>
+  <footer>
+  <div class="row">© 2026 AdhemSwag.com — All Rights Reserved</div>
+  <div class="row">Collaboration: <a href="mailto:adhemswag@yahoo.com">adhemswag@yahoo.com</a></div>
+</footer>
 </main>
 
 </body>
