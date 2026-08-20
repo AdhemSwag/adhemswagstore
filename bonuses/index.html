@@ -1,1 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AdhemSwag — Partner Bonuses</title>
+<meta name="description" content="Exclusive partner bonuses for AdhemSwag viewers — ExitLag, NoPing, GGDrop and ESEA discount codes.">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="AdhemSwag — Partner Bonuses">
+<meta property="og:description" content="Exclusive partner bonuses — ExitLag, NoPing, GGDrop and ESEA.">
+<meta property="og:image" content="https://adhemswag.com/og-image.jpg">
+<meta property="og:url" content="https://adhemswag.com/bonuses">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#05070a; --bg-panel:#0b0f12; --cyan:#11d9f7; --cyan-dim:#0a8fa3;
+    --white:#eaf6f8; --muted:#6b7a80; --line:rgba(17,217,247,0.14); --grid:rgba(17,217,247,0.045);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{
+    background:var(--bg); color:var(--white); font-family:'Inter',sans-serif;
+    background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 42px 42px;
+  }
+  .eyebrow{ font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.22em; text-transform:uppercase; color:var(--cyan-dim); }
+  .bracket{ position:relative; }
+  .bracket::before, .bracket::after{ content:""; position:absolute; width:14px; height:14px; border-color:var(--cyan); border-style:solid; opacity:0.85; }
+  .bracket::before{ top:-1px; left:-1px; border-width:2px 0 0 2px; }
+  .bracket::after{ bottom:-1px; right:-1px; border-width:0 2px 2px 0; }
 
+  header{ display:flex; align-items:center; justify-content:space-between; padding:22px clamp(20px,5vw,64px); border-bottom:1px solid var(--line); }
+  .brand{ display:flex; align-items:center; gap:10px; text-decoration:none; }
+  .brand-mark{ width:10px; height:10px; background:var(--cyan); clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); box-shadow:0 0 8px var(--cyan); }
+  .brand-name{ font-family:'JetBrains Mono', monospace; font-size:13px; letter-spacing:0.12em; color:var(--white); }
+  .brand-name span{ color:var(--cyan); }
+  .back{ font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--cyan); text-decoration:none; opacity:0.85; }
+  .back:hover{ opacity:1; }
+
+  main{ max-width:1100px; margin:0 auto; padding: clamp(40px,7vw,80px) clamp(20px,5vw,64px) 80px; text-align:center; }
+  .heading{ margin-bottom:50px; }
+  h1{
+    font-family:'Rajdhani', sans-serif; font-weight:700; text-transform:uppercase;
+    font-size: clamp(30px, 4.6vw, 48px); letter-spacing:0.02em; color:var(--white); margin-top:10px;
+  }
+  h1 span{ color:var(--cyan); text-shadow:0 0 20px rgba(17,217,247,0.45); }
+  .h1-gift{ width:0.75em; height:0.75em; vertical-align:-0.05em; color:var(--cyan); }
+
+  .cards{ display:grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap:24px; text-align:left; }
+
+  .card{
+    background:var(--bg-panel); border:1px solid var(--line); padding:0; overflow:hidden;
+    display:flex; flex-direction:column; transition: all .2s ease;
+  }
+  .card:hover{ border-color:var(--cyan); box-shadow:0 0 24px rgba(17,217,247,0.15); }
+
+  .card-logo{ padding:30px 24px 24px; display:flex; align-items:center; justify-content:center; min-height:90px; }
+  .card-logo img{ max-height:34px; max-width:100%; }
+
+  .card-body{ padding:0 24px 26px; text-align:center; border-top:1px solid var(--line); padding-top:22px; flex:1; display:flex; flex-direction:column; align-items:center; }
+  .card-gift{ width:22px; height:22px; color:var(--cyan); margin-bottom:14px; }
+  .card-offer{ font-size:13.5px; line-height:1.6; color:var(--muted); }
+  .card-offer strong{ color:var(--cyan); font-weight:700; }
+
+  .card-cta{
+    display:block; text-align:center; padding:15px 20px; margin-top:auto;
+    background:var(--cyan); color:#05070a; text-decoration:none;
+    font-family:'JetBrains Mono', monospace; font-weight:700; font-size:12.5px;
+    letter-spacing:0.06em; text-transform:uppercase; transition: all .2s ease;
+  }
+  .card-cta:hover{ background:#4de6ff; box-shadow:0 0 20px rgba(17,217,247,0.4); }
+
+  @media (max-width: 640px){
+    header{ flex-wrap:wrap; justify-content:center; gap:14px; text-align:center; }
+    .nav-menu{ flex-wrap:wrap; justify-content:center; }
+    .socials{ flex-wrap:wrap; justify-content:center; }
+    main{ text-align:center; }
+  }
+  footer{
+    text-align:center; padding:34px 20px 40px; border-top:1px solid var(--line);
+    font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--muted); letter-spacing:0.05em;
+  }
+  footer a{ color:var(--cyan); text-decoration:none; }
+  footer .row{ margin-top:6px; }
+
+  .nav-menu{ display:flex; gap:10px; }
+  .nav-menu a{
+    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase;
+    color:var(--cyan); text-decoration:none; border:1px solid var(--line); padding:8px 16px;
+    transition: all .2s ease;
+  }
+  .nav-menu a:hover{ background:rgba(17,217,247,0.08); border-color:var(--cyan); box-shadow:0 0 12px rgba(17,217,247,0.2); }
+  .socials{ display:flex; gap:10px; }
+  .socials a{
+    width:34px; height:34px; display:flex; align-items:center; justify-content:center;
+    border:1px solid var(--line); color:var(--cyan); text-decoration:none;
+    transition: all .2s ease;
+  }
+  .socials a:hover{ background:rgba(17,217,247,0.08); border-color:var(--cyan); box-shadow:0 0 12px rgba(17,217,247,0.25); }
+  .socials svg{ width:15px; height:15px; fill:currentColor; }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="https://adhemswag.com/" class="brand">
+    <div class="brand-mark"></div>
+    <div class="brand-name">ADHEM<span>SWAG</span>.COM</div>
+  </a>
+  <nav class="nav-menu">
+    <a href="/settings"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px; margin-right:5px;"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings</a>
+    <a href="/donate"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px; margin-right:5px;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>Donate</a>
+    <a href="https://www.faceit.com/en/club/df590edc-e868-4c06-9541-f0751a167417/" target="_blank" rel="noopener"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAA6klEQVR4nO3VMUpDQRAA0PdDCIoEXFsFsbOIKQXR1sJO0DLgCdKIlYJaWHgFvYEXsdLKak+yrcVHWL4hTeZ3mW53YB6zzO6yjiWRcnlteix+jM9egJTLCN+YDPoAcI8JhHeQcjnCF0YQ2kHKZYC3v+LhAG5xUm+EHVHK5QA/2Kr3QzpIuTR47xaHJuXygfGKxhhnixJNymUfL7jC5orQf6BepFxmuMO0mwsBKmgbj7jBTjjQwc7xgFMMw4EKGmrnfI69cKCDTfGMC2yEAx1spn3cDhfVi7zJu9rBuFYNRl//wSWetF2tY3n8AoMgMQ8Xs3EOAAAAAElFTkSuQmCC" width="13" height="13" style="vertical-align:-2px; margin-right:5px;" alt="">Faceit Club</a>
+  </nav>
+  <div class="socials">
+    <a href="https://twitch.tv/AdhemSwag" target="_blank" aria-label="Twitch"><svg viewBox="0 0 24 24"><path d="M3 2 1 6.5V19h6v3l3-3h4l6-6V2H3zm14 10-3 3h-4l-3 3v-3H4V4h13v8z"/><path d="M14 7h2v4h-2zM9 7h2v4H9z"/></svg></a>
+    <a href="https://kick.com/adhemswag918" target="_blank" aria-label="Kick"><svg viewBox="0 0 24 24"><path d="M2 2h6v6h2V6h2V4h2V2h6v6h-2v2h-2v2h-2v2h2v2h2v2h2v6h-6v-2h-2v-2h-2v-2H8v6H2V2z"/></svg></a>
+    <a href="https://www.instagram.com/adhemswag/" target="_blank" aria-label="Instagram"><svg viewBox="0 0 24 24"><path d="M12 2c2.7 0 3.06.01 4.12.06 1.06.05 1.79.22 2.43.47.66.26 1.22.6 1.77 1.15.55.55.89 1.11 1.15 1.77.25.64.42 1.37.47 2.43.05 1.06.06 1.42.06 4.12s-.01 3.06-.06 4.12c-.05 1.06-.22 1.79-.47 2.43a4.9 4.9 0 0 1-1.15 1.77 4.9 4.9 0 0 1-1.77 1.15c-.64.25-1.37.42-2.43.47-1.06.05-1.42.06-4.12.06s-3.06-.01-4.12-.06c-1.06-.05-1.79-.22-2.43-.47a4.9 4.9 0 0 1-1.77-1.15 4.9 4.9 0 0 1-1.15-1.77c-.25-.64-.42-1.37-.47-2.43C2.01 15.06 2 14.7 2 12s.01-3.06.06-4.12c.05-1.06.22-1.79.47-2.43.26-.66.6-1.22 1.15-1.77A4.9 4.9 0 0 1 5.45 2.53c.64-.25 1.37-.42 2.43-.47C8.94 2.01 9.3 2 12 2zm0 5a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 8.2a3.2 3.2 0 1 1 0-6.4 3.2 3.2 0 0 1 0 6.4zm5.4-8.4a1.2 1.2 0 1 1-2.4 0 1.2 1.2 0 0 1 2.4 0z"/></svg></a>
+    <a href="https://t.me/adhemswag" target="_blank" aria-label="Telegram"><svg viewBox="0 0 24 24"><path d="M21.9 4.3 2.7 11.7c-1.2.5-1.2 1.2-.2 1.5l4.9 1.5 1.9 5.8c.2.6.4.8.9.8s.7-.2 1-.5l2.3-2.2 4.8 3.5c.9.5 1.5.2 1.7-.8L23.7 5.6c.3-1.3-.5-1.9-1.8-1.3zM8.6 14l9.5-6.1c.5-.3.9-.1.5.2l-8 7.4-.3 3.3-1.7-4.8z"/></svg></a>
+    <a href="https://x.com/AdhemSwag" target="_blank" aria-label="X"><svg viewBox="0 0 24 24"><path d="M17.5 3h3.3l-7.3 8.3L22 21h-6.7l-5.2-6.8L4 21H.7l7.8-8.9L2 3h6.9l4.7 6.3L17.5 3zm-1.2 16h1.8L7.7 5H5.8l10.5 14z"/></svg></a>
+    <a href="https://www.tiktok.com/@adhemswagg" target="_blank" aria-label="TikTok"><svg viewBox="0 0 24 24"><path d="M14 2h3.1c.2 1.6 1.1 3 2.9 3.4v3.1c-1.4 0-2.6-.4-3.6-1.1v6.7c0 3.4-2.4 5.9-5.7 5.9-3.2 0-5.7-2.5-5.7-5.7 0-3.3 2.6-5.8 6-5.7v3.2c-1.5-.2-2.8.9-2.8 2.4 0 1.4 1.1 2.5 2.5 2.5 1.5 0 2.7-1.1 2.7-2.7V2z"/></svg></a>
+    <a href="https://discord.gg/cMRS6E2" target="_blank" aria-label="Discord"><svg viewBox="0 0 24 24"><path d="M20.3 5.4A17.6 17.6 0 0 0 15.9 4l-.3.5c1.7.4 2.7 1 3.7 1.7-1.6-.8-3.2-1.2-4.8-1.2s-3.2.4-4.8 1.2c1-.7 2.2-1.4 3.7-1.7L13.1 4a17.6 17.6 0 0 0-4.4 1.4C6.5 8.3 5.7 11.2 6 14c1.4 1 2.7 1.6 4 2l.5-.9c-.7-.3-1.4-.6-2-1.1.2.1.3.2.5.3 2 1 4.2 1.5 6.9 1.5s4.9-.5 6.9-1.5c.2-.1.3-.2.5-.3-.6.5-1.3.8-2 1.1l.5.9c1.3-.4 2.6-1 4-2 .4-3.4-.6-6.3-2.4-8.6zM9.7 12.7c-.7 0-1.3-.7-1.3-1.5s.6-1.5 1.3-1.5 1.3.7 1.3 1.5-.6 1.5-1.3 1.5zm4.6 0c-.7 0-1.3-.7-1.3-1.5s.6-1.5 1.3-1.5 1.3.7 1.3 1.5-.6 1.5-1.3 1.5z"/></svg></a>
+  </div>
+</header>
+
+<main>
+  <div class="heading">
+    <div class="eyebrow">ADHEMSWAG EXCLUSIVE</div>
+    <h1>Partner <svg class="h1-gift" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="8" width="18" height="4"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8"/><path d="M16.5 8a2.5 2.5 0 0 0 0-5C13 3 12 8 12 8"/></svg> <span>Bonuses</span></h1>
+  </div>
+
+  <div class="cards">
+
+    <div class="card bracket">
+      <div class="card-logo"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAC70lEQVR4nO3WTYiWVRQH8N/oJN02cotKLIVadDVIgz4I+lrUJsNdiUZFZEXU1kD6QEGNXAg1NIEgRBRUIFSbKCgDJYJWUTRwJYoKLGhx+zBuTTNOi+e+zevk+86Y7ZyzudznnOf8/+ece8+5LMqinO0yMkwZc12JV+Z8nsYoDpQU3phjvwc3NJslbV2KoyWFx06FMTqMQEnhWMwVbj+F+uqY64clhZ8a+EY8OcDVW4Mwlgwj0OQh/IK/MKWL6k9cgD19ds/jRLObxmTbHyopjA9yPrQEPYm5Po1dZlMKM21dj7vxTJ9+poGfwPUlhc8G+V5IBpQUdiM3wn/ooqttP4Yr5/xyohEZHwbOgAzEXG/DeB/IJlyMw3gCBxv5VfgI+7AFKxv4EhwrKVw6X3ADSxBzzbiibT8uKdwUc30Xl5UU1vbZPYeteLmRm8Qy3F9SeHU+AsNK8LAumkncGHPdUlLYgDXtTICSwnZdzVfhSAM/tBDwoQRKCofxZnM4rTvlsB27Yq6X9Jk/gs26cvyKbQsBn1diritjrj/EXKdjrjMx15fa96Mx1/fn2L4Tc/0q5nrr6WAMvQUlhWO6EvTOyvltrTh3jvkkzsN3/xuBmOsYVutKcLyksDnmuhXr8ECf3R24C/vxQcx19RkTiLmux6O67jeKp5pqP/aUFL7pMz+At3ENLsfuMyaAF3BOA58oKYzFXF/DjyWFf25BzHUHluNzbNS14vtaL5lXBjWiTbobMK27Yjfj9wZyT0nh9Wa3BhO6G3Knrm/0MvZFSWHdfyWwAhe17VRJYSLm+imuxdeN2BRW4Ft8iXvNdsHeTNhWUth32gROQehxvOjkYdSTW3QH8kEnD6MZ/IarSgrfD/I97zBq2djRnDPbHeFgSeEIduLnPn1vXY69w/wvZBruxYW6yJa2f5bhuNbxWoQ7+/QjZh87W2KuGwY5n+9JtlY3AXu2I2bT/Ozc+sZc38N1/v0k+6SksHEBwS7KopyF8jc3mAOI/sKaUwAAAABJRU5ErkJggg==" alt="ExitLag" style="height:34px; width:34px;"></div>
+      <div class="card-body">
+        <svg class="card-gift" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="8" width="18" height="4"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8"/><path d="M16.5 8a2.5 2.5 0 0 0 0-5C13 3 12 8 12 8"/></svg>
+        <div class="card-offer"><strong>50% OFF</strong> + 3 months free with code <strong>AdhemSwag</strong></div>
+      </div>
+      <a href="https://www.exitlag.com/refer/ADHEMSWAG" target="_blank" rel="noopener" class="card-cta">Use code AdhemSwag</a>
+    </div>
+
+    <div class="card bracket">
+      <div class="card-logo"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAA6klEQVR4nO1WOxKFIAwMjA2lp+D+x/EUlJZaOZOH+afwFWwlkrCbsKAACwsfo0SS9uO8tJjRG7v2fpzXM1+9xBbyJ9by3twBKzGF0VvB+bg7JgEUudZiSQweqwLmxSRiTQSVK3ogSk7FcrkuE3rA7XlYgKd6ipw7QayAqOupPGktUwc81Wt5s5i0ByyXk1TAliWnnj0Id8BTtdsDc8JcafZaxuPXFkiLa7dbRNhPBzLkeOwRVblAybmjt8LNa3nzO/YUcMozHyMK1RqMq9biPZ9vda+yJpPIAZAHKENFr2ArOcBHP6ULC3+FGyjMsE3wCqMWAAAAAElFTkSuQmCC" alt="NoPing" style="height:34px; width:34px;"></div>
+      <div class="card-body">
+        <svg class="card-gift" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="8" width="18" height="4"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8"/><path d="M16.5 8a2.5 2.5 0 0 0 0-5C13 3 12 8 12 8"/></svg>
+        <div class="card-offer">Lower your <strong>ping</strong> and boost <strong>FPS</strong> instantly</div>
+      </div>
+      <a href="https://nopi.ng/adhemswag" target="_blank" rel="noopener" class="card-cta">Get NoPing</a>
+    </div>
+
+    <div class="card bracket">
+      <div class="card-logo"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAyElEQVR4nO1WMQrAIAzU0sXRV/T/z/EVjo52EqQYc0mwpeBtosldzkR0bmPjY3htYEyl9ut8BVUuUdCTlIJEDHQQJdYIOVaRo7GsACs4EWYB2uZrmAbHVGojaJVwhKOKZzHkhmXM+li1Q30SSyNygBzQ2P4ElYNswnwFj9iHukOdO7nD1i7nAD1EK3tgKGBUtVUE5eTwCqyJJWJFLyGSWOrUdAqkBNSe6iXkyFBwUzS9gtUj6JzgR6RxAyngH18yRMwb17WxsQQ3FLFxZcs2WyAAAAAASUVORK5CYII=" alt="GGDrop" style="height:34px; width:34px;"></div>
+      <div class="card-body">
+        <svg class="card-gift" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="8" width="18" height="4"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8"/><path d="M16.5 8a2.5 2.5 0 0 0 0-5C13 3 12 8 12 8"/></svg>
+        <div class="card-offer"><strong>+7% deposit</strong> bonus + free spin with code <strong>Adhem</strong></div>
+      </div>
+      <a href="https://ggdrop.art/Adhem" target="_blank" rel="noopener" class="card-cta">Use code Adhem</a>
+    </div>
+
+    <div class="card bracket">
+      <div class="card-logo"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAC7UlEQVR4nO3WTWgdZRQG4CfJbeqkteYTqxGqgn8jrT/gwpVYFKqCIG4VURFBBCm4EEEUcSe4EEGb4sbu3ChqQVE3LhRBKFVaigwuRPyJRXBCUAeb5MbFd66ZXpLUuQYX2gPDcM9857zveb9zDpez9l+xVDU7R4kb3yTwp/DkKLG9TQDfgwcwP0r8ZijwGK7BUqqay/5VAqlq7sX9GMMfOK9rjpGvIFXNHZhtgW6Pp5ONpECqmn14JsBXwn0Ozu2aq7MCqWpm8AhuRiMXMRG5OivQiUCAPxrgfbnqsfi8DdOdCaSq2Y+E87EUCQfJt8fvcbnaaeyLd78FPrBtnQngO9yDW3Eykg4k3dIC6Yevh1Px7QRewW/xVBuBpaq5Dbsj/khdFkd7dVm8narmIrmhbtwgfhkLQWRKHruP6rI4uA7YFdiJS3CVrPApWcmTkS/3QF0WB1PVHMNL2GNVyn68x/BrELgYkziOIy3AmSB2Na5rPZeH/wu8XpfFbJvoaXeYqmYX9suNtiNYTsR7MY5tCd+HOIALcS1uwJVy7wz6Zwnv4RA+r8tiblip4SYakLgdD+KWcP+M3+U5n8JWzOFbXCBLPd1K8wvexcc4WpfFiWGcdQm0iNyHF2XJ5+Umm5KvZ3KN2JU482mAH67L4sf18g9soz3wjVzhjDymaQ3AQY8syqosYbYui8NnAv47BO6Up2I8gMYDdNnqbpiIswMfHdf7modT1TyOh+Wq+nKFiwHSC+AVueKVofDJf0QgVc1N8q7fZXXXb5W7/ye8j2PhHyi43ErR18FOIxAL6QV5pKCQK5zHV3itLou78Cw+kydjLMiNZMMK3N0CH9hxeS/srcviOYgmewgvyxuxZ+3rOKP91YSpavbieXllLuAtfIC5uiw+GQ6sy+LrVDWv4vsgeL3Vhu1GIFXNbrnp4E18iXc2WiBB4gccSFVT4wlcKvdLNwLyuO3A03VZHOqSIIi8kapmTv5/uNA1/qz9v+1PC9nL6tgu3WQAAAAASUVORK5CYII=" alt="ESEA" style="height:34px; width:34px;"></div>
+      <div class="card-body">
+        <svg class="card-gift" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="8" width="18" height="4"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8"/><path d="M16.5 8a2.5 2.5 0 0 0 0-5C13 3 12 8 12 8"/></svg>
+        <div class="card-offer">Save <strong>10%</strong> instantly + up to <strong>40% OFF</strong> for new subscribers</div>
+      </div>
+      <a href="https://fce.gg/ESEA-ADHEMSWAG" target="_blank" rel="noopener" class="card-cta">Join ESEA</a>
+    </div>
+
+  </div>
+</main>
+
+<footer>
+  <div class="row">© 2026 AdhemSwag.com — All Rights Reserved</div>
+  <div class="row">Collaboration: <a href="mailto:adhemswag@yahoo.com">adhemswag@yahoo.com</a></div>
+</footer>
+
+</body>
+</html>
