@@ -128,11 +128,7 @@
     border-bottom:1px solid var(--line);
   }
   .brand{ display:flex; align-items:center; gap:10px; }
-  .brand-mark{
-    width:10px; height:10px; background:var(--cyan);
-    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
-    box-shadow:0 0 8px var(--cyan);
-  }
+  
   .brand-name{ font-family:'JetBrains Mono', monospace; font-size:13px; letter-spacing:0.12em; color:var(--white); }
   .brand-name span{ color:var(--cyan); }
 
@@ -553,7 +549,12 @@
 
 <header>
   <a href="https://adhemswag.com/" class="brand" style="text-decoration:none;">
-    <div class="brand-mark"></div>
+    <svg class="brand-mark" viewBox="0 0 24 24" fill="none" stroke="#11d9f7" stroke-width="1.6" style="width:16px; height:16px; overflow:visible;">
+      <path d="M12 2C7 2 4 5.5 4 10c0 2.6 1.1 4.4 2.5 5.7V19c0 .6.4 1 1 1h1v-2h1v2h5v-2h1v2h1c.6 0 1-.4 1-1v-3.3C18.9 14.4 20 12.6 20 10c0-4.5-3-8-8-8z"/>
+      <circle cx="9" cy="10" r="1.6" fill="#11d9f7" stroke="none"/>
+      <circle cx="15" cy="10" r="1.6" fill="#11d9f7" stroke="none"/>
+      <path d="M11 13.5h2l-.5 1.5h-1z" fill="#11d9f7" stroke="none"/>
+    </svg>
     <div class="brand-name">ADHEM<span>SWAG</span>.COM</div>
   </a>
   <nav class="nav-menu">
