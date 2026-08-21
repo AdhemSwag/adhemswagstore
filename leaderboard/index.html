@@ -62,15 +62,40 @@
   h1 span{ color:var(--cyan); text-shadow:0 0 20px rgba(17,217,247,0.45); }
   .page-sub{ color:var(--muted); font-size:13px; margin-bottom:30px; }
 
-  .lb-frame{ background:var(--bg-panel); border:1px solid var(--line); padding:0; overflow:hidden; position:relative; }
-  .lb-frame iframe{ width:100%; height:900px; border:0; display:block; background:#0d1117; }
-
-  .lb-status{
-    display:flex; align-items:center; gap:8px; margin-bottom:14px;
-    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted);
+  .lb-table{ background:var(--bg-panel); border:1px solid var(--line); overflow:hidden; }
+  .lb-row{
+    display:grid; grid-template-columns: 70px 1fr 140px; align-items:center; gap:10px;
+    padding:13px 20px; border-bottom:1px solid var(--line); font-size:13.5px;
+    border-left:3px solid transparent;
   }
-  .lb-dot{ width:7px; height:7px; border-radius:50%; background:var(--cyan); box-shadow:0 0 8px var(--cyan); animation: lbPulse 1.4s ease-in-out infinite; }
-  @keyframes lbPulse{ 0%,100%{ opacity:1; } 50%{ opacity:0.35; } }
+  .lb-row:last-child{ border-bottom:none; }
+  .lb-head{
+    font-family:'JetBrains Mono', monospace; font-size:11px; text-transform:uppercase; letter-spacing:0.08em;
+    color:var(--cyan); background:rgba(17,217,247,0.05);
+  }
+  .lb-rank{ font-family:'JetBrains Mono', monospace; color:var(--muted); font-weight:600; }
+  .lb-user{ color:var(--white); font-weight:500; }
+  .lb-points{ font-family:'JetBrains Mono', monospace; color:var(--cyan); font-weight:700; text-align:right; }
+  .lb-points span{ color:var(--muted); font-weight:400; font-size:10px; }
+
+  .lb-row.top1{ background:rgba(255,215,0,0.08); border-left:3px solid #FFD700; }
+  .lb-row.top1 .lb-rank{ color:#FFD700; font-weight:700; }
+  .lb-row.top1 .lb-points{ color:#FFD700; }
+  .lb-row.top2{ background:rgba(197,203,214,0.08); border-left:3px solid #C5CBD6; }
+  .lb-row.top2 .lb-rank{ color:#C5CBD6; font-weight:700; }
+  .lb-row.top2 .lb-points{ color:#C5CBD6; }
+  .lb-row.top3{ background:rgba(205,127,50,0.08); border-left:3px solid #CD7F32; }
+  .lb-row.top3 .lb-rank{ color:#CD7F32; font-weight:700; }
+  .lb-row.top3 .lb-points{ color:#CD7F32; }
+
+  .lb-more{
+    display:inline-flex; align-items:center; gap:10px; margin-top:20px;
+    color:var(--cyan); text-decoration:none; border:1px solid var(--line); padding:13px 24px;
+    font-family:'JetBrains Mono', monospace; font-size:12.5px; letter-spacing:0.06em; text-transform:uppercase;
+    transition: all .2s ease;
+  }
+  .lb-more:hover{ background:rgba(17,217,247,0.08); border-color:var(--cyan); box-shadow:0 0 14px rgba(17,217,247,0.2); }
+  .lb-note{ margin-top:14px; font-size:12px; color:var(--muted); }
 
   footer{
     text-align:center; padding:34px 20px 40px; border-top:1px solid var(--line);
@@ -83,7 +108,8 @@
     header{ flex-wrap:wrap; justify-content:center; gap:14px; text-align:center; }
     .nav-menu{ justify-content:center; }
     .socials{ justify-content:center; }
-    .lb-frame iframe{ height:700px; }
+    .lb-row{ grid-template-columns: 44px 1fr 100px; padding:12px 14px; font-size:12.5px; gap:6px; }
+    .lb-more{ width:100%; justify-content:center; }
   }
 </style>
 </head>
@@ -119,31 +145,152 @@
 <main>
   <div class="eyebrow" style="margin-bottom:10px;">// FNC Points ranking</div>
   <h1>Leader<span>board</span></h1>
-  <p class="page-sub">Top viewers ranked by FNC Points and watch time.</p>
+  <p class="page-sub">Top 25 viewers ranked by FNC Points.</p>
 
-  <div class="lb-status">
-    <span class="lb-dot"></span>
-    <span id="refreshStatus">Live · refreshes every 60s</span>
+  <div class="lb-table bracket">
+    <div class="lb-row lb-head">
+      <div class="lb-rank">Rank</div>
+      <div class="lb-user">Username</div>
+      <div class="lb-points">Points</div>
+    </div>
+        <div class="lb-row top1">
+          <div class="lb-rank">#1</div>
+          <div class="lb-user">yasosus_bibus</div>
+          <div class="lb-points">30,350 <span>FNC</span></div>
+        </div>
+        <div class="lb-row top2">
+          <div class="lb-rank">#2</div>
+          <div class="lb-user">yuri2130r</div>
+          <div class="lb-points">28,215 <span>FNC</span></div>
+        </div>
+        <div class="lb-row top3">
+          <div class="lb-rank">#3</div>
+          <div class="lb-user">thetimelesstoni</div>
+          <div class="lb-points">20,840 <span>FNC</span></div>
+        </div>
+        <div class="lb-row">
+          <div class="lb-rank">#4</div>
+          <div class="lb-user">phpkiller</div>
+          <div class="lb-points">18,225 <span>FNC</span></div>
+        </div>
+        <div class="lb-row">
+          <div class="lb-rank">#5</div>
+          <div class="lb-user">ronn1e_joe</div>
+          <div class="lb-points">16,460 <span>FNC</span></div>
+        </div>
+        <div class="lb-row">
+          <div class="lb-rank">#6</div>
+          <div class="lb-user">faceitsync</div>
+          <div class="lb-points">15,185 <span>FNC</span></div>
+        </div>
+        <div class="lb-row">
+          <div class="lb-rank">#7</div>
+          <div class="lb-user">demx_dz39</div>
+          <div class="lb-points">14,980 <span>FNC</span></div>
+        </div>
+        <div class="lb-row">
+          <div class="lb-rank">#8</div>
+          <div class="lb-user">wiitaje</div>
+          <div class="lb-points">14,155 <span>FNC</span></div>
+        </div>
+        <div class="lb-row">
+          <div class="lb-rank">#9</div>
+          <div class="lb-user">raouf1312</div>
+          <div class="lb-points">9,340 <span>FNC</span></div>
+        </div>
+        <div class="lb-row">
+          <div class="lb-rank">#10</div>
+          <div class="lb-user">mootje31</div>
+          <div class="lb-points">7,535 <span>FNC</span></div>
+        </div>
+        <div class="lb-row">
+          <div class="lb-rank">#11</div>
+          <div class="lb-user">dzz_black</div>
+          <div class="lb-points">6,415 <span>FNC</span></div>
+        </div>
+        <div class="lb-row">
+          <div class="lb-rank">#12</div>
+          <div class="lb-user">khou_zwita</div>
+          <div class="lb-points">5,645 <span>FNC</span></div>
+        </div>
+        <div class="lb-row">
+          <div class="lb-rank">#13</div>
+          <div class="lb-user">nino_666</div>
+          <div class="lb-points">5,580 <span>FNC</span></div>
+        </div>
+        <div class="lb-row">
+          <div class="lb-rank">#14</div>
+          <div class="lb-user">lilwolfey_</div>
+          <div class="lb-points">5,210 <span>FNC</span></div>
+        </div>
+        <div class="lb-row">
+          <div class="lb-rank">#15</div>
+          <div class="lb-user">targgar</div>
+          <div class="lb-points">4,750 <span>FNC</span></div>
+        </div>
+        <div class="lb-row">
+          <div class="lb-rank">#16</div>
+          <div class="lb-user">farhatbenbraham</div>
+          <div class="lb-points">4,535 <span>FNC</span></div>
+        </div>
+        <div class="lb-row">
+          <div class="lb-rank">#17</div>
+          <div class="lb-user">doblodz</div>
+          <div class="lb-points">4,430 <span>FNC</span></div>
+        </div>
+        <div class="lb-row">
+          <div class="lb-rank">#18</div>
+          <div class="lb-user">wahabj6</div>
+          <div class="lb-points">3,970 <span>FNC</span></div>
+        </div>
+        <div class="lb-row">
+          <div class="lb-rank">#19</div>
+          <div class="lb-user">the_os6</div>
+          <div class="lb-points">3,865 <span>FNC</span></div>
+        </div>
+        <div class="lb-row">
+          <div class="lb-rank">#20</div>
+          <div class="lb-user">sn3ijderrr</div>
+          <div class="lb-points">3,805 <span>FNC</span></div>
+        </div>
+        <div class="lb-row">
+          <div class="lb-rank">#21</div>
+          <div class="lb-user">zinou331</div>
+          <div class="lb-points">3,650 <span>FNC</span></div>
+        </div>
+        <div class="lb-row">
+          <div class="lb-rank">#22</div>
+          <div class="lb-user">pendo31</div>
+          <div class="lb-points">3,450 <span>FNC</span></div>
+        </div>
+        <div class="lb-row">
+          <div class="lb-rank">#23</div>
+          <div class="lb-user">masstiw</div>
+          <div class="lb-points">3,420 <span>FNC</span></div>
+        </div>
+        <div class="lb-row">
+          <div class="lb-rank">#24</div>
+          <div class="lb-user">echyda</div>
+          <div class="lb-points">3,175 <span>FNC</span></div>
+        </div>
+        <div class="lb-row">
+          <div class="lb-rank">#25</div>
+          <div class="lb-user">hover0098</div>
+          <div class="lb-points">3,145 <span>FNC</span></div>
+        </div>
   </div>
 
-  <div class="lb-frame bracket">
-    <span class="bc-tr" style="position:absolute; top:-1px; right:-1px; width:14px; height:14px; border:2px solid var(--cyan); border-width:2px 2px 0 0; opacity:.85;"></span>
-    <span class="bc-bl" style="position:absolute; bottom:-1px; left:-1px; width:14px; height:14px; border:2px solid var(--cyan); border-width:0 0 2px 2px; opacity:.85;"></span>
-    <iframe id="lbIframe" src="https://streamelements.com/adhemswag/leaderboard" loading="lazy"></iframe>
-  </div>
+  <a href="https://streamelements.com/adhemswag/leaderboard" target="_blank" rel="noopener" class="lb-more">
+    View Full Leaderboard
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14 21 3"/></svg>
+  </a>
+  <p class="lb-note">Snapshot updated manually — for real-time ranking beyond top 25, check the live page above.</p>
 </main>
 
 <footer>
   <div class="row">© 2026 AdhemSwag.com — All Rights Reserved</div>
   <div class="row">Collaboration: <a href="mailto:adhemswag@yahoo.com">adhemswag@yahoo.com</a></div>
 </footer>
-
-<script>
-  setInterval(() => {
-    const iframe = document.getElementById('lbIframe');
-    iframe.src = iframe.src;
-  }, 60000);
-</script>
 
 </body>
 </html>
