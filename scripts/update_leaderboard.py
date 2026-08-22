@@ -25,6 +25,7 @@ if not JWT or not CHANNEL_ID:
 headers = {"Authorization": f"Bearer {JWT}", "Accept": "application/json"}
 
 all_entries = []
+seen_usernames = set()
 offset = 0
 
 while offset < MAX_ENTRIES:
@@ -41,7 +42,19 @@ while offset < MAX_ENTRIES:
     if not batch:
         break
 
-    all_entries.extend(batch)
+    new_in_batch = 0
+    for entry in batch:
+        uname = entry.get("username") or entry.get("user")
+        if uname and uname not in seen_usernames:
+            seen_usernames.add(uname)
+            all_entries.append(entry)
+            new_in_batch += 1
+
+    # If a full page came back but none of it was new, the API is likely
+    # ignoring "offset" and repeating the same page — stop here to avoid looping forever.
+    if new_in_batch == 0:
+        break
+
     offset += PAGE_SIZE
 
     if len(batch) < PAGE_SIZE:
