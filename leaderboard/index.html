@@ -148,14 +148,18 @@
   .lb-page-btn:disabled{ opacity:0.35; cursor:not-allowed; }
   .lb-page-info{ font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--muted); letter-spacing:0.05em; }
 
-  .lb-page-numbers{ display:flex; gap:6px; flex-wrap:wrap; justify-content:center; }
-  .lb-page-num{
-    background:var(--bg-panel); border:1px solid var(--line); color:var(--muted);
-    font-family:'JetBrains Mono', monospace; font-size:12px; min-width:38px; height:38px;
-    display:flex; align-items:center; justify-content:center; cursor:pointer; transition: all .2s ease;
+  .lb-page-size{
+    display:flex; align-items:center; gap:8px; margin-top:16px;
+    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.05em;
   }
-  .lb-page-num:hover{ border-color:var(--cyan); color:var(--cyan); }
-  .lb-page-num.active{ background:var(--cyan); color:#05070a; border-color:var(--cyan); font-weight:700; }
+  .lb-page-size-label{ color:var(--muted); text-transform:uppercase; }
+  .lb-size-btn{
+    background:var(--bg-panel); border:1px solid var(--line); color:var(--muted);
+    font-family:'JetBrains Mono', monospace; font-size:12px; padding:8px 14px;
+    cursor:pointer; transition: all .2s ease;
+  }
+  .lb-size-btn:hover{ border-color:var(--cyan); color:var(--cyan); }
+  .lb-size-btn.active{ background:var(--cyan); color:#05070a; border-color:var(--cyan); font-weight:700; }
 
   footer{
     text-align:center; padding:34px 20px 40px; border-top:1px solid var(--line);
@@ -172,7 +176,8 @@
     .lb-more{ width:100%; justify-content:center; }
     .lb-pagination{ flex-wrap:wrap; gap:10px; }
     .lb-page-btn{ padding:10px 16px; font-size:11px; }
-    .lb-page-num{ min-width:32px; height:32px; font-size:11px; }
+    .lb-size-btn{ padding:7px 12px; font-size:11px; }
+    .lb-page-size{ flex-wrap:wrap; justify-content:center; }
     .lb-podium{ grid-template-columns: 1fr; }
     .lb-podium-card.champion{ order:-1; }
   }
@@ -247,7 +252,7 @@
 </footer>
 
 <script>
-  const PAGE_SIZE = 25;
+  let PAGE_SIZE = 25;
   let leaderboardData = [];
   let currentPage = 1;
 
@@ -274,23 +279,25 @@
       </div>
     `).join('');
 
+    document.getElementById('lbPageInfo').textContent = `Page ${currentPage} / ${totalPages}`;
     document.getElementById('lbPrev').disabled = currentPage <= 1;
     document.getElementById('lbNext').disabled = currentPage >= totalPages;
     document.getElementById('lbPagination').style.display = leaderboardData.length > PAGE_SIZE ? 'flex' : 'none';
-
-    const numbersContainer = document.getElementById('lbPageNumbers');
-    numbersContainer.innerHTML = '';
-    for (let i = 1; i <= totalPages; i++) {
-      const btn = document.createElement('button');
-      btn.className = 'lb-page-num' + (i === currentPage ? ' active' : '');
-      btn.textContent = Math.min(i * PAGE_SIZE, leaderboardData.length);
-      btn.addEventListener('click', () => { currentPage = i; renderPage(); });
-      numbersContainer.appendChild(btn);
-    }
+    document.getElementById('lbPageSize').style.display = leaderboardData.length > 25 ? 'flex' : 'none';
   }
 
   document.getElementById('lbPrev').addEventListener('click', () => { currentPage--; renderPage(); });
   document.getElementById('lbNext').addEventListener('click', () => { currentPage++; renderPage(); });
+
+  document.querySelectorAll('.lb-size-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.lb-size-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      PAGE_SIZE = parseInt(btn.dataset.size, 10);
+      currentPage = 1;
+      renderPage();
+    });
+  });
 
   const AVATAR_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>';
 
