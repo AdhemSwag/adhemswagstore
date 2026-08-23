@@ -29,8 +29,10 @@ jobs:
         env:
           STREAMELEMENTS_CHANNEL_NAME: adhemswag
         run: python scripts/update_leaderboard.py
+        continue-on-error: true
 
       - name: Commit and push if changed
+        if: always()
         run: |
           git config user.name "leaderboard-bot"
           git config user.email "actions@github.com"
