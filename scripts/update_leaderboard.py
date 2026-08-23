@@ -1,76 +1,83 @@
 """
-Fetches the FULL loyalty leaderboard from StreamElements (paginated) and
-writes it to leaderboard/data.json for the page's client-side table to consume.
+Scrapes the PUBLIC StreamElements leaderboard page (the real page a visitor sees)
+using a headless browser, and writes the result to leaderboard/data.json.
 
-Requires two environment variables (set as GitHub Actions secrets):
-  STREAMELEMENTS_JWT         - your JWT token (Dashboard > Account > Channels > Show secrets)
-  STREAMELEMENTS_CHANNEL_ID  - your channel's guid (same page as the JWT)
+No API token needed — this just visits the public page like a normal visitor,
+waits for it to load, and reads the rendered text.
+
+Requires ONE environment variable (GitHub Actions secret or repo variable):
+  STREAMELEMENTS_CHANNEL_NAME   - e.g. "adhemswag" (your StreamElements URL slug)
 """
 
 import os
+import re
 import sys
 import json
-import requests
+from playwright.sync_api import sync_playwright
 
-JWT = os.environ.get("STREAMELEMENTS_JWT")
-CHANNEL_ID = os.environ.get("STREAMELEMENTS_CHANNEL_ID")
+CHANNEL_NAME = os.environ.get("STREAMELEMENTS_CHANNEL_NAME", "adhemswag")
 OUT_PATH = "leaderboard/data.json"
-PAGE_SIZE = 100          # how many to request per API call
-MAX_ENTRIES = 1000       # safety cap so a run can't loop forever
+DEBUG_PATH = "leaderboard/debug_snapshot.txt"
+URL = f"https://streamelements.com/{CHANNEL_NAME}/leaderboard"
 
-if not JWT or not CHANNEL_ID:
-    print("Missing STREAMELEMENTS_JWT or STREAMELEMENTS_CHANNEL_ID secret.")
+
+def parse_entries(text: str):
+    """
+    Looks for repeating patterns like:
+      #1
+      werdef_xd
+      ...
+      96,954
+    Falls back to a looser rank/username/points scan if the exact layout differs.
+    """
+    entries = []
+
+    # Pattern: "#<rank>" then a username-looking line then a number with commas somewhere nearby
+    pattern = re.compile(
+        r"#(\d+)\s*\n\s*([A-Za-z0-9_]{2,25})\b.*?([\d,]{2,10})\s*(?:PTS|POINTS|pts|points)?",
+        re.S,
+    )
+
+    for match in pattern.finditer(text):
+        rank = int(match.group(1))
+        username = match.group(2)
+        points_str = match.group(3).replace(",", "")
+        if not points_str.isdigit():
+            continue
+        points = int(points_str)
+        entries.append({"rank": rank, "username": username, "points": points})
+
+    # De-duplicate by rank, keep first occurrence, sort by rank
+    seen_ranks = {}
+    for e in entries:
+        if e["rank"] not in seen_ranks:
+            seen_ranks[e["rank"]] = e
+
+    return [seen_ranks[r] for r in sorted(seen_ranks)]
+
+
+with sync_playwright() as p:
+    browser = p.chromium.launch()
+    page = browser.new_page()
+    page.goto(URL, wait_until="networkidle", timeout=30000)
+    page.wait_for_timeout(4000)  # extra buffer for client-side rendering
+
+    body_text = page.inner_text("body")
+    browser.close()
+
+# Always save a raw debug snapshot so we can inspect what the page actually
+# showed if parsing fails or looks wrong.
+os.makedirs(os.path.dirname(DEBUG_PATH), exist_ok=True)
+with open(DEBUG_PATH, "w", encoding="utf-8") as f:
+    f.write(body_text)
+
+entries = parse_entries(body_text)
+
+if not entries:
+    print("Could not parse any leaderboard entries. Check leaderboard/debug_snapshot.txt")
     sys.exit(1)
 
-headers = {"Authorization": f"Bearer {JWT}", "Accept": "application/json"}
-
-all_entries = []
-seen_usernames = set()
-offset = 0
-
-while offset < MAX_ENTRIES:
-    resp = requests.get(
-        f"https://api.streamelements.com/kappa/v2/points/{CHANNEL_ID}/leaderboard",
-        params={"limit": PAGE_SIZE, "offset": offset},
-        headers=headers,
-        timeout=15,
-    )
-    resp.raise_for_status()
-    data = resp.json()
-    batch = data.get("leaderboard", data if isinstance(data, list) else [])
-
-    if not batch:
-        break
-
-    new_in_batch = 0
-    for entry in batch:
-        uname = entry.get("username") or entry.get("user")
-        if uname and uname not in seen_usernames:
-            seen_usernames.add(uname)
-            all_entries.append(entry)
-            new_in_batch += 1
-
-    # If a full page came back but none of it was new, the API is likely
-    # ignoring "offset" and repeating the same page — stop here to avoid looping forever.
-    if new_in_batch == 0:
-        break
-
-    offset += PAGE_SIZE
-
-    if len(batch) < PAGE_SIZE:
-        break
-
-if not all_entries:
-    print("No leaderboard entries returned — aborting without changes.")
-    sys.exit(0)
-
-output = []
-for i, entry in enumerate(all_entries[:MAX_ENTRIES], start=1):
-    username = entry.get("username") or entry.get("user") or "unknown"
-    points = entry.get("points", 0)
-    output.append({"rank": i, "username": username, "points": points})
-
 with open(OUT_PATH, "w", encoding="utf-8") as f:
-    json.dump(output, f, ensure_ascii=False, indent=2)
+    json.dump(entries, f, ensure_ascii=False, indent=2)
 
-print(f"Wrote {len(output)} entries to {OUT_PATH}.")
+print(f"Wrote {len(entries)} entries to {OUT_PATH}.")
