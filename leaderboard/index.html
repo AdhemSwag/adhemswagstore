@@ -230,7 +230,7 @@
     </div>
   </div>
 
-  <div class="lb-page-size" id="lbPageSize" style="display:none;">
+  <div class="lb-page-size" id="lbPageSize">
     <span class="lb-page-size-label">Show:</span>
     <button class="lb-size-btn active" data-size="25">25</button>
     <button class="lb-size-btn" data-size="50">50</button>
@@ -238,7 +238,7 @@
     <button class="lb-size-btn" data-size="100">100</button>
   </div>
 
-  <div class="lb-pagination" id="lbPagination" style="display:none;">
+  <div class="lb-pagination" id="lbPagination">
     <button id="lbPrev" class="lb-page-btn">← Previous</button>
     <span id="lbPageInfo" class="lb-page-info">Page 1</span>
     <button id="lbNext" class="lb-page-btn">Next →</button>
@@ -282,8 +282,8 @@
     document.getElementById('lbPageInfo').textContent = `Page ${currentPage} / ${totalPages}`;
     document.getElementById('lbPrev').disabled = currentPage <= 1;
     document.getElementById('lbNext').disabled = currentPage >= totalPages;
-    document.getElementById('lbPagination').style.display = leaderboardData.length > PAGE_SIZE ? 'flex' : 'none';
-    document.getElementById('lbPageSize').style.display = leaderboardData.length > 25 ? 'flex' : 'none';
+    document.getElementById('lbPagination').style.display = 'flex';
+    document.getElementById('lbPageSize').style.display = 'flex';
   }
 
   document.getElementById('lbPrev').addEventListener('click', () => { currentPage--; renderPage(); });
