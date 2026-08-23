@@ -32,18 +32,18 @@ All Time
 POSITION	USERNAME	FNC
 #1	yasosus_bibus
 🥇
-	30,920
+	30,930
 #2	yuri2130r
 🥈
-	28,785
+	28,795
 #3	thetimelesstoni
 🥉
-	21,950
+	21,980
 #4	phpkiller	18,225
-#5	ronn1e_joe	16,640
-#6	faceitsync	15,765
+#5	ronn1e_joe	16,650
+#6	faceitsync	15,775
 #7	demx_dz39	14,980
-#8	wiitaje	14,185
+#8	wiitaje	14,215
 #9	raouf1312	9,340
 #10	mootje31	7,535
 #11	dzz_black	6,415
@@ -53,10 +53,10 @@ POSITION	USERNAME	FNC
 #15	doblodz	4,590
 #16	farhatbenbraham	4,555
 #17	wahabj6	3,970
-#18	zinou331	3,940
+#18	zinou331	3,950
 #19	the_os6	3,865
-#20	sn3ijderrr	3,815
-#21	kazimoh	3,485
+#20	sn3ijderrr	3,825
+#21	kazimoh	3,495
 #22	pendo31	3,450
 #23	masstiw	3,450
 #24	hover0098	3,295
