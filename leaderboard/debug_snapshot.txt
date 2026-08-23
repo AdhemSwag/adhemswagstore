@@ -32,16 +32,16 @@ All Time
 POSITION	USERNAME	FNC
 #1	yuri2130r
 🥇
-	28,985
+	29,005
 #2	thetimelesstoni
 🥈
-	23,050
+	23,110
 #3	phpkiller
 🥉
 	18,225
-#4	ronn1e_joe	16,780
+#4	ronn1e_joe	16,800
 #5	demx_dz39	14,980
-#6	wiitaje	14,785
+#6	wiitaje	14,845
 #7	raouf1312	9,340
 #8	mootje31	7,535
 #9	dzz_black	6,415
@@ -50,14 +50,14 @@ POSITION	USERNAME	FNC
 #12	targgar	4,770
 #13	doblodz	4,600
 #14	farhatbenbraham	4,555
-#15	zinou331	4,000
+#15	zinou331	4,010
 #16	wahabj6	3,970
 #17	sn3ijderrr	3,905
 #18	the_os6	3,865
-#19	kazimoh	3,685
+#19	kazimoh	3,705
 #20	pendo31	3,450
 #21	masstiw	3,450
-#22	fyssoul	3,315
+#22	fyssoul	3,335
 #23	hover0098	3,305
 #24	echyda	3,175
 #25	fivasaid	3,130
