@@ -23,28 +23,40 @@ URL = f"https://streamelements.com/{CHANNEL_NAME}/leaderboard"
 
 def parse_entries(text: str):
     """
-    Looks for repeating patterns like:
-      #1
-      werdef_xd
-      ...
-      96,954
-    Falls back to a looser rank/username/points scan if the exact layout differs.
+    Splits the page text on rank markers like "#1", "#2", ... and extracts
+    the username (first word-like token in each chunk) and the points
+    (last comma-formatted number in each chunk, before the next rank marker).
+    Handles both:
+      "#4\tphpkiller\t18,225"                      (single line)
+      "#1\tyasosus_bibus\n🥇\n\t30,910"             (medal emoji breaks the line)
     """
+    # Stop before the pagination/footer noise so we don't pick up junk numbers
+    cutoff_markers = ["Previous", "Page 1", "© 2026 StreamElements"]
+    cut_at = len(text)
+    for marker in cutoff_markers:
+        idx = text.find(marker)
+        if idx != -1:
+            cut_at = min(cut_at, idx)
+    table_text = text[:cut_at]
+
+    parts = re.split(r"#(\d+)", table_text)
+    # parts looks like: [prefix, '1', chunk1, '2', chunk2, '3', chunk3, ...]
+
     entries = []
+    for i in range(1, len(parts) - 1, 2):
+        rank = int(parts[i])
+        chunk = parts[i + 1]
 
-    # Pattern: "#<rank>" then a username-looking line then a number with commas somewhere nearby
-    pattern = re.compile(
-        r"#(\d+)\s*\n\s*([A-Za-z0-9_]{2,25})\b.*?([\d,]{2,10})\s*(?:PTS|POINTS|pts|points)?",
-        re.S,
-    )
-
-    for match in pattern.finditer(text):
-        rank = int(match.group(1))
-        username = match.group(2)
-        points_str = match.group(3).replace(",", "")
-        if not points_str.isdigit():
+        username_match = re.search(r"[A-Za-z0-9_]{2,25}", chunk)
+        if not username_match:
             continue
-        points = int(points_str)
+        username = username_match.group(0)
+
+        points_matches = re.findall(r"[\d]{1,3}(?:,\d{3})+|\d{3,}", chunk)
+        if not points_matches:
+            continue
+        points = int(points_matches[-1].replace(",", ""))
+
         entries.append({"rank": rank, "username": username, "points": points})
 
     # De-duplicate by rank, keep first occurrence, sort by rank
