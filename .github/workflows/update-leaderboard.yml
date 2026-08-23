@@ -21,18 +21,19 @@ jobs:
           python-version: '3.12'
 
       - name: Install dependencies
-        run: pip install requests
+        run: |
+          pip install playwright
+          playwright install --with-deps chromium
 
       - name: Update leaderboard
         env:
-          STREAMELEMENTS_JWT: ${{ secrets.STREAMELEMENTS_JWT }}
-          STREAMELEMENTS_CHANNEL_ID: ${{ secrets.STREAMELEMENTS_CHANNEL_ID }}
+          STREAMELEMENTS_CHANNEL_NAME: adhemswag
         run: python scripts/update_leaderboard.py
 
       - name: Commit and push if changed
         run: |
           git config user.name "leaderboard-bot"
           git config user.email "actions@github.com"
-          git add leaderboard/data.json
+          git add leaderboard/data.json leaderboard/debug_snapshot.txt
           git diff --staged --quiet || git commit -m "Auto-update leaderboard data"
           git push
