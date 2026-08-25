@@ -207,6 +207,10 @@
   }
   h1 .hl{ color:var(--cyan); text-shadow:0 0 22px rgba(17,217,247,0.45); }
 
+  .active-note{
+    color: var(--cyan-dim); font-size:12px; font-family:'JetBrains Mono', monospace;
+    letter-spacing:0.03em; margin-bottom:14px;
+  }
   .lede{ color:var(--muted); font-size:15.5px; line-height:1.65; max-width:440px; margin-bottom:30px; }
 
   .cta-row{ display:flex; gap:14px; flex-wrap:wrap; margin-bottom:44px; }
@@ -605,6 +609,7 @@
         <div class="eyebrow">// tracking watch time<br>· earning rewards</div>
       </div>
       <h1>Turn watch time<br>into <span class="hl">real rewards</span></h1>
+      <p class="active-note">Active viewers only — chat and watch the stream to earn points.</p>
       <p class="lede">Watch AdhemSwag live, earn points every minute, and redeem exclusive rewards directly — CS2 skins, gear, shoutouts, perks, and more, made for the community.</p>
 
       <div class="cta-row">
@@ -738,7 +743,7 @@
             <button class="fnc-faq-q" onclick="this.parentElement.classList.toggle('active')">
               Do I need to be active in chat? <span class="fnc-faq-icon">+</span>
             </button>
-            <div class="fnc-faq-a">You're expected to genuinely <strong>engage in live streams</strong> — passive/bot viewing doesn't count toward rewards.</div>
+            <div class="fnc-faq-a">Yes — you need to actually <strong>type in chat</strong> during the stream, not just have the tab open. Passive viewing, muted tabs, or bots don't count toward points.</div>
           </div>
 
           <div class="fnc-faq-item">
