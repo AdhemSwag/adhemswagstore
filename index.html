@@ -900,6 +900,16 @@
       } else {
         label.textContent = 'LIVE NOW';
         status.textContent = 'LIVE';
+        // stream is live — also fetch current viewer count
+        fetch('https://decapi.me/twitch/viewercount/adhemswag')
+          .then(r => r.text())
+          .then(count => {
+            const n = parseInt(count, 10);
+            if (!isNaN(n)) {
+              label.textContent = `LIVE NOW · ${n.toLocaleString()} viewers`;
+            }
+          })
+          .catch(() => {});
       }
     })
     .catch(() => {
