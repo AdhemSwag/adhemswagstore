@@ -262,6 +262,18 @@
   }
   .stream-foot b{ color:var(--cyan); font-weight:600; }
 
+  .follow-sub-row{ display:flex; gap:10px; margin-top:14px; }
+  .follow-btn, .sub-btn{
+    flex:1; display:flex; align-items:center; justify-content:center; gap:8px;
+    padding:12px 16px; text-decoration:none; font-family:'JetBrains Mono', monospace;
+    font-size:12px; font-weight:700; letter-spacing:0.05em; text-transform:uppercase;
+    transition: all .2s ease;
+  }
+  .follow-btn{ background:#9146FF; color:#fff; }
+  .follow-btn:hover{ background:#7c2dff; box-shadow:0 0 16px rgba(145,70,255,0.4); }
+  .sub-btn{ background:var(--cyan); color:#05070a; }
+  .sub-btn:hover{ background:#4de6ff; box-shadow:0 0 16px rgba(17,217,247,0.4); }
+
   /* points strip */
   .points-strip{
     margin-top:22px; display:grid; grid-template-columns: repeat(3,1fr); border:1px solid var(--line);
@@ -622,6 +634,17 @@
           <span>STATUS: <b id="statusText">STANDBY</b></span>
           <span>CS2 · COMPETITIVE</span>
         </div>
+      </div>
+
+      <div class="follow-sub-row">
+        <a href="https://twitch.tv/AdhemSwag" target="_blank" rel="noopener" class="follow-btn">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h1v4l4-4h7a2 2 0 0 0 2-2z"/><path d="M12 8v3M9 8v3"/></svg>
+          Follow
+        </a>
+        <a href="https://www.twitch.tv/subs/AdhemSwag" target="_blank" rel="noopener" class="sub-btn">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          Subscribe
+        </a>
       </div>
 
       <div class="points-strip">
