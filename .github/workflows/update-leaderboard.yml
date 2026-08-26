@@ -21,13 +21,9 @@ jobs:
           python-version: '3.12'
 
       - name: Install dependencies
-        run: |
-          pip install playwright
-          playwright install --with-deps chromium
+        run: pip install requests
 
       - name: Update leaderboard
-        env:
-          STREAMELEMENTS_CHANNEL_NAME: adhemswag
         run: python scripts/update_leaderboard.py
         continue-on-error: true
 
