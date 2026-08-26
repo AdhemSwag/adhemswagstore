@@ -3,569 +3,191 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AdhemSwag — Turn Watch Time Into Real Rewards</title>
-
-<!-- SEO -->
-<meta name="description" content="Watch AdhemSwag live on Twitch and Kick, earn FNC Points every minute, and redeem exclusive CS2 rewards — skins, gear, shoutouts and more. Join the squad.">
-<meta name="keywords" content="AdhemSwag, CS2, Counter-Strike 2, Twitch streamer, Kick streamer, FNC Points, CS2 skins, esports, Faceit, gaming rewards">
-<meta name="author" content="AdhemSwag">
+<title>AdhemSwag — Leaderboard</title>
+<meta name="description" content="AdhemSwag FNC Points leaderboard — see the top viewers ranked by points.">
 <meta name="robots" content="index, follow">
-<link rel="canonical" href="https://adhemswag.com/">
-
-<!-- Open Graph (Facebook, Discord, LinkedIn) -->
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://adhemswag.com/">
-<meta property="og:title" content="AdhemSwag — Turn Watch Time Into Real Rewards">
-<meta property="og:description" content="Watch AdhemSwag live, earn FNC Points every minute, and redeem exclusive CS2 rewards — skins, gear, shoutouts and more.">
+<meta property="og:title" content="AdhemSwag — Leaderboard">
+<meta property="og:description" content="See the top viewers ranked by FNC Points.">
 <meta property="og:image" content="https://adhemswag.com/og-image.jpg">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta property="og:site_name" content="AdhemSwag">
-
-<!-- Twitter / X Card -->
+<meta property="og:url" content="https://adhemswag.com/leaderboard">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:url" content="https://adhemswag.com/">
-<meta name="twitter:title" content="AdhemSwag — Turn Watch Time Into Real Rewards">
-<meta name="twitter:description" content="Watch AdhemSwag live, earn FNC Points every minute, and redeem exclusive CS2 rewards.">
-<meta name="twitter:image" content="https://adhemswag.com/og-image.jpg">
-
-<!-- Favicon -->
 <link rel="icon" type="image/x-icon" href="/favicon.ico">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
-<link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png">
-
-<!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-FHDRLF5HHC"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-FHDRLF5HHC');
-</script>
-
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-
-<!-- Schema.org JSON-LD -->
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Person",
-  "name": "AdhemSwag",
-  "url": "https://adhemswag.com/",
-  "image": "https://adhemswag.com/og-image.jpg",
-  "description": "Algerian CS2 streamer and content creator.",
-  "sameAs": [
-    "https://twitch.tv/AdhemSwag",
-    "https://kick.com/adhemswag918",
-    "https://www.instagram.com/adhemswag/",
-    "https://t.me/adhemswag",
-    "https://x.com/AdhemSwag",
-    "https://www.tiktok.com/@adhemswagg",
-    "https://discord.gg/cMRS6E2"
-  ]
-}
-</script>
 <style>
   :root{
-    --bg:#05070a;
-    --bg-panel:#0b0f12;
-    --bg-panel-2:#0e1316;
-    --cyan:#11d9f7;
-    --cyan-dim:#0a8fa3;
-    --white:#eaf6f8;
-    --muted:#6b7a80;
-    --danger:#ff3b3b;
-    --line:rgba(17,217,247,0.14);
-    --grid:rgba(17,217,247,0.045);
+    --bg:#05070a; --bg-panel:#0b0f12; --cyan:#11d9f7; --cyan-dim:#0a8fa3;
+    --white:#eaf6f8; --muted:#6b7a80; --line:rgba(17,217,247,0.14); --grid:rgba(17,217,247,0.045);
   }
   *{box-sizing:border-box; margin:0; padding:0;}
-  html,body{background:var(--bg); color:var(--white); font-family:'Inter',sans-serif; overflow-x:hidden;}
-  body{
-    background-image:
-      linear-gradient(var(--grid) 1px, transparent 1px),
-      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  html,body{
+    background:var(--bg); color:var(--white); font-family:'Inter',sans-serif;
+    background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
     background-size: 42px 42px;
-    background-position: center top;
-    min-height:100vh;
-    position:relative;
   }
-  body::before{
-    content:"";
-    position:fixed; inset:0;
-    background: radial-gradient(ellipse at 20% 10%, rgba(17,217,247,0.05), transparent 55%),
-                radial-gradient(ellipse at 100% 100%, rgba(17,217,247,0.04), transparent 50%);
-    pointer-events:none;
-  }
-
-  .eyebrow{
-    font-family:'JetBrains Mono', monospace;
-    font-size:11px;
-    letter-spacing:0.22em;
-    text-transform:uppercase;
-    color:var(--cyan-dim);
-  }
-
-  /* ---- bracket frame utility ---- */
+  .eyebrow{ font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.22em; text-transform:uppercase; color:var(--cyan-dim); }
   .bracket{ position:relative; }
-  .bracket::before, .bracket::after,
-  .bracket .bc-tr, .bracket .bc-bl{
-    content:""; position:absolute; width:14px; height:14px;
-    border-color:var(--cyan); border-style:solid; opacity:0.85;
-  }
+  .bracket::before, .bracket::after{ content:""; position:absolute; width:14px; height:14px; border-color:var(--cyan); border-style:solid; opacity:0.85; }
   .bracket::before{ top:-1px; left:-1px; border-width:2px 0 0 2px; }
   .bracket::after{ bottom:-1px; right:-1px; border-width:0 2px 2px 0; }
-  .bracket .bc-tr{ top:-1px; right:-1px; border-width:2px 2px 0 0; }
-  .bracket .bc-bl{ bottom:-1px; left:-1px; border-width:0 0 2px 2px; }
 
-  /* ---- top bar ---- */
-  header{
-    position:relative; z-index:2;
-    display:flex; align-items:center; justify-content:space-between;
-    padding:22px clamp(20px,5vw,64px);
-    border-bottom:1px solid var(--line);
-  }
-  .brand{ display:flex; align-items:center; gap:10px; }
-  
+  header{ display:flex; align-items:center; justify-content:space-between; padding:22px clamp(20px,5vw,64px); border-bottom:1px solid var(--line); flex-wrap:wrap; gap:14px; }
+  .brand{ display:flex; align-items:center; gap:10px; text-decoration:none; }
   .brand-name{ font-family:'JetBrains Mono', monospace; font-size:13px; letter-spacing:0.12em; color:var(--white); }
   .brand-name span{ color:var(--cyan); }
 
-  .nav-menu{ display:flex; gap:10px; }
+  .nav-menu{ display:flex; gap:10px; flex-wrap:wrap; }
   .nav-menu a{
     font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase;
     color:var(--cyan); text-decoration:none; border:1px solid var(--line); padding:8px 16px;
     transition: all .2s ease;
   }
   .nav-menu a:hover{ background:rgba(17,217,247,0.08); border-color:var(--cyan); box-shadow:0 0 12px rgba(17,217,247,0.2); }
-
-  .socials{ display:flex; gap:10px; }
+  .socials{ display:flex; gap:10px; flex-wrap:wrap; }
   .socials a{
-    width:38px; height:38px; display:flex; align-items:center; justify-content:center;
+    width:34px; height:34px; display:flex; align-items:center; justify-content:center;
     border:1px solid var(--line); color:var(--cyan); text-decoration:none;
-    transition: all .2s ease; position:relative;
-  }
-  .socials a:hover{ background:rgba(17,217,247,0.08); border-color:var(--cyan); box-shadow:0 0 14px rgba(17,217,247,0.25); }
-  .socials svg{ width:17px; height:17px; fill:currentColor; }
-
-  /* ---- hero ---- */
-  main{ position:relative; z-index:2; max-width:1180px; margin:0 auto; padding: clamp(40px,7vw,90px) clamp(20px,5vw,64px) 60px; }
-  .hero-grid{ display:grid; grid-template-columns: 1.05fr 0.95fr; gap:48px; align-items:start; }
-  @media (max-width: 880px){ .hero-grid{ grid-template-columns:1fr; } }
-
-  @media (max-width: 640px){
-    header{ flex-wrap:wrap; justify-content:center; gap:16px; text-align:center; padding:18px 20px; }
-    .nav-menu{ flex-wrap:wrap; justify-content:center; }
-    .socials{ flex-wrap:wrap; justify-content:center; }
-    .points-strip{ grid-template-columns:1fr; }
-    .points-cell{ border-right:none; border-bottom:1px solid var(--line); text-align:center; }
-    .points-cell:last-child{ border-bottom:none; }
-    .cta-row{ justify-content:center; }
-    .cta-row .btn{ flex:1 1 auto; text-align:center; justify-content:center; }
-    .fnc-faq-btn{ width:100%; justify-content:center; }
-    .partners-row{ flex-direction:column; }
-    .partner-btn{ text-align:center; }
-  }
-
-  @media (max-width: 420px){
-    .socials a{ width:34px; height:34px; }
-    .socials svg{ width:15px; height:15px; }
-    h1{ font-size:clamp(28px, 8vw, 40px); }
-  }
-
-  .hero-top-row{ display:flex; align-items:center; gap:14px; margin-bottom:22px; }
-
-  .radar-wrap{
-    width:52px; height:52px; border-radius:50%; flex-shrink:0;
-    border:1px solid var(--line);
-    display:flex; align-items:center; justify-content:center;
-    position:relative;
-    background: radial-gradient(circle, rgba(17,217,247,0.05) 0%, transparent 70%);
-  }
-  .radar-wrap::before{
-    content:""; position:absolute; inset:8px; border-radius:50%; border:1px solid var(--line);
-  }
-  .radar-sweep{
-    position:absolute; inset:0; border-radius:50%;
-    background: conic-gradient(from 0deg, rgba(17,217,247,0.35), transparent 28%);
-    animation: spin 4.5s linear infinite;
-    mask-image: radial-gradient(circle, black 60%, transparent 61%);
-    -webkit-mask-image: radial-gradient(circle, black 60%, transparent 61%);
-  }
-  @keyframes spin{ to{ transform: rotate(360deg); } }
-  .skull{ width:24px; height:24px; position:relative; z-index:2; filter: drop-shadow(0 0 6px rgba(17,217,247,0.5)); }
-
-  h1{
-    font-family:'Rajdhani', sans-serif;
-    font-weight:700;
-    text-transform:uppercase;
-    font-size: clamp(34px, 4.6vw, 54px);
-    line-height:1.04;
-    letter-spacing:0.01em;
-    margin-bottom:18px;
-  }
-  h1 .hl{ color:var(--cyan); text-shadow:0 0 22px rgba(17,217,247,0.45); }
-
-  .active-note{
-    color: var(--cyan-dim); font-size:12px; font-family:'JetBrains Mono', monospace;
-    letter-spacing:0.03em; margin-bottom:14px;
-  }
-  .lede{ color:var(--muted); font-size:15.5px; line-height:1.65; max-width:440px; margin-bottom:30px; }
-
-  .cta-row{ display:flex; gap:14px; flex-wrap:wrap; margin-bottom:44px; }
-  .btn{
-    font-family:'JetBrains Mono', monospace; font-size:13px; letter-spacing:0.06em; text-transform:uppercase;
-    padding:15px 26px; text-decoration:none; display:inline-flex; align-items:center; gap:10px;
-    position:relative; overflow:hidden; transition: transform .15s ease;
-  }
-  .btn:active{ transform: scale(0.98); }
-  .btn-primary{ background:var(--cyan); color:#03181c; font-weight:600; }
-  .btn-primary:hover{ box-shadow:0 0 24px rgba(17,217,247,0.5); }
-  .btn-outline{ border:1px solid var(--cyan); color:var(--cyan); background:rgba(17,217,247,0.03); }
-  .btn-outline:hover{ background:rgba(17,217,247,0.1); }
-  .btn::after{
-    content:""; position:absolute; top:0; left:-60%; width:40%; height:100%;
-    background:linear-gradient(120deg, transparent, rgba(255,255,255,0.35), transparent);
-    transform: skewX(-20deg);
-    transition: left .5s ease;
-  }
-  .btn:hover::after{ left:130%; }
-
-  /* faq panel */
-  .panel{ background:var(--bg-panel); border:1px solid var(--line); padding:22px; }
-  .faq-panel{ max-width:440px; }
-  .panel-label{ display:flex; align-items:center; gap:10px; font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.1em; text-transform:uppercase; color:var(--cyan); }
-  .panel-label svg{ width:15px; height:15px; }
-  .panel-sub{ color:var(--muted); font-size:12.5px; margin-top:8px; line-height:1.5; }
-
-  /* ---- twitch card ---- */
-  .stream-card{ background:var(--bg-panel); border:1px solid var(--line); padding:0; }
-  .stream-top{
-    display:flex; align-items:center; justify-content:space-between;
-    padding:14px 18px; border-bottom:1px solid var(--line);
-  }
-  .live-tag{ display:flex; align-items:center; gap:8px; font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.1em; color:var(--danger); }
-  .live-dot{ width:7px; height:7px; border-radius:50%; background:var(--danger); box-shadow:0 0 8px var(--danger); animation:pulse 1.4s ease-in-out infinite; }
-  @keyframes pulse{ 0%,100%{ opacity:1;} 50%{ opacity:0.35; } }
-  .live-dot.offline{ background:var(--muted); box-shadow:none; animation:none; }
-  .live-tag.offline{ color:var(--muted); }
-  .platform-tag{ font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--muted); letter-spacing:0.08em; }
-
-  .stream-body{
-    height:280px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px;
-    position:relative; overflow:hidden; background:#000;
-  }
-  .stream-body svg{ width:52px; height:52px; color:var(--cyan); opacity:0.9; }
-  .stream-url{ font-family:'JetBrains Mono', monospace; font-size:15px; color:var(--white); }
-  .stream-url span{ color:var(--cyan); }
-
-  .stream-foot{
-    display:flex; justify-content:space-between; padding:14px 18px; border-top:1px solid var(--line);
-    font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--muted); letter-spacing:0.06em;
-  }
-  .stream-foot b{ color:var(--cyan); font-weight:600; }
-
-  .follow-sub-row{ display:flex; gap:10px; margin-top:14px; }
-  .follow-btn, .sub-btn{
-    flex:1; display:flex; align-items:center; justify-content:center; gap:8px;
-    padding:12px 16px; text-decoration:none; font-family:'JetBrains Mono', monospace;
-    font-size:12px; font-weight:700; letter-spacing:0.05em; text-transform:uppercase;
     transition: all .2s ease;
   }
-  .follow-btn{ background:#9146FF; color:#fff; }
-  .follow-btn:hover{ background:#7c2dff; box-shadow:0 0 16px rgba(145,70,255,0.4); }
-  .sub-btn{ background:var(--cyan); color:#05070a; }
-  .sub-btn:hover{ background:#4de6ff; box-shadow:0 0 16px rgba(17,217,247,0.4); }
+  .socials a:hover{ background:rgba(17,217,247,0.08); border-color:var(--cyan); box-shadow:0 0 12px rgba(17,217,247,0.25); }
+  .socials svg{ width:15px; height:15px; fill:currentColor; }
 
-  /* points strip */
-  .points-strip{
-    margin-top:22px; display:grid; grid-template-columns: repeat(3,1fr); border:1px solid var(--line);
+  main{ max-width:900px; margin:0 auto; padding: clamp(30px,5vw,60px) clamp(20px,5vw,64px) 80px; }
+  h1{
+    font-family:'Rajdhani', sans-serif; font-weight:700; text-transform:uppercase;
+    font-size: clamp(28px, 4vw, 42px); letter-spacing:0.02em; color:var(--white); margin-top:10px; margin-bottom:6px;
   }
-  .points-cell{ padding:16px 18px; border-right:1px solid var(--line); }
-  .points-cell:last-child{ border-right:none; }
-  .points-cell .num{ font-family:'Rajdhani', sans-serif; font-weight:700; font-size:22px; color:var(--cyan); }
-  .points-cell .lbl{ font-family:'JetBrains Mono', monospace; font-size:10px; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-top:2px; }
+  h1 span{ color:var(--cyan); text-shadow:0 0 20px rgba(17,217,247,0.45); }
+  .page-sub{ color:var(--muted); font-size:13px; margin-bottom:30px; }
+
+  .lb-table{ background:var(--bg-panel); border:1px solid var(--line); overflow:hidden; }
+  .lb-row{
+    display:grid; grid-template-columns: 70px 1fr 140px; align-items:center; gap:10px;
+    padding:13px 20px; border-bottom:1px solid var(--line); font-size:13.5px;
+    border-left:3px solid transparent;
+  }
+  .lb-row:last-child{ border-bottom:none; }
+  .lb-head{
+    font-family:'JetBrains Mono', monospace; font-size:11px; text-transform:uppercase; letter-spacing:0.08em;
+    color:var(--cyan); background:rgba(17,217,247,0.05);
+  }
+  .lb-rank{ font-family:'JetBrains Mono', monospace; color:var(--muted); font-weight:600; }
+  .lb-user{ color:var(--white); font-weight:500; }
+  .lb-points{ font-family:'JetBrains Mono', monospace; color:var(--cyan); font-weight:700; text-align:right; }
+  .lb-points span{ color:var(--muted); font-weight:400; font-size:10px; }
+
+  .lb-row.top1{ background:rgba(255,215,0,0.08); border-left:3px solid #FFD700; }
+  .lb-row.top1 .lb-rank{ color:#FFD700; font-weight:700; }
+  .lb-row.top1 .lb-points{ color:#FFD700; }
+  .lb-row.top2{ background:rgba(197,203,214,0.08); border-left:3px solid #C5CBD6; }
+  .lb-row.top2 .lb-rank{ color:#C5CBD6; font-weight:700; }
+  .lb-row.top2 .lb-points{ color:#C5CBD6; }
+  .lb-row.top3{ background:rgba(205,127,50,0.08); border-left:3px solid #CD7F32; }
+  .lb-row.top3 .lb-rank{ color:#CD7F32; font-weight:700; }
+  .lb-row.top3 .lb-points{ color:#CD7F32; }
+
+  .lb-more{
+    display:inline-flex; align-items:center; gap:10px; margin-top:20px;
+    color:var(--cyan); text-decoration:none; border:1px solid var(--line); padding:13px 24px;
+    font-family:'JetBrains Mono', monospace; font-size:12.5px; letter-spacing:0.06em; text-transform:uppercase;
+    transition: all .2s ease;
+  }
+  .lb-more:hover{ background:rgba(17,217,247,0.08); border-color:var(--cyan); box-shadow:0 0 14px rgba(17,217,247,0.2); }
+  .lb-note{ margin-top:14px; font-size:12px; color:var(--muted); }
+
+  .lb-loading{ padding:30px 20px; text-align:center; color:var(--muted); font-family:'JetBrains Mono', monospace; font-size:12.5px; }
+
+  .lb-podium{
+    display:grid; grid-template-columns: 1fr 1.1fr 1fr; gap:18px; margin-bottom:30px; align-items:end;
+  }
+  .lb-podium-card{
+    background:var(--bg-panel); border:1px solid var(--line); padding:26px 20px; text-align:center; position:relative;
+  }
+  .lb-podium-card.champion{ padding-top:32px; padding-bottom:34px; border-color:rgba(255,215,0,0.4); }
+  .lb-podium-label{
+    font-family:'JetBrains Mono', monospace; font-size:10px; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted); margin-bottom:14px;
+  }
+  .lb-podium-badge{
+    display:inline-flex; align-items:center; justify-content:center; width:44px; height:44px; border-radius:50%;
+    font-family:'Rajdhani', sans-serif; font-weight:700; font-size:16px; margin-bottom:14px;
+  }
+  .lb-podium-card.rank1 .lb-podium-badge{ background:#FFD700; color:#05070a; }
+  .lb-podium-card.rank2 .lb-podium-badge{ background:#C5CBD6; color:#05070a; }
+  .lb-podium-card.rank3 .lb-podium-badge{ background:#CD7F32; color:#05070a; }
+
+  .lb-podium-avatar{
+    width:64px; height:64px; border-radius:50%; margin:0 auto 14px; display:flex; align-items:center; justify-content:center;
+    background:rgba(17,217,247,0.08); border:2px solid var(--line);
+  }
+  .lb-podium-card.rank1 .lb-podium-avatar{ width:82px; height:82px; border-color:#FFD700; }
+  .lb-podium-card.rank2 .lb-podium-avatar{ border-color:#C5CBD6; }
+  .lb-podium-card.rank3 .lb-podium-avatar{ border-color:#CD7F32; }
+  .lb-podium-avatar svg{ width:55%; height:55%; color:var(--cyan); }
+
+  .lb-podium-name{ font-family:'Rajdhani', sans-serif; font-weight:700; font-size:18px; color:var(--white); margin-bottom:2px; }
+  .lb-podium-card.rank1 .lb-podium-name{ font-size:21px; }
+  .lb-podium-handle{ font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--muted); margin-bottom:14px; }
+
+  .lb-podium-points{ font-family:'Rajdhani', sans-serif; font-weight:700; font-size:24px; }
+  .lb-podium-card.rank1 .lb-podium-points{ color:#FFD700; font-size:30px; }
+  .lb-podium-card.rank2 .lb-podium-points{ color:#C5CBD6; }
+  .lb-podium-card.rank3 .lb-podium-points{ color:#CD7F32; }
+  .lb-podium-points-label{ font-family:'JetBrains Mono', monospace; font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); margin-top:2px; }
+
+  .lb-pagination{
+    display:flex; align-items:center; justify-content:center; gap:18px; margin-top:20px;
+  }
+  .lb-page-btn{
+    background:var(--bg-panel); border:1px solid var(--line); color:var(--cyan);
+    font-family:'JetBrains Mono', monospace; font-size:12px; letter-spacing:0.05em; text-transform:uppercase;
+    padding:11px 20px; cursor:pointer; transition: all .2s ease;
+  }
+  .lb-page-btn:hover:not(:disabled){ background:rgba(17,217,247,0.08); border-color:var(--cyan); box-shadow:0 0 12px rgba(17,217,247,0.2); }
+  .lb-page-btn:disabled{ opacity:0.35; cursor:not-allowed; }
+  .lb-page-info{ font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--muted); letter-spacing:0.05em; }
+
+  .lb-page-size{
+    display:flex; align-items:center; gap:8px; margin-top:16px;
+    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.05em;
+  }
+  .lb-page-size-label{ color:var(--muted); text-transform:uppercase; }
+  .lb-size-btn{
+    background:var(--bg-panel); border:1px solid var(--line); color:var(--muted);
+    font-family:'JetBrains Mono', monospace; font-size:12px; padding:8px 14px;
+    cursor:pointer; transition: all .2s ease;
+  }
+  .lb-size-btn:hover{ border-color:var(--cyan); color:var(--cyan); }
+  .lb-size-btn.active{ background:var(--cyan); color:#05070a; border-color:var(--cyan); font-weight:700; }
 
   footer{
-    position:relative; z-index:1; text-align:center; padding:34px 20px 40px;
-    border-top:1px solid var(--line);
+    text-align:center; padding:34px 20px 40px; border-top:1px solid var(--line);
     font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--muted); letter-spacing:0.05em;
   }
   footer a{ color:var(--cyan); text-decoration:none; }
   footer .row{ margin-top:6px; }
 
-  ::selection{ background:rgba(17,217,247,0.3); }
-
-  /* ---- FNC Points FAQ (button + popup) ---- */
-  .fnc-faq-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    background: #11D9F7;
-    color: #05070a;
-    border: none;
-    padding: 15px 26px;
-    border-radius: 4px;
-    font-family: 'JetBrains Mono', monospace;
-    font-weight: 700;
-    font-size: 13px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    cursor: pointer;
-    box-shadow: 0 0 16px rgba(17, 217, 247, 0.45);
-    transition: all 0.2s ease;
-    position: relative;
-    overflow: hidden;
+  @media (max-width: 640px){
+    header{ flex-wrap:wrap; justify-content:center; gap:14px; text-align:center; }
+    .nav-menu{ justify-content:center; }
+    .socials{ justify-content:center; }
+    .lb-row{ grid-template-columns: 44px 1fr 100px; padding:12px 14px; font-size:12.5px; gap:6px; }
+    .lb-more{ width:100%; justify-content:center; }
+    .lb-pagination{ flex-wrap:wrap; gap:10px; }
+    .lb-page-btn{ padding:10px 16px; font-size:11px; }
+    .lb-size-btn{ padding:7px 12px; font-size:11px; }
+    .lb-page-size{ flex-wrap:wrap; justify-content:center; }
+    .lb-podium{ grid-template-columns: 1fr; }
+    .lb-podium-card.champion{ order:-1; }
   }
-  .fnc-faq-btn:hover {
-    background: #4de6ff;
-    box-shadow: 0 0 24px rgba(17, 217, 247, 0.75);
-    transform: translateY(-1px);
-  }
-  .fnc-faq-btn::after{
-    content:""; position:absolute; top:0; left:-60%; width:40%; height:100%;
-    background:linear-gradient(120deg, transparent, rgba(255,255,255,0.5), transparent);
-    transform: skewX(-20deg);
-    transition: left .5s ease;
-  }
-  .fnc-faq-btn:hover::after{ left:130%; }
-  .fnc-faq-btn-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: #05070a;
-    color: #11D9F7;
-    font-size: 12px;
-    font-weight: 900;
-    flex-shrink: 0;
-  }
-
-  .fnc-faq-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(2, 4, 6, 0.95);
-    backdrop-filter: blur(8px);
-    z-index: 9999;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-  }
-  .fnc-faq-overlay.open {
-    display: flex;
-  }
-
-  .fnc-faq-modal {
-    background: linear-gradient(180deg, #0c0e13 0%, #05060a 100%);
-    border: 1px solid rgba(17, 217, 247, 0.4);
-    border-radius: 14px;
-    max-width: 640px;
-    width: 100%;
-    max-height: 85vh;
-    overflow-y: auto;
-    padding: 28px 24px 20px;
-    font-family: Arial, Helvetica, sans-serif;
-    color: #e8f9ff;
-    position: relative;
-    box-shadow: 0 0 40px rgba(17, 217, 247, 0.25);
-  }
-  .fnc-faq-modal::-webkit-scrollbar { width: 6px; }
-  .fnc-faq-modal::-webkit-scrollbar-thumb { background: rgba(17,217,247,0.4); border-radius: 3px; }
-
-  .fnc-faq-close {
-    position: absolute;
-    top: 16px;
-    right: 18px;
-    background: none;
-    border: none;
-    color: #11D9F7;
-    font-size: 22px;
-    cursor: pointer;
-    line-height: 1;
-  }
-  .fnc-faq-close:hover { color: #ffffff; }
-
-  .fnc-faq-title {
-    font-size: 24px;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin: 0 0 4px;
-    color: #ffffff;
-  }
-  .fnc-faq-title span { color: #11D9F7; }
-
-  .fnc-faq-sub {
-    font-size: 13px;
-    color: #8fb8c4;
-    margin: 0 0 22px;
-  }
-
-  .fnc-faq-section-label {
-    font-size: 12px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    color: #11D9F7;
-    margin: 22px 0 10px;
-    opacity: 0.85;
-  }
-  .fnc-faq-section-label:first-of-type { margin-top: 0; }
-
-  .fnc-faq-item {
-    border: 1px solid rgba(17, 217, 247, 0.18);
-    border-radius: 8px;
-    margin-bottom: 8px;
-    overflow: hidden;
-    background: rgba(17, 217, 247, 0.03);
-  }
-
-  .fnc-faq-q {
-    width: 100%;
-    background: none;
-    border: none;
-    text-align: left;
-    color: #e8f9ff;
-    font-size: 14.5px;
-    font-weight: 600;
-    padding: 13px 16px;
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 12px;
-  }
-  .fnc-faq-q:hover { color: #11D9F7; }
-
-  .fnc-faq-icon {
-    flex-shrink: 0;
-    width: 18px;
-    height: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #11D9F7;
-    transition: transform 0.25s ease;
-    font-size: 16px;
-  }
-  .fnc-faq-item.active .fnc-faq-icon { transform: rotate(45deg); }
-
-  .fnc-faq-a {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.25s ease, padding 0.25s ease;
-    padding: 0 16px;
-    font-size: 13.5px;
-    line-height: 1.55;
-    color: #b9d6de;
-  }
-  .fnc-faq-item.active .fnc-faq-a {
-    max-height: 400px;
-    padding: 0 16px 15px;
-  }
-
-  .fnc-faq-a ul { margin: 6px 0 0; padding-left: 18px; }
-  .fnc-faq-a li { margin-bottom: 4px; }
-  .fnc-faq-a strong { color: #11D9F7; }
-
-  .fnc-faq-footer {
-    margin-top: 20px;
-    padding-top: 14px;
-    border-top: 1px solid rgba(17, 217, 247, 0.15);
-    font-size: 12.5px;
-    color: #7fa3ac;
-    text-align: center;
-  }
-  .fnc-faq-footer a { color: #11D9F7; text-decoration: none; font-weight: 600; }
-  .fnc-faq-footer a:hover { text-decoration: underline; }
-
-  /* ---- section separators ---- */
-  .section-block{ margin-top:70px; }
-  .partners-heading{
-    font-family:'Rajdhani', sans-serif; font-weight:700; text-transform:uppercase;
-    font-size: clamp(24px, 3.4vw, 34px); letter-spacing:0.02em; color:var(--white);
-    margin-bottom:20px;
-  }
-  .partners-gift{ width:0.75em; height:0.75em; vertical-align:-0.05em; color:var(--cyan); }
-
-  /* ---- partners ---- */
-  .partners-row{ display:flex; gap:14px; flex-wrap:wrap; }
-  .partner-btn{
-    font-family:'JetBrains Mono', monospace; font-size:13px; letter-spacing:0.06em; text-transform:uppercase;
-    color:var(--white); text-decoration:none; border:1px solid var(--line); background:var(--bg-panel);
-    padding:15px 26px; transition:all .2s ease; position:relative; overflow:hidden;
-  }
-  .partner-btn:hover{ border-color:var(--cyan); color:var(--cyan); box-shadow:0 0 16px rgba(17,217,247,0.25); background:rgba(17,217,247,0.05); }
-
-  .partner-popup{
-    display:none; position:fixed; inset:0; background:rgba(2,4,6,0.95); backdrop-filter:blur(8px);
-    z-index:9999; align-items:center; justify-content:center; padding:20px;
-  }
-  .partner-popup:target{ display:flex; }
-  .partner-popup-backdrop{
-    position:absolute; inset:0; z-index:1;
-  }
-  .partner-popup-box{
-    position:relative; z-index:2;
-    background: linear-gradient(180deg, #0c0e13 0%, #05060a 100%);
-    border:1px solid rgba(17,217,247,0.4); max-width:400px; width:100%;
-    padding:30px; text-align:center; color:var(--white);
-    box-shadow:0 0 40px rgba(17,217,247,0.25);
-  }
-  .partner-popup-close{
-    position:absolute; top:10px; right:15px; font-size:26px; color:var(--cyan); text-decoration:none; line-height:1;
-  }
-  .partner-popup-close:hover{ color:#fff; }
-  .partner-popup-img{ width:100%; border-radius:4px; margin-bottom:16px; display:block; }
-  .partner-popup-box h2{
-    font-family:'Rajdhani', sans-serif; font-size:18px; font-weight:700; line-height:1.3; margin-bottom:10px; color:var(--white);
-  }
-  .partner-popup-box p{ font-size:13px; color:var(--muted); margin-bottom:6px; }
-  .partner-popup-box p strong{ color:var(--cyan); }
-  .partner-popup-cta{
-    display:inline-block; margin-top:14px; padding:12px 26px; background:var(--cyan); color:#05070a;
-    text-decoration:none; font-family:'JetBrains Mono', monospace; font-weight:700; font-size:12px;
-    letter-spacing:0.06em; text-transform:uppercase; transition:all .2s ease;
-  }
-  .partner-popup-cta:hover{ box-shadow:0 0 20px rgba(17,217,247,0.5); }
-
-  .promo-code-btn{
-    display:inline-flex; align-items:center; justify-content:center; gap:8px;
-    margin-top:6px; padding:10px 18px; background:rgba(17,217,247,0.08);
-    border:1px dashed rgba(17,217,247,0.5); color:var(--white);
-    font-family:'JetBrains Mono', monospace; font-size:13px; font-weight:600; letter-spacing:0.04em;
-    cursor:pointer; transition: all .2s ease; width:100%;
-  }
-  .promo-code-btn:hover{ background:rgba(17,217,247,0.15); border-color:var(--cyan); }
-  .promo-code-btn .promo-label{ color:var(--muted); font-weight:400; }
-  .promo-code-btn .promo-copy-icon{ color:var(--cyan); font-size:14px; }
-  .promo-code-btn.copied{ border-color:var(--cyan); border-style:solid; color:var(--cyan); }
-
-  .promo-discord-block{
-    margin-top:16px; padding:14px; border-left:2px solid #57F287;
-    background:rgba(87,242,135,0.05); text-align:left;
-  }
-  .promo-discord-text{ font-size:12px; color:var(--muted); line-height:1.5; margin-bottom:10px; }
-  .promo-discord-text span{ color:#57F287; font-weight:700; }
-  .promo-discord-btn{
-    display:flex; align-items:center; justify-content:center; gap:8px;
-    background:#5865F2; color:#fff; text-decoration:none; padding:11px 16px;
-    font-family:'JetBrains Mono', monospace; font-size:12.5px; font-weight:600;
-    transition: background .2s ease;
-  }
-  .promo-discord-btn:hover{ background:#4752c4; }
-  .promo-discord-btn svg{ width:16px; height:16px; fill:#fff; flex-shrink:0; }
 </style>
 </head>
 <body>
 
 <header>
-  <a href="https://adhemswag.com/" class="brand" style="text-decoration:none;">
-    <svg class="brand-mark" viewBox="0 0 24 24" fill="none" stroke="#11d9f7" stroke-width="1.6" style="width:16px; height:16px; overflow:visible;">
+  <a href="https://adhemswag.com/" class="brand">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#11d9f7" stroke-width="1.6" style="width:16px; height:16px; overflow:visible;">
       <path d="M12 2C7 2 4 5.5 4 10c0 2.6 1.1 4.4 2.5 5.7V19c0 .6.4 1 1 1h1v-2h1v2h5v-2h1v2h1c.6 0 1-.4 1-1v-3.3C18.9 14.4 20 12.6 20 10c0-4.5-3-8-8-8z"/>
       <circle cx="9" cy="10" r="1.6" fill="#11d9f7" stroke="none"/>
       <circle cx="15" cy="10" r="1.6" fill="#11d9f7" stroke="none"/>
@@ -574,7 +196,6 @@
     <div class="brand-name">ADHEM<span>SWAG</span>.COM</div>
   </a>
   <nav class="nav-menu">
-    <a href="/leaderboard"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px; margin-right:5px;"><path d="M8 21h8M12 17v4M17 3H7v6a5 5 0 0 0 10 0V3z"/><path d="M17 5h3a2 2 0 0 1 2 2 4 4 0 0 1-4 4M7 5H4a2 2 0 0 0-2 2 4 4 0 0 0 4 4"/></svg>Leaderboard</a>
     <a href="/bonuses"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px; margin-right:5px;"><rect x="3" y="8" width="18" height="4"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8"/><path d="M16.5 8a2.5 2.5 0 0 0 0-5C13 3 12 8 12 8"/></svg>Bonuses</a>
     <a href="/settings"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px; margin-right:5px;"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings</a>
     <a href="/donate"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px; margin-right:5px;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>Donate</a>
@@ -591,283 +212,38 @@
   </div>
 </header>
 
-<main id="home">
-  <div class="hero-grid">
+<main>
+  <div class="eyebrow" style="margin-bottom:10px;">// FNC Points ranking</div>
+  <h1>Leader<span>board</span></h1>
+  <p class="page-sub">Top 25 viewers ranked by FNC Points.</p>
 
-    <!-- LEFT COLUMN -->
-    <div>
-      <div class="hero-top-row">
-        <div class="radar-wrap">
-          <div class="radar-sweep"></div>
-          <svg class="skull" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="1.4">
-            <path d="M12 2C7 2 4 5.5 4 10c0 2.6 1.1 4.4 2.5 5.7V19c0 .6.4 1 1 1h1v-2h1v2h5v-2h1v2h1c.6 0 1-.4 1-1v-3.3C18.9 14.4 20 12.6 20 10c0-4.5-3-8-8-8z"/>
-            <circle cx="9" cy="10" r="1.6" fill="var(--cyan)" stroke="none"/>
-            <circle cx="15" cy="10" r="1.6" fill="var(--cyan)" stroke="none"/>
-            <path d="M11 13.5h2l-.5 1.5h-1z" fill="var(--cyan)" stroke="none"/>
-          </svg>
-        </div>
-        <div class="eyebrow">// tracking watch time<br>· earning rewards</div>
-      </div>
-      <h1>Turn watch time<br>into <span class="hl">real rewards</span></h1>
-      <p class="active-note">Active viewers only — chat and watch the stream to earn points.</p>
-      <p class="lede">Watch AdhemSwag live, earn points every minute, and redeem exclusive rewards directly — CS2 skins, gear, shoutouts, perks, and more, made for the community.</p>
+  <div class="lb-podium" id="lbPodium"></div>
 
-      <div class="cta-row">
-        <a href="https://twitch.tv/AdhemSwag" target="_blank" rel="noopener" class="btn btn-primary">▶ Watch Live</a>
-        <a href="https://streamelements.com/AdhemSwag/store" target="_blank" class="btn btn-outline"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-3px; margin-right:7px;"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>Store</a>
-      </div>
+  <div class="lb-table bracket" id="lbTable">
+    <div class="lb-row lb-head">
+      <div class="lb-rank">Rank</div>
+      <div class="lb-user">Username</div>
+      <div class="lb-points">Points</div>
     </div>
-
-    <!-- RIGHT COLUMN -->
-    <div>
-      <div class="stream-card bracket">
-        <span class="bc-tr"></span><span class="bc-bl"></span>
-        <div class="stream-top">
-          <div class="live-tag" id="liveTag"><span class="live-dot" id="liveDot"></span> <span id="liveText">CHECKING…</span></div>
-          <div class="platform-tag">TWITCH</div>
-        </div>
-        <div class="stream-body">
-          <iframe
-            src="https://player.twitch.tv/?channel=adhemswag&parent=adhemswag.github.io&parent=live.adhemswag.com&parent=adhemswag.com&parent=www.adhemswag.com&muted=true"
-            frameborder="0"
-            allowfullscreen="true"
-            scrolling="no"
-            style="width:100%; height:100%; position:absolute; inset:0;">
-          </iframe>
-        </div>
-        <div class="stream-foot">
-          <span>STATUS: <b id="statusText">STANDBY</b></span>
-          <span>CS2 · COMPETITIVE</span>
-        </div>
-      </div>
-
-      <div class="follow-sub-row">
-        <a href="https://twitch.tv/AdhemSwag" target="_blank" rel="noopener" class="follow-btn">
-          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h1v4l4-4h7a2 2 0 0 0 2-2z"/><path d="M12 8v3M9 8v3"/></svg>
-          Follow
-        </a>
-        <a href="https://www.twitch.tv/subs/AdhemSwag" target="_blank" rel="noopener" class="sub-btn">
-          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-          Subscribe
-        </a>
-      </div>
-
-      <div class="points-strip">
-        <div class="points-cell">
-          <div class="num">+1</div>
-          <div class="lbl">FNC / min — viewers</div>
-        </div>
-        <div class="points-cell">
-          <div class="num">+3</div>
-          <div class="lbl">FNC / min — subscribers</div>
-        </div>
-        <div class="points-cell">
-          <div class="num">24/7</div>
-          <div class="lbl">Store access</div>
-        </div>
-      </div>
+    <div id="lbBody">
+      <div class="lb-loading">Loading leaderboard…</div>
     </div>
-
   </div>
 
-  <!-- FAQ SECTION -->
-  <div class="section-block">
-    <div class="eyebrow" style="margin-bottom:14px;">// need help</div>
-    <button class="fnc-faq-btn" onclick="document.getElementById('fncFaqOverlay').classList.add('open')">
-      <span class="fnc-faq-btn-icon">?</span>FAQ
-    </button>
+  <div class="lb-page-size" id="lbPageSize">
+    <span class="lb-page-size-label">Show:</span>
+    <button class="lb-size-btn active" data-size="25">25</button>
+    <button class="lb-size-btn" data-size="50">50</button>
+    <button class="lb-size-btn" data-size="75">75</button>
+    <button class="lb-size-btn" data-size="100">100</button>
+  </div>
 
-    <div class="fnc-faq-overlay" id="fncFaqOverlay" onclick="if(event.target===this) this.classList.remove('open')">
-      <div class="fnc-faq-modal">
-          <button class="fnc-faq-close" onclick="document.getElementById('fncFaqOverlay').classList.remove('open')">×</button>
-          <h2 class="fnc-faq-title">FNC POINTS <span>FAQ</span></h2>
-          <p class="fnc-faq-sub">Everything you need to know about earning and redeeming FNC Points.</p>
-
-          <div class="fnc-faq-section-label">Earning FNC Points</div>
-
-          <div class="fnc-faq-item">
-            <button class="fnc-faq-q" onclick="this.parentElement.classList.toggle('active')">
-              How do viewers earn points? <span class="fnc-faq-icon">+</span>
-            </button>
-            <div class="fnc-faq-a">Every viewer watching the stream live on Twitch earns <strong>10 FNC every 10 minutes</strong>.</div>
-          </div>
-
-          <div class="fnc-faq-item">
-            <button class="fnc-faq-q" onclick="this.parentElement.classList.toggle('active')">
-              Do subscribers earn more? <span class="fnc-faq-icon">+</span>
-            </button>
-            <div class="fnc-faq-a">Yes. Active subscribers earn <strong>30 FNC every 10 minutes</strong> while watching live, on top of the one-time subscribe bonus below.</div>
-          </div>
-
-          <div class="fnc-faq-item">
-            <button class="fnc-faq-q" onclick="this.parentElement.classList.toggle('active')">
-              How much do Bits and Subs give me? <span class="fnc-faq-icon">+</span>
-            </button>
-            <div class="fnc-faq-a">
-              <ul>
-                <li><strong>Cheering:</strong> 100 FNC per 100 Bits</li>
-                <li><strong>Subscribing:</strong> 500 FNC instantly when you subscribe</li>
-              </ul>
-            </div>
-          </div>
-
-          <div class="fnc-faq-item">
-            <button class="fnc-faq-q" onclick="this.parentElement.classList.toggle('active')">
-              Do tips and raids give points too? <span class="fnc-faq-icon">+</span>
-            </button>
-            <div class="fnc-faq-a">
-              <ul>
-                <li><strong>Tipping:</strong> 100 FNC per $1 tipped (non-anonymous tips only)</li>
-                <li><strong>Raiding:</strong> 100 FNC for every raider</li>
-              </ul>
-            </div>
-          </div>
-
-          <div class="fnc-faq-item">
-            <button class="fnc-faq-q" onclick="this.parentElement.classList.toggle('active')">
-              Do I earn points if the stream is offline? <span class="fnc-faq-icon">+</span>
-            </button>
-            <div class="fnc-faq-a">No. Points only accumulate while you're actively watching a <strong>live</strong> stream on Twitch.</div>
-          </div>
-
-          <div class="fnc-faq-section-label">Redemption Rules</div>
-
-          <div class="fnc-faq-item">
-            <button class="fnc-faq-q" onclick="this.parentElement.classList.toggle('active')">
-              Can I use multiple accounts? <span class="fnc-faq-icon">+</span>
-            </button>
-            <div class="fnc-faq-a">No, multi-accounting to farm extra points is <strong>not allowed</strong> and may result in disqualification.</div>
-          </div>
-
-          <div class="fnc-faq-item">
-            <button class="fnc-faq-q" onclick="this.parentElement.classList.toggle('active')">
-              Do I need to be active in chat? <span class="fnc-faq-icon">+</span>
-            </button>
-            <div class="fnc-faq-a">Yes — you need to actually <strong>type in chat</strong> during the stream, not just have the tab open. Passive viewing, muted tabs, or bots don't count toward points.</div>
-          </div>
-
-          <div class="fnc-faq-item">
-            <button class="fnc-faq-q" onclick="this.parentElement.classList.toggle('active')">
-              Can I transfer or sell my points? <span class="fnc-faq-icon">+</span>
-            </button>
-            <div class="fnc-faq-a">No, FNC Points are <strong>non-transferable</strong> between accounts and have no cash value.</div>
-          </div>
-
-          <div class="fnc-faq-item">
-            <button class="fnc-faq-q" onclick="this.parentElement.classList.toggle('active')">
-              How long does delivery take? <span class="fnc-faq-icon">+</span>
-            </button>
-            <div class="fnc-faq-a">Redeemed rewards are delivered within <strong>1 week</strong> of your order.</div>
-          </div>
-
-          <div class="fnc-faq-item">
-            <button class="fnc-faq-q" onclick="this.parentElement.classList.toggle('active')">
-              My reward hasn't arrived after a week — what do I do? <span class="fnc-faq-icon">+</span>
-            </button>
-            <div class="fnc-faq-a">Reach out on Discord with your order details and it'll be sorted out as soon as possible.</div>
-          </div>
-
-          <div class="fnc-faq-item">
-            <button class="fnc-faq-q" onclick="this.parentElement.classList.toggle('active')">
-              Where do I redeem my points? <span class="fnc-faq-icon">+</span>
-            </button>
-            <div class="fnc-faq-a">Head to the SWAG STORE linked on the site to browse and redeem rewards with your FNC Points balance.</div>
-          </div>
-
-          <div class="fnc-faq-footer">
-            Still need help? Join the <a href="https://discord.gg/cMRS6E2" target="_blank" rel="noopener">Discord</a>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- PARTNERS SECTION -->
-    <div class="section-block">
-      <div class="eyebrow" style="margin-bottom:10px;">ADHEMSWAG EXCLUSIVE BONUSES</div>
-      <h2 class="partners-heading">Partner <svg class="partners-gift" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="8" width="18" height="4"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8"/><path d="M16.5 8a2.5 2.5 0 0 0 0-5C13 3 12 8 12 8"/></svg> Bonuses</h2>
-      <div class="partners-row">
-        <a href="#exitlag-popup" class="partner-btn"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAC70lEQVR4nO3WTYiWVRQH8N/oJN02cotKLIVadDVIgz4I+lrUJsNdiUZFZEXU1kD6QEGNXAg1NIEgRBRUIFSbKCgDJYJWUTRwJYoKLGhx+zBuTTNOi+e+zevk+86Y7ZyzudznnOf8/+ece8+5LMqinO0yMkwZc12JV+Z8nsYoDpQU3phjvwc3NJslbV2KoyWFx06FMTqMQEnhWMwVbj+F+uqY64clhZ8a+EY8OcDVW4Mwlgwj0OQh/IK/MKWL6k9cgD19ds/jRLObxmTbHyopjA9yPrQEPYm5Po1dZlMKM21dj7vxTJ9+poGfwPUlhc8G+V5IBpQUdiM3wn/ooqttP4Yr5/xyohEZHwbOgAzEXG/DeB/IJlyMw3gCBxv5VfgI+7AFKxv4EhwrKVw6X3ADSxBzzbiibT8uKdwUc30Xl5UU1vbZPYeteLmRm8Qy3F9SeHU+AsNK8LAumkncGHPdUlLYgDXtTICSwnZdzVfhSAM/tBDwoQRKCofxZnM4rTvlsB27Yq6X9Jk/gs26cvyKbQsBn1diritjrj/EXKdjrjMx15fa96Mx1/fn2L4Tc/0q5nrr6WAMvQUlhWO6EvTOyvltrTh3jvkkzsN3/xuBmOsYVutKcLyksDnmuhXr8ECf3R24C/vxQcx19RkTiLmux6O67jeKp5pqP/aUFL7pMz+At3ENLsfuMyaAF3BOA58oKYzFXF/DjyWFf25BzHUHluNzbNS14vtaL5lXBjWiTbobMK27Yjfj9wZyT0nh9Wa3BhO6G3Knrm/0MvZFSWHdfyWwAhe17VRJYSLm+imuxdeN2BRW4Ft8iXvNdsHeTNhWUth32gROQehxvOjkYdSTW3QH8kEnD6MZ/IarSgrfD/I97zBq2djRnDPbHeFgSeEIduLnPn1vXY69w/wvZBruxYW6yJa2f5bhuNbxWoQ7+/QjZh87W2KuGwY5n+9JtlY3AXu2I2bT/Ozc+sZc38N1/v0k+6SksHEBwS7KopyF8jc3mAOI/sKaUwAAAABJRU5ErkJggg==" width="14" height="14" style="vertical-align:-2px; margin-right:6px;" alt="">ExitLag</a>
-        <a href="#noping-popup" class="partner-btn"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAA6klEQVR4nO1WOxKFIAwMjA2lp+D+x/EUlJZaOZOH+afwFWwlkrCbsKAACwsfo0SS9uO8tJjRG7v2fpzXM1+9xBbyJ9by3twBKzGF0VvB+bg7JgEUudZiSQweqwLmxSRiTQSVK3ogSk7FcrkuE3rA7XlYgKd6ipw7QayAqOupPGktUwc81Wt5s5i0ByyXk1TAliWnnj0Id8BTtdsDc8JcafZaxuPXFkiLa7dbRNhPBzLkeOwRVblAybmjt8LNa3nzO/YUcMozHyMK1RqMq9biPZ9vda+yJpPIAZAHKENFr2ArOcBHP6ULC3+FGyjMsE3wCqMWAAAAAElFTkSuQmCC" width="14" height="14" style="vertical-align:-2px; margin-right:6px;" alt="">NoPing</a>
-        <a href="#ggdrop-popup" class="partner-btn"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAyElEQVR4nO1WMQrAIAzU0sXRV/T/z/EVjo52EqQYc0mwpeBtosldzkR0bmPjY3htYEyl9ut8BVUuUdCTlIJEDHQQJdYIOVaRo7GsACs4EWYB2uZrmAbHVGojaJVwhKOKZzHkhmXM+li1Q30SSyNygBzQ2P4ElYNswnwFj9iHukOdO7nD1i7nAD1EK3tgKGBUtVUE5eTwCqyJJWJFLyGSWOrUdAqkBNSe6iXkyFBwUzS9gtUj6JzgR6RxAyngH18yRMwb17WxsQQ3FLFxZcs2WyAAAAAASUVORK5CYII=" width="14" height="14" style="vertical-align:-2px; margin-right:6px;" alt="">GGDrop</a>
-        <a href="#esea-popup" class="partner-btn"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAC7UlEQVR4nO3WTWgdZRQG4CfJbeqkteYTqxGqgn8jrT/gwpVYFKqCIG4VURFBBCm4EEEUcSe4EEGb4sbu3ChqQVE3LhRBKFVaigwuRPyJRXBCUAeb5MbFd66ZXpLUuQYX2gPDcM9857zveb9zDpez9l+xVDU7R4kb3yTwp/DkKLG9TQDfgwcwP0r8ZijwGK7BUqqay/5VAqlq7sX9GMMfOK9rjpGvIFXNHZhtgW6Pp5ONpECqmn14JsBXwn0Ozu2aq7MCqWpm8AhuRiMXMRG5OivQiUCAPxrgfbnqsfi8DdOdCaSq2Y+E87EUCQfJt8fvcbnaaeyLd78FPrBtnQngO9yDW3Eykg4k3dIC6Yevh1Px7QRewW/xVBuBpaq5Dbsj/khdFkd7dVm8narmIrmhbtwgfhkLQWRKHruP6rI4uA7YFdiJS3CVrPApWcmTkS/3QF0WB1PVHMNL2GNVyn68x/BrELgYkziOIy3AmSB2Na5rPZeH/wu8XpfFbJvoaXeYqmYX9suNtiNYTsR7MY5tCd+HOIALcS1uwJVy7wz6Zwnv4RA+r8tiblip4SYakLgdD+KWcP+M3+U5n8JWzOFbXCBLPd1K8wvexcc4WpfFiWGcdQm0iNyHF2XJ5+Umm5KvZ3KN2JU482mAH67L4sf18g9soz3wjVzhjDymaQ3AQY8syqosYbYui8NnAv47BO6Up2I8gMYDdNnqbpiIswMfHdf7modT1TyOh+Wq+nKFiwHSC+AVueKVofDJf0QgVc1N8q7fZXXXb5W7/ye8j2PhHyi43ErR18FOIxAL6QV5pKCQK5zHV3itLou78Cw+kydjLMiNZMMK3N0CH9hxeS/srcviOYgmewgvyxuxZ+3rOKP91YSpavbieXllLuAtfIC5uiw+GQ6sy+LrVDWv4vsgeL3Vhu1GIFXNbrnp4E18iXc2WiBB4gccSFVT4wlcKvdLNwLyuO3A03VZHOqSIIi8kapmTv5/uNA1/qz9v+1PC9nL6tgu3WQAAAAASUVORK5CYII=" width="14" height="14" style="vertical-align:-2px; margin-right:6px;" alt="">ESEA</a>
-      </div>
-    </div>
-
-    <!-- PARTNER POPUPS -->
-    <div id="exitlag-popup" class="partner-popup"><a href="#home" class="partner-popup-backdrop"></a>
-      <div class="partner-popup-box bracket">
-        <span class="bc-tr"></span><span class="bc-bl"></span>
-        <a href="#home" class="partner-popup-close">&times;</a>
-        <img src="https://i.ibb.co/9Hbx9QqX/White.png" alt="ExitLag logo" class="partner-popup-img">
-        <h2>ExitLag — Level up your connection with 50% OFF + 3 months free.</h2>
-        <button class="promo-code-btn" onclick="copyPromoCode(this, 'AdhemSwag')">
-          <span class="promo-label">Code:</span> AdhemSwag <span class="promo-copy-icon">⧉</span>
-        </button>
-        <div class="promo-discord-block">
-          <div class="promo-discord-text">🎁 <span>The competition continues!</span><br>For more information, join our Discord</div>
-          <a href="https://discord.gg/cMRS6E2" target="_blank" rel="noopener" class="promo-discord-btn">
-            <svg viewBox="0 0 24 24"><path d="M20.3 5.4A17.6 17.6 0 0 0 15.9 4l-.3.5c1.7.4 2.7 1 3.7 1.7-1.6-.8-3.2-1.2-4.8-1.2s-3.2.4-4.8 1.2c1-.7 2.2-1.4 3.7-1.7L13.1 4a17.6 17.6 0 0 0-4.4 1.4C6.5 8.3 5.7 11.2 6 14c1.4 1 2.7 1.6 4 2l.5-.9c-.7-.3-1.4-.6-2-1.1.2.1.3.2.5.3 2 1 4.2 1.5 6.9 1.5s4.9-.5 6.9-1.5c.2-.1.3-.2.5-.3-.6.5-1.3.8-2 1.1l.5.9c1.3-.4 2.6-1 4-2 .4-3.4-.6-6.3-2.4-8.6zM9.7 12.7c-.7 0-1.3-.7-1.3-1.5s.6-1.5 1.3-1.5 1.3.7 1.3 1.5-.6 1.5-1.3 1.5zm4.6 0c-.7 0-1.3-.7-1.3-1.5s.6-1.5 1.3-1.5 1.3.7 1.3 1.5-.6 1.5-1.3 1.5z"/></svg>
-            Join us on Discord
-          </a>
-        </div>
-        <a href="https://www.exitlag.com/refer/ADHEMSWAG" target="_blank" rel="noopener" class="partner-popup-cta"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px; margin-right:6px;"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14 21 3"/></svg>Go to page</a>
-      </div>
-    </div>
-
-    <div id="noping-popup" class="partner-popup"><a href="#home" class="partner-popup-backdrop"></a>
-      <div class="partner-popup-box bracket">
-        <span class="bc-tr"></span><span class="bc-bl"></span>
-        <a href="#home" class="partner-popup-close">&times;</a>
-        <img src="https://i.ibb.co/rfp0rGZx/novo-logo-verde-branco.webp" alt="NoPing logo" class="partner-popup-img">
-        <h2>Lower Your Ping and Boost FPS with NoPing.</h2>
-        <div class="promo-discord-block">
-          <div class="promo-discord-text">🎁 <span>The competition continues!</span><br>For more information, join our Discord</div>
-          <a href="https://discord.gg/cMRS6E2" target="_blank" rel="noopener" class="promo-discord-btn">
-            <svg viewBox="0 0 24 24"><path d="M20.3 5.4A17.6 17.6 0 0 0 15.9 4l-.3.5c1.7.4 2.7 1 3.7 1.7-1.6-.8-3.2-1.2-4.8-1.2s-3.2.4-4.8 1.2c1-.7 2.2-1.4 3.7-1.7L13.1 4a17.6 17.6 0 0 0-4.4 1.4C6.5 8.3 5.7 11.2 6 14c1.4 1 2.7 1.6 4 2l.5-.9c-.7-.3-1.4-.6-2-1.1.2.1.3.2.5.3 2 1 4.2 1.5 6.9 1.5s4.9-.5 6.9-1.5c.2-.1.3-.2.5-.3-.6.5-1.3.8-2 1.1l.5.9c1.3-.4 2.6-1 4-2 .4-3.4-.6-6.3-2.4-8.6zM9.7 12.7c-.7 0-1.3-.7-1.3-1.5s.6-1.5 1.3-1.5 1.3.7 1.3 1.5-.6 1.5-1.3 1.5zm4.6 0c-.7 0-1.3-.7-1.3-1.5s.6-1.5 1.3-1.5 1.3.7 1.3 1.5-.6 1.5-1.3 1.5z"/></svg>
-            Join us on Discord
-          </a>
-        </div>
-        <a href="https://nopi.ng/adhemswag" target="_blank" rel="noopener" class="partner-popup-cta"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px; margin-right:6px;"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14 21 3"/></svg>Go to page</a>
-      </div>
-    </div>
-
-    <div id="ggdrop-popup" class="partner-popup"><a href="#home" class="partner-popup-backdrop"></a>
-      <div class="partner-popup-box bracket">
-        <span class="bc-tr"></span><span class="bc-bl"></span>
-        <a href="#home" class="partner-popup-close">&times;</a>
-        <img src="https://i.ibb.co/hFM0Kv8Z/ggdrop-2.png" alt="GGDrop logo" class="partner-popup-img">
-        <h2>Boost your skins! +7% Deposit &amp; FREE Spin on GGDROP!</h2>
-        <button class="promo-code-btn" onclick="copyPromoCode(this, 'Adhem')">
-          <span class="promo-label">Code:</span> Adhem <span class="promo-copy-icon">⧉</span>
-        </button>
-        <div class="promo-discord-block">
-          <div class="promo-discord-text">🎁 <span>The competition continues!</span><br>For more information, join our Discord</div>
-          <a href="https://discord.gg/cMRS6E2" target="_blank" rel="noopener" class="promo-discord-btn">
-            <svg viewBox="0 0 24 24"><path d="M20.3 5.4A17.6 17.6 0 0 0 15.9 4l-.3.5c1.7.4 2.7 1 3.7 1.7-1.6-.8-3.2-1.2-4.8-1.2s-3.2.4-4.8 1.2c1-.7 2.2-1.4 3.7-1.7L13.1 4a17.6 17.6 0 0 0-4.4 1.4C6.5 8.3 5.7 11.2 6 14c1.4 1 2.7 1.6 4 2l.5-.9c-.7-.3-1.4-.6-2-1.1.2.1.3.2.5.3 2 1 4.2 1.5 6.9 1.5s4.9-.5 6.9-1.5c.2-.1.3-.2.5-.3-.6.5-1.3.8-2 1.1l.5.9c1.3-.4 2.6-1 4-2 .4-3.4-.6-6.3-2.4-8.6zM9.7 12.7c-.7 0-1.3-.7-1.3-1.5s.6-1.5 1.3-1.5 1.3.7 1.3 1.5-.6 1.5-1.3 1.5zm4.6 0c-.7 0-1.3-.7-1.3-1.5s.6-1.5 1.3-1.5 1.3.7 1.3 1.5-.6 1.5-1.3 1.5z"/></svg>
-            Join us on Discord
-          </a>
-        </div>
-        <a href="https://ggdrop.art/Adhem" target="_blank" rel="noopener" class="partner-popup-cta"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px; margin-right:6px;"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14 21 3"/></svg>Go to page</a>
-      </div>
-    </div>
-
-    <div id="esea-popup" class="partner-popup"><a href="#home" class="partner-popup-backdrop"></a>
-      <div class="partner-popup-box bracket">
-        <span class="bc-tr"></span><span class="bc-bl"></span>
-        <a href="#home" class="partner-popup-close">&times;</a>
-        <img src="https://i.ibb.co/8nQcjDDw/header.jpg" alt="ESEA logo" class="partner-popup-img">
-        <h2>Join ESEA today – Save 10% instantly + Up to 40% OFF for new subscribers!</h2>
-        <div class="promo-discord-block">
-          <div class="promo-discord-text">🎁 <span>The competition continues!</span><br>For more information, join our Discord</div>
-          <a href="https://discord.gg/cMRS6E2" target="_blank" rel="noopener" class="promo-discord-btn">
-            <svg viewBox="0 0 24 24"><path d="M20.3 5.4A17.6 17.6 0 0 0 15.9 4l-.3.5c1.7.4 2.7 1 3.7 1.7-1.6-.8-3.2-1.2-4.8-1.2s-3.2.4-4.8 1.2c1-.7 2.2-1.4 3.7-1.7L13.1 4a17.6 17.6 0 0 0-4.4 1.4C6.5 8.3 5.7 11.2 6 14c1.4 1 2.7 1.6 4 2l.5-.9c-.7-.3-1.4-.6-2-1.1.2.1.3.2.5.3 2 1 4.2 1.5 6.9 1.5s4.9-.5 6.9-1.5c.2-.1.3-.2.5-.3-.6.5-1.3.8-2 1.1l.5.9c1.3-.4 2.6-1 4-2 .4-3.4-.6-6.3-2.4-8.6zM9.7 12.7c-.7 0-1.3-.7-1.3-1.5s.6-1.5 1.3-1.5 1.3.7 1.3 1.5-.6 1.5-1.3 1.5zm4.6 0c-.7 0-1.3-.7-1.3-1.5s.6-1.5 1.3-1.5 1.3.7 1.3 1.5-.6 1.5-1.3 1.5z"/></svg>
-            Join us on Discord
-          </a>
-        </div>
-        <a href="https://fce.gg/ESEA-ADHEMSWAG" target="_blank" rel="noopener" class="partner-popup-cta"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px; margin-right:6px;"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14 21 3"/></svg>Go to page</a>
-      </div>
-    </div>
-
+  <div class="lb-pagination" id="lbPagination">
+    <button id="lbPrev" class="lb-page-btn">← Previous</button>
+    <span id="lbPageInfo" class="lb-page-info">Page 1</span>
+    <button id="lbNext" class="lb-page-btn">Next →</button>
+  </div>
+  <p class="lb-note" id="lbUpdatedNote">Updated automatically every hour.</p>
 </main>
 
 <footer>
@@ -876,73 +252,92 @@
 </footer>
 
 <script>
-  function copyPromoCode(btn, code) {
-    const showCopied = () => {
-      const original = btn.innerHTML;
-      btn.classList.add('copied');
-      btn.innerHTML = '<span class="promo-copy-icon">✓</span> Copied!';
-      setTimeout(() => {
-        btn.classList.remove('copied');
-        btn.innerHTML = original;
-      }, 1500);
-    };
+  let PAGE_SIZE = 25;
+  let leaderboardData = [];
+  let currentPage = 1;
 
-    const fallbackCopy = () => {
-      const textarea = document.createElement('textarea');
-      textarea.value = code;
-      textarea.style.position = 'fixed';
-      textarea.style.opacity = '0';
-      document.body.appendChild(textarea);
-      textarea.focus();
-      textarea.select();
-      try {
-        document.execCommand('copy');
-        showCopied();
-      } catch (err) {
-        prompt('Copy this code:', code);
-      }
-      document.body.removeChild(textarea);
-    };
-
-    if (navigator.clipboard && window.isSecureContext) {
-      navigator.clipboard.writeText(code).then(showCopied).catch(fallbackCopy);
-    } else {
-      fallbackCopy();
-    }
+  function medalClass(rank) {
+    if (rank === 1) return 'lb-row top1';
+    if (rank === 2) return 'lb-row top2';
+    if (rank === 3) return 'lb-row top3';
+    return 'lb-row';
   }
 
-  // Twitch live status check (DecAPI)
-  fetch('https://decapi.me/twitch/uptime/adhemswag')
-    .then(r => r.text())
-    .then(text => {
-      const tag = document.getElementById('liveTag');
-      const dot = document.getElementById('liveDot');
-      const label = document.getElementById('liveText');
-      const status = document.getElementById('statusText');
-      const isOffline = text.toLowerCase().includes('offline');
-      if (isOffline) {
-        tag.classList.add('offline');
-        dot.classList.add('offline');
-        label.textContent = 'OFFLINE';
-        status.textContent = 'OFFLINE';
-      } else {
-        label.textContent = 'LIVE NOW';
-        status.textContent = 'LIVE';
-        // stream is live — also fetch current viewer count
-        fetch('https://decapi.me/twitch/viewercount/adhemswag')
-          .then(r => r.text())
-          .then(count => {
-            const n = parseInt(count, 10);
-            if (!isNaN(n)) {
-              label.textContent = `LIVE NOW · ${n.toLocaleString()} viewers`;
-            }
-          })
-          .catch(() => {});
+  function renderPage() {
+    const body = document.getElementById('lbBody');
+    const totalPages = Math.max(1, Math.ceil(leaderboardData.length / PAGE_SIZE));
+    currentPage = Math.min(Math.max(1, currentPage), totalPages);
+
+    const start = (currentPage - 1) * PAGE_SIZE;
+    const pageItems = leaderboardData.slice(start, start + PAGE_SIZE);
+
+    body.innerHTML = pageItems.map(entry => `
+      <div class="${medalClass(entry.rank)}">
+        <div class="lb-rank">#${entry.rank}</div>
+        <div class="lb-user">${entry.username}</div>
+        <div class="lb-points">${entry.points.toLocaleString()} <span>FNC</span></div>
+      </div>
+    `).join('');
+
+    document.getElementById('lbPageInfo').textContent = `Page ${currentPage} / ${totalPages}`;
+    document.getElementById('lbPrev').disabled = currentPage <= 1;
+    document.getElementById('lbNext').disabled = currentPage >= totalPages;
+    document.getElementById('lbPagination').style.display = 'flex';
+    document.getElementById('lbPageSize').style.display = 'flex';
+  }
+
+  document.getElementById('lbPrev').addEventListener('click', () => { currentPage--; renderPage(); });
+  document.getElementById('lbNext').addEventListener('click', () => { currentPage++; renderPage(); });
+
+  document.querySelectorAll('.lb-size-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.lb-size-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      PAGE_SIZE = parseInt(btn.dataset.size, 10);
+      currentPage = 1;
+      renderPage();
+    });
+  });
+
+  const AVATAR_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>';
+
+  function renderPodium() {
+    const podium = document.getElementById('lbPodium');
+    if (leaderboardData.length < 3) { podium.style.display = 'none'; return; }
+
+    const [first, second, third] = leaderboardData;
+
+    const card = (entry, rankNum, label) => `
+      <div class="lb-podium-card rank${rankNum}${rankNum === 1 ? ' champion' : ''}">
+        <div class="lb-podium-label">${label}</div>
+        <div class="lb-podium-badge">#${rankNum}</div>
+        <div class="lb-podium-avatar">${AVATAR_ICON}</div>
+        <div class="lb-podium-name">${entry.username}</div>
+        <div class="lb-podium-handle">@${entry.username}</div>
+        <div class="lb-podium-points">${entry.points.toLocaleString()}</div>
+        <div class="lb-podium-points-label">FNC Points</div>
+      </div>`;
+
+    podium.innerHTML = card(second, 2, 'Runner Up') + card(first, 1, 'Champion') + card(third, 3, 'Top Three');
+  }
+
+  fetch('data.json')
+    .then(r => r.json())
+    .then(data => {
+      leaderboardData = data;
+      if (!leaderboardData.length) {
+        document.getElementById('lbBody').innerHTML = '<div class="lb-loading">No leaderboard data yet.</div>';
+        document.getElementById('lbPodium').style.display = 'none';
+        return;
       }
+      renderPodium();
+      renderPage();
     })
     .catch(() => {
-      document.getElementById('liveText').textContent = 'LIVE FEED';
+      document.getElementById('lbBody').innerHTML = '<div class="lb-loading">Couldn\'t load leaderboard data.</div>';
+      document.getElementById('lbPodium').style.display = 'none';
     });
 </script>
+
 </body>
 </html>
