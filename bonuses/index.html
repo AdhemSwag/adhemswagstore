@@ -147,8 +147,18 @@
   body{ padding-left:200px; }
 
   @media (max-width: 1024px){
-    .sidebar{ display:none; }
-    body{ padding-left:0; }
+    .sidebar{ width:64px; }
+    body{ padding-left:64px; }
+    .sidebar-brand{ padding:8px 4px 14px; }
+    .sidebar-link span{ display:none; }
+    .sidebar-section-label{ display:none; }
+    .sidebar-link{ justify-content:center; padding:12px 4px; }
+  }
+
+  @media (max-width: 640px){
+    .sidebar{ width:52px; }
+    body{ padding-left:52px; }
+    .sidebar-link svg, .sidebar-link img{ width:18px; height:18px; }
   }
 
 </style>
