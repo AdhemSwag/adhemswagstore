@@ -17,7 +17,7 @@
   {
     "rank": 4,
     "username": "ronn1e_joe",
-    "points": 19250
+    "points": 19310
   },
   {
     "rank": 5,
@@ -27,7 +27,7 @@
   {
     "rank": 6,
     "username": "raouf1312",
-    "points": 15220
+    "points": 15400
   },
   {
     "rank": 7,
@@ -42,7 +42,7 @@
   {
     "rank": 9,
     "username": "a_mal0",
-    "points": 5790
+    "points": 5850
   },
   {
     "rank": 10,
@@ -57,7 +57,7 @@
   {
     "rank": 12,
     "username": "yasosus_bibus",
-    "points": 5460
+    "points": 5520
   },
   {
     "rank": 13,
@@ -72,7 +72,7 @@
   {
     "rank": 15,
     "username": "zinou331",
-    "points": 5160
+    "points": 5170
   },
   {
     "rank": 16,
@@ -86,18 +86,18 @@
   },
   {
     "rank": 18,
+    "username": "rohmiix",
+    "points": 3940
+  },
+  {
+    "rank": 19,
     "username": "the_os6",
     "points": 3925
   },
   {
-    "rank": 19,
+    "rank": 20,
     "username": "sn3ijderrr",
     "points": 3905
-  },
-  {
-    "rank": 20,
-    "username": "rohmiix",
-    "points": 3880
   },
   {
     "rank": 21,
@@ -162,7 +162,7 @@
   {
     "rank": 33,
     "username": "el_ouss_8",
-    "points": 2865
+    "points": 2875
   },
   {
     "rank": 34,
@@ -181,13 +181,13 @@
   },
   {
     "rank": 37,
-    "username": "miklouzzzzzzzzzzz",
-    "points": 2735
+    "username": "kdw_sofiane_14dz",
+    "points": 2770
   },
   {
     "rank": 38,
-    "username": "kdw_sofiane_14dz",
-    "points": 2720
+    "username": "miklouzzzzzzzzzzz",
+    "points": 2735
   },
   {
     "rank": 39,
@@ -242,7 +242,7 @@
   {
     "rank": 49,
     "username": "iokilz",
-    "points": 2150
+    "points": 2180
   },
   {
     "rank": 50,
@@ -251,28 +251,28 @@
   },
   {
     "rank": 51,
+    "username": "kazimoh",
+    "points": 2095
+  },
+  {
+    "rank": 52,
     "username": "maherrdz",
     "points": 2010
   },
   {
-    "rank": 52,
+    "rank": 53,
+    "username": "f1caaal",
+    "points": 1985
+  },
+  {
+    "rank": 54,
     "username": "mefo09",
     "points": 1935
   },
   {
-    "rank": 53,
+    "rank": 55,
     "username": "maleeekdh",
     "points": 1935
-  },
-  {
-    "rank": 54,
-    "username": "f1caaal",
-    "points": 1925
-  },
-  {
-    "rank": 55,
-    "username": "kazimoh",
-    "points": 1915
   },
   {
     "rank": 56,
@@ -406,63 +406,63 @@
   },
   {
     "rank": 82,
-    "username": "ruffyyw",
+    "username": "sailex666",
     "points": 1210
   },
   {
     "rank": 83,
-    "username": "deszuuye",
+    "username": "ruffyyw",
     "points": 1210
   },
   {
     "rank": 84,
+    "username": "deszuuye",
+    "points": 1210
+  },
+  {
+    "rank": 85,
     "username": "jadlov",
     "points": 1190
   },
   {
-    "rank": 85,
+    "rank": 86,
     "username": "daxvincix",
     "points": 1190
   },
   {
-    "rank": 86,
+    "rank": 87,
     "username": "sadektoyz",
     "points": 1175
   },
   {
-    "rank": 87,
+    "rank": 88,
     "username": "el_ambassador_",
     "points": 1170
   },
   {
-    "rank": 88,
+    "rank": 89,
     "username": "darkinho0012",
     "points": 1160
   },
   {
-    "rank": 89,
-    "username": "sailex666",
-    "points": 1150
+    "rank": 90,
+    "username": "ouss4life",
+    "points": 1130
   },
   {
-    "rank": 90,
+    "rank": 91,
     "username": "resedorsaa",
     "points": 1120
   },
   {
-    "rank": 91,
+    "rank": 92,
     "username": "abdou420r",
     "points": 1095
   },
   {
-    "rank": 92,
+    "rank": 93,
     "username": "sidowssss",
     "points": 1090
-  },
-  {
-    "rank": 93,
-    "username": "ouss4life",
-    "points": 1070
   },
   {
     "rank": 94,
@@ -496,13 +496,13 @@
   },
   {
     "rank": 100,
-    "username": "nassim",
-    "points": 1000
+    "username": "hariss_x05",
+    "points": 1005
   },
   {
     "rank": 101,
-    "username": "hariss_x05",
-    "points": 995
+    "username": "nassim",
+    "points": 1000
   },
   {
     "rank": 102,
@@ -526,48 +526,48 @@
   },
   {
     "rank": 106,
-    "username": "mrfoxypt",
+    "username": "streamlabs",
     "points": 960
   },
   {
     "rank": 107,
-    "username": "adamosb",
+    "username": "mrfoxypt",
     "points": 960
   },
   {
     "rank": 108,
+    "username": "adamosb",
+    "points": 960
+  },
+  {
+    "rank": 109,
     "username": "spartan18000",
     "points": 950
   },
   {
-    "rank": 109,
+    "rank": 110,
     "username": "1xhibou",
     "points": 950
   },
   {
-    "rank": 110,
+    "rank": 111,
     "username": "zkhaled2",
     "points": 930
   },
   {
-    "rank": 111,
+    "rank": 112,
     "username": "oxucw",
     "points": 920
   },
   {
-    "rank": 112,
+    "rank": 113,
     "username": "louuuai",
     "points": 920
   },
   {
-    "rank": 113,
+    "rank": 114,
     "username": "sprakintov",
     "points": 915
-  },
-  {
-    "rank": 114,
-    "username": "streamlabs",
-    "points": 900
   },
   {
     "rank": 115,
@@ -616,13 +616,13 @@
   },
   {
     "rank": 124,
-    "username": "armenkrptn",
-    "points": 775
+    "username": "fivasaid",
+    "points": 780
   },
   {
     "rank": 125,
-    "username": "fivasaid",
-    "points": 770
+    "username": "armenkrptn",
+    "points": 775
   },
   {
     "rank": 126,
@@ -971,247 +971,247 @@
   },
   {
     "rank": 195,
+    "username": "outlaw_noufel",
+    "points": 410
+  },
+  {
+    "rank": 196,
     "username": "va1lky",
     "points": 400
   },
   {
-    "rank": 196,
+    "rank": 197,
     "username": "lightdotoo",
     "points": 400
   },
   {
-    "rank": 197,
+    "rank": 198,
     "username": "dwxx__",
     "points": 400
   },
   {
-    "rank": 198,
+    "rank": 199,
     "username": "doovaak",
     "points": 400
   },
   {
-    "rank": 199,
+    "rank": 200,
     "username": "wurfy100",
     "points": 390
   },
   {
-    "rank": 200,
+    "rank": 201,
     "username": "skampo09",
     "points": 390
   },
   {
-    "rank": 201,
+    "rank": 202,
     "username": "mtwhocin",
     "points": 390
   },
   {
-    "rank": 202,
+    "rank": 203,
     "username": "j4ck__k",
     "points": 390
   },
   {
-    "rank": 203,
+    "rank": 204,
     "username": "ihabovic310",
     "points": 390
   },
   {
-    "rank": 204,
+    "rank": 205,
     "username": "dzpunisher1",
     "points": 390
   },
   {
-    "rank": 205,
+    "rank": 206,
     "username": "sid_0_ali",
     "points": 385
   },
   {
-    "rank": 206,
+    "rank": 207,
     "username": "smoflee23",
     "points": 380
   },
   {
-    "rank": 207,
+    "rank": 208,
     "username": "gtagta5772",
     "points": 375
   },
   {
-    "rank": 208,
+    "rank": 209,
     "username": "wh1te_angel",
     "points": 370
   },
   {
-    "rank": 209,
+    "rank": 210,
     "username": "salahedfn",
     "points": 370
   },
   {
-    "rank": 210,
+    "rank": 211,
+    "username": "kamattchi",
+    "points": 370
+  },
+  {
+    "rank": 212,
     "username": "srekrapstob",
     "points": 365
   },
   {
-    "rank": 211,
+    "rank": 213,
+    "username": "kdrch31oi",
+    "points": 365
+  },
+  {
+    "rank": 214,
     "username": "rinoyoo22",
     "points": 360
   },
   {
-    "rank": 212,
+    "rank": 215,
     "username": "chiba4kttv",
     "points": 360
   },
   {
-    "rank": 213,
+    "rank": 216,
     "username": "arslano24",
     "points": 360
   },
   {
-    "rank": 214,
+    "rank": 217,
+    "username": "solo_al0ne",
+    "points": 355
+  },
+  {
+    "rank": 218,
     "username": "mlodym1chu",
     "points": 355
   },
   {
-    "rank": 215,
-    "username": "kdrch31oi",
-    "points": 355
-  },
-  {
-    "rank": 216,
+    "rank": 219,
     "username": "rriad6",
     "points": 350
   },
   {
-    "rank": 217,
-    "username": "outlaw_noufel",
-    "points": 350
-  },
-  {
-    "rank": 218,
+    "rank": 220,
     "username": "noobishoo",
     "points": 350
   },
   {
-    "rank": 219,
+    "rank": 221,
     "username": "nemlaaa",
     "points": 350
   },
   {
-    "rank": 220,
+    "rank": 222,
     "username": "fletox013",
     "points": 350
   },
   {
-    "rank": 221,
+    "rank": 223,
     "username": "dar1naya",
     "points": 350
   },
   {
-    "rank": 222,
+    "rank": 224,
     "username": "redlsr",
     "points": 345
   },
   {
-    "rank": 223,
+    "rank": 225,
     "username": "diidi31",
     "points": 345
   },
   {
-    "rank": 224,
+    "rank": 226,
+    "username": "benamlis",
+    "points": 345
+  },
+  {
+    "rank": 227,
     "username": "fyansodzalger",
     "points": 340
   },
   {
-    "rank": 225,
+    "rank": 228,
     "username": "wwandderr",
     "points": 335
   },
   {
-    "rank": 226,
+    "rank": 229,
     "username": "skull2kk",
     "points": 335
   },
   {
-    "rank": 227,
+    "rank": 230,
     "username": "kng7ace",
     "points": 335
   },
   {
-    "rank": 228,
+    "rank": 231,
     "username": "kago_0o",
     "points": 335
   },
   {
-    "rank": 229,
-    "username": "benamlis",
-    "points": 335
-  },
-  {
-    "rank": 230,
+    "rank": 232,
     "username": "lobonegron55",
     "points": 330
   },
   {
-    "rank": 231,
+    "rank": 233,
     "username": "lachiiche",
     "points": 330
   },
   {
-    "rank": 232,
+    "rank": 234,
     "username": "ziomalixx",
     "points": 325
   },
   {
-    "rank": 233,
-    "username": "solo_al0ne",
-    "points": 325
-  },
-  {
-    "rank": 234,
+    "rank": 235,
     "username": "frezzy41",
     "points": 325
   },
   {
-    "rank": 235,
+    "rank": 236,
     "username": "ennkiiy",
     "points": 325
   },
   {
-    "rank": 236,
+    "rank": 237,
     "username": "zedetro",
     "points": 320
   },
   {
-    "rank": 237,
+    "rank": 238,
     "username": "dvl1x99",
     "points": 320
   },
   {
-    "rank": 238,
+    "rank": 239,
     "username": "djoubeyr",
     "points": 320
   },
   {
-    "rank": 239,
+    "rank": 240,
     "username": "ahmedhabibdh09",
     "points": 320
   },
   {
-    "rank": 240,
+    "rank": 241,
     "username": "cressy_007",
     "points": 315
   },
   {
-    "rank": 241,
+    "rank": 242,
     "username": "marshall_dark2",
     "points": 310
   },
   {
-    "rank": 242,
-    "username": "kerjybeuxy",
-    "points": 310
-  },
-  {
     "rank": 243,
-    "username": "kamattchi",
+    "username": "kerjybeuxy",
     "points": 310
   },
   {
@@ -1591,172 +1591,172 @@
   },
   {
     "rank": 319,
+    "username": "kaidobtwcs2",
+    "points": 230
+  },
+  {
+    "rank": 320,
     "username": "piwiiiiii",
     "points": 225
   },
   {
-    "rank": 320,
+    "rank": 321,
     "username": "pinglele",
     "points": 225
   },
   {
-    "rank": 321,
+    "rank": 322,
     "username": "moh_tfc",
     "points": 225
   },
   {
-    "rank": 322,
+    "rank": 323,
     "username": "mikocs0",
     "points": 225
   },
   {
-    "rank": 323,
+    "rank": 324,
     "username": "ctrl0001",
     "points": 225
   },
   {
-    "rank": 324,
+    "rank": 325,
     "username": "yassssinnnnnn",
     "points": 220
   },
   {
-    "rank": 325,
+    "rank": 326,
     "username": "redak310",
     "points": 220
   },
   {
-    "rank": 326,
+    "rank": 327,
     "username": "nwer92",
     "points": 220
   },
   {
-    "rank": 327,
+    "rank": 328,
     "username": "n1zeim",
     "points": 220
   },
   {
-    "rank": 328,
+    "rank": 329,
     "username": "chernnobylsos",
     "points": 220
   },
   {
-    "rank": 329,
+    "rank": 330,
     "username": "anis_bendjama",
     "points": 220
   },
   {
-    "rank": 330,
+    "rank": 331,
     "username": "victen2706",
     "points": 215
   },
   {
-    "rank": 331,
+    "rank": 332,
     "username": "seashadow77",
     "points": 215
   },
   {
-    "rank": 332,
+    "rank": 333,
     "username": "idrisysss",
     "points": 215
   },
   {
-    "rank": 333,
+    "rank": 334,
     "username": "younghabibigspot",
     "points": 210
   },
   {
-    "rank": 334,
+    "rank": 335,
     "username": "tr1ckyssss",
     "points": 210
   },
   {
-    "rank": 335,
+    "rank": 336,
     "username": "rovoftww",
     "points": 210
   },
   {
-    "rank": 336,
+    "rank": 337,
     "username": "nordincsgo",
     "points": 210
   },
   {
-    "rank": 337,
+    "rank": 338,
     "username": "moncef__k",
     "points": 210
   },
   {
-    "rank": 338,
+    "rank": 339,
     "username": "moigdzsvb",
     "points": 210
   },
   {
-    "rank": 339,
+    "rank": 340,
     "username": "haniysref",
     "points": 210
   },
   {
-    "rank": 340,
+    "rank": 341,
     "username": "pandaseatwhat",
     "points": 205
   },
   {
-    "rank": 341,
+    "rank": 342,
     "username": "its_volcano_",
     "points": 205
   },
   {
-    "rank": 342,
+    "rank": 343,
     "username": "achour322",
     "points": 205
   },
   {
-    "rank": 343,
+    "rank": 344,
     "username": "younesbmca",
     "points": 200
   },
   {
-    "rank": 344,
+    "rank": 345,
     "username": "wily_rll",
     "points": 200
   },
   {
-    "rank": 345,
+    "rank": 346,
     "username": "whoaminotsurebutnotabot",
     "points": 200
   },
   {
-    "rank": 346,
+    "rank": 347,
     "username": "taz",
     "points": 200
   },
   {
-    "rank": 347,
+    "rank": 348,
     "username": "sidousd",
     "points": 200
   },
   {
-    "rank": 348,
+    "rank": 349,
     "username": "rclcj47",
     "points": 200
   },
   {
-    "rank": 349,
+    "rank": 350,
     "username": "noza",
     "points": 200
   },
   {
-    "rank": 350,
+    "rank": 351,
     "username": "markijen",
     "points": 200
   },
   {
-    "rank": 351,
-    "username": "leo",
-    "points": 200
-  },
-  {
     "rank": 352,
-    "username": "kaidobtwcs2",
+    "username": "leo",
     "points": 200
   },
   {
@@ -2631,742 +2631,742 @@
   },
   {
     "rank": 527,
-    "username": "noouunoouu",
+    "username": "ouail737",
     "points": 100
   },
   {
     "rank": 528,
-    "username": "mohamedrayanetrea",
+    "username": "noouunoouu",
     "points": 100
   },
   {
     "rank": 529,
-    "username": "mahmoudfech",
+    "username": "mohamedrayanetrea",
     "points": 100
   },
   {
     "rank": 530,
-    "username": "m1dkm",
+    "username": "mahmoudfech",
     "points": 100
   },
   {
     "rank": 531,
-    "username": "levithemlg",
+    "username": "m1dkm",
     "points": 100
   },
   {
     "rank": 532,
-    "username": "kmsiiz",
+    "username": "levithemlg",
     "points": 100
   },
   {
     "rank": 533,
-    "username": "k1m4n0",
+    "username": "kmsiiz",
     "points": 100
   },
   {
     "rank": 534,
-    "username": "joskiyprime",
+    "username": "k1m4n0",
     "points": 100
   },
   {
     "rank": 535,
-    "username": "gaxxed",
+    "username": "joskiyprime",
     "points": 100
   },
   {
     "rank": 536,
-    "username": "fuserunknow",
+    "username": "gaxxed",
     "points": 100
   },
   {
     "rank": 537,
-    "username": "etoo",
+    "username": "fuserunknow",
     "points": 100
   },
   {
     "rank": 538,
-    "username": "dj3afar",
+    "username": "etoo",
     "points": 100
   },
   {
     "rank": 539,
-    "username": "cryona",
+    "username": "dj3afar",
     "points": 100
   },
   {
     "rank": 540,
-    "username": "chikoulagrinta",
+    "username": "cryona",
     "points": 100
   },
   {
     "rank": 541,
-    "username": "bigbrain150cm",
+    "username": "chikoulagrinta",
     "points": 100
   },
   {
     "rank": 542,
-    "username": "bigbeef",
+    "username": "bigbrain150cm",
     "points": 100
   },
   {
     "rank": 543,
-    "username": "anismz",
+    "username": "bigbeef",
     "points": 100
   },
   {
     "rank": 544,
-    "username": "3awnoh",
+    "username": "anismz",
     "points": 100
   },
   {
     "rank": 545,
-    "username": "1ndra31",
+    "username": "3awnoh",
     "points": 100
   },
   {
     "rank": 546,
+    "username": "1ndra31",
+    "points": 100
+  },
+  {
+    "rank": 547,
     "username": "laminhox",
     "points": 95
   },
   {
-    "rank": 547,
-    "username": "haithemdjen",
-    "points": 95
-  },
-  {
     "rank": 548,
-    "username": "astark0007",
+    "username": "kugo20201",
     "points": 95
   },
   {
     "rank": 549,
+    "username": "haithemdjen",
+    "points": 95
+  },
+  {
+    "rank": 550,
+    "username": "astark0007",
+    "points": 95
+  },
+  {
+    "rank": 551,
     "username": "zaligou19",
     "points": 90
   },
   {
-    "rank": 550,
+    "rank": 552,
     "username": "uba333",
     "points": 90
   },
   {
-    "rank": 551,
+    "rank": 553,
     "username": "rassim_21",
     "points": 90
   },
   {
-    "rank": 552,
+    "rank": 554,
     "username": "ojopeek1",
     "points": 90
   },
   {
-    "rank": 553,
+    "rank": 555,
     "username": "msfm__",
     "points": 90
   },
   {
-    "rank": 554,
+    "rank": 556,
     "username": "lunaa_323",
     "points": 90
   },
   {
-    "rank": 555,
+    "rank": 557,
     "username": "itz_omaaar",
     "points": 90
   },
   {
-    "rank": 556,
+    "rank": 558,
     "username": "it_lamo",
     "points": 90
   },
   {
-    "rank": 557,
+    "rank": 559,
     "username": "ismail_sen31",
     "points": 90
   },
   {
-    "rank": 558,
+    "rank": 560,
     "username": "ilyawszasf",
     "points": 90
   },
   {
-    "rank": 559,
+    "rank": 561,
     "username": "iitzw4hab",
     "points": 90
   },
   {
-    "rank": 560,
+    "rank": 562,
     "username": "genzo4d",
     "points": 90
   },
   {
-    "rank": 561,
+    "rank": 563,
     "username": "faresxntares1",
     "points": 90
   },
   {
-    "rank": 562,
+    "rank": 564,
     "username": "eroxdz_x",
     "points": 90
   },
   {
-    "rank": 563,
+    "rank": 565,
     "username": "elmbr",
     "points": 90
   },
   {
-    "rank": 564,
-    "username": "craqx7",
-    "points": 90
-  },
-  {
-    "rank": 565,
-    "username": "alibengoua23",
-    "points": 90
-  },
-  {
     "rank": 566,
-    "username": "aikidoox",
+    "username": "djinnycs",
     "points": 90
   },
   {
     "rank": 567,
+    "username": "craqx7",
+    "points": 90
+  },
+  {
+    "rank": 568,
+    "username": "alibengoua23",
+    "points": 90
+  },
+  {
+    "rank": 569,
+    "username": "aikidoox",
+    "points": 90
+  },
+  {
+    "rank": 570,
     "username": "za__kii",
     "points": 85
   },
   {
-    "rank": 568,
+    "rank": 571,
     "username": "xfarouk_",
     "points": 85
   },
   {
-    "rank": 569,
+    "rank": 572,
     "username": "mohamedkaito22",
     "points": 85
   },
   {
-    "rank": 570,
+    "rank": 573,
     "username": "21lm9wd",
     "points": 85
   },
   {
-    "rank": 571,
+    "rank": 574,
     "username": "zacka01",
     "points": 80
   },
   {
-    "rank": 572,
+    "rank": 575,
     "username": "ynecu14",
     "points": 80
   },
   {
-    "rank": 573,
+    "rank": 576,
     "username": "xnoyzi",
     "points": 80
   },
   {
-    "rank": 574,
+    "rank": 577,
     "username": "wn_f",
     "points": 80
   },
   {
-    "rank": 575,
+    "rank": 578,
     "username": "wennext",
     "points": 80
   },
   {
-    "rank": 576,
+    "rank": 579,
     "username": "uebxg82",
     "points": 80
   },
   {
-    "rank": 577,
+    "rank": 580,
     "username": "toxickhs",
     "points": 80
   },
   {
-    "rank": 578,
+    "rank": 581,
     "username": "tomq9",
     "points": 80
   },
   {
-    "rank": 579,
+    "rank": 582,
     "username": "thewixyy",
     "points": 80
   },
   {
-    "rank": 580,
+    "rank": 583,
     "username": "some_games9",
     "points": 80
   },
   {
-    "rank": 581,
+    "rank": 584,
     "username": "redliner206",
     "points": 80
   },
   {
-    "rank": 582,
+    "rank": 585,
     "username": "qzqnu68",
     "points": 80
   },
   {
-    "rank": 583,
+    "rank": 586,
     "username": "qucml71",
     "points": 80
   },
   {
-    "rank": 584,
-    "username": "ouail737",
-    "points": 80
-  },
-  {
-    "rank": 585,
+    "rank": 587,
     "username": "megamad",
     "points": 80
   },
   {
-    "rank": 586,
+    "rank": 588,
     "username": "m0exxxcs",
     "points": 80
   },
   {
-    "rank": 587,
+    "rank": 589,
     "username": "hamza_exe01",
     "points": 80
   },
   {
-    "rank": 588,
+    "rank": 590,
     "username": "ha_louf",
     "points": 80
   },
   {
-    "rank": 589,
+    "rank": 591,
     "username": "gunhand141",
     "points": 80
   },
   {
-    "rank": 590,
+    "rank": 592,
     "username": "dontrylittlething",
     "points": 80
   },
   {
-    "rank": 591,
+    "rank": 593,
     "username": "daddyamineee",
     "points": 80
   },
   {
-    "rank": 592,
+    "rank": 594,
     "username": "agnost1c_",
     "points": 80
   },
   {
-    "rank": 593,
+    "rank": 595,
     "username": "aboqayyim",
     "points": 80
   },
   {
-    "rank": 594,
+    "rank": 596,
     "username": "abdexxjd",
     "points": 80
   },
   {
-    "rank": 595,
+    "rank": 597,
     "username": "abdelillah001",
     "points": 80
   },
   {
-    "rank": 596,
+    "rank": 598,
     "username": "500hamza",
     "points": 80
   },
   {
-    "rank": 597,
+    "rank": 599,
     "username": "sn000ow",
     "points": 75
   },
   {
-    "rank": 598,
+    "rank": 600,
     "username": "r1cocc",
     "points": 75
   },
   {
-    "rank": 599,
+    "rank": 601,
     "username": "lokmanecv",
     "points": 75
   },
   {
-    "rank": 600,
+    "rank": 602,
     "username": "isaac_cs2",
     "points": 75
   },
   {
-    "rank": 601,
+    "rank": 603,
     "username": "yurriz",
     "points": 70
   },
   {
-    "rank": 602,
+    "rank": 604,
     "username": "youcefbell",
     "points": 70
   },
   {
-    "rank": 603,
+    "rank": 605,
     "username": "xscar_17",
     "points": 70
   },
   {
-    "rank": 604,
+    "rank": 606,
     "username": "ufl3x_",
     "points": 70
   },
   {
-    "rank": 605,
+    "rank": 607,
     "username": "trk_jr",
     "points": 70
   },
   {
-    "rank": 606,
+    "rank": 608,
     "username": "syenxx_e4vx1",
     "points": 70
   },
   {
-    "rank": 607,
+    "rank": 609,
     "username": "samy_bs07",
     "points": 70
   },
   {
-    "rank": 608,
+    "rank": 610,
     "username": "muosa120",
     "points": 70
   },
   {
-    "rank": 609,
+    "rank": 611,
     "username": "mojo0111",
     "points": 70
   },
   {
-    "rank": 610,
+    "rank": 612,
     "username": "lazzy_zzzz",
     "points": 70
   },
   {
-    "rank": 611,
+    "rank": 613,
     "username": "kadehrakazuha",
     "points": 70
   },
   {
-    "rank": 612,
+    "rank": 614,
     "username": "frodyy_",
     "points": 70
   },
   {
-    "rank": 613,
+    "rank": 615,
     "username": "fanemask",
     "points": 70
   },
   {
-    "rank": 614,
+    "rank": 616,
     "username": "dypgo15",
     "points": 70
   },
   {
-    "rank": 615,
-    "username": "djinnycs",
-    "points": 70
-  },
-  {
-    "rank": 616,
+    "rank": 617,
     "username": "d0ctor1s",
     "points": 70
   },
   {
-    "rank": 617,
+    "rank": 618,
     "username": "brahim2133",
     "points": 70
   },
   {
-    "rank": 618,
+    "rank": 619,
     "username": "akrxxmm",
     "points": 70
   },
   {
-    "rank": 619,
+    "rank": 620,
     "username": "abogari",
     "points": 70
   },
   {
-    "rank": 620,
+    "rank": 621,
     "username": "abdo3552",
     "points": 70
   },
   {
-    "rank": 621,
+    "rank": 622,
     "username": "1skayer1",
     "points": 70
   },
   {
-    "rank": 622,
+    "rank": 623,
     "username": "skitzo23000",
     "points": 65
   },
   {
-    "rank": 623,
+    "rank": 624,
     "username": "sir_astra",
     "points": 65
   },
   {
-    "rank": 624,
+    "rank": 625,
     "username": "revenge272",
     "points": 65
   },
   {
-    "rank": 625,
+    "rank": 626,
     "username": "imadbelalia",
     "points": 65
   },
   {
-    "rank": 626,
+    "rank": 627,
     "username": "fidz_val",
     "points": 65
   },
   {
-    "rank": 627,
+    "rank": 628,
     "username": "cs_moha07",
     "points": 65
   },
   {
-    "rank": 628,
+    "rank": 629,
     "username": "yassinejuve",
     "points": 60
   },
   {
-    "rank": 629,
+    "rank": 630,
     "username": "yasser_dzf",
     "points": 60
   },
   {
-    "rank": 630,
+    "rank": 631,
     "username": "yanni_benjibro",
     "points": 60
   },
   {
-    "rank": 631,
+    "rank": 632,
     "username": "vvolvixx",
     "points": 60
   },
   {
-    "rank": 632,
+    "rank": 633,
     "username": "voidreasoning",
     "points": 60
   },
   {
-    "rank": 633,
+    "rank": 634,
     "username": "verdeleone",
     "points": 60
   },
   {
-    "rank": 634,
+    "rank": 635,
     "username": "tpp_d_a_d",
     "points": 60
   },
   {
-    "rank": 635,
+    "rank": 636,
     "username": "tonygoldmoney",
     "points": 60
   },
   {
-    "rank": 636,
+    "rank": 637,
     "username": "thekingbibou",
     "points": 60
   },
   {
-    "rank": 637,
+    "rank": 638,
     "username": "tenmah_",
     "points": 60
   },
   {
-    "rank": 638,
+    "rank": 639,
     "username": "snoopiii213",
     "points": 60
   },
   {
-    "rank": 639,
+    "rank": 640,
     "username": "sinoyac",
     "points": 60
   },
   {
-    "rank": 640,
+    "rank": 641,
     "username": "shanksmvpp",
     "points": 60
   },
   {
-    "rank": 641,
+    "rank": 642,
     "username": "sh000g",
     "points": 60
   },
   {
-    "rank": 642,
+    "rank": 643,
     "username": "samichergui",
     "points": 60
   },
   {
-    "rank": 643,
+    "rank": 644,
     "username": "sabirblackhand",
     "points": 60
   },
   {
-    "rank": 644,
+    "rank": 645,
     "username": "riful999",
     "points": 60
   },
   {
-    "rank": 645,
+    "rank": 646,
     "username": "pushem1",
     "points": 60
   },
   {
-    "rank": 646,
+    "rank": 647,
     "username": "pimod11",
     "points": 60
   },
   {
-    "rank": 647,
+    "rank": 648,
     "username": "oddx1",
     "points": 60
   },
   {
-    "rank": 648,
+    "rank": 649,
     "username": "mehdith1337",
     "points": 60
   },
   {
-    "rank": 649,
+    "rank": 650,
     "username": "mehdilch31",
     "points": 60
   },
   {
-    "rank": 650,
+    "rank": 651,
     "username": "marlboroo4",
     "points": 60
   },
   {
-    "rank": 651,
+    "rank": 652,
     "username": "mahdi_sediri",
     "points": 60
   },
   {
-    "rank": 652,
+    "rank": 653,
     "username": "louaicht",
     "points": 60
   },
   {
-    "rank": 653,
+    "rank": 654,
     "username": "khaled_xyz",
     "points": 60
   },
   {
-    "rank": 654,
+    "rank": 655,
     "username": "justqexshaqs",
     "points": 60
   },
   {
-    "rank": 655,
+    "rank": 656,
     "username": "issbe13",
     "points": 60
   },
   {
-    "rank": 656,
+    "rank": 657,
     "username": "iinemsis",
     "points": 60
   },
   {
-    "rank": 657,
+    "rank": 658,
     "username": "hayden_dz",
     "points": 60
   },
   {
-    "rank": 658,
+    "rank": 659,
     "username": "gmc_adawi",
     "points": 60
   },
   {
-    "rank": 659,
+    "rank": 660,
     "username": "elhasniiiu",
     "points": 60
   },
   {
-    "rank": 660,
+    "rank": 661,
     "username": "dexterys666",
     "points": 60
   },
   {
-    "rank": 661,
+    "rank": 662,
     "username": "cptbarboossa",
     "points": 60
   },
   {
-    "rank": 662,
+    "rank": 663,
     "username": "amyyne2r",
     "points": 60
   },
   {
-    "rank": 663,
+    "rank": 664,
     "username": "amrane2k",
     "points": 60
   },
   {
-    "rank": 664,
+    "rank": 665,
     "username": "akr1mmmmm",
     "points": 60
   },
   {
-    "rank": 665,
+    "rank": 666,
     "username": "adem3016",
     "points": 60
   },
   {
-    "rank": 666,
+    "rank": 667,
     "username": "abduuh88",
     "points": 60
   },
   {
-    "rank": 667,
+    "rank": 668,
     "username": "abdoucrf1337",
     "points": 60
   },
   {
-    "rank": 668,
+    "rank": 669,
     "username": "0ghoosty",
     "points": 60
   },
   {
-    "rank": 669,
+    "rank": 670,
     "username": "tbvibe",
     "points": 55
   },
   {
-    "rank": 670,
+    "rank": 671,
     "username": "samkun22",
     "points": 55
   },
   {
-    "rank": 671,
+    "rank": 672,
     "username": "ridakch",
     "points": 55
   },
   {
-    "rank": 672,
+    "rank": 673,
     "username": "noirmr",
     "points": 55
   },
   {
-    "rank": 673,
-    "username": "nadir23kiki",
-    "points": 55
-  },
-  {
     "rank": 674,
-    "username": "kugo20201",
+    "username": "nadir23kiki",
     "points": 55
   },
   {
@@ -3821,3116 +3821,3141 @@
   },
   {
     "rank": 765,
-    "username": "hafid1313",
+    "username": "hamodaxtv",
     "points": 40
   },
   {
     "rank": 766,
-    "username": "gutsuu007",
+    "username": "hafid1313",
     "points": 40
   },
   {
     "rank": 767,
-    "username": "guizmou_993",
+    "username": "gutsuu007",
     "points": 40
   },
   {
     "rank": 768,
-    "username": "enarmazz",
+    "username": "guizmou_993",
     "points": 40
   },
   {
     "rank": 769,
-    "username": "dzratata_",
+    "username": "enarmazz",
     "points": 40
   },
   {
     "rank": 770,
-    "username": "dzouss_off",
+    "username": "dzratata_",
     "points": 40
   },
   {
     "rank": 771,
-    "username": "dvm_beasty",
+    "username": "dzouss_off",
     "points": 40
   },
   {
     "rank": 772,
-    "username": "drooooooooooooooox",
+    "username": "dvm_beasty",
     "points": 40
   },
   {
     "rank": 773,
-    "username": "drapa__",
+    "username": "drooooooooooooooox",
     "points": 40
   },
   {
     "rank": 774,
-    "username": "donnnx1",
+    "username": "drapa__",
     "points": 40
   },
   {
     "rank": 775,
-    "username": "d7oom11744",
+    "username": "donnnx1",
     "points": 40
   },
   {
     "rank": 776,
-    "username": "ctyhu56",
+    "username": "d7oom11744",
     "points": 40
   },
   {
     "rank": 777,
-    "username": "clark_1402",
+    "username": "ctyhu56",
     "points": 40
   },
   {
     "rank": 778,
-    "username": "ckr0n0s",
+    "username": "clark_1402",
     "points": 40
   },
   {
     "rank": 779,
-    "username": "cfmpq55",
+    "username": "ckr0n0s",
     "points": 40
   },
   {
     "rank": 780,
-    "username": "bylka141",
+    "username": "cfmpq55",
     "points": 40
   },
   {
     "rank": 781,
-    "username": "benbilal1",
+    "username": "bylka141",
     "points": 40
   },
   {
     "rank": 782,
-    "username": "bachirchek16",
+    "username": "benbilal1",
     "points": 40
   },
   {
     "rank": 783,
-    "username": "ayoub_bh_j",
+    "username": "bachirchek16",
     "points": 40
   },
   {
     "rank": 784,
-    "username": "atgxj",
+    "username": "ayoub_bh_j",
     "points": 40
   },
   {
     "rank": 785,
-    "username": "arthur_leyw1in",
+    "username": "atgxj",
     "points": 40
   },
   {
     "rank": 786,
-    "username": "amirfdl",
+    "username": "arthur_leyw1in",
     "points": 40
   },
   {
     "rank": 787,
-    "username": "aminetcheva",
+    "username": "amirfdl",
     "points": 40
   },
   {
     "rank": 788,
-    "username": "abdeldjabar005",
+    "username": "aminetcheva",
     "points": 40
   },
   {
     "rank": 789,
-    "username": "5533445",
+    "username": "abdeldjabar005",
     "points": 40
   },
   {
     "rank": 790,
-    "username": "456qc",
+    "username": "5533445",
     "points": 40
   },
   {
     "rank": 791,
-    "username": "23kalim",
+    "username": "456qc",
     "points": 40
   },
   {
     "rank": 792,
-    "username": "1mad_b",
+    "username": "23kalim",
     "points": 40
   },
   {
     "rank": 793,
+    "username": "1mad_b",
+    "points": 40
+  },
+  {
+    "rank": 794,
     "username": "shawnycs",
     "points": 35
   },
   {
-    "rank": 794,
+    "rank": 795,
     "username": "romario_arx",
     "points": 35
   },
   {
-    "rank": 795,
+    "rank": 796,
     "username": "mansourbrother",
     "points": 35
   },
   {
-    "rank": 796,
+    "rank": 797,
     "username": "kilog0",
     "points": 35
   },
   {
-    "rank": 797,
+    "rank": 798,
     "username": "hugfuyu",
     "points": 35
   },
   {
-    "rank": 798,
+    "rank": 799,
     "username": "adelamirats",
     "points": 35
   },
   {
-    "rank": 799,
+    "rank": 800,
     "username": "ziaaad__",
     "points": 30
   },
   {
-    "rank": 800,
+    "rank": 801,
     "username": "yamiikokoro",
     "points": 30
   },
   {
-    "rank": 801,
+    "rank": 802,
     "username": "xsprinterr",
     "points": 30
   },
   {
-    "rank": 802,
+    "rank": 803,
     "username": "xo989",
     "points": 30
   },
   {
-    "rank": 803,
+    "rank": 804,
     "username": "xkfai45",
     "points": 30
   },
   {
-    "rank": 804,
+    "rank": 805,
     "username": "xiii_zz",
     "points": 30
   },
   {
-    "rank": 805,
+    "rank": 806,
     "username": "x7_twizzy_x7",
     "points": 30
   },
   {
-    "rank": 806,
+    "rank": 807,
     "username": "wvjor80",
     "points": 30
   },
   {
-    "rank": 807,
+    "rank": 808,
     "username": "wiizard2047",
     "points": 30
   },
   {
-    "rank": 808,
+    "rank": 809,
     "username": "userrayoub",
     "points": 30
   },
   {
-    "rank": 809,
+    "rank": 810,
     "username": "udqtj16",
     "points": 30
   },
   {
-    "rank": 810,
+    "rank": 811,
     "username": "tyw1n_",
     "points": 30
   },
   {
-    "rank": 811,
+    "rank": 812,
     "username": "turb0dz",
     "points": 30
   },
   {
-    "rank": 812,
+    "rank": 813,
     "username": "tokachanz1",
     "points": 30
   },
   {
-    "rank": 813,
+    "rank": 814,
     "username": "taharllllllllll",
     "points": 30
   },
   {
-    "rank": 814,
+    "rank": 815,
     "username": "tadus23",
     "points": 30
   },
   {
-    "rank": 815,
+    "rank": 816,
     "username": "strypezy",
     "points": 30
   },
   {
-    "rank": 816,
+    "rank": 817,
     "username": "stigmv1_1",
     "points": 30
   },
   {
-    "rank": 817,
+    "rank": 818,
     "username": "srt_redeye",
     "points": 30
   },
   {
-    "rank": 818,
+    "rank": 819,
     "username": "sprtch23",
     "points": 30
   },
   {
-    "rank": 819,
+    "rank": 820,
     "username": "solomeisty",
     "points": 30
   },
   {
-    "rank": 820,
+    "rank": 821,
     "username": "sinvoztienevoz",
     "points": 30
   },
   {
-    "rank": 821,
+    "rank": 822,
     "username": "sevorek7k",
     "points": 30
   },
   {
-    "rank": 822,
+    "rank": 823,
     "username": "samialjehni",
     "points": 30
   },
   {
-    "rank": 823,
+    "rank": 824,
     "username": "ryadplays",
     "points": 30
   },
   {
-    "rank": 824,
+    "rank": 825,
     "username": "robbencs",
     "points": 30
   },
   {
-    "rank": 825,
+    "rank": 826,
     "username": "raouf_26_",
     "points": 30
   },
   {
-    "rank": 826,
+    "rank": 827,
     "username": "raa3da_gaming",
     "points": 30
   },
   {
-    "rank": 827,
+    "rank": 828,
     "username": "r2off",
     "points": 30
   },
   {
-    "rank": 828,
+    "rank": 829,
     "username": "psycho6662k",
     "points": 30
   },
   {
-    "rank": 829,
+    "rank": 830,
     "username": "proxy632",
     "points": 30
   },
   {
-    "rank": 830,
+    "rank": 831,
     "username": "poupc37",
     "points": 30
   },
   {
-    "rank": 831,
+    "rank": 832,
     "username": "pgyjv20",
     "points": 30
   },
   {
-    "rank": 832,
+    "rank": 833,
     "username": "pencroffff",
     "points": 30
   },
   {
-    "rank": 833,
+    "rank": 834,
     "username": "painkillerxxd",
     "points": 30
   },
   {
-    "rank": 834,
+    "rank": 835,
     "username": "oxapk60",
     "points": 30
   },
   {
-    "rank": 835,
+    "rank": 836,
     "username": "nokgp43",
     "points": 30
   },
   {
-    "rank": 836,
+    "rank": 837,
     "username": "neutralized15",
     "points": 30
   },
   {
-    "rank": 837,
+    "rank": 838,
     "username": "nanny69wewe",
     "points": 30
   },
   {
-    "rank": 838,
+    "rank": 839,
     "username": "namyaaaaaa",
     "points": 30
   },
   {
-    "rank": 839,
+    "rank": 840,
     "username": "n1xxim",
     "points": 30
   },
   {
-    "rank": 840,
+    "rank": 841,
     "username": "n11223344556688",
     "points": 30
   },
   {
-    "rank": 841,
+    "rank": 842,
     "username": "mvrcinhoo",
     "points": 30
   },
   {
-    "rank": 842,
+    "rank": 843,
     "username": "mqkhx50",
     "points": 30
   },
   {
-    "rank": 843,
+    "rank": 844,
     "username": "minou_dz41",
     "points": 30
   },
   {
-    "rank": 844,
+    "rank": 845,
     "username": "milionghost",
     "points": 30
   },
   {
-    "rank": 845,
+    "rank": 846,
     "username": "mhamed_el02k",
     "points": 30
   },
   {
-    "rank": 846,
+    "rank": 847,
     "username": "mayacin",
     "points": 30
   },
   {
-    "rank": 847,
+    "rank": 848,
     "username": "marishka0028",
     "points": 30
   },
   {
-    "rank": 848,
+    "rank": 849,
     "username": "manq_br0",
     "points": 30
   },
   {
-    "rank": 849,
+    "rank": 850,
     "username": "malekbdn",
     "points": 30
   },
   {
-    "rank": 850,
+    "rank": 851,
     "username": "madjid_smail",
     "points": 30
   },
   {
-    "rank": 851,
+    "rank": 852,
     "username": "maaaadox",
     "points": 30
   },
   {
-    "rank": 852,
+    "rank": 853,
     "username": "m1__cs",
     "points": 30
   },
   {
-    "rank": 853,
+    "rank": 854,
     "username": "laveriidad",
     "points": 30
   },
   {
-    "rank": 854,
+    "rank": 855,
     "username": "lamine_2k",
     "points": 30
   },
   {
-    "rank": 855,
+    "rank": 856,
     "username": "lambdacorecs",
     "points": 30
   },
   {
-    "rank": 856,
+    "rank": 857,
     "username": "laith_ts1",
     "points": 30
   },
   {
-    "rank": 857,
+    "rank": 858,
     "username": "kocey_",
     "points": 30
   },
   {
-    "rank": 858,
+    "rank": 859,
     "username": "josephibk",
     "points": 30
   },
   {
-    "rank": 859,
+    "rank": 860,
     "username": "ittaaachii",
     "points": 30
   },
   {
-    "rank": 860,
+    "rank": 861,
     "username": "itssverith",
     "points": 30
   },
   {
-    "rank": 861,
+    "rank": 862,
     "username": "ianger2",
     "points": 30
   },
   {
-    "rank": 862,
+    "rank": 863,
     "username": "hichemtm1993",
     "points": 30
   },
   {
-    "rank": 863,
+    "rank": 864,
     "username": "fk_litos",
     "points": 30
   },
   {
-    "rank": 864,
+    "rank": 865,
     "username": "dz8punisher",
     "points": 30
   },
   {
-    "rank": 865,
+    "rank": 866,
     "username": "debaba23",
     "points": 30
   },
   {
-    "rank": 866,
+    "rank": 867,
     "username": "dali172",
     "points": 30
   },
   {
-    "rank": 867,
+    "rank": 868,
     "username": "cbrg2077",
     "points": 30
   },
   {
-    "rank": 868,
-    "username": "astraxdz",
-    "points": 30
-  },
-  {
     "rank": 869,
-    "username": "anoxwastaken",
+    "username": "bag1raaaa",
     "points": 30
   },
   {
     "rank": 870,
-    "username": "allaswrld",
+    "username": "astraxdz",
     "points": 30
   },
   {
     "rank": 871,
-    "username": "albertonothere",
+    "username": "anoxwastaken",
     "points": 30
   },
   {
     "rank": 872,
-    "username": "al_3toani",
+    "username": "allaswrld",
     "points": 30
   },
   {
     "rank": 873,
-    "username": "adamscan_33",
+    "username": "albertonothere",
     "points": 30
   },
   {
     "rank": 874,
-    "username": "abdou_kr00",
+    "username": "al_3toani",
     "points": 30
   },
   {
     "rank": 875,
-    "username": "abdennouraf",
+    "username": "adamscan_33",
     "points": 30
   },
   {
     "rank": 876,
-    "username": "9wi9iza33",
+    "username": "abdou_kr00",
     "points": 30
   },
   {
     "rank": 877,
-    "username": "213viracci",
+    "username": "abdennouraf",
     "points": 30
   },
   {
     "rank": 878,
+    "username": "9wi9iza33",
+    "points": 30
+  },
+  {
+    "rank": 879,
+    "username": "213viracci",
+    "points": 30
+  },
+  {
+    "rank": 880,
     "username": "ymohaaa",
     "points": 25
   },
   {
-    "rank": 879,
+    "rank": 881,
     "username": "x0jar",
     "points": 25
   },
   {
-    "rank": 880,
+    "rank": 882,
     "username": "tackling",
     "points": 25
   },
   {
-    "rank": 881,
+    "rank": 883,
     "username": "t0ux_",
     "points": 25
   },
   {
-    "rank": 882,
+    "rank": 884,
     "username": "rosski_141",
     "points": 25
   },
   {
-    "rank": 883,
+    "rank": 885,
     "username": "rayane_trea",
     "points": 25
   },
   {
-    "rank": 884,
+    "rank": 886,
     "username": "r4ptor_101",
     "points": 25
   },
   {
-    "rank": 885,
+    "rank": 887,
     "username": "nasser__king1",
     "points": 25
   },
   {
-    "rank": 886,
+    "rank": 888,
     "username": "mnr_cs",
     "points": 25
   },
   {
-    "rank": 887,
+    "rank": 889,
     "username": "iwa24",
     "points": 25
   },
   {
-    "rank": 888,
+    "rank": 890,
     "username": "dadi3333",
     "points": 25
   },
   {
-    "rank": 889,
+    "rank": 891,
     "username": "ahmed_bsz",
     "points": 25
   },
   {
-    "rank": 890,
+    "rank": 892,
     "username": "zxdak63",
     "points": 20
   },
   {
-    "rank": 891,
+    "rank": 893,
     "username": "zvinga_",
     "points": 20
   },
   {
-    "rank": 892,
+    "rank": 894,
     "username": "ziedd44",
     "points": 20
   },
   {
-    "rank": 893,
+    "rank": 895,
     "username": "zaki09_",
     "points": 20
   },
   {
-    "rank": 894,
+    "rank": 896,
     "username": "z0kkorra",
     "points": 20
   },
   {
-    "rank": 895,
+    "rank": 897,
     "username": "younes_mk9",
     "points": 20
   },
   {
-    "rank": 896,
+    "rank": 898,
     "username": "youccef_kel",
     "points": 20
   },
   {
-    "rank": 897,
+    "rank": 899,
     "username": "yfz_dzikkoo",
     "points": 20
   },
   {
-    "rank": 898,
+    "rank": 900,
     "username": "xrdnx",
     "points": 20
   },
   {
-    "rank": 899,
+    "rank": 901,
     "username": "xakt_",
     "points": 20
   },
   {
-    "rank": 900,
+    "rank": 902,
     "username": "wxymunson",
     "points": 20
   },
   {
-    "rank": 901,
+    "rank": 903,
     "username": "witchy40k",
     "points": 20
   },
   {
-    "rank": 902,
+    "rank": 904,
     "username": "vosterx",
     "points": 20
   },
   {
-    "rank": 903,
+    "rank": 905,
     "username": "urnay72",
     "points": 20
   },
   {
-    "rank": 904,
+    "rank": 906,
     "username": "uk133",
     "points": 20
   },
   {
-    "rank": 905,
+    "rank": 907,
     "username": "ufduk43",
     "points": 20
   },
   {
-    "rank": 906,
+    "rank": 908,
     "username": "ubxtf50",
     "points": 20
   },
   {
-    "rank": 907,
+    "rank": 909,
     "username": "tyzizx888",
     "points": 20
   },
   {
-    "rank": 908,
+    "rank": 910,
     "username": "twixvdff",
     "points": 20
   },
   {
-    "rank": 909,
+    "rank": 911,
     "username": "twixum",
     "points": 20
   },
   {
-    "rank": 910,
+    "rank": 912,
     "username": "twaung13",
     "points": 20
   },
   {
-    "rank": 911,
+    "rank": 913,
     "username": "turttle_62",
     "points": 20
   },
   {
-    "rank": 912,
+    "rank": 914,
     "username": "tsteadz",
     "points": 20
   },
   {
-    "rank": 913,
+    "rank": 915,
     "username": "tlbaz15",
     "points": 20
   },
   {
-    "rank": 914,
+    "rank": 916,
     "username": "theone5237",
     "points": 20
   },
   {
-    "rank": 915,
+    "rank": 917,
     "username": "the_boss_dz",
     "points": 20
   },
   {
-    "rank": 916,
+    "rank": 918,
     "username": "tchayniz",
     "points": 20
   },
   {
-    "rank": 917,
+    "rank": 919,
     "username": "spykerr56",
     "points": 20
   },
   {
-    "rank": 918,
+    "rank": 920,
     "username": "solanobest",
     "points": 20
   },
   {
-    "rank": 919,
+    "rank": 921,
     "username": "sneakyyy01",
     "points": 20
   },
   {
-    "rank": 920,
+    "rank": 922,
     "username": "smileleleley",
     "points": 20
   },
   {
-    "rank": 921,
+    "rank": 923,
     "username": "slavmonkeey",
     "points": 20
   },
   {
-    "rank": 922,
+    "rank": 924,
     "username": "sktrecon",
     "points": 20
   },
   {
-    "rank": 923,
+    "rank": 925,
     "username": "sirinellez",
     "points": 20
   },
   {
-    "rank": 924,
+    "rank": 926,
     "username": "sidouxlrbb",
     "points": 20
   },
   {
-    "rank": 925,
+    "rank": 927,
     "username": "sicko20201",
     "points": 20
   },
   {
-    "rank": 926,
+    "rank": 928,
     "username": "shee_kuu",
     "points": 20
   },
   {
-    "rank": 927,
+    "rank": 929,
     "username": "shd_ma_",
     "points": 20
   },
   {
-    "rank": 928,
+    "rank": 930,
     "username": "salvadorbkk",
     "points": 20
   },
   {
-    "rank": 929,
+    "rank": 931,
     "username": "saimondz",
     "points": 20
   },
   {
-    "rank": 930,
+    "rank": 932,
     "username": "saidben777",
     "points": 20
   },
   {
-    "rank": 931,
+    "rank": 933,
     "username": "ryirx35",
     "points": 20
   },
   {
-    "rank": 932,
+    "rank": 934,
     "username": "rostom_23ydy",
     "points": 20
   },
   {
-    "rank": 933,
+    "rank": 935,
     "username": "ridha30",
     "points": 20
   },
   {
-    "rank": 934,
+    "rank": 936,
     "username": "reggaez09",
     "points": 20
   },
   {
-    "rank": 935,
+    "rank": 937,
     "username": "rayan7433",
     "points": 20
   },
   {
-    "rank": 936,
+    "rank": 938,
     "username": "raphael7991",
     "points": 20
   },
   {
-    "rank": 937,
+    "rank": 939,
     "username": "rahimenzo25",
     "points": 20
   },
   {
-    "rank": 938,
+    "rank": 940,
     "username": "rahim21savage",
     "points": 20
   },
   {
-    "rank": 939,
+    "rank": 941,
     "username": "r3ktorin0",
     "points": 20
   },
   {
-    "rank": 940,
+    "rank": 942,
     "username": "pggcs2",
     "points": 20
   },
   {
-    "rank": 941,
+    "rank": 943,
     "username": "pboiadel",
     "points": 20
   },
   {
-    "rank": 942,
+    "rank": 944,
     "username": "pashka_0303",
     "points": 20
   },
   {
-    "rank": 943,
+    "rank": 945,
     "username": "oussamaben0",
     "points": 20
   },
   {
-    "rank": 944,
+    "rank": 946,
     "username": "othmanzyou",
     "points": 20
   },
   {
-    "rank": 945,
+    "rank": 947,
     "username": "otbtq08",
     "points": 20
   },
   {
-    "rank": 946,
+    "rank": 948,
     "username": "onev3s",
     "points": 20
   },
   {
-    "rank": 947,
+    "rank": 949,
     "username": "omar05gamer",
     "points": 20
   },
   {
-    "rank": 948,
+    "rank": 950,
     "username": "nxhmq61",
     "points": 20
   },
   {
-    "rank": 949,
+    "rank": 951,
     "username": "nightbot",
     "points": 20
   },
   {
-    "rank": 950,
+    "rank": 952,
     "username": "nidhal2k",
     "points": 20
   },
   {
-    "rank": 951,
+    "rank": 953,
     "username": "nb_xfps",
     "points": 20
   },
   {
-    "rank": 952,
+    "rank": 954,
     "username": "naifajme",
     "points": 20
   },
   {
-    "rank": 953,
+    "rank": 955,
     "username": "mouadxd08",
     "points": 20
   },
   {
-    "rank": 954,
+    "rank": 956,
     "username": "monsterje_rl",
     "points": 20
   },
   {
-    "rank": 955,
+    "rank": 957,
     "username": "moh123ff",
     "points": 20
   },
   {
-    "rank": 956,
+    "rank": 958,
     "username": "marouanbenko",
     "points": 20
   },
   {
-    "rank": 957,
+    "rank": 959,
     "username": "malikz__",
     "points": 20
   },
   {
-    "rank": 958,
+    "rank": 960,
     "username": "magentadz",
     "points": 20
   },
   {
-    "rank": 959,
+    "rank": 961,
     "username": "m8kaiser",
     "points": 20
   },
   {
-    "rank": 960,
+    "rank": 962,
     "username": "lpomada_safra",
     "points": 20
   },
   {
-    "rank": 961,
+    "rank": 963,
     "username": "looq01011",
     "points": 20
   },
   {
-    "rank": 962,
+    "rank": 964,
     "username": "logic_g0",
     "points": 20
   },
   {
-    "rank": 963,
+    "rank": 965,
     "username": "lmoh1337",
     "points": 20
   },
   {
-    "rank": 964,
+    "rank": 966,
     "username": "lmarru",
     "points": 20
   },
   {
-    "rank": 965,
+    "rank": 967,
     "username": "llitchi99",
     "points": 20
   },
   {
-    "rank": 966,
+    "rank": 968,
     "username": "lighthood_",
     "points": 20
   },
   {
-    "rank": 967,
+    "rank": 969,
     "username": "khaled_aka19",
     "points": 20
   },
   {
-    "rank": 968,
+    "rank": 970,
     "username": "kgbey31",
     "points": 20
   },
   {
-    "rank": 969,
+    "rank": 971,
     "username": "kdyow75",
     "points": 20
   },
   {
-    "rank": 970,
+    "rank": 972,
     "username": "k4d0ur1",
     "points": 20
   },
   {
-    "rank": 971,
+    "rank": 973,
     "username": "juanbessssi",
     "points": 20
   },
   {
-    "rank": 972,
+    "rank": 974,
     "username": "jackrabbit_0",
     "points": 20
   },
   {
-    "rank": 973,
+    "rank": 975,
     "username": "ivanlealsanchez",
     "points": 20
   },
   {
-    "rank": 974,
+    "rank": 976,
     "username": "its__gohan",
     "points": 20
   },
   {
-    "rank": 975,
+    "rank": 977,
     "username": "is71k",
     "points": 20
   },
   {
-    "rank": 976,
+    "rank": 978,
     "username": "immortalllx",
     "points": 20
   },
   {
-    "rank": 977,
+    "rank": 979,
     "username": "iikou",
     "points": 20
   },
   {
-    "rank": 978,
+    "rank": 980,
     "username": "ihebhrg",
     "points": 20
   },
   {
-    "rank": 979,
+    "rank": 981,
     "username": "igoop9",
     "points": 20
   },
   {
-    "rank": 980,
+    "rank": 982,
     "username": "ibrahim8hm",
     "points": 20
   },
   {
-    "rank": 981,
+    "rank": 983,
     "username": "hugo0ooz",
     "points": 20
   },
   {
-    "rank": 982,
+    "rank": 984,
     "username": "horizonluis",
     "points": 20
   },
   {
-    "rank": 983,
+    "rank": 985,
     "username": "hixzoleet",
     "points": 20
   },
   {
-    "rank": 984,
+    "rank": 986,
     "username": "hil3n47",
     "points": 20
   },
   {
-    "rank": 985,
+    "rank": 987,
     "username": "hidiiiiiiii",
     "points": 20
   },
   {
-    "rank": 986,
-    "username": "hamodaxtv",
-    "points": 20
-  },
-  {
-    "rank": 987,
+    "rank": 988,
     "username": "haithem_dzz",
     "points": 20
   },
   {
-    "rank": 988,
+    "rank": 989,
     "username": "haidrean",
     "points": 20
   },
   {
-    "rank": 989,
+    "rank": 990,
     "username": "h7csgo",
     "points": 20
   },
   {
-    "rank": 990,
+    "rank": 991,
     "username": "h0sssin",
     "points": 20
   },
   {
-    "rank": 991,
+    "rank": 992,
     "username": "griim11",
     "points": 20
   },
   {
-    "rank": 992,
+    "rank": 993,
     "username": "geazy_for_fans",
     "points": 20
   },
   {
-    "rank": 993,
+    "rank": 994,
     "username": "gaf_0",
     "points": 20
   },
   {
-    "rank": 994,
+    "rank": 995,
     "username": "fuzns15",
     "points": 20
   },
   {
-    "rank": 995,
+    "rank": 996,
     "username": "foibah",
     "points": 20
   },
   {
-    "rank": 996,
+    "rank": 997,
     "username": "fngyp",
     "points": 20
   },
   {
-    "rank": 997,
+    "rank": 998,
     "username": "flokiloki1",
     "points": 20
   },
   {
-    "rank": 998,
+    "rank": 999,
     "username": "fiksux",
     "points": 20
   },
   {
-    "rank": 999,
+    "rank": 1000,
     "username": "fayssal111",
     "points": 20
   },
   {
-    "rank": 1000,
+    "rank": 1001,
     "username": "epic0le114",
     "points": 20
   },
   {
-    "rank": 1001,
+    "rank": 1002,
     "username": "eloxxn",
     "points": 20
   },
   {
-    "rank": 1002,
+    "rank": 1003,
     "username": "elgenerald",
     "points": 20
   },
   {
-    "rank": 1003,
+    "rank": 1004,
     "username": "ejzts33",
     "points": 20
   },
   {
-    "rank": 1004,
+    "rank": 1005,
     "username": "dzieuba",
     "points": 20
   },
   {
-    "rank": 1005,
+    "rank": 1006,
     "username": "dtxip05",
     "points": 20
   },
   {
-    "rank": 1006,
+    "rank": 1007,
     "username": "drxprooo",
     "points": 20
   },
   {
-    "rank": 1007,
+    "rank": 1008,
     "username": "dgcrp20",
     "points": 20
   },
   {
-    "rank": 1008,
+    "rank": 1009,
     "username": "darx3kkk",
     "points": 20
   },
   {
-    "rank": 1009,
+    "rank": 1010,
     "username": "d7oom1243",
     "points": 20
   },
   {
-    "rank": 1010,
+    "rank": 1011,
     "username": "crypto_nob",
     "points": 20
   },
   {
-    "rank": 1011,
+    "rank": 1012,
     "username": "cordo_ee",
     "points": 20
   },
   {
-    "rank": 1012,
+    "rank": 1013,
     "username": "chiiiiiiik",
     "points": 20
   },
   {
-    "rank": 1013,
+    "rank": 1014,
     "username": "chef_alaa",
     "points": 20
   },
   {
-    "rank": 1014,
+    "rank": 1015,
     "username": "ch1ju_tv",
     "points": 20
   },
   {
-    "rank": 1015,
+    "rank": 1016,
     "username": "cesarr_w9",
     "points": 20
   },
   {
-    "rank": 1016,
+    "rank": 1017,
     "username": "cable_hdmi25",
     "points": 20
   },
   {
-    "rank": 1017,
+    "rank": 1018,
     "username": "bnjhc56",
     "points": 20
   },
   {
-    "rank": 1018,
+    "rank": 1019,
     "username": "blueberry999999999__",
     "points": 20
   },
   {
-    "rank": 1019,
+    "rank": 1020,
     "username": "bilalblk999",
     "points": 20
   },
   {
-    "rank": 1020,
+    "rank": 1021,
     "username": "big__fallen",
     "points": 20
   },
   {
-    "rank": 1021,
+    "rank": 1022,
     "username": "aymeen_c1",
     "points": 20
   },
   {
-    "rank": 1022,
+    "rank": 1023,
     "username": "anouarhadji",
     "points": 20
   },
   {
-    "rank": 1023,
+    "rank": 1024,
     "username": "amroramahi",
     "points": 20
   },
   {
-    "rank": 1024,
+    "rank": 1025,
     "username": "ammar15h",
     "points": 20
   },
   {
-    "rank": 1025,
+    "rank": 1026,
     "username": "aminesixy",
     "points": 20
   },
   {
-    "rank": 1026,
+    "rank": 1027,
     "username": "alexmoderat",
     "points": 20
   },
   {
-    "rank": 1027,
+    "rank": 1028,
     "username": "aka_112",
     "points": 20
   },
   {
-    "rank": 1028,
+    "rank": 1029,
     "username": "acilcj",
     "points": 20
   },
   {
-    "rank": 1029,
+    "rank": 1030,
     "username": "achref197aa",
     "points": 20
   },
   {
-    "rank": 1030,
+    "rank": 1031,
     "username": "abu_salih0",
     "points": 20
   },
   {
-    "rank": 1031,
+    "rank": 1032,
     "username": "abdoo2o",
     "points": 20
   },
   {
-    "rank": 1032,
+    "rank": 1033,
     "username": "a1mr4n",
     "points": 20
   },
   {
-    "rank": 1033,
+    "rank": 1034,
     "username": "99_souls_",
     "points": 20
   },
   {
-    "rank": 1034,
+    "rank": 1035,
     "username": "2leno1",
     "points": 20
   },
   {
-    "rank": 1035,
+    "rank": 1036,
     "username": "1smaa4",
     "points": 20
   },
   {
-    "rank": 1036,
+    "rank": 1037,
     "username": "077691170",
     "points": 20
   },
   {
-    "rank": 1037,
+    "rank": 1038,
     "username": "yacinerealdz",
     "points": 15
   },
   {
-    "rank": 1038,
+    "rank": 1039,
     "username": "ryadgam2",
     "points": 15
   },
   {
-    "rank": 1039,
+    "rank": 1040,
     "username": "reda_fps",
     "points": 15
   },
   {
-    "rank": 1040,
+    "rank": 1041,
     "username": "red__one_",
     "points": 15
   },
   {
-    "rank": 1041,
+    "rank": 1042,
     "username": "re1nhard42",
     "points": 15
   },
   {
-    "rank": 1042,
+    "rank": 1043,
     "username": "penipen_",
     "points": 15
   },
   {
-    "rank": 1043,
+    "rank": 1044,
     "username": "n0uryy",
     "points": 15
   },
   {
-    "rank": 1044,
+    "rank": 1045,
     "username": "mmoo51",
     "points": 15
   },
   {
-    "rank": 1045,
+    "rank": 1046,
     "username": "m1rsycs",
     "points": 15
   },
   {
-    "rank": 1046,
+    "rank": 1047,
     "username": "lololiiytgkoyu",
     "points": 15
   },
   {
-    "rank": 1047,
+    "rank": 1048,
     "username": "imnotgodgamer",
     "points": 15
   },
   {
-    "rank": 1048,
+    "rank": 1049,
     "username": "ghost_r301",
     "points": 15
   },
   {
-    "rank": 1049,
+    "rank": 1050,
     "username": "exco_xxx97",
     "points": 15
   },
   {
-    "rank": 1050,
+    "rank": 1051,
     "username": "anesss_ch",
     "points": 15
   },
   {
-    "rank": 1051,
+    "rank": 1052,
     "username": "amine31mtl",
     "points": 15
   },
   {
-    "rank": 1052,
+    "rank": 1053,
     "username": "zulzys_",
     "points": 10
   },
   {
-    "rank": 1053,
+    "rank": 1054,
     "username": "znukr12",
     "points": 10
   },
   {
-    "rank": 1054,
+    "rank": 1055,
     "username": "zmitox00",
     "points": 10
   },
   {
-    "rank": 1055,
-    "username": "zijakcs",
-    "points": 10
-  },
-  {
     "rank": 1056,
-    "username": "ziiyad_",
+    "username": "zizouziad4",
     "points": 10
   },
   {
     "rank": 1057,
-    "username": "zeyroox_bs",
+    "username": "zijakcs",
     "points": 10
   },
   {
     "rank": 1058,
-    "username": "zenati2001",
+    "username": "ziiyad_",
     "points": 10
   },
   {
     "rank": 1059,
-    "username": "zatar_4",
+    "username": "zeyroox_bs",
     "points": 10
   },
   {
     "rank": 1060,
-    "username": "zakovic94",
+    "username": "zenati2001",
     "points": 10
   },
   {
     "rank": 1061,
-    "username": "zakfloyd16",
+    "username": "zatar_4",
     "points": 10
   },
   {
     "rank": 1062,
-    "username": "yukaogaming",
+    "username": "zakovic94",
     "points": 10
   },
   {
     "rank": 1063,
-    "username": "youpi5555",
+    "username": "zakfloyd16",
     "points": 10
   },
   {
     "rank": 1064,
-    "username": "yohan1956",
+    "username": "yukaogaming",
     "points": 10
   },
   {
     "rank": 1065,
-    "username": "yoh4x_",
+    "username": "youpi5555",
     "points": 10
   },
   {
     "rank": 1066,
-    "username": "yfifrtifyk",
+    "username": "yohan1956",
     "points": 10
   },
   {
     "rank": 1067,
-    "username": "yasshuh",
+    "username": "yoh4x_",
     "points": 10
   },
   {
     "rank": 1068,
-    "username": "yaneblantyxx",
+    "username": "yfifrtifyk",
     "points": 10
   },
   {
     "rank": 1069,
-    "username": "xtoufik27",
+    "username": "yasshuh",
     "points": 10
   },
   {
     "rank": 1070,
-    "username": "xsultanx",
+    "username": "yaneblantyxx",
     "points": 10
   },
   {
     "rank": 1071,
-    "username": "xrobinnhood",
+    "username": "xtoufik27",
     "points": 10
   },
   {
     "rank": 1072,
-    "username": "xmc__x",
+    "username": "xsultanx",
     "points": 10
   },
   {
     "rank": 1073,
-    "username": "xeqcj83",
+    "username": "xrobinnhood",
     "points": 10
   },
   {
     "rank": 1074,
-    "username": "xemd1",
+    "username": "xmc__x",
     "points": 10
   },
   {
     "rank": 1075,
-    "username": "wondzak",
+    "username": "xeqcj83",
     "points": 10
   },
   {
     "rank": 1076,
-    "username": "whizzland",
+    "username": "xemd1",
     "points": 10
   },
   {
     "rank": 1077,
-    "username": "wfydbachir",
+    "username": "wondzak",
     "points": 10
   },
   {
     "rank": 1078,
-    "username": "well_c4",
+    "username": "whizzland",
     "points": 10
   },
   {
     "rank": 1079,
-    "username": "walid_ceza",
+    "username": "wfydbachir",
     "points": 10
   },
   {
     "rank": 1080,
-    "username": "w1ckedcs2",
+    "username": "well_c4",
     "points": 10
   },
   {
     "rank": 1081,
-    "username": "voyevodakw",
+    "username": "walid_ceza",
     "points": 10
   },
   {
     "rank": 1082,
-    "username": "vinexxxxxxxxx",
+    "username": "wailgamer2",
     "points": 10
   },
   {
     "rank": 1083,
-    "username": "vibro022",
+    "username": "w1ckedcs2",
     "points": 10
   },
   {
     "rank": 1084,
-    "username": "vasguard",
+    "username": "voyevodakw",
     "points": 10
   },
   {
     "rank": 1085,
-    "username": "valerie_cs",
+    "username": "vinexxxxxxxxx",
     "points": 10
   },
   {
     "rank": 1086,
-    "username": "uppermoon31",
+    "username": "vibro022",
     "points": 10
   },
   {
     "rank": 1087,
-    "username": "upfrag_gg",
+    "username": "vasguard",
     "points": 10
   },
   {
     "rank": 1088,
-    "username": "unus_netio",
+    "username": "valerie_cs",
     "points": 10
   },
   {
     "rank": 1089,
-    "username": "uktt40",
+    "username": "uppermoon31",
     "points": 10
   },
   {
     "rank": 1090,
-    "username": "trzzw",
+    "username": "upfrag_gg",
     "points": 10
   },
   {
     "rank": 1091,
-    "username": "trwk12",
+    "username": "unus_netio",
     "points": 10
   },
   {
     "rank": 1092,
-    "username": "tra_cs",
+    "username": "uktt40",
     "points": 10
   },
   {
     "rank": 1093,
-    "username": "toyohisa_",
+    "username": "uaq47",
     "points": 10
   },
   {
     "rank": 1094,
-    "username": "tn22225",
+    "username": "trzzw",
     "points": 10
   },
   {
     "rank": 1095,
-    "username": "they_call_me_ace5",
+    "username": "trwk12",
     "points": 10
   },
   {
     "rank": 1096,
-    "username": "th_g_07",
+    "username": "tra_cs",
     "points": 10
   },
   {
     "rank": 1097,
-    "username": "tered_twich",
+    "username": "toyohisa_",
     "points": 10
   },
   {
     "rank": 1098,
-    "username": "tchiks_ben",
+    "username": "tn22225",
     "points": 10
   },
   {
     "rank": 1099,
-    "username": "takibne",
+    "username": "they_call_me_ace5",
     "points": 10
   },
   {
     "rank": 1100,
-    "username": "tabr1z",
+    "username": "th_g_07",
     "points": 10
   },
   {
     "rank": 1101,
-    "username": "taakram",
+    "username": "tered_twich",
     "points": 10
   },
   {
     "rank": 1102,
-    "username": "syri_1",
+    "username": "tchiks_ben",
     "points": 10
   },
   {
     "rank": 1103,
-    "username": "syprow1",
+    "username": "takibne",
     "points": 10
   },
   {
     "rank": 1104,
-    "username": "surfiista_",
+    "username": "tabr1z",
     "points": 10
   },
   {
     "rank": 1105,
-    "username": "super_vegeta200",
+    "username": "taakram",
     "points": 10
   },
   {
     "rank": 1106,
-    "username": "suliman_hbs",
+    "username": "syri_1",
     "points": 10
   },
   {
     "rank": 1107,
-    "username": "stylcsky1337",
+    "username": "syprow1",
     "points": 10
   },
   {
     "rank": 1108,
-    "username": "sonyoda",
+    "username": "surfiista_",
     "points": 10
   },
   {
     "rank": 1109,
-    "username": "soner_ame",
+    "username": "super_vegeta200",
     "points": 10
   },
   {
     "rank": 1110,
-    "username": "solazurr",
+    "username": "suliman_hbs",
     "points": 10
   },
   {
     "rank": 1111,
-    "username": "smokweed1990",
+    "username": "stylcsky1337",
     "points": 10
   },
   {
     "rank": 1112,
-    "username": "sminnaaa",
+    "username": "sonyoda",
     "points": 10
   },
   {
     "rank": 1113,
-    "username": "slavaloh2281337",
+    "username": "soner_ame",
     "points": 10
   },
   {
     "rank": 1114,
-    "username": "skyline2152",
+    "username": "solazurr",
     "points": 10
   },
   {
     "rank": 1115,
-    "username": "sirinesh",
+    "username": "smokweed1990",
     "points": 10
   },
   {
     "rank": 1116,
-    "username": "sir3a",
+    "username": "sminnaaa",
     "points": 10
   },
   {
     "rank": 1117,
-    "username": "simouuuuuuu7",
+    "username": "slavaloh2281337",
     "points": 10
   },
   {
     "rank": 1118,
-    "username": "shomy213",
+    "username": "skyline2152",
     "points": 10
   },
   {
     "rank": 1119,
-    "username": "shl4yten",
+    "username": "sirinesh",
     "points": 10
   },
   {
     "rank": 1120,
-    "username": "shatth1",
+    "username": "sir3a",
     "points": 10
   },
   {
     "rank": 1121,
-    "username": "serjiksatan",
+    "username": "simouuuuuuu7",
     "points": 10
   },
   {
     "rank": 1122,
-    "username": "sepremz",
+    "username": "shomy213",
     "points": 10
   },
   {
     "rank": 1123,
-    "username": "scqbg72",
+    "username": "shl4yten",
     "points": 10
   },
   {
     "rank": 1124,
-    "username": "savage_fg6",
+    "username": "shatth1",
     "points": 10
   },
   {
     "rank": 1125,
-    "username": "samdex1921",
+    "username": "serjiksatan",
     "points": 10
   },
   {
     "rank": 1126,
-    "username": "sam_most18",
+    "username": "sepremz",
     "points": 10
   },
   {
     "rank": 1127,
-    "username": "salva_tory11",
+    "username": "scqbg72",
     "points": 10
   },
   {
     "rank": 1128,
-    "username": "saku1333",
+    "username": "savage_fg6",
     "points": 10
   },
   {
     "rank": 1129,
-    "username": "sadekmhm",
+    "username": "samdex1921",
     "points": 10
   },
   {
     "rank": 1130,
-    "username": "saber_grd",
+    "username": "sam_most18",
     "points": 10
   },
   {
     "rank": 1131,
-    "username": "s_w0rd",
+    "username": "salva_tory11",
     "points": 10
   },
   {
     "rank": 1132,
-    "username": "s41450",
+    "username": "saku1333",
     "points": 10
   },
   {
     "rank": 1133,
-    "username": "s3mtex666",
+    "username": "sadekmhm",
     "points": 10
   },
   {
     "rank": 1134,
-    "username": "ryusuke_77",
+    "username": "saber_grd",
     "points": 10
   },
   {
     "rank": 1135,
-    "username": "ryadnh0",
+    "username": "s_w0rd",
     "points": 10
   },
   {
     "rank": 1136,
-    "username": "rriiyad",
+    "username": "s41450",
     "points": 10
   },
   {
     "rank": 1137,
-    "username": "roronoa_zaki_by_twitch",
+    "username": "s3mtex666",
     "points": 10
   },
   {
     "rank": 1138,
-    "username": "revoooox",
+    "username": "ryusuke_77",
     "points": 10
   },
   {
     "rank": 1139,
-    "username": "reihh35",
+    "username": "ryadnh0",
     "points": 10
   },
   {
     "rank": 1140,
-    "username": "reczusg",
+    "username": "rriiyad",
     "points": 10
   },
   {
     "rank": 1141,
-    "username": "rcvzp37",
+    "username": "roronoa_zaki_by_twitch",
     "points": 10
   },
   {
     "rank": 1142,
-    "username": "rayzz64e",
+    "username": "revoooox",
     "points": 10
   },
   {
     "rank": 1143,
-    "username": "rarty158",
+    "username": "reihh35",
     "points": 10
   },
   {
     "rank": 1144,
-    "username": "rahim___rmn",
+    "username": "reczusg",
     "points": 10
   },
   {
     "rank": 1145,
-    "username": "raghad545",
+    "username": "rcvzp37",
     "points": 10
   },
   {
     "rank": 1146,
-    "username": "racha_chan",
+    "username": "rayzz64e",
     "points": 10
   },
   {
     "rank": 1147,
-    "username": "ra0ufdm",
+    "username": "rarty158",
     "points": 10
   },
   {
     "rank": 1148,
-    "username": "qteur28",
+    "username": "rahim___rmn",
     "points": 10
   },
   {
     "rank": 1149,
-    "username": "qigzi45",
+    "username": "raghad545",
     "points": 10
   },
   {
     "rank": 1150,
-    "username": "pzhis28",
+    "username": "racha_chan",
     "points": 10
   },
   {
     "rank": 1151,
-    "username": "pynnks",
+    "username": "ra0ufdm",
     "points": 10
   },
   {
     "rank": 1152,
-    "username": "pupaxv",
+    "username": "qteur28",
     "points": 10
   },
   {
     "rank": 1153,
-    "username": "pulabelitamami",
+    "username": "qigzi45",
     "points": 10
   },
   {
     "rank": 1154,
-    "username": "prokannnn",
+    "username": "pzhis28",
     "points": 10
   },
   {
     "rank": 1155,
-    "username": "princerayann",
+    "username": "pynnks",
     "points": 10
   },
   {
     "rank": 1156,
-    "username": "prest1lge",
+    "username": "pupaxv",
     "points": 10
   },
   {
     "rank": 1157,
-    "username": "popyris",
+    "username": "pulabelitamami",
     "points": 10
   },
   {
     "rank": 1158,
-    "username": "plfmp12",
+    "username": "prokannnn",
     "points": 10
   },
   {
     "rank": 1159,
-    "username": "pikachu192222",
+    "username": "princerayann",
     "points": 10
   },
   {
     "rank": 1160,
-    "username": "petersburg_add1ct",
+    "username": "prest1lge",
     "points": 10
   },
   {
     "rank": 1161,
-    "username": "papasvin_999",
+    "username": "popyris",
     "points": 10
   },
   {
     "rank": 1162,
-    "username": "oussamacoza",
+    "username": "plfmp12",
     "points": 10
   },
   {
     "rank": 1163,
-    "username": "oolsx35",
+    "username": "pikachu192222",
     "points": 10
   },
   {
     "rank": 1164,
-    "username": "onetwooooooooooo",
+    "username": "petersburg_add1ct",
     "points": 10
   },
   {
     "rank": 1165,
-    "username": "onestyleeee",
+    "username": "papasvin_999",
     "points": 10
   },
   {
     "rank": 1166,
-    "username": "omar_robert",
+    "username": "oussamacoza",
     "points": 10
   },
   {
     "rank": 1167,
-    "username": "olsen225",
+    "username": "oolsx35",
     "points": 10
   },
   {
     "rank": 1168,
-    "username": "ocimde018",
+    "username": "onetwooooooooooo",
     "points": 10
   },
   {
     "rank": 1169,
-    "username": "obscurity____",
+    "username": "onestyleeee",
     "points": 10
   },
   {
     "rank": 1170,
-    "username": "nujabe_oz",
+    "username": "omar_robert",
     "points": 10
   },
   {
     "rank": 1171,
-    "username": "npeql70",
+    "username": "olsen225",
     "points": 10
   },
   {
     "rank": 1172,
-    "username": "noufnouftv",
+    "username": "ocimde018",
     "points": 10
   },
   {
     "rank": 1173,
-    "username": "noisestxt",
+    "username": "obscurity____",
     "points": 10
   },
   {
     "rank": 1174,
-    "username": "no_love10",
+    "username": "nujabe_oz",
     "points": 10
   },
   {
     "rank": 1175,
-    "username": "nizaro667",
+    "username": "npeql70",
     "points": 10
   },
   {
     "rank": 1176,
-    "username": "ninwar1",
+    "username": "noufnouftv",
     "points": 10
   },
   {
     "rank": 1177,
-    "username": "ningadz",
+    "username": "noisestxt",
     "points": 10
   },
   {
     "rank": 1178,
-    "username": "niinoo09",
+    "username": "no_love10",
     "points": 10
   },
   {
     "rank": 1179,
-    "username": "nightmar1111",
+    "username": "nizaro667",
     "points": 10
   },
   {
     "rank": 1180,
-    "username": "neyxonz",
+    "username": "ninwar1",
     "points": 10
   },
   {
     "rank": 1181,
-    "username": "ndrbk_b_3in",
+    "username": "ningadz",
     "points": 10
   },
   {
     "rank": 1182,
-    "username": "navai89",
+    "username": "niinoo09",
     "points": 10
   },
   {
     "rank": 1183,
-    "username": "nadthereal",
+    "username": "nightmar1111",
     "points": 10
   },
   {
     "rank": 1184,
-    "username": "nadirsyh",
+    "username": "neyxonz",
     "points": 10
   },
   {
     "rank": 1185,
-    "username": "n1ssim1",
+    "username": "ndrbk_b_3in",
     "points": 10
   },
   {
     "rank": 1186,
-    "username": "msiiix",
+    "username": "navai89",
     "points": 10
   },
   {
     "rank": 1187,
-    "username": "mr_hack_50",
+    "username": "nadthereal",
     "points": 10
   },
   {
     "rank": 1188,
-    "username": "monsterje3322",
+    "username": "nadirsyh",
     "points": 10
   },
   {
     "rank": 1189,
-    "username": "moncef1x",
+    "username": "n1ssim1",
     "points": 10
   },
   {
     "rank": 1190,
-    "username": "mohdfd",
+    "username": "msiiix",
     "points": 10
   },
   {
     "rank": 1191,
-    "username": "mohammd787877",
+    "username": "mr_hack_50",
     "points": 10
   },
   {
     "rank": 1192,
-    "username": "mohamedha420",
+    "username": "monsterje3322",
     "points": 10
   },
   {
     "rank": 1193,
-    "username": "mo_karim47",
+    "username": "moncef1x",
     "points": 10
   },
   {
     "rank": 1194,
-    "username": "mo7ame6mr",
+    "username": "mohdfd",
     "points": 10
   },
   {
     "rank": 1195,
-    "username": "mnb_power",
+    "username": "mohammd787877",
     "points": 10
   },
   {
     "rank": 1196,
-    "username": "mlz94",
+    "username": "mohamedha420",
     "points": 10
   },
   {
     "rank": 1197,
-    "username": "misuucsgo",
+    "username": "mo_karim47",
     "points": 10
   },
   {
     "rank": 1198,
-    "username": "mipjd37",
+    "username": "mo7ame6mr",
     "points": 10
   },
   {
     "rank": 1199,
-    "username": "miish3lr",
+    "username": "mnb_power",
     "points": 10
   },
   {
     "rank": 1200,
-    "username": "midnyx001",
+    "username": "mlz94",
     "points": 10
   },
   {
     "rank": 1201,
-    "username": "midamode25",
+    "username": "misuucsgo",
     "points": 10
   },
   {
     "rank": 1202,
-    "username": "mi_cr7",
+    "username": "mipjd37",
     "points": 10
   },
   {
     "rank": 1203,
-    "username": "mhmood_5",
+    "username": "miish3lr",
     "points": 10
   },
   {
     "rank": 1204,
-    "username": "merzakmhf",
+    "username": "midnyx001",
     "points": 10
   },
   {
     "rank": 1205,
-    "username": "menarabdelhak",
+    "username": "midamode25",
     "points": 10
   },
   {
     "rank": 1206,
-    "username": "mdaa7",
+    "username": "mi_cr7",
     "points": 10
   },
   {
     "rank": 1207,
-    "username": "mathisgeek250",
+    "username": "mhmood_5",
     "points": 10
   },
   {
     "rank": 1208,
-    "username": "massinissa34",
+    "username": "merzakmhf",
     "points": 10
   },
   {
     "rank": 1209,
-    "username": "marwane2225",
+    "username": "menarabdelhak",
     "points": 10
   },
   {
     "rank": 1210,
-    "username": "marcelo_0922",
+    "username": "mdaa7",
     "points": 10
   },
   {
     "rank": 1211,
-    "username": "mar1nnnn",
+    "username": "mathisgeek250",
     "points": 10
   },
   {
     "rank": 1212,
-    "username": "mansourgh20",
+    "username": "massinissa34",
     "points": 10
   },
   {
     "rank": 1213,
-    "username": "mamo3671",
+    "username": "marwane2225",
     "points": 10
   },
   {
     "rank": 1214,
-    "username": "maleking7",
+    "username": "marcelo_0922",
     "points": 10
   },
   {
     "rank": 1215,
-    "username": "maksym29lol",
+    "username": "mar1nnnn",
     "points": 10
   },
   {
     "rank": 1216,
-    "username": "mahi_boumaza",
+    "username": "mansourgh20",
     "points": 10
   },
   {
     "rank": 1217,
-    "username": "m7mmedrma",
+    "username": "mamo3671",
     "points": 10
   },
   {
     "rank": 1218,
-    "username": "m0onesy1",
+    "username": "maleking7",
     "points": 10
   },
   {
     "rank": 1219,
-    "username": "m0ham33d",
+    "username": "maksym29lol",
     "points": 10
   },
   {
     "rank": 1220,
-    "username": "lucky_razrushitel",
+    "username": "mahi_boumaza",
     "points": 10
   },
   {
     "rank": 1221,
-    "username": "lousync",
+    "username": "m7mmedrma",
     "points": 10
   },
   {
     "rank": 1222,
-    "username": "limar34",
+    "username": "m0onesy1",
     "points": 10
   },
   {
     "rank": 1223,
-    "username": "leadsupervic",
+    "username": "m0ham33d",
     "points": 10
   },
   {
     "rank": 1224,
-    "username": "laloulilou99",
+    "username": "lucky_razrushitel",
     "points": 10
   },
   {
     "rank": 1225,
-    "username": "lahcenbhm",
+    "username": "lousync",
     "points": 10
   },
   {
     "rank": 1226,
-    "username": "kurty80",
+    "username": "limar34",
     "points": 10
   },
   {
     "rank": 1227,
-    "username": "kryptex133700",
+    "username": "leadsupervic",
     "points": 10
   },
   {
     "rank": 1228,
-    "username": "kroway22",
+    "username": "laloulilou99",
     "points": 10
   },
   {
     "rank": 1229,
-    "username": "kokuma23",
+    "username": "lahcenbhm",
     "points": 10
   },
   {
     "rank": 1230,
-    "username": "kofistreambot",
+    "username": "kurty80",
     "points": 10
   },
   {
     "rank": 1231,
-    "username": "kmb_xx",
+    "username": "kryptex133700",
     "points": 10
   },
   {
     "rank": 1232,
-    "username": "kiraruqueen",
+    "username": "kroway22",
     "points": 10
   },
   {
     "rank": 1233,
-    "username": "khalidamn",
+    "username": "kokuma23",
     "points": 10
   },
   {
     "rank": 1234,
-    "username": "khaledsen",
+    "username": "kofistreambot",
     "points": 10
   },
   {
     "rank": 1235,
-    "username": "kh_707",
+    "username": "kmb_xx",
     "points": 10
   },
   {
     "rank": 1236,
-    "username": "kezrz35",
+    "username": "kiraruqueen",
     "points": 10
   },
   {
     "rank": 1237,
-    "username": "kastali_kc_999",
+    "username": "khalidamn",
     "points": 10
   },
   {
     "rank": 1238,
-    "username": "kakasneakyleka",
+    "username": "khaledsen",
     "points": 10
   },
   {
     "rank": 1239,
-    "username": "k1_030",
+    "username": "kh_707",
     "points": 10
   },
   {
     "rank": 1240,
-    "username": "juzo_20",
+    "username": "kezrz35",
     "points": 10
   },
   {
     "rank": 1241,
-    "username": "jrdovah",
+    "username": "kastali_kc_999",
     "points": 10
   },
   {
     "rank": 1242,
-    "username": "jpvjj57",
+    "username": "kakasneakyleka",
     "points": 10
   },
   {
     "rank": 1243,
-    "username": "joujou1900",
+    "username": "k1_030",
     "points": 10
   },
   {
     "rank": 1244,
-    "username": "jimiiiiii1",
+    "username": "juzo_20",
     "points": 10
   },
   {
     "rank": 1245,
-    "username": "jheeezzzz1",
+    "username": "jrdovah",
     "points": 10
   },
   {
     "rank": 1246,
-    "username": "jackshepered21",
+    "username": "jpvjj57",
     "points": 10
   },
   {
     "rank": 1247,
-    "username": "itsgalileoo",
+    "username": "joujou1900",
     "points": 10
   },
   {
     "rank": 1248,
-    "username": "itsdefo0",
+    "username": "jimiiiiii1",
     "points": 10
   },
   {
     "rank": 1249,
-    "username": "itdsk86",
+    "username": "jheeezzzz1",
     "points": 10
   },
   {
     "rank": 1250,
-    "username": "issaac_gm",
+    "username": "jackshepered21",
     "points": 10
   },
   {
     "rank": 1251,
-    "username": "isixtysevenn",
+    "username": "itsgalileoo",
     "points": 10
   },
   {
     "rank": 1252,
-    "username": "isaax4sure",
+    "username": "itsdefo0",
     "points": 10
   },
   {
     "rank": 1253,
-    "username": "inunj",
+    "username": "itdsk86",
     "points": 10
   },
   {
     "rank": 1254,
-    "username": "inhaleuk",
+    "username": "issaac_gm",
     "points": 10
   },
   {
     "rank": 1255,
-    "username": "imed_soldier",
+    "username": "isixtysevenn",
     "points": 10
   },
   {
     "rank": 1256,
-    "username": "imdefaultx",
+    "username": "isaax4sure",
     "points": 10
   },
   {
     "rank": 1257,
-    "username": "ilykait",
+    "username": "inunj",
     "points": 10
   },
   {
     "rank": 1258,
-    "username": "illustrum",
+    "username": "inhaleuk",
     "points": 10
   },
   {
     "rank": 1259,
-    "username": "ilinzy",
+    "username": "imed_soldier",
     "points": 10
   },
   {
     "rank": 1260,
-    "username": "ifleuro",
+    "username": "imdefaultx",
     "points": 10
   },
   {
     "rank": 1261,
-    "username": "idncareeeeeee",
+    "username": "ilykait",
     "points": 10
   },
   {
     "rank": 1262,
-    "username": "ibrahimoha00",
+    "username": "illustrum",
     "points": 10
   },
   {
     "rank": 1263,
-    "username": "i0ssama",
+    "username": "ilinzy",
     "points": 10
   },
   {
     "rank": 1264,
-    "username": "hxqci36",
+    "username": "ifleuro",
     "points": 10
   },
   {
     "rank": 1265,
-    "username": "hiso515",
+    "username": "idncareeeeeee",
     "points": 10
   },
   {
     "rank": 1266,
-    "username": "hichem2602",
+    "username": "ibrahimoha00",
     "points": 10
   },
   {
     "rank": 1267,
-    "username": "hamou19i",
+    "username": "i0ssama",
     "points": 10
   },
   {
     "rank": 1268,
-    "username": "haki_ben",
+    "username": "hxqci36",
     "points": 10
   },
   {
     "rank": 1269,
-    "username": "haijennn",
+    "username": "hiso515",
     "points": 10
   },
   {
     "rank": 1270,
-    "username": "guxsssss",
+    "username": "hichem2602",
     "points": 10
   },
   {
     "rank": 1271,
-    "username": "grishgrib",
+    "username": "hamou19i",
     "points": 10
   },
   {
     "rank": 1272,
-    "username": "gqhkk45",
+    "username": "haki_ben",
     "points": 10
   },
   {
     "rank": 1273,
-    "username": "gobigorgonrg",
+    "username": "haijennn",
     "points": 10
   },
   {
     "rank": 1274,
-    "username": "ghvrbi",
+    "username": "guxsssss",
     "points": 10
   },
   {
     "rank": 1275,
-    "username": "gamingkada",
+    "username": "grishgrib",
     "points": 10
   },
   {
     "rank": 1276,
-    "username": "fyceel4",
+    "username": "gqhkk45",
     "points": 10
   },
   {
     "rank": 1277,
-    "username": "fthzak",
+    "username": "gobigorgonrg",
     "points": 10
   },
   {
     "rank": 1278,
-    "username": "freezy1337_",
+    "username": "ghvrbi",
     "points": 10
   },
   {
     "rank": 1279,
-    "username": "fraglobby",
+    "username": "gamingkada",
     "points": 10
   },
   {
     "rank": 1280,
-    "username": "fmsk11",
+    "username": "fyceel4",
     "points": 10
   },
   {
     "rank": 1281,
-    "username": "fiir3awn",
+    "username": "fthzak",
     "points": 10
   },
   {
     "rank": 1282,
-    "username": "fayta3",
+    "username": "freezy1337_",
     "points": 10
   },
   {
     "rank": 1283,
-    "username": "farouk_0ntop",
+    "username": "fraglobby",
     "points": 10
   },
   {
     "rank": 1284,
-    "username": "fan1knk6",
+    "username": "fmsk11",
     "points": 10
   },
   {
     "rank": 1285,
-    "username": "falconsrayan",
+    "username": "fiir3awn",
     "points": 10
   },
   {
     "rank": 1286,
-    "username": "faisal_5156",
+    "username": "fayta3",
     "points": 10
   },
   {
     "rank": 1287,
-    "username": "faceitsync",
+    "username": "farouk_0ntop",
     "points": 10
   },
   {
     "rank": 1288,
-    "username": "excelsior_212",
+    "username": "fan1knk6",
     "points": 10
   },
   {
     "rank": 1289,
-    "username": "ex_gafe_sicario",
+    "username": "falconsrayan",
     "points": 10
   },
   {
     "rank": 1290,
-    "username": "eveeeee01",
+    "username": "faisal_5156",
     "points": 10
   },
   {
     "rank": 1291,
-    "username": "em1ilio99",
+    "username": "faceitsync",
     "points": 10
   },
   {
     "rank": 1292,
-    "username": "elringo18",
+    "username": "excelsior_212",
     "points": 10
   },
   {
     "rank": 1293,
-    "username": "elred34",
+    "username": "ex_gafe_sicario",
     "points": 10
   },
   {
     "rank": 1294,
-    "username": "electromancer2002",
+    "username": "eveeeee01",
     "points": 10
   },
   {
     "rank": 1295,
-    "username": "egzuk0",
+    "username": "em1ilio99",
     "points": 10
   },
   {
     "rank": 1296,
-    "username": "eagiee_",
+    "username": "elringo18",
     "points": 10
   },
   {
     "rank": 1297,
-    "username": "dzredmax",
+    "username": "elred34",
     "points": 10
   },
   {
     "rank": 1298,
-    "username": "dzblast",
+    "username": "electromancer2002",
     "points": 10
   },
   {
     "rank": 1299,
-    "username": "dyr0d",
+    "username": "egzuk0",
     "points": 10
   },
   {
     "rank": 1300,
-    "username": "dokercs",
+    "username": "eagiee_",
     "points": 10
   },
   {
     "rank": 1301,
-    "username": "djangoo_00",
+    "username": "dzredmax",
     "points": 10
   },
   {
     "rank": 1302,
-    "username": "digalolzz",
+    "username": "dzblast",
     "points": 10
   },
   {
     "rank": 1303,
-    "username": "delt_on666",
+    "username": "dyr0d",
     "points": 10
   },
   {
     "rank": 1304,
-    "username": "ddige75",
+    "username": "dokercs",
     "points": 10
   },
   {
     "rank": 1305,
-    "username": "darksoul_enjoyer",
+    "username": "dofyy22",
     "points": 10
   },
   {
     "rank": 1306,
-    "username": "dadzie_tv",
+    "username": "djangoo_00",
     "points": 10
   },
   {
     "rank": 1307,
-    "username": "daaawidoooski",
+    "username": "digalolzz",
     "points": 10
   },
   {
     "rank": 1308,
-    "username": "d0nkey690",
+    "username": "delt_on666",
     "points": 10
   },
   {
     "rank": 1309,
-    "username": "czdbn68",
+    "username": "ddige75",
     "points": 10
   },
   {
     "rank": 1310,
-    "username": "cwxxn87",
+    "username": "darksoul_enjoyer",
     "points": 10
   },
   {
     "rank": 1311,
-    "username": "cursesed",
+    "username": "dadzie_tv",
     "points": 10
   },
   {
     "rank": 1312,
-    "username": "chopinbushi",
+    "username": "daaawidoooski",
     "points": 10
   },
   {
     "rank": 1313,
-    "username": "chmaichen",
+    "username": "d0nkey690",
     "points": 10
   },
   {
     "rank": 1314,
-    "username": "chlifchlaf",
+    "username": "czdbn68",
     "points": 10
   },
   {
     "rank": 1315,
-    "username": "chlenanus",
+    "username": "cwxxn87",
     "points": 10
   },
   {
     "rank": 1316,
-    "username": "chemsou1998",
+    "username": "cursesed",
     "points": 10
   },
   {
     "rank": 1317,
-    "username": "catherinecarnevale",
+    "username": "chopinbushi",
     "points": 10
   },
   {
     "rank": 1318,
-    "username": "cad0m",
+    "username": "chmaichen",
     "points": 10
   },
   {
     "rank": 1319,
-    "username": "botrixoficial",
+    "username": "chlifchlaf",
     "points": 10
   },
   {
     "rank": 1320,
-    "username": "bossi_16_",
+    "username": "chlenanus",
     "points": 10
   },
   {
     "rank": 1321,
-    "username": "bob3li",
+    "username": "chemsou1998",
     "points": 10
   },
   {
     "rank": 1322,
-    "username": "bebo_destroyer_",
+    "username": "catherinecarnevale",
     "points": 10
   },
   {
     "rank": 1323,
-    "username": "bagiraxxxxx",
+    "username": "cad0m",
     "points": 10
   },
   {
     "rank": 1324,
-    "username": "b34571337",
+    "username": "botrixoficial",
     "points": 10
   },
   {
     "rank": 1325,
-    "username": "b2dabot",
+    "username": "bossi_16_",
     "points": 10
   },
   {
     "rank": 1326,
-    "username": "b1zaad_cs2",
+    "username": "bob3li",
     "points": 10
   },
   {
     "rank": 1327,
-    "username": "b0usr1",
+    "username": "bebo_destroyer_",
     "points": 10
   },
   {
     "rank": 1328,
-    "username": "aziz_bw",
+    "username": "bagiraxxxxx",
     "points": 10
   },
   {
     "rank": 1329,
-    "username": "azeez0707",
+    "username": "b34571337",
     "points": 10
   },
   {
     "rank": 1330,
-    "username": "az1k369",
+    "username": "b2dabot",
     "points": 10
   },
   {
     "rank": 1331,
-    "username": "ayoub_160h",
+    "username": "b1zaad_cs2",
     "points": 10
   },
   {
     "rank": 1332,
-    "username": "aymenazzouz77",
+    "username": "b0usr1",
     "points": 10
   },
   {
     "rank": 1333,
-    "username": "asaad__20",
+    "username": "aziz_bw",
     "points": 10
   },
   {
     "rank": 1334,
-    "username": "arino_67",
+    "username": "azeez0707",
     "points": 10
   },
   {
     "rank": 1335,
-    "username": "appolo1223",
+    "username": "az1k369",
     "points": 10
   },
   {
     "rank": 1336,
-    "username": "anessrhm",
+    "username": "ayoub_160h",
     "points": 10
   },
   {
     "rank": 1337,
-    "username": "anes_16",
+    "username": "aymenazzouz77",
     "points": 10
   },
   {
     "rank": 1338,
-    "username": "andka70",
+    "username": "asaad__20",
     "points": 10
   },
   {
     "rank": 1339,
-    "username": "amineotis",
+    "username": "arino_67",
     "points": 10
   },
   {
     "rank": 1340,
-    "username": "aljibory85",
+    "username": "appolo1223",
     "points": 10
   },
   {
     "rank": 1341,
-    "username": "akhatarr",
+    "username": "anessrhm",
     "points": 10
   },
   {
     "rank": 1342,
-    "username": "adh3my",
+    "username": "anes_16",
     "points": 10
   },
   {
     "rank": 1343,
-    "username": "adelproof1",
+    "username": "andka70",
     "points": 10
   },
   {
     "rank": 1344,
-    "username": "achrafv8",
+    "username": "amineotis",
     "points": 10
   },
   {
     "rank": 1345,
-    "username": "abdullrhman01",
+    "username": "aljibory85",
     "points": 10
   },
   {
     "rank": 1346,
-    "username": "abdoun1dz",
+    "username": "akhatarr",
     "points": 10
   },
   {
     "rank": 1347,
-    "username": "abdokriz01",
+    "username": "adh3my",
     "points": 10
   },
   {
     "rank": 1348,
-    "username": "abderrahmann_07",
+    "username": "adelproof1",
     "points": 10
   },
   {
     "rank": 1349,
-    "username": "abd33lgha4",
+    "username": "achrafv8",
     "points": 10
   },
   {
     "rank": 1350,
-    "username": "a_b_d_r_h_m_n_47",
+    "username": "abdullrhman01",
     "points": 10
   },
   {
     "rank": 1351,
-    "username": "7osamij",
+    "username": "abdoun1dz",
     "points": 10
   },
   {
     "rank": 1352,
-    "username": "7mkah",
+    "username": "abdokriz01",
     "points": 10
   },
   {
     "rank": 1353,
-    "username": "7blend",
+    "username": "abderrahmann_07",
     "points": 10
   },
   {
     "rank": 1354,
-    "username": "7ak1mx",
+    "username": "abd33lgha4",
     "points": 10
   },
   {
     "rank": 1355,
-    "username": "4hyqw",
+    "username": "a_b_d_r_h_m_n_47",
     "points": 10
   },
   {
     "rank": 1356,
-    "username": "3raffat",
+    "username": "7osamij",
     "points": 10
   },
   {
     "rank": 1357,
-    "username": "3lo_oi",
+    "username": "7mkah",
     "points": 10
   },
   {
     "rank": 1358,
-    "username": "1seif_s",
+    "username": "7blend",
     "points": 10
   },
   {
     "rank": 1359,
-    "username": "1bensu1",
+    "username": "7ak1mx",
     "points": 10
   },
   {
     "rank": 1360,
-    "username": "19walid98",
+    "username": "4hyqw",
     "points": 10
   },
   {
     "rank": 1361,
-    "username": "1742174",
+    "username": "3raffat",
     "points": 10
   },
   {
     "rank": 1362,
-    "username": "1234haytem",
+    "username": "3lo_oi",
     "points": 10
   },
   {
     "rank": 1363,
-    "username": "0mazzy",
+    "username": "1seif_s",
     "points": 10
   },
   {
     "rank": 1364,
-    "username": "0koya",
+    "username": "1bensu1",
     "points": 10
   },
   {
     "rank": 1365,
-    "username": "0750015054",
+    "username": "19walid98",
     "points": 10
   },
   {
     "rank": 1366,
-    "username": "043sosascar",
+    "username": "1742174",
     "points": 10
   },
   {
     "rank": 1367,
-    "username": "00kittyyy",
+    "username": "1234haytem",
     "points": 10
   },
   {
     "rank": 1368,
-    "username": "00_eva",
+    "username": "0mazzy",
     "points": 10
   },
   {
     "rank": 1369,
+    "username": "0koya",
+    "points": 10
+  },
+  {
+    "rank": 1370,
+    "username": "0750015054",
+    "points": 10
+  },
+  {
+    "rank": 1371,
+    "username": "043sosascar",
+    "points": 10
+  },
+  {
+    "rank": 1372,
+    "username": "00kittyyy",
+    "points": 10
+  },
+  {
+    "rank": 1373,
+    "username": "00_eva",
+    "points": 10
+  },
+  {
+    "rank": 1374,
     "username": "zakki_ttv",
     "points": 5
   },
   {
-    "rank": 1370,
+    "rank": 1375,
     "username": "yaa_koub",
     "points": 5
   },
   {
-    "rank": 1371,
+    "rank": 1376,
     "username": "xmiidou",
     "points": 5
   },
   {
-    "rank": 1372,
+    "rank": 1377,
     "username": "tvxdiablo",
     "points": 5
   },
   {
-    "rank": 1373,
+    "rank": 1378,
     "username": "rrmn1",
     "points": 5
   },
   {
-    "rank": 1374,
+    "rank": 1379,
     "username": "noobsgetright",
     "points": 5
   },
   {
-    "rank": 1375,
+    "rank": 1380,
     "username": "ninja19991",
     "points": 5
   },
   {
-    "rank": 1376,
+    "rank": 1381,
     "username": "nibiiitv",
     "points": 5
   },
   {
-    "rank": 1377,
+    "rank": 1382,
     "username": "massi_ouz",
     "points": 5
   },
   {
-    "rank": 1378,
+    "rank": 1383,
     "username": "kalyue",
     "points": 5
   },
   {
-    "rank": 1379,
+    "rank": 1384,
     "username": "kait0oo007",
     "points": 5
   },
   {
-    "rank": 1380,
+    "rank": 1385,
     "username": "josegomeeedzz",
     "points": 5
   },
   {
-    "rank": 1381,
+    "rank": 1386,
     "username": "jeetbot",
     "points": 5
   },
   {
-    "rank": 1382,
+    "rank": 1387,
     "username": "hako_killer",
     "points": 5
   },
   {
-    "rank": 1383,
+    "rank": 1388,
     "username": "ftita1",
     "points": 5
   },
   {
-    "rank": 1384,
+    "rank": 1389,
     "username": "csfoxx",
     "points": 5
   },
   {
-    "rank": 1385,
+    "rank": 1390,
     "username": "anisbnk",
     "points": 5
   },
   {
-    "rank": 1386,
+    "rank": 1391,
     "username": "5quir",
     "points": 5
   },
   {
-    "rank": 1387,
+    "rank": 1392,
     "username": "1_zenki",
     "points": 5
   }
