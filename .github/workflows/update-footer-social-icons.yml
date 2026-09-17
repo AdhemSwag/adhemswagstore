@@ -1,0 +1,79 @@
+name: Update footer social icons
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/update-footer-social-icons.yml'
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Update all page footers
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          pages = [p for p in Path('.').rglob('index.html') if '.git' not in p.parts]
+          socials = [
+              ('twitch.tv/AdhemSwag', 'Twitch'),
+              ('kick.com/adhemswag918', 'Kick'),
+              ('instagram.com/adhemswag', 'Instagram'),
+              ('x.com/adhemdwag', 'X'),
+              ('tiktok.com/@adhemswagg', 'TikTok'),
+              ('t.me/adhemswag', 'Telegram'),
+              ('discord.gg/adhemswag', 'Discord'),
+              ('youtube.com/adhemswag', 'YouTube'),
+          ]
+
+          for path in pages:
+              text = path.read_text(encoding='utf-8')
+              icons = []
+              for needle, label in socials:
+                  m = re.search(r'<a[^>]+href=[\"\']https?://(?:www\.)?' + re.escape(needle) + r'[\"\'][^>]*class=[\"\']sidebar-link[\"\'][^>]*>\s*(<svg[\s\S]*?</svg>)', text, re.I)
+                  if not m:
+                      m = re.search(r'<a[^>]+class=[\"\']sidebar-link[\"\'][^>]+href=[\"\']https?://(?:www\.)?' + re.escape(needle) + r'[\"\'][^>]*>\s*(<svg[\s\S]*?</svg>)', text, re.I)
+                  if m:
+                      svg = m.group(1)
+                      svg = re.sub(r'\s*(?:width|height)=[\"\'][^\"\']*[\"\']', '', svg, flags=re.I)
+                      svg = re.sub(r'\s*style=[\"\'][^\"\']*[\"\']', '', svg, flags=re.I)
+                      svg = re.sub(r'<svg', '<svg aria-hidden="true"', svg, count=1)
+                      icons.append(f'<a href="https://{needle}" aria-label="{label}" target="_blank" rel="noopener">{svg}</a>')
+
+              if len(icons) < 2:
+                  print(f'Skipping {path}: could not find enough existing sidebar icons')
+                  continue
+
+              block = '  <div class="footer-socials" aria-label="Social links">\n' + '\n'.join('    '+x for x in icons) + '\n  </div>\n'
+              if re.search(r'<div class=[\"\']footer-socials[\"\']', text):
+                  text = re.sub(r'\s*<div class=[\"\']footer-socials[\"\'][\s\S]*?</div>\s*', '\n'+block, text, count=1)
+              else:
+                  text = text.replace('</footer>', block + '</footer>', 1)
+
+              if '.footer-socials{' not in text:
+                  css = """
+  .footer-socials{display:flex;justify-content:center;align-items:center;gap:12px;margin:16px 0 4px;}
+  .footer-socials a{width:34px;height:34px;display:flex;align-items:center;justify-content:center;border:1px solid var(--line);color:var(--cyan);text-decoration:none;transition:all .2s ease;}
+  .footer-socials a:hover{background:rgba(17,217,247,.08);border-color:var(--cyan);box-shadow:0 0 12px rgba(17,217,247,.25);}
+  .footer-socials svg{width:17px;height:17px;fill:currentColor;}
+"""
+                  text = text.replace('</style>', css + '</style>', 1)
+              else:
+                  text = re.sub(r'\s*\.footer-socials\{[^}]*\}\s*\.footer-socials a\{[^}]*\}\s*\.footer-socials a:hover\{[^}]*\}\s*', '\n'+css if 'css' in locals() else '\n', text, count=1)
+
+              path.write_text(text, encoding='utf-8')
+              print('Updated', path)
+          PY
+      - name: Commit changes and remove workflow
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add '*.html'
+          git rm .github/workflows/update-footer-social-icons.yml
+          git commit -m "Use real social icons in all page footers" || exit 0
+          git push
