@@ -243,6 +243,17 @@ footer .footer-copy .row{margin:0;}
 .footer-socials a:hover{background:rgba(17,217,247,.08);border-color:var(--cyan);box-shadow:0 0 9px rgba(17,217,247,.2);}
 .footer-socials svg{width:14px !important;height:14px !important;display:block;fill:#11D9F7 !important;color:#11D9F7 !important;opacity:1 !important;}
 @media (max-width:700px){footer .footer-inner{flex-direction:column;align-items:center;text-align:center;gap:14px}.footer-socials{justify-content:center;flex-wrap:wrap}}
+
+/* ---- global viewer account header ---- */
+.adhem-topbar{position:relative;z-index:20;min-height:54px;margin-left:0;border-bottom:1px solid var(--line);background:rgba(5,7,10,.94);display:flex;align-items:center;justify-content:space-between;padding:9px clamp(18px,4vw,48px);font-family:'JetBrains Mono',monospace;backdrop-filter:blur(8px)}
+.adhem-topbar-left{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:10px;letter-spacing:.12em;text-transform:uppercase}
+.adhem-topbar-mark{width:7px;height:7px;background:var(--cyan);box-shadow:0 0 9px rgba(17,217,247,.7)}
+.adhem-topbar-brand{color:var(--white);font-weight:600}
+.adhem-topbar-brand span{color:var(--cyan)}
+.adhem-twitch-connect{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:34px;padding:8px 15px;border:1px solid rgba(17,217,247,.5);background:rgba(17,217,247,.06);color:var(--cyan);text-decoration:none;font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;cursor:pointer;transition:all .2s ease}
+.adhem-twitch-connect svg{width:15px;height:15px;fill:currentColor}
+.adhem-twitch-connect:hover{background:var(--cyan);color:#05070a;border-color:var(--cyan);box-shadow:0 0 16px rgba(17,217,247,.3)}
+@media(max-width:700px){.adhem-topbar{padding:8px 14px}.adhem-topbar-left{font-size:9px}.adhem-topbar-left .adhem-topbar-brand{display:none}.adhem-twitch-connect{font-size:9px;padding:8px 12px}}
 </style>
 </head>
 <body>
@@ -311,6 +322,14 @@ footer .footer-copy .row{margin:0;}
   <span>YouTube</span>
 </a>
 </nav>
+<div class="adhem-topbar" role="banner">
+  <div class="adhem-topbar-left"><span class="adhem-topbar-mark"></span><span class="adhem-topbar-brand">ADHEMSWAG <span>//</span> FNC REWARDS</span></div>
+  <a class="adhem-twitch-connect" href="#" id="twitchConnectBtn" aria-label="Connect Twitch" data-twitch-connect>
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 3h17v12l-5 5h-4l-3 3v-3H4V3zm2 2v13h4v1.2L11.8 18H15l4-4V5H6zm3 3h2v5H9V8zm5 0h2v5h-2V8z"/></svg>
+    CONNECT TWITCH
+  </a>
+</div>
+
 
 <main>
   <div class="eyebrow" style="margin-bottom:10px;">// AdhemSwag Official Setup</div>
