@@ -1,0 +1,52 @@
+name: Finish social sidebar and footer
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/final-socials-fix.yml']
+permissions:
+  contents: write
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Update every page
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          yt='''  <a href="https://youtube.com/adhemswag" target="_blank" rel="noopener" class="sidebar-link">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.6 15.5v-7l6.2 3.5-6.2 3.5z"/></svg>
+            <span>YouTube</span>
+          </a>'''
+          footer='''  <a href="https://youtube.com/adhemswag" aria-label="YouTube" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.6 15.5v-7l6.2 3.5-6.2 3.5z"/></svg></a>'''
+          css='''\n  .footer-socials{display:flex;justify-content:center;align-items:center;gap:12px;margin:18px 0 4px;}\n  .footer-socials a{width:42px;height:42px;display:flex;align-items:center;justify-content:center;border:1px solid var(--cyan);color:#11D9F7 !important;text-decoration:none;opacity:1;transition:all .2s ease;}\n  .footer-socials a:hover{background:rgba(17,217,247,.08);box-shadow:0 0 14px rgba(17,217,247,.3);}\n  .footer-socials svg{width:22px !important;height:22px !important;display:block;fill:#11D9F7 !important;color:#11D9F7 !important;opacity:1 !important;}\n'''
+          for p in Path('.').rglob('index.html'):
+              if '.git' in p.parts: continue
+              s=p.read_text(encoding='utf-8')
+              if 'class="sidebar"' in s and 'href="https://youtube.com/adhemswag"' not in s.split('</nav>',1)[0]:
+                  pos=s.find('</nav>')
+                  if pos>=0:
+                      s=s[:pos]+yt+'\n'+s[pos:]
+              if 'class="footer-socials"' in s:
+                  s=re.sub(r'(?s)(\.footer-socials\{).*?\n\s*</style>', lambda m:m.group(0), s) if False else s
+                  if '.footer-socials svg{' not in s:
+                      s=s.replace('</style>',css+'</style>',1)
+                  if 'aria-label="YouTube"' not in s.split('</footer>',1)[0]:
+                      s=s.replace('</div>\n</footer>',footer+'\n</div>\n</footer>') if False else s
+                      marker='</div>\n</footer>'
+                      idx=s.find(marker)
+                      if idx>=0 and 'class="footer-socials"' in s[:idx]:
+                          s=s[:idx]+footer+'\n'+s[idx:]
+              s=re.sub(r'href="https://x\.com/[^"]*" aria-label="X"', 'href="https://x.com/AdhemSwag" aria-label="X"', s)
+              p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit and remove workflow
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add '*.html'
+          git rm .github/workflows/final-socials-fix.yml
+          git commit -m "Finish social sidebar and footer on all pages" || exit 0
+          git push
