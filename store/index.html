@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SwagStore — AdhemSwag Rewards</title>
+<meta name="description" content="SwagStore — redeem AdhemSwag rewards with FNC Points.">
+<link rel="canonical" href="https://adhemswag.com/store/">
+<link rel="icon" href="/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#05070a;--panel:#0b0f12;--cyan:#11d9f7;--muted:#6b7a80;--white:#eaf6f8;--line:rgba(17,217,247,.14);--danger:#ff3b3b}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--white);font-family:Inter,sans-serif;min-height:100vh}
+body{padding-left:200px;background-image:linear-gradient(rgba(17,217,247,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(17,217,247,.045) 1px,transparent 1px);background-size:42px 42px}
+.sidebar{position:fixed;top:0;left:0;height:100vh;width:200px;z-index:50;background:rgba(5,7,10,.92);backdrop-filter:blur(6px);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:22px 12px;gap:2px;overflow-y:auto}
+.sidebar-brand{display:flex;align-items:center;justify-content:center;padding:10px 8px 20px}
+.sidebar-brand a{font:700 18px 'JetBrains Mono',monospace;letter-spacing:.1em;color:var(--white);text-decoration:none}
+.sidebar-brand span{color:var(--cyan)}
+.sidebar-link{display:flex;align-items:center;gap:12px;padding:10px;text-decoration:none;color:rgba(107,122,128,.85);border-radius:3px;font-size:13px;font-weight:500;transition:.2s}
+.sidebar-link:hover,.sidebar-link.active{color:var(--cyan);background:rgba(17,217,247,.05)}
+.sidebar-link svg{width:17px;height:17px;flex-shrink:0}
+.sidebar-divider{height:1px;background:var(--line);margin:14px 10px}
+main{max-width:1080px;margin:0 auto;padding:70px 40px 80px}
+.eyebrow{font:11px 'JetBrains Mono',monospace;letter-spacing:.22em;text-transform:uppercase;color:#0a8fa3;margin-bottom:10px}
+h1{font:700 clamp(42px,6vw,70px) Rajdhani,sans-serif;text-transform:uppercase;line-height:1;color:var(--white)}
+h1 span{color:var(--cyan);text-shadow:0 0 22px rgba(17,217,247,.35)}
+.lede{max-width:650px;color:var(--muted);line-height:1.7;margin-top:18px}
+.status{margin-top:30px;border:1px solid rgba(255,59,59,.3);background:rgba(255,59,59,.045);padding:16px 18px;display:flex;align-items:center;gap:12px;font:12px 'JetBrains Mono',monospace}
+.status-dot{width:8px;height:8px;background:var(--danger);box-shadow:0 0 10px rgba(255,59,59,.7)}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:38px}
+.card{background:var(--panel);border:1px solid var(--line);padding:24px;min-height:210px;display:flex;flex-direction:column}
+.card-icon{font-size:28px;color:var(--cyan);margin-bottom:20px}
+.card h2{font:700 24px Rajdhani,sans-serif;text-transform:uppercase}
+.card p{color:var(--muted);font-size:13px;line-height:1.6;margin-top:8px}
+.btn{margin-top:auto;display:inline-flex;align-items:center;justify-content:center;padding:13px 18px;border:1px solid var(--line);color:var(--muted);font:700 11px 'JetBrains Mono',monospace;text-transform:uppercase;text-decoration:none;cursor:not-allowed}
+.btn.disabled{opacity:.65}
+.profile{margin-top:38px;border:1px solid var(--line);padding:24px;background:rgba(17,217,247,.025)}
+.profile h2{font:700 24px Rajdhani,sans-serif;text-transform:uppercase}
+.profile p{color:var(--muted);font-size:13px;line-height:1.6;margin:8px 0 18px}
+.profile a{display:inline-flex;padding:12px 18px;background:var(--cyan);color:#03181c;text-decoration:none;font:700 11px 'JetBrains Mono',monospace;text-transform:uppercase}
+footer{border-top:1px solid var(--line);padding:28px 20px;text-align:center;color:var(--muted);font:11px 'JetBrains Mono',monospace}
+footer a{color:var(--cyan);text-decoration:none}
+@media(max-width:1024px){body{padding-left:64px}.sidebar{width:64px}.sidebar-brand a{font-size:11px}.sidebar-link span{display:none}.sidebar-link{justify-content:center;padding:12px 4px}}
+@media(max-width:700px){.grid{grid-template-columns:1fr}main{padding:45px 24px 60px}}
+@media(max-width:640px){body{padding-left:52px}.sidebar{width:52px}.sidebar-brand{padding:8px 4px 14px}.sidebar-brand a{font-size:0}.sidebar-brand a:after{content:'AS';font:700 14px 'JetBrains Mono',monospace;color:var(--cyan)}}
+</style>
+</head>
+<body>
+<nav class="sidebar" aria-label="Main navigation">
+  <div class="sidebar-brand"><a href="https://adhemswag.com/">ADHEMSWAG<span>.</span></a></div>
+  <div class="sidebar-divider" style="margin-top:0"></div>
+  <a href="/" class="sidebar-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg><span>Dashboard</span></a>
+  <a href="/leaderboard" class="sidebar-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 21h8M12 17v4M17 3H7v6a5 5 0 0 0 10 0V3z"/></svg><span>Leaderboard</span></a>
+  <a href="/store" class="sidebar-link active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9h18l-1.5 12h-15L3 9z"/><path d="M5 9l2-6h10l2 6"/><path d="M9 13v4M15 13v4"/></svg><span>SwagStore</span></a>
+  <a href="/bonuses" class="sidebar-link"><span>🎁</span><span>Bonus</span></a>
+  <a href="/settings" class="sidebar-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4"/></svg><span>Settings</span></a>
+  <a href="/donate" class="sidebar-link"><span>♥</span><span>Donate</span></a>
+  <a href="https://www.faceit.com/en/club/df590edc-e868-4c06-9541-f0751a167417/" target="_blank" rel="noopener" class="sidebar-link"><span>◈</span><span>Faceit</span></a>
+</nav>
+<main>
+  <div class="eyebrow">// ADHEMSWAG REWARDS</div>
+  <h1>SWAG<span>STORE</span></h1>
+  <p class="lede">Redeem your FNC Points for AdhemSwag rewards. CS2 skins and other rewards will be available here once the rewards system is activated.</p>
+
+  <div class="status">
+    <span class="status-dot"></span>
+    <strong>REWARDS SYSTEM: STOPPED</strong>
+    <span>FNC Points &amp; XP are not being awarded or spent yet.</span>
+  </div>
+
+  <div class="grid">
+    <article class="card">
+      <div class="card-icon">◈</div>
+      <h2>CS2 Skins</h2>
+      <p>Counter-Strike 2 skins delivered through your Steam Trade Link.</p>
+      <span class="btn disabled">COMING SOON</span>
+    </article>
+    <article class="card">
+      <div class="card-icon">★</div>
+      <h2>Perks</h2>
+      <p>Special AdhemSwag perks and community rewards unlocked with FNC Points.</p>
+      <span class="btn disabled">COMING SOON</span>
+    </article>
+    <article class="card">
+      <div class="card-icon">+</div>
+      <h2>More Rewards</h2>
+      <p>New rewards will be added with their FNC cost and required level.</p>
+      <span class="btn disabled">COMING SOON</span>
+    </article>
+  </div>
+
+  <section class="profile">
+    <h2>Complete your profile</h2>
+    <p>Before earning or redeeming rewards, viewers will need a complete profile with email and Steam Trade Link. The earning system is currently stopped while existing StreamElements balances are prepared for migration.</p>
+    <a href="/settings">Open Profile Settings</a>
+  </section>
+</main>
+<footer>© 2026 AdhemSwag.com — All Rights Reserved · <a href="mailto:adhemswag@yahoo.com">adhemswag@yahoo.com</a></footer>
+</body>
+</html>
