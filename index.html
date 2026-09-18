@@ -786,15 +786,15 @@ footer .footer-copy .row{margin:0;}
   <!-- FAQ SECTION -->
   <div class="section-block">
     <div class="eyebrow" style="margin-bottom:14px;">// need help</div>
-    <a class="fnc-faq-btn" href="/faq/">
+    <button class="fnc-faq-btn" onclick="document.getElementById('fncFaqOverlay').classList.add('open')">
       <span class="fnc-faq-btn-icon">?</span>FAQ
-    </a>
+    </button>
 
     <div class="fnc-faq-overlay" id="fncFaqOverlay" onclick="if(event.target===this) this.classList.remove('open')">
       <div class="fnc-faq-modal">
           <button class="fnc-faq-close" onclick="document.getElementById('fncFaqOverlay').classList.remove('open')">×</button>
           <h2 class="fnc-faq-title">FNC POINTS <span>FAQ</span></h2>
-          <p class="fnc-faq-sub">Everything you need to know about earning and redeeming FNC Points.</p>
+          <p class="fnc-faq-sub">Active viewers only — watch and chat to earn points and unlock rewards to claim.</p>
 
           <div class="fnc-faq-section-label">Earning FNC Points</div>
 
