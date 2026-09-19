@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AdhemSwag — Admin Panel</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" href="/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#05070a;--panel:#0b0f12;--cyan:#11d9f7;--muted:#6b7a80;--white:#eaf6f8;--line:rgba(17,217,247,.14);--danger:#ff4d5f;--ok:#3ce7a5}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%;background:var(--bg);color:var(--white);font-family:Inter,sans-serif}
+body{background-image:linear-gradient(rgba(17,217,247,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(17,217,247,.035) 1px,transparent 1px);background-size:42px 42px}
+.admin-shell{display:grid;grid-template-columns:220px 1fr;min-height:100vh}
+.admin-nav{border-right:1px solid var(--line);background:rgba(5,7,10,.96);padding:22px 14px}
+.brand{display:block;padding:8px 10px 24px;text-decoration:none;color:var(--white);font:700 18px 'JetBrains Mono',monospace;letter-spacing:.08em}.brand span{color:var(--cyan)}
+.nav-label{font:10px 'JetBrains Mono',monospace;color:var(--muted);letter-spacing:.16em;text-transform:uppercase;padding:14px 10px 7px}
+.nav-btn{width:100%;border:0;background:transparent;color:var(--muted);padding:11px 10px;text-align:left;font:600 12px 'JetBrains Mono',monospace;cursor:pointer;border-radius:3px}
+.nav-btn:hover,.nav-btn.active{color:var(--cyan);background:rgba(17,217,247,.05)}
+.main{max-width:1250px;width:100%;margin:auto;padding:48px 42px 70px}
+.top{display:flex;justify-content:space-between;align-items:flex-end;gap:20px}.eyebrow{font:10px 'JetBrains Mono',monospace;letter-spacing:.2em;color:#0a8fa3;text-transform:uppercase;margin-bottom:8px}
+h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transform:uppercase}h1 span{color:var(--cyan)}
+.subtitle{color:var(--muted);font-size:13px;margin-top:10px;line-height:1.6}
+.security{margin-top:24px;border:1px solid rgba(17,217,247,.2);background:rgba(17,217,247,.035);padding:14px 16px;font:11px 'JetBrains Mono',monospace;color:var(--muted)}
+.security strong{color:var(--cyan)}
+.panel{display:none;margin-top:28px}.panel.active{display:block}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.card{border:1px solid var(--line);background:var(--panel);padding:20px}.card small{font:10px 'JetBrains Mono',monospace;color:var(--muted);text-transform:uppercase}.metric{font:700 30px Rajdhani,sans-serif;margin-top:6px}
+.section{margin-top:24px;border:1px solid var(--line);background:var(--panel);padding:22px}.section h2{font:700 24px Rajdhani,sans-serif;text-transform:uppercase}.section p{color:var(--muted);font-size:13px;line-height:1.6;margin-top:6px}
+.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:18px}.field{display:flex;flex-direction:column;gap:7px}.field.full{grid-column:1/-1}.field label{font:10px 'JetBrains Mono',monospace;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}.field input,.field textarea,.field select{width:100%;border:1px solid var(--line);background:#070b0e;color:var(--white);padding:12px;font:12px Inter,sans-serif;outline:none}.field textarea{min-height:90px;resize:vertical}.upload{border:1px dashed rgba(17,217,247,.3);padding:22px;text-align:center;color:var(--muted);font:11px 'JetBrains Mono',monospace}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.btn{border:1px solid var(--line);background:transparent;color:var(--cyan);padding:11px 16px;font:700 10px 'JetBrains Mono',monospace;text-transform:uppercase;cursor:pointer}.btn.primary{background:var(--cyan);color:#03181c;border-color:var(--cyan)}.btn.danger{color:var(--danger);border-color:rgba(255,77,95,.3)}
+.notice{padding:12px 14px;margin-top:14px;border-left:2px solid var(--cyan);background:rgba(17,217,247,.03);color:var(--muted);font-size:12px;line-height:1.6}
+.table-wrap{overflow:auto;margin-top:18px;border:1px solid var(--line)}table{width:100%;border-collapse:collapse;min-width:760px}th,td{padding:12px;border-bottom:1px solid var(--line);text-align:left;font-size:12px}th{font:10px 'JetBrains Mono',monospace;color:var(--muted);text-transform:uppercase}td{color:var(--white)}
+.lock{color:var(--danger);font-family:'JetBrains Mono',monospace;font-size:11px}
+@media(max-width:900px){.admin-shell{grid-template-columns:1fr}.admin-nav{border-right:0;border-bottom:1px solid var(--line);display:flex;gap:5px;overflow:auto;padding:10px}.brand,.nav-label{display:none}.nav-btn{width:auto;white-space:nowrap}.main{padding:30px 20px 50px}.cards{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.cards,.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}}
+</style>
+</head>
+<body>
+<div class="admin-shell">
+  <aside class="admin-nav">
+    <a class="brand" href="/">ADHEMSWAG<span>.</span></a>
+    <div class="nav-label">Admin</div>
+    <button class="nav-btn active" data-panel="dashboard">Dashboard</button>
+    <button class="nav-btn" data-panel="rewards">Rewards / Store</button>
+    <button class="nav-btn" data-panel="redemptions">Redemptions</button>
+    <button class="nav-btn" data-panel="viewers">Viewers</button>
+    <button class="nav-btn" data-panel="transactions">Transactions</button>
+    <button class="nav-btn" data-panel="system">System</button>
+  </aside>
+
+  <main class="main">
+    <div class="top">
+      <div>
+        <div class="eyebrow">// PRIVATE ADMIN AREA</div>
+        <h1>ADMIN <span>PANEL</span></h1>
+        <p class="subtitle">Manage FNC rewards, viewers, redemptions and system controls from one place.</p>
+      </div>
+    </div>
+
+    <div class="security"><strong>SECURITY:</strong> this panel UI is created, but privileged authentication and write actions are intentionally locked until the secure admin identity is connected to Supabase. No FNC or reward operation is executed by this page yet.</div>
+
+    <section id="dashboard" class="panel active">
+      <div class="cards">
+        <div class="card"><small>Total Viewers</small><div class="metric">—</div></div>
+        <div class="card"><small>Active Rewards</small><div class="metric">—</div></div>
+        <div class="card"><small>Pending Redemptions</small><div class="metric">—</div></div>
+        <div class="card"><small>FNC System</small><div class="metric">STOPPED</div></div>
+      </div>
+      <div class="section">
+        <h2>Admin workflow</h2>
+        <p>The final panel will let you add rewards, upload images, set FNC prices and Level requirements, manage stock, approve/reject redemptions, refund FNC automatically, and review transaction history.</p>
+        <div class="notice">Current database structure already contains rewards, redemptions, users and transactions. FNC/XP remain disabled until the complete system is tested.</div>
+      </div>
+    </section>
+
+    <section id="rewards" class="panel">
+      <div class="section">
+        <h2>Add / Edit Reward</h2>
+        <p>This is the store management form that will become connected to Supabase after secure admin authentication is enabled.</p>
+        <div class="form-grid">
+          <div class="field"><label>Reward name</label><input placeholder="Sport Gloves | Red Racer" disabled></div>
+          <div class="field"><label>FNC cost</label><input type="number" placeholder="20000" disabled></div>
+          <div class="field"><label>Level required</label><input type="number" placeholder="15" disabled></div>
+          <div class="field"><label>Stock</label><input type="number" placeholder="3" disabled></div>
+          <div class="field full"><label>Description</label><textarea placeholder="Reward description..." disabled></textarea></div>
+          <div class="field full"><label>Reward image</label><div class="upload">UPLOAD IMAGE — secured Storage connection will be added here</div></div>
+        </div>
+        <div class="actions"><button class="btn primary" disabled>SAVE REWARD</button><button class="btn" disabled>ACTIVATE</button></div>
+      </div>
+    </section>
+
+    <section id="redemptions" class="panel">
+      <div class="section">
+        <h2>Redemption Queue</h2>
+        <p>Every redemption will show the viewer, reward, FNC spent, Steam Trade Link, date and action buttons.</p>
+        <div class="table-wrap"><table><thead><tr><th>Viewer</th><th>Reward</th><th>FNC</th><th>Steam Trade Link</th><th>Date</th><th>Actions</th></tr></thead><tbody><tr><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td><span class="lock">SECURE BACKEND REQUIRED</span></td></tr></tbody></table></div>
+        <div class="actions"><button class="btn primary" disabled>APPROVE</button><button class="btn danger" disabled>REJECT + REFUND</button></div>
+      </div>
+    </section>
+
+    <section id="viewers" class="panel">
+      <div class="section">
+        <h2>Viewers</h2>
+        <p>Search viewers, inspect FNC/XP/Level, profile status and account connections. Admin adjustments will be logged in transactions.</p>
+        <div class="actions"><button class="btn" disabled>SEARCH VIEWERS</button><button class="btn" disabled>ADD FNC</button><button class="btn" disabled>ADD XP</button><button class="btn danger" disabled>BLOCK ACCOUNT</button></div>
+      </div>
+    </section>
+
+    <section id="transactions" class="panel">
+      <div class="section">
+        <h2>Transactions</h2>
+        <p>Full audit history for watch, subscription, bits, donation, raid, redemption, import and admin adjustments.</p>
+        <div class="table-wrap"><table><thead><tr><th>Date</th><th>Viewer</th><th>Type</th><th>Amount</th><th>Source</th><th>Event ID</th></tr></thead><tbody><tr><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr></tbody></table></div>
+      </div>
+    </section>
+
+    <section id="system" class="panel">
+      <div class="section">
+        <h2>System Controls</h2>
+        <p>Global switches remain OFF until the full Twitch/EventSub, XP/FNC, Store and redemption workflow has passed testing.</p>
+        <div class="actions"><button class="btn danger" disabled>FNC: OFF</button><button class="btn danger" disabled>XP: OFF</button><button class="btn danger" disabled>REWARDS: OFF</button></div>
+      </div>
+    </section>
+  </main>
+</div>
+<script>
+document.querySelectorAll('.nav-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.panel).classList.add('active');
+  });
+});
+</script>
+</body>
+</html>
