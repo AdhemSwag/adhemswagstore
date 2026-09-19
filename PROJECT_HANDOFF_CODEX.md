@@ -235,12 +235,13 @@ Existing public tables:
 - fnc_imports
 
 RLS is enabled on all public tables.
-Internal tables currently need final deny-all or private-schema policy review:
+Internal tables are protected by deny-all RLS policies for anon/authenticated:
 - donations
 - fnc_imports
 - raid_events
 - system_config
 - twitch_events
+Security advisor currently reports no findings.
 Run Supabase security advisors after DDL/security changes.
 
 Important Supabase security:
@@ -384,8 +385,10 @@ Current old leaderboard data is preserved in:
 - leaderboard/data.json
 - old leaderboard implementation/workflow/script
 
-Old export contains roughly 1,540 viewer entries with username + points.
-It does not safely provide Twitch IDs/avatars in the static export.
+Old export contains roughly 1,500 staged viewer entries with username + points.
+The current Supabase staging table `public.fnc_imports` contains exactly 1,500 rows and 637,690 total old FNC.
+Those rows currently use temporary IDs in the form `legacy:<username>`, not canonical Twitch user IDs, so the migration is staged but NOT yet matched to live Twitch accounts.
+It does not safely provide canonical Twitch IDs/avatars in the static export.
 
 Goal:
 - Recover/import ALL old StreamElements FNC balances first.
@@ -393,7 +396,7 @@ Goal:
 - When a viewer connects Twitch, securely match canonical Twitch ID.
 - Prefer a verified StreamElements export/API with Twitch IDs if available.
 - Do NOT blindly match usernames without a safe migration strategy.
-- Do NOT claim the migration is complete: previous bulk import attempts failed.
+- Do NOT claim the migration is complete. The old balances are now staged in Supabase, but canonical Twitch matching and final balance import are still pending.
 - Do NOT delete leaderboard/data.json until migration is verified.
 
 Existing old files:
@@ -484,6 +487,7 @@ Recent completed frontend changes:
 - Settings is viewer account settings.
 - Config owns CS2 configuration.
 - Profile owns viewer progression.
+- Profile now includes REDEEM CODE and HISTORY UI placeholders; redemption remains stopped until backend activation.
 - Admin UI foundation created.
 - Top-right account UI foundation created.
 - CONNECT TWITCH remains top-right in header and must stay there.
