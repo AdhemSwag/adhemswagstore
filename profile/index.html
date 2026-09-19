@@ -20,6 +20,22 @@
 .adhem-account-menu .account-menu-danger:hover{color:#ff8b8b;background:rgba(255,59,59,.07)}
 .adhem-account[hidden],.adhem-account-user[hidden],.adhem-account-menu[hidden]{display:none!important}
 @media(max-width:700px){.adhem-account{top:18px;right:20px}.adhem-account-name{display:none}.adhem-account-connect{font-size:9px;padding:8px 10px}}
+
+.profile-extra{display:grid;grid-template-columns:.9fr 1.1fr;gap:16px;margin-top:16px}
+.code-box{display:flex;gap:8px;margin-top:14px}
+.code-box input{flex:1;min-width:0;padding:12px;border:1px solid var(--line);background:#070b0e;color:var(--white);font:500 11px 'JetBrains Mono',monospace;outline:none}
+.code-box input:focus{border-color:rgba(17,217,247,.5)}
+.code-box button{padding:12px 16px;border:1px solid var(--cyan);background:rgba(17,217,247,.08);color:var(--cyan);font:700 10px 'JetBrains Mono',monospace;letter-spacing:.08em;cursor:pointer}
+.code-box button:hover{background:var(--cyan);color:#03181c}
+.code-status{margin-top:10px;min-height:16px;color:var(--muted);font:500 10px 'JetBrains Mono',monospace}
+.history-list{margin-top:4px}
+.history-item{display:grid;grid-template-columns:90px 1fr auto;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line);font-size:12px}
+.history-item:last-child{border-bottom:0}
+.history-type{color:var(--cyan);font:600 10px 'JetBrains Mono',monospace;text-transform:uppercase}
+.history-desc{color:var(--white)}
+.history-amount{color:var(--muted);font:500 10px 'JetBrains Mono',monospace;text-align:right}
+.empty-history{padding:16px 0;color:var(--muted);font-size:12px;line-height:1.6}
+@media(max-width:800px){.profile-extra{grid-template-columns:1fr}.history-item{grid-template-columns:76px 1fr}.history-amount{text-align:left;grid-column:2}}
 </style></head><body>
 <nav class="sidebar"><div class="sidebar-brand"><a href="/">ADHEMSWAG<span>.</span></a></div><div class="sidebar-divider"></div>
 <a href="/" class="sidebar-link"><span>⌂</span><span>Dashboard</span></a><a href="/leaderboard/" class="sidebar-link"><span>🏆</span><span>Leaderboard</span></a><a href="/store/" class="sidebar-link"><span>🛒</span><span>STORE</span></a><a href="/bonuses/" class="sidebar-link"><span>🎁</span><span>Bonus</span></a><a href="/profile/" class="sidebar-link"><span>👤</span><span>MY PROFILE</span></a>
@@ -43,6 +59,24 @@
 <div class="grid"><section class="card"><h2>Account Status</h2><div class="row"><span class="label">Status</span><span class="ok">Ready to use</span></div><div class="row"><span class="label">Account type</span><span class="value">Viewer account</span></div><p class="note">You can earn points, join public giveaways, redeem available rewards, and build profile progression once the rewards system is activated.</p><a class="cta" href="/settings/">Complete Your Profile</a></section>
 <section class="card"><h2>Progression</h2><div class="row"><span class="label">FNC Points</span><span class="value">0</span></div><div class="row"><span class="label">XP</span><span class="value">0</span></div><div class="row"><span class="label">Level</span><span class="value">1</span></div><div class="progress"><span></span></div><p class="note">Your XP and FNC balance will update automatically when the rewards system is activated.</p></section></div>
 <div class="card" style="margin-top:16px"><h2>Complete Your Profile</h2><p class="note">Connect Twitch and Steam, add your email and Steam Trade Link, and optionally connect Discord or Kick to prepare your account for FNC Rewards.</p></div>
+<div class="profile-extra">
+<section class="card">
+<h2>REDEEM CODE</h2>
+<p class="note">Enter a promotional or event code. Code rewards will be processed securely when the rewards system is activated.</p>
+<div class="code-box">
+<input id="redeemCodeInput" type="text" maxlength="64" placeholder="ENTER YOUR CODE" autocomplete="off">
+<button id="redeemCodeBtn" type="button">REDEEM</button>
+</div>
+<div class="code-status" id="redeemCodeStatus">Rewards are currently stopped.</div>
+</section>
+<section class="card">
+<h2>HISTORY</h2>
+<div class="history-list" id="profileHistory">
+<div class="empty-history">No activity yet. Your FNC earnings, XP activity, redemptions and refunds will appear here.</div>
+</div>
+</section>
+</div>
+
 </main>
 <script id="adhem-account-menu-js">
 (function(){
@@ -78,4 +112,18 @@
     connect.hidden=false;
   });
 })();
+
+  const redeemBtn=document.getElementById('redeemCodeBtn');
+  const redeemInput=document.getElementById('redeemCodeInput');
+  const redeemStatus=document.getElementById('redeemCodeStatus');
+  if(redeemBtn){
+    redeemBtn.addEventListener('click',function(){
+      redeemStatus.textContent='Rewards are currently stopped. This code cannot be redeemed yet.';
+    });
+  }
+  if(redeemInput){
+    redeemInput.addEventListener('keydown',function(e){
+      if(e.key==='Enter') redeemBtn.click();
+    });
+  }
 </script></body></html>
