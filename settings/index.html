@@ -13,6 +13,22 @@
 .sidebar{position:fixed;top:0;left:0;height:100vh;width:200px;z-index:50;background:rgba(5,7,10,.94);backdrop-filter:blur(6px);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:22px 12px;gap:2px;overflow-y:auto}.sidebar-brand{text-align:center;padding:10px 8px 20px}.sidebar-brand a{font:700 18px 'JetBrains Mono',monospace;letter-spacing:.1em;color:var(--white);text-decoration:none}.sidebar-brand span{color:var(--cyan)}.sidebar-link{display:flex;align-items:center;gap:12px;padding:10px;text-decoration:none;color:rgba(107,122,128,.85);border-radius:3px;font-size:13px;font-weight:500;transition:.2s}.sidebar-link:hover,.sidebar-link.active{color:var(--cyan);background:rgba(17,217,247,.05)}.sidebar-link svg{width:17px;height:17px;flex-shrink:0}.sidebar-divider{height:1px;background:var(--line);margin:14px 10px}
 main{max-width:1080px;margin:0 auto;padding:70px 40px 80px}.eyebrow{font:11px 'JetBrains Mono',monospace;letter-spacing:.22em;text-transform:uppercase;color:#0a8fa3;margin-bottom:10px}h1{font:700 clamp(42px,6vw,70px) Rajdhani,sans-serif;text-transform:uppercase;line-height:1}h1 span{color:var(--cyan)}.lede{max-width:700px;color:var(--muted);line-height:1.7;margin-top:18px}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:38px}.card{background:var(--panel);border:1px solid var(--line);padding:24px}.card h2{font:700 24px Rajdhani,sans-serif;text-transform:uppercase}.row{display:flex;justify-content:space-between;gap:20px;padding:15px 0;border-bottom:1px solid var(--line);font-size:13px}.row:last-child{border-bottom:0}.label{color:var(--muted)}.status{color:var(--cyan);font:11px 'JetBrains Mono',monospace;text-transform:uppercase}.note{margin-top:24px;padding:18px;border:1px solid var(--line);background:rgba(17,217,247,.025);color:var(--muted);line-height:1.6;font-size:13px}
 @media(max-width:1024px){body{padding-left:64px}.sidebar{width:64px}.sidebar-brand a{font-size:11px}.sidebar-link span{display:none}.sidebar-link{justify-content:center;padding:12px 4px}}@media(max-width:700px){.grid{grid-template-columns:1fr}main{padding:45px 24px 60px}}
+
+<style id="adhem-account-menu-css">
+.adhem-account{position:fixed;top:12px;right:18px;z-index:1000;font-family:'JetBrains Mono',monospace}
+.adhem-account-connect,.adhem-account-user{display:inline-flex;align-items:center;gap:9px;min-height:38px;padding:8px 12px;border:1px solid rgba(17,217,247,.45);background:rgba(5,7,10,.94);color:#11D9F7;text-decoration:none;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;box-shadow:0 6px 22px rgba(0,0,0,.28)}
+.adhem-account-connect:hover,.adhem-account-user:hover{background:rgba(17,217,247,.08);border-color:#11D9F7}
+.adhem-account-user{border-radius:22px;padding:5px 10px 5px 5px}
+.adhem-account-avatar{width:28px;height:28px;border-radius:50%;object-fit:cover;border:1px solid rgba(17,217,247,.45);background:#0b0f12}
+.adhem-account-name{max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#eaf6f8}
+.adhem-account-chevron{font-size:11px;color:#11D9F7}
+.adhem-account-menu{position:absolute;right:0;top:46px;min-width:190px;padding:7px;background:rgba(5,7,10,.98);border:1px solid rgba(17,217,247,.22);box-shadow:0 12px 34px rgba(0,0,0,.45)}
+.adhem-account-menu a,.adhem-account-menu button{display:flex;align-items:center;width:100%;padding:11px 12px;background:none;border:0;color:#b9c9cd;text-decoration:none;font:500 11px 'JetBrains Mono',monospace;text-transform:uppercase;text-align:left;cursor:pointer}
+.adhem-account-menu a:hover,.adhem-account-menu button:hover{background:rgba(17,217,247,.07);color:#11D9F7}
+.adhem-account-menu .account-menu-danger{color:#ff6262}
+.adhem-account-menu .account-menu-danger:hover{color:#ff8b8b;background:rgba(255,59,59,.07)}
+.adhem-account[hidden],.adhem-account-user[hidden],.adhem-account-menu[hidden]{display:none!important}
+@media(max-width:700px){.adhem-account{top:8px;right:10px}.adhem-account-name{display:none}.adhem-account-connect{font-size:9px;padding:8px 10px}}
 </style></head><body>
 <nav class="sidebar" aria-label="Main navigation">
 <div class="sidebar-brand"><a href="/">ADHEMSWAG<span>.</span></a></div><div class="sidebar-divider" style="margin-top:0"></div>
@@ -20,11 +36,25 @@ main{max-width:1080px;margin:0 auto;padding:70px 40px 80px}.eyebrow{font:11px 'J
 <a href="/leaderboard/" class="sidebar-link"><span>🏆</span><span>Leaderboard</span></a>
 <a href="/store/" class="sidebar-link"><span>🛒</span><span>STORE</span></a>
 <a href="/bonuses/" class="sidebar-link"><span>🎁</span><span>Bonus</span></a>
-<a href="/profile/" class="sidebar-link"><span>👤</span><span>PROFILE</span></a>
-<a href="/settings/" class="sidebar-link active"><span>⚙</span><span>SETTINGS</span></a>
-<a href="/config/" class="sidebar-link"><span>🎮</span><span>CONFIG</span></a>
+<a href="/profile/" class="sidebar-link"><span>👤</span><span>MY PROFILE</span></a>
+  <a href="/config/" class="sidebar-link"><span>🎮</span><span>CONFIG</span></a>
 <a href="/donate/" class="sidebar-link"><span>♥</span><span>Donate</span></a>
 </nav>
+<div class="adhem-account" id="adhemAccount" aria-label="Viewer account">
+  <a class="adhem-account-connect" id="adhemAccountConnect" href="#" data-twitch-connect>
+    <span>◉</span><span>CONNECT TWITCH</span>
+  </a>
+  <button class="adhem-account-user" id="adhemAccountUser" type="button" aria-expanded="false" hidden>
+    <img class="adhem-account-avatar" id="adhemAccountAvatar" src="" alt="">
+    <span class="adhem-account-name" id="adhemAccountName">Viewer</span>
+    <span class="adhem-account-chevron">⌄</span>
+  </button>
+  <div class="adhem-account-menu" id="adhemAccountMenu" hidden>
+    <a href="/profile/">PROFILE</a>
+    <a href="/settings/">SETTINGS</a>
+    <button type="button" class="account-menu-danger" id="adhemAccountDisconnect">DISCONNECT</button>
+  </div>
+</div>
 <main>
 <div class="eyebrow">// Viewer Account</div><h1>SETTINGS</h1>
 <p class="lede">Manage your connected platforms and viewer account preferences. CS2 settings are kept separately in CONFIG.</p>
@@ -42,4 +72,39 @@ main{max-width:1080px;margin:0 auto;padding:70px 40px 80px}.eyebrow{font:11px 'J
 </section>
 </div>
 <div class="note"><strong>Account safety:</strong> Your Twitch and Steam connections will be used for rewards eligibility and delivery. Sensitive account data will stay protected by the backend.</div>
-</main></body></html>
+</main>
+<script id="adhem-account-menu-js">
+(function(){
+  const root=document.getElementById('adhemAccount');
+  if(!root)return;
+  const connect=document.getElementById('adhemAccountConnect');
+  const user=document.getElementById('adhemAccountUser');
+  const menu=document.getElementById('adhemAccountMenu');
+  const avatar=document.getElementById('adhemAccountAvatar');
+  const name=document.getElementById('adhemAccountName');
+  const disconnect=document.getElementById('adhemAccountDisconnect');
+  function setViewer(viewer){
+    if(!viewer || !viewer.twitchUsername)return;
+    name.textContent=viewer.twitchUsername;
+    if(viewer.avatarUrl) avatar.src=viewer.avatarUrl;
+    avatar.alt=viewer.twitchUsername;
+    connect.hidden=true;
+    user.hidden=false;
+  }
+  window.setAdhemViewer=setViewer;
+  user.addEventListener('click',function(e){
+    e.stopPropagation();
+    const open=!menu.hidden;
+    menu.hidden=open;
+    user.setAttribute('aria-expanded',String(!open));
+  });
+  document.addEventListener('click',function(){menu.hidden=true;user.setAttribute('aria-expanded','false');});
+  menu.addEventListener('click',function(e){e.stopPropagation();});
+  disconnect.addEventListener('click',function(){
+    window.dispatchEvent(new CustomEvent('adhem:disconnect'));
+    menu.hidden=true;
+    user.hidden=true;
+    connect.hidden=false;
+  });
+})();
+</script></body></html>
