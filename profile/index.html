@@ -4,11 +4,78 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#05070a;--panel:#0b0f12;--cyan:#11d9f7;--muted:#6b7a80;--white:#eaf6f8;--line:rgba(17,217,247,.14);--ok:#39e58c}*{box-sizing:border-box;margin:0;padding:0}html,body{background:var(--bg);color:var(--white);font-family:Inter,sans-serif;min-height:100vh}body{padding-left:200px;background-image:linear-gradient(rgba(17,217,247,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(17,217,247,.045) 1px,transparent 1px);background-size:42px 42px}.sidebar{position:fixed;top:0;left:0;height:100vh;width:200px;background:rgba(5,7,10,.94);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:22px 12px;gap:2px;z-index:50}.sidebar-brand{text-align:center;padding:10px 8px 20px}.sidebar-brand a{font:700 18px 'JetBrains Mono',monospace;color:var(--white);text-decoration:none;letter-spacing:.1em}.sidebar-brand span{color:var(--cyan)}.sidebar-divider{height:1px;background:var(--line);margin:14px 10px}.sidebar-link{display:flex;align-items:center;gap:12px;padding:10px;color:rgba(107,122,128,.85);text-decoration:none;font-size:13px}.sidebar-link:hover,.sidebar-link.active{color:var(--cyan);background:rgba(17,217,247,.05)}main{max-width:1080px;margin:auto;padding:70px 40px 80px}.eyebrow{font:11px 'JetBrains Mono',monospace;letter-spacing:.22em;color:#0a8fa3;margin-bottom:10px}h1{font:700 clamp(42px,6vw,70px) Rajdhani,sans-serif;text-transform:uppercase}h1 span{color:var(--cyan)}.lede{color:var(--muted);line-height:1.7;margin-top:18px;max-width:700px}.grid{display:grid;grid-template-columns:1.1fr .9fr;gap:16px;margin-top:38px}.card{background:var(--panel);border:1px solid var(--line);padding:24px}.card h2{font:700 24px Rajdhani,sans-serif;text-transform:uppercase;margin-bottom:14px}.row{display:flex;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--line);font-size:13px}.label{color:var(--muted)}.value{color:var(--white)}.ok{color:var(--ok);font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase}.progress{height:8px;background:#11181c;border:1px solid var(--line);margin:18px 0 10px}.progress>span{display:block;width:20%;height:100%;background:var(--cyan)}.note{margin-top:16px;color:var(--muted);font-size:13px;line-height:1.6}.cta{display:inline-flex;margin-top:18px;padding:12px 18px;background:var(--cyan);color:#03181c;text-decoration:none;font:700 11px 'JetBrains Mono',monospace;text-transform:uppercase}@media(max-width:1024px){body{padding-left:64px}.sidebar{width:64px}.sidebar-link span:last-child,.sidebar-brand a{display:none}.sidebar-link{justify-content:center}}@media(max-width:700px){.grid{grid-template-columns:1fr}main{padding:45px 24px 60px}}
+
+<style id="adhem-account-menu-css">
+.adhem-account{position:fixed;top:12px;right:18px;z-index:1000;font-family:'JetBrains Mono',monospace}
+.adhem-account-connect,.adhem-account-user{display:inline-flex;align-items:center;gap:9px;min-height:38px;padding:8px 12px;border:1px solid rgba(17,217,247,.45);background:rgba(5,7,10,.94);color:#11D9F7;text-decoration:none;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;box-shadow:0 6px 22px rgba(0,0,0,.28)}
+.adhem-account-connect:hover,.adhem-account-user:hover{background:rgba(17,217,247,.08);border-color:#11D9F7}
+.adhem-account-user{border-radius:22px;padding:5px 10px 5px 5px}
+.adhem-account-avatar{width:28px;height:28px;border-radius:50%;object-fit:cover;border:1px solid rgba(17,217,247,.45);background:#0b0f12}
+.adhem-account-name{max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#eaf6f8}
+.adhem-account-chevron{font-size:11px;color:#11D9F7}
+.adhem-account-menu{position:absolute;right:0;top:46px;min-width:190px;padding:7px;background:rgba(5,7,10,.98);border:1px solid rgba(17,217,247,.22);box-shadow:0 12px 34px rgba(0,0,0,.45)}
+.adhem-account-menu a,.adhem-account-menu button{display:flex;align-items:center;width:100%;padding:11px 12px;background:none;border:0;color:#b9c9cd;text-decoration:none;font:500 11px 'JetBrains Mono',monospace;text-transform:uppercase;text-align:left;cursor:pointer}
+.adhem-account-menu a:hover,.adhem-account-menu button:hover{background:rgba(17,217,247,.07);color:#11D9F7}
+.adhem-account-menu .account-menu-danger{color:#ff6262}
+.adhem-account-menu .account-menu-danger:hover{color:#ff8b8b;background:rgba(255,59,59,.07)}
+.adhem-account[hidden],.adhem-account-user[hidden],.adhem-account-menu[hidden]{display:none!important}
+@media(max-width:700px){.adhem-account{top:8px;right:10px}.adhem-account-name{display:none}.adhem-account-connect{font-size:9px;padding:8px 10px}}
 </style></head><body>
 <nav class="sidebar"><div class="sidebar-brand"><a href="/">ADHEMSWAG<span>.</span></a></div><div class="sidebar-divider"></div>
-<a href="/" class="sidebar-link"><span>⌂</span><span>Dashboard</span></a><a href="/leaderboard/" class="sidebar-link"><span>🏆</span><span>Leaderboard</span></a><a href="/store/" class="sidebar-link"><span>🛒</span><span>STORE</span></a><a href="/bonuses/" class="sidebar-link"><span>🎁</span><span>Bonus</span></a><a href="/profile/" class="sidebar-link active"><span>👤</span><span>PROFILE</span></a><a href="/settings/" class="sidebar-link"><span>⚙</span><span>SETTINGS</span></a><a href="/config/" class="sidebar-link"><span>🎮</span><span>CONFIG</span></a><a href="/donate/" class="sidebar-link"><span>♥</span><span>Donate</span></a></nav>
+<a href="/" class="sidebar-link"><span>⌂</span><span>Dashboard</span></a><a href="/leaderboard/" class="sidebar-link"><span>🏆</span><span>Leaderboard</span></a><a href="/store/" class="sidebar-link"><span>🛒</span><span>STORE</span></a><a href="/bonuses/" class="sidebar-link"><span>🎁</span><span>Bonus</span></a><a href="/profile/" class="sidebar-link"><span>👤</span><span>MY PROFILE</span></a>
+  <a href="/config/" class="sidebar-link"><span>🎮</span><span>CONFIG</span></a><a href="/donate/" class="sidebar-link"><span>♥</span><span>Donate</span></a></nav>
+<div class="adhem-account" id="adhemAccount" aria-label="Viewer account">
+  <a class="adhem-account-connect" id="adhemAccountConnect" href="#" data-twitch-connect>
+    <span>◉</span><span>CONNECT TWITCH</span>
+  </a>
+  <button class="adhem-account-user" id="adhemAccountUser" type="button" aria-expanded="false" hidden>
+    <img class="adhem-account-avatar" id="adhemAccountAvatar" src="" alt="">
+    <span class="adhem-account-name" id="adhemAccountName">Viewer</span>
+    <span class="adhem-account-chevron">⌄</span>
+  </button>
+  <div class="adhem-account-menu" id="adhemAccountMenu" hidden>
+    <a href="/profile/">PROFILE</a>
+    <a href="/settings/">SETTINGS</a>
+    <button type="button" class="account-menu-danger" id="adhemAccountDisconnect">DISCONNECT</button>
+  </div>
+</div>
 <main><div class="eyebrow">// Viewer Account</div><h1>PROFILE <span>OVERVIEW</span></h1><p class="lede">Your viewer profile, FNC rewards progression and account status.</p>
 <div class="grid"><section class="card"><h2>Account Status</h2><div class="row"><span class="label">Status</span><span class="ok">Ready to use</span></div><div class="row"><span class="label">Account type</span><span class="value">Viewer account</span></div><p class="note">You can earn points, join public giveaways, redeem available rewards, and build profile progression once the rewards system is activated.</p><a class="cta" href="/settings/">Complete Your Profile</a></section>
 <section class="card"><h2>Progression</h2><div class="row"><span class="label">FNC Points</span><span class="value">0</span></div><div class="row"><span class="label">XP</span><span class="value">0</span></div><div class="row"><span class="label">Level</span><span class="value">1</span></div><div class="progress"><span></span></div><p class="note">Your XP and FNC balance will update automatically when the rewards system is activated.</p></section></div>
 <div class="card" style="margin-top:16px"><h2>Complete Your Profile</h2><p class="note">Connect Twitch and Steam, add your email and Steam Trade Link, and optionally connect Discord or Kick to prepare your account for FNC Rewards.</p></div>
-</main></body></html>
+</main>
+<script id="adhem-account-menu-js">
+(function(){
+  const root=document.getElementById('adhemAccount');
+  if(!root)return;
+  const connect=document.getElementById('adhemAccountConnect');
+  const user=document.getElementById('adhemAccountUser');
+  const menu=document.getElementById('adhemAccountMenu');
+  const avatar=document.getElementById('adhemAccountAvatar');
+  const name=document.getElementById('adhemAccountName');
+  const disconnect=document.getElementById('adhemAccountDisconnect');
+  function setViewer(viewer){
+    if(!viewer || !viewer.twitchUsername)return;
+    name.textContent=viewer.twitchUsername;
+    if(viewer.avatarUrl) avatar.src=viewer.avatarUrl;
+    avatar.alt=viewer.twitchUsername;
+    connect.hidden=true;
+    user.hidden=false;
+  }
+  window.setAdhemViewer=setViewer;
+  user.addEventListener('click',function(e){
+    e.stopPropagation();
+    const open=!menu.hidden;
+    menu.hidden=open;
+    user.setAttribute('aria-expanded',String(!open));
+  });
+  document.addEventListener('click',function(){menu.hidden=true;user.setAttribute('aria-expanded','false');});
+  menu.addEventListener('click',function(e){e.stopPropagation();});
+  disconnect.addEventListener('click',function(){
+    window.dispatchEvent(new CustomEvent('adhem:disconnect'));
+    menu.hidden=true;
+    user.hidden=true;
+    connect.hidden=false;
+  });
+})();
+</script></body></html>
