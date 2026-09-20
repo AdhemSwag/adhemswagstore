@@ -302,6 +302,9 @@
 
   ::selection{ background:rgba(17,217,247,0.3); }
 
+  .hero-faq{margin-top:-28px;margin-bottom:0;}
+  .hero-faq .fnc-faq-btn{padding:12px 20px;font-size:12px;}
+
   /* ---- FNC Points FAQ (button + popup) ---- */
   .fnc-faq-btn {
     display: inline-flex;
@@ -813,6 +816,13 @@ footer .footer-copy .row{margin:0;}
         <a href="https://twitch.tv/AdhemSwag" target="_blank" rel="noopener" class="btn btn-primary">▶ Watch Live</a>
         <a href="https://streamelements.com/AdhemSwag/store" target="_blank" class="btn btn-outline"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-3px; margin-right:7px;"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>Store</a>
       </div>
+
+      <div class="hero-faq">
+        <div class="eyebrow" style="margin-bottom:8px;">// need help</div>
+        <button class="fnc-faq-btn" onclick="document.getElementById('fncFaqOverlay').classList.add('open')">
+          <span class="fnc-faq-btn-icon">?</span>FAQ
+        </button>
+      </div>
     </div>
 
     <!-- RIGHT COLUMN -->
@@ -866,13 +876,6 @@ footer .footer-copy .row{margin:0;}
     </div>
 
   </div>
-
-  <!-- FAQ SECTION -->
-  <div class="section-block">
-    <div class="eyebrow" style="margin-bottom:14px;">// need help</div>
-    <button class="fnc-faq-btn" onclick="document.getElementById('fncFaqOverlay').classList.add('open')">
-      <span class="fnc-faq-btn-icon">?</span>FAQ
-    </button>
 
     <div class="fnc-faq-overlay" id="fncFaqOverlay" onclick="if(event.target===this) this.classList.remove('open')">
       <div class="fnc-faq-modal">
@@ -999,7 +1002,6 @@ footer .footer-copy .row{margin:0;}
           <small>Only during live</small>
         </div>
       </div>
-    </section>
 
     <!-- PARTNERS SECTION -->
     <div class="section-block">
