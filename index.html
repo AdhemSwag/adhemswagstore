@@ -488,6 +488,38 @@
   .fnc-faq-footer a { color: #11D9F7; text-decoration: none; font-weight: 600; }
   .fnc-faq-footer a:hover { text-decoration: underline; }
 
+
+  /* ---- redeem codes promo ---- */
+  .redeem-live-card{
+    margin-top:70px;
+    border:1px solid rgba(17,217,247,0.28);
+    background:linear-gradient(135deg, rgba(17,217,247,0.08), rgba(11,15,18,0.96) 48%, rgba(5,7,10,0.98));
+    position:relative; overflow:hidden; padding:28px;
+    box-shadow:0 0 28px rgba(17,217,247,0.07);
+  }
+  .redeem-live-card::before{
+    content:""; position:absolute; top:0; left:0; width:100%; height:2px;
+    background:linear-gradient(90deg, transparent, var(--cyan), transparent);
+    opacity:.9;
+  }
+  .redeem-live-grid{display:grid;grid-template-columns:1fr auto;gap:28px;align-items:center;position:relative;z-index:1}
+  .redeem-live-kicker{display:flex;align-items:center;gap:9px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.18em;color:var(--cyan);text-transform:uppercase;margin-bottom:10px}
+  .redeem-live-dot{width:7px;height:7px;border-radius:50%;background:var(--cyan);box-shadow:0 0 10px rgba(17,217,247,.8);animation:pulse 1.5s ease-in-out infinite}
+  .redeem-live-title{font-family:'Rajdhani',sans-serif;font-size:clamp(28px,4vw,40px);font-weight:700;text-transform:uppercase;line-height:1;color:var(--white);margin-bottom:9px}
+  .redeem-live-title span{color:var(--cyan);text-shadow:0 0 18px rgba(17,217,247,.35)}
+  .redeem-live-text{color:var(--muted);font-size:13.5px;line-height:1.6;max-width:650px}
+  .redeem-live-text b{color:var(--white)}
+  .redeem-live-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+  .redeem-live-btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:12px 18px;border:1px solid var(--cyan);background:var(--cyan);color:#03181c;text-decoration:none;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;transition:all .2s ease}
+  .redeem-live-btn:hover{box-shadow:0 0 20px rgba(17,217,247,.4);transform:translateY(-1px)}
+  .redeem-live-btn.alt{background:transparent;color:var(--cyan)}
+  .redeem-live-btn.alt:hover{background:rgba(17,217,247,.08)}
+  .redeem-live-ticket{width:185px;min-height:122px;border:1px dashed rgba(17,217,247,.35);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;background:rgba(5,7,10,.55);font-family:'JetBrains Mono',monospace;text-align:center;position:relative}
+  .redeem-live-ticket .ticket-icon{font-size:28px;color:var(--cyan);line-height:1;text-shadow:0 0 16px rgba(17,217,247,.45)}
+  .redeem-live-ticket strong{font-size:12px;letter-spacing:.1em;color:var(--white)}
+  .redeem-live-ticket small{font-size:9px;letter-spacing:.08em;color:var(--muted);text-transform:uppercase}
+  @media(max-width:640px){.redeem-live-card{padding:22px}.redeem-live-grid{grid-template-columns:1fr}.redeem-live-ticket{width:100%;min-height:90px}.redeem-live-actions .redeem-live-btn{flex:1}}
+
   /* ---- section separators ---- */
   .section-block{ margin-top:70px; }
   .partners-heading{
@@ -946,6 +978,28 @@ footer .footer-copy .row{margin:0;}
         </div>
       </div>
     </div>
+
+
+    <!-- REDEEM CODES SECTION -->
+    <section class="redeem-live-card bracket" id="redeem-codes">
+      <span class="bc-tr"></span><span class="bc-bl"></span>
+      <div class="redeem-live-grid">
+        <div>
+          <div class="redeem-live-kicker"><span class="redeem-live-dot"></span> LIVE REWARDS // CODES</div>
+          <h2 class="redeem-live-title">REDEEM <span>CODES</span></h2>
+          <p class="redeem-live-text"><b>Special codes drop during AdhemSwag live streams.</b> Watch the stream, grab the code when it appears, then redeem it from your profile.</p>
+          <div class="redeem-live-actions">
+            <a class="redeem-live-btn" href="https://twitch.tv/AdhemSwag" target="_blank" rel="noopener">WATCH LIVE</a>
+            <a class="redeem-live-btn alt" href="/profile/">REDEEM CODE</a>
+          </div>
+        </div>
+        <div class="redeem-live-ticket" aria-hidden="true">
+          <div class="ticket-icon">⌁</div>
+          <strong>CODE DROP</strong>
+          <small>Only during live</small>
+        </div>
+      </div>
+    </section>
 
     <!-- PARTNERS SECTION -->
     <div class="section-block">
