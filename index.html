@@ -675,7 +675,7 @@ footer .footer-copy .row{margin:0;}
 @media (max-width:700px){footer .footer-inner{flex-direction:column;align-items:center;text-align:center;gap:14px}.footer-socials{justify-content:center;flex-wrap:wrap}}
 
 /* ---- global viewer account header ---- */
-.adhem-topbar{position:relative;z-index:20;min-height:54px;margin-left:0;border-bottom:1px solid var(--line);background:rgba(5,7,10,.94);display:flex;align-items:center;justify-content:space-between;padding:9px clamp(18px,4vw,48px);font-family:'JetBrains Mono',monospace;backdrop-filter:blur(8px)}
+.adhem-topbar{position:sticky;top:0;z-index:1000;min-height:54px;margin-left:0;border-bottom:1px solid var(--line);background:rgba(5,7,10,.94);display:flex;align-items:center;justify-content:space-between;padding:9px clamp(18px,4vw,48px);font-family:'JetBrains Mono',monospace;backdrop-filter:blur(8px)}
 .adhem-topbar-left{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:10px;letter-spacing:.12em;text-transform:uppercase}
 .adhem-topbar-mark{width:7px;height:7px;background:var(--cyan);box-shadow:0 0 9px rgba(17,217,247,.7)}
 .adhem-topbar-brand{color:var(--white);font-weight:600}
@@ -686,7 +686,7 @@ footer .footer-copy .row{margin:0;}
 @media(max-width:700px){.adhem-topbar{padding:8px 14px}.adhem-topbar-left{font-size:9px}.adhem-topbar-left .adhem-topbar-brand{display:none}.adhem-twitch-connect{font-size:9px;padding:8px 12px}}
 
 <style id="adhem-account-menu-css">
-.adhem-account{position:fixed;top:8px;right:clamp(20px,5vw,64px);z-index:1000;font-family:'JetBrains Mono',monospace}
+.adhem-account{position:relative;top:auto;right:auto;z-index:1001;font-family:'JetBrains Mono',monospace}
 .adhem-account-connect,.adhem-account-user{display:inline-flex;align-items:center;gap:9px;min-height:38px;padding:8px 12px;border:1px solid rgba(17,217,247,.45);background:rgba(5,7,10,.94);color:#11D9F7;text-decoration:none;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;box-shadow:0 6px 22px rgba(0,0,0,.28)}
 .adhem-account-connect:hover,.adhem-account-user:hover{background:rgba(17,217,247,.08);border-color:#11D9F7}
 .adhem-account-user{border-radius:22px;padding:5px 10px 5px 5px}
@@ -699,7 +699,7 @@ footer .footer-copy .row{margin:0;}
 .adhem-account-menu .account-menu-danger{color:#ff6262}
 .adhem-account-menu .account-menu-danger:hover{color:#ff8b8b;background:rgba(255,59,59,.07)}
 .adhem-account[hidden],.adhem-account-user[hidden],.adhem-account-menu[hidden]{display:none!important}
-@media(max-width:700px){.adhem-account{top:8px;right:20px}.adhem-account-name{display:none}.adhem-account-connect{font-size:9px;padding:8px 10px}}
+@media(max-width:700px){.adhem-account{top:auto;right:auto}.adhem-account-name{display:none}.adhem-account-connect{font-size:9px;padding:7px 10px;min-height:34px}}
 .redeem-home-box{display:flex;gap:8px;margin-top:14px;max-width:620px}.redeem-home-box input{flex:1;min-width:0;padding:13px 14px;border:1px solid rgba(17,217,247,.25);background:rgba(4,8,11,.9);color:#fff;font:700 11px 'JetBrains Mono',monospace;outline:none}.redeem-home-box input:focus{border-color:#11D9F7;box-shadow:0 0 18px rgba(17,217,247,.08)}.redeem-home-box button{padding:13px 16px;border:1px solid #11D9F7;background:rgba(17,217,247,.08);color:#11D9F7;font:700 10px 'JetBrains Mono',monospace;letter-spacing:.08em;cursor:pointer}.redeem-home-box button:hover{background:rgba(17,217,247,.16)}.redeem-home-status{margin-top:8px;color:#71858a;font:500 10px 'JetBrains Mono',monospace}.redeem-home-status.ok{color:#11D9F7}.redeem-home-status.err{color:#ff6262}@media(max-width:600px){.redeem-home-box{flex-direction:column}.redeem-home-box button{width:100%}}
 </style>
 </head>
@@ -774,7 +774,9 @@ footer .footer-copy .row{margin:0;}
   <span>YouTube</span>
 </a>
 </nav>
-<div class="adhem-account" id="adhemAccount" aria-label="Viewer account">
+<div class="adhem-topbar" role="banner">
+  <div class="adhem-topbar-left"><span class="adhem-topbar-mark"></span><span class="adhem-topbar-brand">ADHEMSWAG <span>//</span> FNC REWARDS</span></div>
+  <div class="adhem-account" id="adhemAccount" aria-label="Viewer account">
   <a class="adhem-account-connect" id="adhemAccountConnect" href="https://twitch.tv/AdhemSwag" target="_blank" rel="noopener" data-twitch-connect>
     <span>◉</span><span>CONNECT TWITCH</span>
   </a>
@@ -789,9 +791,7 @@ footer .footer-copy .row{margin:0;}
     <button type="button" class="account-menu-danger" id="adhemAccountDisconnect">DISCONNECT</button>
   </div>
 </div>
-<div class="adhem-topbar" role="banner">
-  <div class="adhem-topbar-left"><span class="adhem-topbar-mark"></span><span class="adhem-topbar-brand">ADHEMSWAG <span>//</span> FNC REWARDS</span></div>
-  
+
 </div>
 
 
