@@ -700,6 +700,7 @@ footer .footer-copy .row{margin:0;}
 .adhem-account-menu .account-menu-danger:hover{color:#ff8b8b;background:rgba(255,59,59,.07)}
 .adhem-account[hidden],.adhem-account-user[hidden],.adhem-account-menu[hidden]{display:none!important}
 @media(max-width:700px){.adhem-account{top:18px;right:20px}.adhem-account-name{display:none}.adhem-account-connect{font-size:9px;padding:8px 10px}}
+.redeem-home-box{display:flex;gap:8px;margin-top:14px;max-width:620px}.redeem-home-box input{flex:1;min-width:0;padding:13px 14px;border:1px solid rgba(17,217,247,.25);background:rgba(4,8,11,.9);color:#fff;font:700 11px 'JetBrains Mono',monospace;outline:none}.redeem-home-box input:focus{border-color:#11D9F7;box-shadow:0 0 18px rgba(17,217,247,.08)}.redeem-home-box button{padding:13px 16px;border:1px solid #11D9F7;background:rgba(17,217,247,.08);color:#11D9F7;font:700 10px 'JetBrains Mono',monospace;letter-spacing:.08em;cursor:pointer}.redeem-home-box button:hover{background:rgba(17,217,247,.16)}.redeem-home-status{margin-top:8px;color:#71858a;font:500 10px 'JetBrains Mono',monospace}.redeem-home-status.ok{color:#11D9F7}.redeem-home-status.err{color:#ff6262}@media(max-width:600px){.redeem-home-box{flex-direction:column}.redeem-home-box button{width:100%}}
 </style>
 </head>
 <body>
@@ -993,8 +994,12 @@ footer .footer-copy .row{margin:0;}
           <p class="redeem-live-text"><b>Special codes drop during AdhemSwag live streams.</b> Watch the stream, grab the code when it appears, then redeem it from your profile.</p>
           <div class="redeem-live-actions">
             <a class="redeem-live-btn" href="https://twitch.tv/AdhemSwag" target="_blank" rel="noopener">WATCH LIVE</a>
-            <a class="redeem-live-btn alt" href="/profile/">REDEEM CODE</a>
           </div>
+          <div class="redeem-home-box">
+            <input id="homeRedeemCodeInput" type="text" maxlength="64" placeholder="ENTER YOUR CODE" autocomplete="off">
+            <button id="homeRedeemCodeBtn" type="button">REDEEM CODE</button>
+          </div>
+          <div class="redeem-home-status" id="homeRedeemCodeStatus">Enter your live code above.</div>
         </div>
         <div class="redeem-live-ticket" aria-hidden="true">
           <div class="ticket-icon">⌁</div>
@@ -1216,5 +1221,21 @@ footer .footer-copy .row{margin:0;}
     connect.hidden=false;
   });
 })();
-</script></body>
+</script><script>
+(function(){
+  const input=document.getElementById('homeRedeemCodeInput');
+  const btn=document.getElementById('homeRedeemCodeBtn');
+  const status=document.getElementById('homeRedeemCodeStatus');
+  if(!input||!btn||!status)return;
+  btn.addEventListener('click',function(){
+    const code=input.value.trim();
+    status.className='redeem-home-status';
+    if(!code){status.textContent='ENTER A CODE FIRST.';status.classList.add('err');return;}
+    status.textContent='Code received. Rewards system is currently stopped.';
+    status.classList.add('ok');
+  });
+  input.addEventListener('keydown',function(e){if(e.key==='Enter')btn.click();});
+})();
+</script>
+</body>
 </html>
