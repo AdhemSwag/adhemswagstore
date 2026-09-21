@@ -288,6 +288,7 @@
   .stream-foot .viewer-separator{color:var(--muted);margin:0 6px;}
   .stream-foot{gap:12px;align-items:center;flex-wrap:wrap;}
   .stream-foot #platformStatus{font-weight:700;letter-spacing:.04em;}
+  .stream-foot #statusText.status-live{color:#53FC18;}
   .stream-foot #viewerCounts{font-weight:600;color:var(--muted);}
 
   .follow-sub-row{ display:flex; gap:10px; margin-top:14px; }
@@ -1241,6 +1242,7 @@ footer .footer-copy .row{margin:0;}
       platform.textContent = bothLive ? 'TWITCH · KICK' : 'TWITCH';
       label.textContent = 'LIVE NOW · TWITCH';
       status.textContent = 'LIVE';
+      status.classList.add('status-live');
     }else if(selected === 'KICK'){
       player.src = kickPlayer;
       platform.textContent = 'KICK';
@@ -1254,6 +1256,7 @@ footer .footer-copy .row{margin:0;}
       platform.textContent = 'OFFLINE';
       label.textContent = 'OFFLINE';
       status.textContent = 'OFFLINE';
+      status.classList.remove('status-live');
     }else{
       player.style.display = 'none';
       offline.hidden = false;
@@ -1264,6 +1267,7 @@ footer .footer-copy .row{margin:0;}
       platform.textContent = 'CHECK ERROR';
       label.textContent = 'CHECK ERROR';
       status.textContent = 'CHECK ERROR';
+      status.classList.remove('status-live');
     }
 
     const twitchCount = twitch.viewers == null ? '—' : twitch.viewers.toLocaleString();
@@ -1288,12 +1292,12 @@ footer .footer-copy .row{margin:0;}
       viewerCounts.hidden = false;
       if(twitch.live && kick.live){
         platformStatus.innerHTML =
-          '<span class="platform-twitch">TWITCH</span> <span class="viewer-platform viewer-twitch">' + twitchCount + '</span>' +
+          '<span class="platform-twitch">TWITCH</span> <span class="viewer-platform viewer-twitch">' + twitchCount + ' viewers</span>' +
           '<span class="viewer-separator">|</span>' +
-          '<span class="platform-kick">KICK</span> <span class="viewer-platform viewer-kick">' + kickCount + '</span>';
+          '<span class="platform-kick">KICK</span> <span class="viewer-platform viewer-kick">' + kickCount + ' viewers</span>';
       }else if(twitch.live){
         platformStatus.innerHTML =
-          '<span class="platform-twitch">TWITCH</span> <span class="viewer-platform viewer-twitch">' + twitchCount + '</span>';
+          '<span class="platform-twitch">TWITCH</span> <span class="viewer-platform viewer-twitch">' + twitchCount + ' viewers</span>';
       }else{
         platformStatus.innerHTML =
           '<span class="platform-kick">KICK</span> <span class="viewer-platform viewer-kick">' + kickCount + '</span>';
