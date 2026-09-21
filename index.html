@@ -1209,6 +1209,8 @@ footer .footer-copy .row{margin:0;}
 
     const [twitch, kick] = await Promise.all([getTwitch(), getKick()]);
     const bothLive = twitch.live && kick.live;
+    const anyLive = twitch.live || kick.live;
+    const checkFailed = twitch.error || kick.error;
     const selected = twitch.live ? 'TWITCH' : (kick.live ? 'KICK' : 'OFFLINE');
 
     player.style.display = 'block';
@@ -1219,14 +1221,14 @@ footer .footer-copy .row{margin:0;}
     if(selected === 'TWITCH'){
       player.src = twitchPlayer;
       platform.textContent = bothLive ? 'TWITCH · KICK' : 'TWITCH';
-      label.textContent = bothLive ? 'LIVE NOW · TWITCH' : 'LIVE NOW · TWITCH';
+      label.textContent = 'LIVE NOW · TWITCH';
       status.textContent = 'LIVE';
     }else if(selected === 'KICK'){
       player.src = kickPlayer;
       platform.textContent = 'KICK';
       label.textContent = 'LIVE NOW · KICK';
       status.textContent = 'LIVE';
-    }else{
+    }else if(!checkFailed){
       player.style.display = 'none';
       offline.hidden = false;
       tag.classList.add('offline');
@@ -1234,6 +1236,16 @@ footer .footer-copy .row{margin:0;}
       platform.textContent = 'OFFLINE';
       label.textContent = 'OFFLINE';
       status.textContent = 'OFFLINE';
+    }else{
+      player.style.display = 'none';
+      offline.hidden = false;
+      offline.querySelector('strong').textContent = 'STATUS UNAVAILABLE';
+      offline.querySelector('span').textContent = 'Unable to check Twitch or Kick right now.';
+      tag.classList.add('offline');
+      dot.classList.add('offline');
+      platform.textContent = 'CHECK ERROR';
+      label.textContent = 'CHECK ERROR';
+      status.textContent = 'CHECK ERROR';
     }
 
     const twitchCount = twitch.viewers == null ? '—' : twitch.viewers.toLocaleString();
