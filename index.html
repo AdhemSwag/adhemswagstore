@@ -860,7 +860,7 @@ footer .footer-copy .row{margin:0;}
           </div>
         </div>
         <div class="stream-foot">
-          <span>STATUS <b id="statusText">CHECKING</b> - <span class="platform-status platform-twitch">TWITCH</span> | <span class="platform-status platform-kick">KICK</span></span>
+          <span>STATUS <b id="statusText">OFFLINE</b> - <span class="platform-status platform-twitch">TWITCH</span> | <span class="platform-status platform-kick">KICK</span></span>
           <span id="viewerCounts">TWITCH — · KICK —</span>
         </div>
       </div>
@@ -1254,7 +1254,7 @@ footer .footer-copy .row{margin:0;}
 
     const twitchCount = twitch.viewers == null ? '—' : twitch.viewers.toLocaleString();
     const kickCount = kick.viewers == null ? '—' : kick.viewers.toLocaleString();
-    counts.textContent = `TWITCH ${twitchCount} · KICK ${kickCount}`;
+    counts.textContent = `TWITCH ${twitchCount} | KICK ${kickCount}`;
   })();
 </script>
 
