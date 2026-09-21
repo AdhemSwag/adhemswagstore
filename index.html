@@ -1240,13 +1240,13 @@ footer .footer-copy .row{margin:0;}
     if(selected === 'TWITCH'){
       player.src = twitchPlayer;
       platform.innerHTML = bothLive ? '<span class="live-platform-twitch">TWITCH</span><span class="live-platform-separator">•</span><span class="live-platform-kick">KICK</span>' : '<span class="live-platform-twitch">TWITCH</span>';
-      label.textContent = 'LIVE NOW · TWITCH';
+      label.textContent = 'LIVE NOW';
       status.textContent = 'LIVE';
       status.classList.add('status-live');
     }else if(selected === 'KICK'){
       player.src = kickPlayer;
       platform.innerHTML = '<span class="live-platform-kick">KICK</span>';
-      label.textContent = 'LIVE NOW · KICK';
+      label.textContent = 'LIVE NOW';
       status.textContent = 'LIVE';
     }else if(!checkFailed){
       player.style.display = 'none';
@@ -1282,9 +1282,9 @@ footer .footer-copy .row{margin:0;}
     if(twitch.live && kick.live){
       label.innerHTML = '<span>LIVE NOW</span>';
     }else if(twitch.live){
-      label.innerHTML = '<span>LIVE NOW</span> <span class="live-platform-twitch">TWITCH</span>';
+      label.innerHTML = '<span>LIVE NOW</span>';
     }else if(kick.live){
-      label.innerHTML = '<span>LIVE NOW</span> <span class="live-platform-kick">KICK</span>';
+      label.innerHTML = '<span>LIVE NOW</span>';
     }else{
       label.textContent = checkFailed ? 'CHECK ERROR' : 'OFFLINE';
     }
