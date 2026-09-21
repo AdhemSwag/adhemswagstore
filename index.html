@@ -283,6 +283,9 @@
   .stream-foot .viewer-kick{color:#53FC18;}
   .stream-foot .viewer-platform b{font-weight:800;color:inherit;}
   .stream-foot .viewer-separator{color:var(--muted);margin:0 6px;}
+  .stream-foot{gap:12px;align-items:center;flex-wrap:wrap;}
+  .stream-foot #platformStatus{font-weight:700;letter-spacing:.04em;}
+  .stream-foot #viewerCounts{font-weight:600;color:var(--muted);}
 
   .follow-sub-row{ display:flex; gap:10px; margin-top:14px; }
   .follow-btn, .sub-btn{
@@ -866,6 +869,8 @@ footer .footer-copy .row{margin:0;}
         </div>
         <div class="stream-foot">
           <span>STATUS <b id="statusText">OFFLINE</b></span>
+          <span id="platformStatus" class="platform-status">OFFLINE</span>
+          <span id="viewerCounts" class="viewer-counts" hidden></span>
         </div>
       </div>
 
@@ -1220,6 +1225,8 @@ footer .footer-copy .row{margin:0;}
     const anyLive = twitch.live || kick.live;
     const checkFailed = twitch.error || kick.error;
     const selected = twitch.live ? 'TWITCH' : (kick.live ? 'KICK' : 'OFFLINE');
+    const platformStatus = document.getElementById('platformStatus');
+    const viewerCounts = document.getElementById('viewerCounts');
 
     player.style.display = 'block';
     offline.hidden = true;
@@ -1263,13 +1270,31 @@ footer .footer-copy .row{margin:0;}
     if(twitchViewerEl) twitchViewerEl.textContent = twitchCount;
     if(kickViewerEl) kickViewerEl.textContent = kickCount;
 
-    // Show each live platform and its own viewer count separately beside LIVE NOW.
-    if(twitch.live && kick.live){
-      label.innerHTML = '<span style="color:var(--danger)">LIVE NOW</span> <span class="platform-twitch">TWITCH</span> <span style="color:var(--muted)">' + twitchCount + '</span> <span style="color:var(--muted)">|</span> <span class="platform-kick">KICK</span> <span style="color:var(--muted)">' + kickCount + '</span>';
-    }else if(twitch.live){
-      label.innerHTML = '<span style="color:var(--danger)">LIVE NOW</span> <span class="platform-twitch">TWITCH</span> <span style="color:var(--muted)">' + twitchCount + '</span>';
-    }else if(kick.live){
-      label.innerHTML = '<span style="color:var(--danger)">LIVE NOW</span> <span class="platform-kick">KICK</span> <span style="color:var(--muted)">' + kickCount + '</span>';
+    // Keep LIVE NOW clean at the top. Show platform names + separate viewer counts only below the VOD.
+    label.textContent = anyLive ? 'LIVE NOW' : (checkFailed ? 'CHECK ERROR' : 'OFFLINE');
+    if(anyLive){
+      viewerCounts.hidden = false;
+      if(twitch.live && kick.live){
+        platformStatus.innerHTML =
+          '<span class="platform-twitch">TWITCH</span> <span class="viewer-platform viewer-twitch">' + twitchCount + '</span>' +
+          '<span class="viewer-separator">|</span>' +
+          '<span class="platform-kick">KICK</span> <span class="viewer-platform viewer-kick">' + kickCount + '</span>';
+      }else if(twitch.live){
+        platformStatus.innerHTML =
+          '<span class="platform-twitch">TWITCH</span> <span class="viewer-platform viewer-twitch">' + twitchCount + '</span>';
+      }else{
+        platformStatus.innerHTML =
+          '<span class="platform-kick">KICK</span> <span class="viewer-platform viewer-kick">' + kickCount + '</span>';
+      }
+      viewerCounts.textContent = '';
+    }else if(!checkFailed){
+      platformStatus.textContent = 'OFFLINE';
+      viewerCounts.hidden = true;
+      viewerCounts.textContent = '';
+    }else{
+      platformStatus.textContent = 'CHECK ERROR';
+      viewerCounts.hidden = true;
+      viewerCounts.textContent = '';
     }
   })();
 </script>
