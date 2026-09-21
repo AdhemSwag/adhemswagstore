@@ -852,7 +852,7 @@ footer .footer-copy .row{margin:0;}
         <span class="bc-tr"></span><span class="bc-bl"></span>
         <div class="stream-top">
           <div class="live-tag" id="liveTag"><span class="live-dot" id="liveDot"></span> <span id="liveText">CHECKING…</span></div>
-          <div class="platform-tag" id="platformTag">CHECKING</div>
+          <div class="platform-tag" id="platformTag"></div>
         </div>
         <div class="stream-body" id="streamBody">
           <iframe
@@ -1239,13 +1239,13 @@ footer .footer-copy .row{margin:0;}
 
     if(selected === 'TWITCH'){
       player.src = twitchPlayer;
-      platform.textContent = bothLive ? 'TWITCH · KICK' : 'TWITCH';
+      platform.innerHTML = bothLive ? '<span class="live-platform-twitch">TWITCH</span><span class="live-platform-separator">•</span><span class="live-platform-kick">KICK</span>' : '<span class="live-platform-twitch">TWITCH</span>';
       label.textContent = 'LIVE NOW · TWITCH';
       status.textContent = 'LIVE';
       status.classList.add('status-live');
     }else if(selected === 'KICK'){
       player.src = kickPlayer;
-      platform.textContent = 'KICK';
+      platform.innerHTML = '<span class="live-platform-kick">KICK</span>';
       label.textContent = 'LIVE NOW · KICK';
       status.textContent = 'LIVE';
     }else if(!checkFailed){
@@ -1253,7 +1253,7 @@ footer .footer-copy .row{margin:0;}
       offline.hidden = false;
       tag.classList.add('offline');
       dot.classList.add('offline');
-      platform.textContent = 'OFFLINE';
+      platform.textContent = '';
       label.textContent = 'OFFLINE';
       status.textContent = 'OFFLINE';
       status.classList.remove('status-live');
@@ -1264,7 +1264,7 @@ footer .footer-copy .row{margin:0;}
       offline.querySelector('span').textContent = 'Unable to check Twitch or Kick right now.';
       tag.classList.add('offline');
       dot.classList.add('offline');
-      platform.textContent = 'CHECK ERROR';
+      platform.textContent = '';
       label.textContent = 'CHECK ERROR';
       status.textContent = 'CHECK ERROR';
       status.classList.remove('status-live');
