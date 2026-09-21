@@ -261,6 +261,9 @@
   .stream-offline strong{font-size:18px;letter-spacing:.18em;color:#eaf6f8}
   .stream-offline span{font-size:10px;color:#71858a;letter-spacing:.04em}
   .platform-tag{ font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--muted); letter-spacing:0.08em; }
+  .live-platform-twitch{color:#9146FF;}
+  .live-platform-kick{color:#53FC18;}
+  .live-platform-separator{color:var(--muted);margin:0 4px;}
 
   .stream-body{
     height:280px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px;
@@ -1270,8 +1273,17 @@ footer .footer-copy .row{margin:0;}
     if(twitchViewerEl) twitchViewerEl.textContent = twitchCount;
     if(kickViewerEl) kickViewerEl.textContent = kickCount;
 
-    // Keep LIVE NOW clean at the top. Show platform names + separate viewer counts only below the VOD.
-    label.textContent = anyLive ? 'LIVE NOW' : (checkFailed ? 'CHECK ERROR' : 'OFFLINE');
+    // Keep LIVE NOW red and show the active platform(s) beside it.
+    // Inactive platform names stay gray elsewhere; the top label only shows platforms that are live.
+    if(twitch.live && kick.live){
+      label.innerHTML = '<span>LIVE NOW</span> <span class="live-platform-twitch">TWITCH</span> <span class="live-platform-separator">•</span> <span class="live-platform-kick">KICK</span>';
+    }else if(twitch.live){
+      label.innerHTML = '<span>LIVE NOW</span> <span class="live-platform-twitch">TWITCH</span>';
+    }else if(kick.live){
+      label.innerHTML = '<span>LIVE NOW</span> <span class="live-platform-kick">KICK</span>';
+    }else{
+      label.textContent = checkFailed ? 'CHECK ERROR' : 'OFFLINE';
+    }
     if(anyLive){
       viewerCounts.hidden = false;
       if(twitch.live && kick.live){
