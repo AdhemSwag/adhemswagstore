@@ -255,6 +255,10 @@
   @keyframes pulse{ 0%,100%{ opacity:1;} 50%{ opacity:0.35; } }
   .live-dot.offline{ background:var(--muted); box-shadow:none; animation:none; }
   .live-tag.offline{ color:var(--muted); }
+  .stream-offline{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:radial-gradient(circle at center,rgba(17,217,247,.06),rgba(5,7,10,.98) 62%);text-align:center;font-family:'JetBrains Mono',monospace}
+  .stream-offline-icon{font-size:34px;color:#71858a}
+  .stream-offline strong{font-size:18px;letter-spacing:.18em;color:#eaf6f8}
+  .stream-offline span{font-size:10px;color:#71858a;letter-spacing:.04em}
   .platform-tag{ font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--muted); letter-spacing:0.08em; }
 
   .stream-body{
@@ -832,20 +836,28 @@ footer .footer-copy .row{margin:0;}
         <span class="bc-tr"></span><span class="bc-bl"></span>
         <div class="stream-top">
           <div class="live-tag" id="liveTag"><span class="live-dot" id="liveDot"></span> <span id="liveText">CHECKING…</span></div>
-          <div class="platform-tag">TWITCH</div>
+          <div class="platform-tag" id="platformTag">CHECKING</div>
         </div>
-        <div class="stream-body">
+        <div class="stream-body" id="streamBody">
           <iframe
-            src="https://player.twitch.tv/?channel=adhemswag&parent=adhemswag.github.io&parent=live.adhemswag.com&parent=adhemswag.com&parent=www.adhemswag.com&muted=true"
+            id="livePlayer"
+            src=""
+            title="AdhemSwag live stream"
             frameborder="0"
+            allow="autoplay; fullscreen"
             allowfullscreen="true"
             scrolling="no"
             style="width:100%; height:100%; position:absolute; inset:0;">
           </iframe>
+          <div class="stream-offline" id="streamOffline" hidden>
+            <div class="stream-offline-icon">◉</div>
+            <strong>OFFLINE</strong>
+            <span>Twitch and Kick are currently offline.</span>
+          </div>
         </div>
         <div class="stream-foot">
-          <span>STATUS: <b id="statusText">STANDBY</b></span>
-          <span>CS2 · COMPETITIVE</span>
+          <span>STATUS: <b id="statusText">CHECKING</b></span>
+          <span id="viewerCounts">TWITCH — · KICK —</span>
         </div>
       </div>
 
@@ -1152,38 +1164,82 @@ footer .footer-copy .row{margin:0;}
     }
   }
 
-  // Twitch live status check (DecAPI)
-  fetch('https://decapi.me/twitch/uptime/adhemswag')
-    .then(r => r.text())
-    .then(text => {
-      const tag = document.getElementById('liveTag');
-      const dot = document.getElementById('liveDot');
-      const label = document.getElementById('liveText');
-      const status = document.getElementById('statusText');
-      const isOffline = text.toLowerCase().includes('offline');
-      if (isOffline) {
-        tag.classList.add('offline');
-        dot.classList.add('offline');
-        label.textContent = 'OFFLINE';
-        status.textContent = 'OFFLINE';
-      } else {
-        label.textContent = 'LIVE NOW';
-        status.textContent = 'LIVE';
-        // stream is live — also fetch current viewer count
-        fetch('https://decapi.me/twitch/viewercount/adhemswag')
-          .then(r => r.text())
-          .then(count => {
-            const n = parseInt(count, 10);
-            if (!isNaN(n)) {
-              label.textContent = `LIVE NOW · ${n.toLocaleString()} viewers`;
-            }
-          })
-          .catch(() => {});
-      }
-    })
-    .catch(() => {
-      document.getElementById('liveText').textContent = 'LIVE FEED';
-    });
+  // Dual-platform live detection: Twitch has priority for the player.
+  (async function(){
+    const TWITCH_CHANNEL = 'adhemswag';
+    const KICK_CHANNEL = 'adhemswag918';
+    const twitchPlayer = 'https://player.twitch.tv/?channel=adhemswag&parent=adhemswag.github.io&parent=live.adhemswag.com&parent=adhemswag.com&parent=www.adhemswag.com&muted=true';
+    const kickPlayer = 'https://player.kick.com/adhemswag918?autoplay=true&muted=true';
+
+    const tag = document.getElementById('liveTag');
+    const dot = document.getElementById('liveDot');
+    const label = document.getElementById('liveText');
+    const status = document.getElementById('statusText');
+    const platform = document.getElementById('platformTag');
+    const player = document.getElementById('livePlayer');
+    const offline = document.getElementById('streamOffline');
+    const counts = document.getElementById('viewerCounts');
+
+    async function getTwitch(){
+      try{
+        const uptime = await fetch('https://decapi.me/twitch/uptime/' + TWITCH_CHANNEL, {cache:'no-store'}).then(r=>r.text());
+        const live = !uptime.toLowerCase().includes('offline');
+        let viewers = null;
+        if(live){
+          const raw = await fetch('https://decapi.me/twitch/viewercount/' + TWITCH_CHANNEL, {cache:'no-store'}).then(r=>r.text());
+          const n = parseInt(raw,10);
+          if(!isNaN(n)) viewers=n;
+        }
+        return {live, viewers};
+      }catch(e){ return {live:false, viewers:null, error:true}; }
+    }
+
+    async function getKick(){
+      try{
+        const data = await fetch('https://kick.com/api/v2/channels/' + KICK_CHANNEL, {cache:'no-store'}).then(r=>{
+          if(!r.ok) throw new Error('Kick status unavailable');
+          return r.json();
+        });
+        const live = !!data.livestream;
+        const viewers = live && Number.isFinite(Number(data.livestream.viewer_count))
+          ? Number(data.livestream.viewer_count) : null;
+        return {live, viewers};
+      }catch(e){ return {live:false, viewers:null, error:true}; }
+    }
+
+    const [twitch, kick] = await Promise.all([getTwitch(), getKick()]);
+    const bothLive = twitch.live && kick.live;
+    const selected = twitch.live ? 'TWITCH' : (kick.live ? 'KICK' : 'OFFLINE');
+
+    player.style.display = 'block';
+    offline.hidden = true;
+    tag.classList.remove('offline');
+    dot.classList.remove('offline');
+
+    if(selected === 'TWITCH'){
+      player.src = twitchPlayer;
+      platform.textContent = bothLive ? 'TWITCH · KICK' : 'TWITCH';
+      label.textContent = bothLive ? 'LIVE NOW · TWITCH' : 'LIVE NOW · TWITCH';
+      status.textContent = 'LIVE';
+    }else if(selected === 'KICK'){
+      player.src = kickPlayer;
+      platform.textContent = 'KICK';
+      label.textContent = 'LIVE NOW · KICK';
+      status.textContent = 'LIVE';
+    }else{
+      player.style.display = 'none';
+      offline.hidden = false;
+      tag.classList.add('offline');
+      dot.classList.add('offline');
+      platform.textContent = 'OFFLINE';
+      label.textContent = 'OFFLINE';
+      status.textContent = 'OFFLINE';
+    }
+
+    const twitchCount = twitch.viewers == null ? '—' : twitch.viewers.toLocaleString();
+    const kickCount = kick.viewers == null ? '—' : kick.viewers.toLocaleString();
+    counts.textContent = `TWITCH ${twitchCount} · KICK ${kickCount}`;
+  })();
 </script>
 
 <script id="adhem-account-menu-js">
