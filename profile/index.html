@@ -67,7 +67,7 @@
 <input id="redeemCodeInput" type="text" maxlength="64" placeholder="ENTER YOUR CODE" autocomplete="off">
 <button id="redeemCodeBtn" type="button">REDEEM</button>
 </div>
-<div class="code-status" id="redeemCodeStatus">Rewards are currently stopped.</div>
+<div class="code-status" id="redeemCodeStatus">Enter your live code above.</div>
 </section>
 <section class="card">
 <h2>HISTORY</h2>
@@ -118,7 +118,7 @@
   const redeemStatus=document.getElementById('redeemCodeStatus');
   if(redeemBtn){
     redeemBtn.addEventListener('click',function(){
-      redeemStatus.textContent='Rewards are currently stopped. This code cannot be redeemed yet.';
+      redeemStatus.textContent='Enter your live code above. This code cannot be redeemed yet.';
     });
   }
   if(redeemInput){
