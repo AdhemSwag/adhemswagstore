@@ -278,6 +278,11 @@
   .stream-foot .platform-status{font-weight:700;letter-spacing:0.04em;}
   .stream-foot .platform-twitch{color:#9146FF;}
   .stream-foot .platform-kick{color:#53FC18;}
+  .stream-foot .viewer-platform{font-weight:700;letter-spacing:0.04em;}
+  .stream-foot .viewer-twitch{color:#9146FF;}
+  .stream-foot .viewer-kick{color:#53FC18;}
+  .stream-foot .viewer-platform b{font-weight:800;color:inherit;}
+  .stream-foot .viewer-separator{color:var(--muted);margin:0 6px;}
 
   .follow-sub-row{ display:flex; gap:10px; margin-top:14px; }
   .follow-btn, .sub-btn{
@@ -861,7 +866,7 @@ footer .footer-copy .row{margin:0;}
         </div>
         <div class="stream-foot">
           <span>STATUS <b id="statusText">OFFLINE</b> - <span class="platform-status platform-twitch">TWITCH</span> | <span class="platform-status platform-kick">KICK</span></span>
-          <span id="viewerCounts">TWITCH — · KICK —</span>
+          <span id="viewerCounts"><span class="viewer-platform viewer-twitch">TWITCH <b id="twitchViewerCount">—</b></span> <span class="viewer-separator">|</span> <span class="viewer-platform viewer-kick">KICK <b id="kickViewerCount">—</b></span></span>
         </div>
       </div>
 
@@ -1254,7 +1259,19 @@ footer .footer-copy .row{margin:0;}
 
     const twitchCount = twitch.viewers == null ? '—' : twitch.viewers.toLocaleString();
     const kickCount = kick.viewers == null ? '—' : kick.viewers.toLocaleString();
-    counts.textContent = `TWITCH ${twitchCount} | KICK ${kickCount}`;
+    const twitchViewerEl = document.getElementById('twitchViewerCount');
+    const kickViewerEl = document.getElementById('kickViewerCount');
+    if(twitchViewerEl) twitchViewerEl.textContent = twitchCount;
+    if(kickViewerEl) kickViewerEl.textContent = kickCount;
+
+    // Show each live platform and its own viewer count separately beside LIVE NOW.
+    if(twitch.live && kick.live){
+      label.innerHTML = '<span class="platform-twitch">LIVE NOW TWITCH</span> <span style="color:var(--muted)">' + twitchCount + '</span> <span style="color:var(--muted)">|</span> <span class="platform-kick">KICK</span> <span style="color:var(--muted)">' + kickCount + '</span>';
+    }else if(twitch.live){
+      label.innerHTML = '<span class="platform-twitch">LIVE NOW TWITCH</span> <span style="color:var(--muted)">' + twitchCount + '</span>';
+    }else if(kick.live){
+      label.innerHTML = '<span class="platform-kick">LIVE NOW KICK</span> <span style="color:var(--muted)">' + kickCount + '</span>';
+    }
   })();
 </script>
 
