@@ -1280,7 +1280,7 @@ footer .footer-copy .row{margin:0;}
     // Keep LIVE NOW red and show the active platform(s) beside it.
     // Inactive platform names stay gray elsewhere; the top label only shows platforms that are live.
     if(twitch.live && kick.live){
-      label.innerHTML = '<span>LIVE NOW</span> <span class="live-platform-twitch">TWITCH</span>';
+      label.innerHTML = '<span>LIVE NOW</span> <span class="live-platform-twitch">TWITCH</span><span class="live-platform-separator">•</span><span class="live-platform-kick">KICK</span>';
     }else if(twitch.live){
       label.innerHTML = '<span>LIVE NOW</span> <span class="live-platform-twitch">TWITCH</span>';
     }else if(kick.live){
