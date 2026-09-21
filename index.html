@@ -1266,11 +1266,11 @@ footer .footer-copy .row{margin:0;}
 
     // Show each live platform and its own viewer count separately beside LIVE NOW.
     if(twitch.live && kick.live){
-      label.innerHTML = '<span class="platform-twitch">LIVE NOW TWITCH</span> <span style="color:var(--muted)">' + twitchCount + '</span> <span style="color:var(--muted)">|</span> <span class="platform-kick">KICK</span> <span style="color:var(--muted)">' + kickCount + '</span>';
+      label.innerHTML = '<span style="color:var(--danger)">LIVE NOW</span> <span class="platform-twitch">TWITCH</span> <span style="color:var(--muted)">' + twitchCount + '</span> <span style="color:var(--muted)">|</span> <span class="platform-kick">KICK</span> <span style="color:var(--muted)">' + kickCount + '</span>';
     }else if(twitch.live){
-      label.innerHTML = '<span class="platform-twitch">LIVE NOW TWITCH</span> <span style="color:var(--muted)">' + twitchCount + '</span>';
+      label.innerHTML = '<span style="color:var(--danger)">LIVE NOW</span> <span class="platform-twitch">TWITCH</span> <span style="color:var(--muted)">' + twitchCount + '</span>';
     }else if(kick.live){
-      label.innerHTML = '<span class="platform-kick">LIVE NOW KICK</span> <span style="color:var(--muted)">' + kickCount + '</span>';
+      label.innerHTML = '<span style="color:var(--danger)">LIVE NOW</span> <span class="platform-kick">KICK</span> <span style="color:var(--muted)">' + kickCount + '</span>';
     }
   })();
 </script>
