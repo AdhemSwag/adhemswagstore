@@ -49,6 +49,7 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
     <button class="nav-btn" data-panel="viewers">Viewers</button>
     <button class="nav-btn" data-panel="transactions">Transactions</button>
     <button class="nav-btn" data-panel="system">System</button>
+    <button class="nav-btn" data-panel="fnc-settings">FNC Points</button>
   </aside>
 
   <main class="main">
@@ -117,7 +118,35 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
       </div>
     </section>
 
-    <section id="system" class="panel">
+<section id="fnc-settings" class="panel">
+      <div class="section">
+        <h2>FNC Points <span style="color:var(--cyan)">SETTINGS</span></h2>
+        <p>All values are configurable. The rewards engine will use the latest saved values automatically.</p>
+        <div class="form-grid">
+          <div class="field"><label>FNC Points — Enabled</label><select id="fncEnabled"><option value="false">OFF</option><option value="true">ON</option></select></div>
+          <div class="field"><label>Interval (in minutes)</label><input id="fncInterval" type="number" min="1" value="1"><small style="color:var(--muted)">How often points are handed out.</small></div>
+          <div class="field"><label>Amount (FNC)</label><input id="fncAmount" type="number" min="0" value="1"><small style="color:var(--muted)">FNC earned per interval.</small></div>
+          <div class="field"><label>Subscriber multiplier</label><input id="fncMultiplier" type="number" min="0" step="0.1" value="3"></div>
+        </div>
+        <div class="actions"><button class="btn primary" id="saveFncSettings">SAVE FNC SETTINGS</button><span id="fncSaveStatus" class="notice" style="display:none;margin-top:0"></span></div>
+      </div>
+      <div class="section">
+        <h2>Bonuses</h2>
+        <p>Enable/disable each bonus and change its amount independently.</p>
+        <div class="form-grid">
+          <div class="field"><label>Subscriber bonus — Enabled</label><select data-bonus-enabled="subscriber_bonus"><option value="false">OFF</option><option value="true">ON</option></select></div><div class="field"><label>Subscriber bonus — Amount</label><input data-bonus-amount="subscriber_bonus" type="number" min="0" value="500"></div>
+          <div class="field"><label>Bits — Enabled</label><select data-bonus-enabled="bits"><option value="false">OFF</option><option value="true">ON</option></select></div><div class="field"><label>Bits — FNC per Bit</label><input data-bonus-amount="bits" type="number" min="0" value="1"></div>
+          <div class="field"><label>Donation — Enabled</label><select data-bonus-enabled="donation_per_usd"><option value="false">OFF</option><option value="true">ON</option></select></div><div class="field"><label>Donation — FNC per $1</label><input data-bonus-amount="donation_per_usd" type="number" min="0" value="100"></div>
+          <div class="field"><label>Raid — Enabled</label><select data-bonus-enabled="raid_per_viewer"><option value="false">OFF</option><option value="true">ON</option></select></div><div class="field"><label>Raid — FNC per viewer</label><input data-bonus-amount="raid_per_viewer" type="number" min="0" value="100"></div>
+          <div class="field"><label>Chat activity — Enabled</label><select data-bonus-enabled="chat_activity"><option value="false">OFF</option><option value="true">ON</option></select></div><div class="field"><label>Chat activity — Amount</label><input data-bonus-amount="chat_activity" type="number" min="0" value="0"></div>
+          <div class="field"><label>Special bonus — Enabled</label><select data-bonus-enabled="special_bonus"><option value="false">OFF</option><option value="true">ON</option></select></div><div class="field"><label>Special bonus — Amount</label><input data-bonus-amount="special_bonus" type="number" min="0" value="0"></div>
+        </div>
+        <div class="actions"><button class="btn primary" id="saveBonusSettings">SAVE BONUS SETTINGS</button><span id="bonusSaveStatus" class="notice" style="display:none;margin-top:0"></span></div>
+        <div class="notice">Database settings are created and default to OFF. Secure admin authentication/write access will be connected before production rewards are enabled.</div>
+      </div>
+    </section>
+
+        <section id="system" class="panel">
       <div class="section">
         <h2>System Controls</h2>
         <p>Global switches remain OFF until the full Twitch/EventSub, XP/FNC, Store and redemption workflow has passed testing.</p>
