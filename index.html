@@ -1300,11 +1300,11 @@ footer .footer-copy .row{margin:0;}
           '<span class="platform-twitch">TWITCH</span> <span class="viewer-platform viewer-twitch">' + twitchCount + ' viewers</span>';
       }else{
         platformStatus.innerHTML =
-          '<span class="platform-kick">KICK</span> <span class="viewer-platform viewer-kick">' + kickCount + '</span>';
+          '<span class="platform-kick">KICK</span> <span class="viewer-platform viewer-kick">' + kickCount + ' viewers</span>';
       }
       viewerCounts.textContent = '';
     }else if(!checkFailed){
-      platformStatus.textContent = 'OFFLINE';
+      platformStatus.textContent = '';
       viewerCounts.hidden = true;
       viewerCounts.textContent = '';
     }else{
