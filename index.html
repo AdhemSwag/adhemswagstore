@@ -1239,7 +1239,7 @@ footer .footer-copy .row{margin:0;}
 
     if(selected === 'TWITCH'){
       player.src = twitchPlayer;
-      platform.innerHTML = bothLive ? '<span class="live-platform-twitch">TWITCH</span><span class="live-platform-separator">•</span><span class="live-platform-kick">KICK</span>' : '<span class="live-platform-twitch">TWITCH</span>';
+      platform.innerHTML = bothLive ? '<span class="live-platform-kick">KICK</span>' : '<span class="live-platform-twitch">TWITCH</span>';
       label.textContent = 'LIVE NOW · TWITCH';
       status.textContent = 'LIVE';
       status.classList.add('status-live');
