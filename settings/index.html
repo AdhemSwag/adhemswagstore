@@ -230,7 +230,7 @@ main{max-width:1080px;margin:0 auto;padding:70px 40px 80px}.eyebrow{font:11px 'J
   });
   form.addEventListener('submit',async function(e){
     e.preventDefault();
-    const session=(await window.adhemSupabase.auth.getSession()).data.session;
+    const session=(await window.AdhemSwagAuth.client.auth.getSession()).data.session;
     if(!session){status.textContent='Connect Twitch first.';return;}
     status.textContent='SAVING…';
     const payload={
@@ -239,10 +239,10 @@ main{max-width:1080px;margin:0 auto;padding:70px 40px 80px}.eyebrow{font:11px 'J
       steam_profile_url:document.getElementById('steamProfileUrl').value.trim(),
       steam_trade_url:document.getElementById('steamTradeUrl').value.trim()
     };
-    const {error}=await window.adhemSupabase.from('users').update(payload).eq('id',session.user.id);
+    const {error}=await window.AdhemSwagAuth.client.from('users').update(payload).eq('id',session.user.id);
     if(error){status.textContent='SAVE ERROR: '+error.message;return;}
     status.textContent='PROFILE SAVED.';
-    await window.adhemAuth.refresh();
+    await window.AdhemSwagAuth.refreshAccountUI();
   });
 })();
 </script>
