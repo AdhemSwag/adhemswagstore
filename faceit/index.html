@@ -432,39 +432,7 @@ footer .footer-copy .row{margin:0;}
 </main>
 
 
-<script id="adhem-account-menu-js">
-(function(){
-  const root=document.getElementById('adhemAccount');
-  if(!root)return;
-  const connect=document.getElementById('adhemAccountConnect');
-  const user=document.getElementById('adhemAccountUser');
-  const menu=document.getElementById('adhemAccountMenu');
-  const avatar=document.getElementById('adhemAccountAvatar');
-  const name=document.getElementById('adhemAccountName');
-  const disconnect=document.getElementById('adhemAccountDisconnect');
-  function setViewer(viewer){
-    if(!viewer || !viewer.twitchUsername)return;
-    name.textContent=viewer.twitchUsername;
-    if(viewer.avatarUrl) avatar.src=viewer.avatarUrl;
-    avatar.alt=viewer.twitchUsername;
-    connect.hidden=true;
-    user.hidden=false;
-  }
-  window.setAdhemViewer=setViewer;
-  user.addEventListener('click',function(e){
-    e.stopPropagation();
-    const open=!menu.hidden;
-    menu.hidden=open;
-    user.setAttribute('aria-expanded',String(!open));
-  });
-  document.addEventListener('click',function(){menu.hidden=true;user.setAttribute('aria-expanded','false');});
-  menu.addEventListener('click',function(e){e.stopPropagation();});
-  disconnect.addEventListener('click',function(){
-    window.dispatchEvent(new CustomEvent('adhem:disconnect'));
-    menu.hidden=true;
-    user.hidden=true;
-    connect.hidden=false;
-  });
-})();
-</script></body>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/auth.js"></script>
+</body>
 </html>
