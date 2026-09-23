@@ -15,7 +15,7 @@ main{max-width:1080px;margin:0 auto;padding:70px 40px 80px}.eyebrow{font:11px 'J
 @media(max-width:1024px){body{padding-left:64px}.sidebar{width:64px}.sidebar-brand a{font-size:11px}.sidebar-link span{display:none}.sidebar-link{justify-content:center;padding:12px 4px}}@media(max-width:700px){.grid{grid-template-columns:1fr}main{padding:45px 24px 60px}}
 
 <style id="adhem-account-menu-css">
-.adhem-account{position:fixed;top:8px;right:clamp(20px,5vw,64px);z-index:1000;font-family:'JetBrains Mono',monospace}
+.adhem-account{position:relative;top:auto;right:auto;z-index:1001;font-family:'JetBrains Mono',monospace}
 .adhem-account-connect,.adhem-account-user{display:inline-flex;align-items:center;gap:9px;min-height:38px;padding:8px 12px;border:1px solid rgba(17,217,247,.45);background:rgba(5,7,10,.94);color:#11D9F7;text-decoration:none;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;box-shadow:0 6px 22px rgba(0,0,0,.28)}
 .adhem-account-connect:hover,.adhem-account-user:hover{background:rgba(17,217,247,.08);border-color:#11D9F7}
 .adhem-account-user{border-radius:22px;padding:5px 10px 5px 5px}
@@ -28,7 +28,7 @@ main{max-width:1080px;margin:0 auto;padding:70px 40px 80px}.eyebrow{font:11px 'J
 .adhem-account-menu .account-menu-danger{color:#ff6262}
 .adhem-account-menu .account-menu-danger:hover{color:#ff8b8b;background:rgba(255,59,59,.07)}
 .adhem-account[hidden],.adhem-account-user[hidden],.adhem-account-menu[hidden]{display:none!important}
-@media(max-width:700px){.adhem-account{top:8px;right:20px}.adhem-account-name{display:none}.adhem-account-connect{font-size:9px;padding:8px 10px}}
+@media(max-width:700px){.adhem-account{top:auto;right:auto}.adhem-account-name{display:none}.adhem-account-connect{font-size:9px;padding:8px 10px}}
 </style><style id="adhem-shared-sidebar">.sidebar{
     position:fixed; top:0; left:0; height:100vh; width:200px; z-index:50;
     background:rgba(5,7,10,0.85); backdrop-filter: blur(6px);
@@ -158,6 +158,8 @@ main{max-width:1080px;margin:0 auto;padding:70px 40px 80px}.eyebrow{font:11px 'J
   <span>YouTube</span>
 </a>
 </nav>
+<div class="adhem-topbar" role="banner">
+<div class="adhem-topbar-left"><span class="adhem-topbar-mark"></span><span class="adhem-topbar-brand">ADHEMSWAG <span>//</span> FNC REWARDS</span></div>
 <div class="adhem-account" id="adhemAccount" aria-label="Viewer account">
   <a class="adhem-account-connect" id="adhemAccountConnect" href="/login/">
     <span>◉</span><span>LOGIN</span>
@@ -173,7 +175,8 @@ main{max-width:1080px;margin:0 auto;padding:70px 40px 80px}.eyebrow{font:11px 'J
     <button type="button" class="account-menu-danger" id="adhemAccountDisconnect">DISCONNECT</button>
   </div>
 </div>
-<main>
+
+</div><main>
 <div class="eyebrow">// Viewer Account</div>
 <h1>SETTINGS</h1>
 <p class="lede">Connect Twitch and complete the required profile before FNC Rewards can be enabled.</p>
