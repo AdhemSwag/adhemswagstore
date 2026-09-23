@@ -5,6 +5,32 @@
 <style>
 :root{--bg:#05070a;--panel:#0b0f12;--cyan:#11d9f7;--muted:#6b7a80;--white:#eaf6f8;--line:rgba(17,217,247,.14);--ok:#39e58c}*{box-sizing:border-box;margin:0;padding:0}html,body{background:var(--bg);color:var(--white);font-family:Inter,sans-serif;min-height:100vh}body{padding-left:200px;background-image:linear-gradient(rgba(17,217,247,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(17,217,247,.045) 1px,transparent 1px);background-size:42px 42px}.sidebar{position:fixed;top:0;left:0;height:100vh;width:200px;background:rgba(5,7,10,.94);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:22px 12px;gap:2px;z-index:50}.sidebar-brand{text-align:center;padding:10px 8px 20px}.sidebar-brand a{font:700 18px 'JetBrains Mono',monospace;color:var(--white);text-decoration:none;letter-spacing:.1em}.sidebar-brand span{color:var(--cyan)}.sidebar-divider{height:1px;background:var(--line);margin:14px 10px}.sidebar-link{display:flex;align-items:center;gap:12px;padding:10px;color:rgba(107,122,128,.85);text-decoration:none;font-size:13px}.sidebar-link:hover,.sidebar-link.active{color:var(--cyan);background:rgba(17,217,247,.05)}main{max-width:1080px;margin:auto;padding:70px 40px 80px}.eyebrow{font:11px 'JetBrains Mono',monospace;letter-spacing:.22em;color:#0a8fa3;margin-bottom:10px}h1{font:700 clamp(42px,6vw,70px) Rajdhani,sans-serif;text-transform:uppercase}h1 span{color:var(--cyan)}.lede{color:var(--muted);line-height:1.7;margin-top:18px;max-width:700px}.grid{display:grid;grid-template-columns:1.1fr .9fr;gap:16px;margin-top:38px}.card{background:var(--panel);border:1px solid var(--line);padding:24px}.card h2{font:700 24px Rajdhani,sans-serif;text-transform:uppercase;margin-bottom:14px}.row{display:flex;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--line);font-size:13px}.label{color:var(--muted)}.value{color:var(--white)}.ok{color:var(--ok);font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase}.progress{height:8px;background:#11181c;border:1px solid var(--line);margin:18px 0 10px}.progress>span{display:block;width:20%;height:100%;background:var(--cyan)}.note{margin-top:16px;color:var(--muted);font-size:13px;line-height:1.6}.cta{display:inline-flex;margin-top:18px;padding:12px 18px;background:var(--cyan);color:#03181c;text-decoration:none;font:700 11px 'JetBrains Mono',monospace;text-transform:uppercase}@media(max-width:1024px){body{padding-left:64px}.sidebar{width:64px}.sidebar-link span:last-child,.sidebar-brand a{display:none}.sidebar-link{justify-content:center}}@media(max-width:700px){.grid{grid-template-columns:1fr}main{padding:45px 24px 60px}}
 
+<style id="profile-organized-css">
+.profile-hero{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;padding:34px 0 28px;border-bottom:1px solid var(--line)}
+.hero-badge{min-width:130px;padding:14px 16px;border:1px solid var(--line);background:rgba(11,15,18,.8);text-align:right}
+.hero-badge span,.reward-stat span,.xp-head span{display:block;color:var(--muted);font:600 9px 'JetBrains Mono',monospace;letter-spacing:.12em}
+.hero-badge strong{display:block;margin-top:5px;color:var(--cyan);font:700 12px 'JetBrains Mono',monospace}
+.status-card .cta{margin-top:12px}
+.progression-card{min-height:100%}
+.reward-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:4px 0 24px}
+.reward-stat{padding:14px;background:#070b0e;border:1px solid var(--line)}
+.reward-stat strong{display:block;margin-top:7px;color:var(--cyan);font:700 20px 'JetBrains Mono',monospace}
+.xp-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.xp-head strong{color:var(--white);font:600 10px 'JetBrains Mono',monospace}
+.progress{height:7px;margin:0;background:#11181c;border:1px solid var(--line);overflow:hidden}
+.progress>span{display:block;width:0;height:100%;background:var(--cyan);box-shadow:0 0 10px rgba(17,217,247,.35);transition:width .25s ease}
+.requirements-card{margin-top:16px}
+.section-head{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:12px}
+.section-head h2{margin-bottom:0}
+.section-head a{color:var(--cyan);text-decoration:none;font:700 9px 'JetBrains Mono',monospace;border:1px solid var(--line);padding:8px 10px}
+.requirements-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.requirement{padding:13px;background:#070b0e;border:1px solid var(--line)}
+.requirement span{display:block;color:var(--muted);font-size:11px;margin-bottom:7px}
+.requirement b{font:600 9px 'JetBrains Mono',monospace;color:var(--muted);text-transform:uppercase}
+.requirement b.complete{color:var(--ok)}
+@media(max-width:800px){.profile-hero{align-items:flex-start;flex-direction:column}.hero-badge{width:100%;text-align:left}.requirements-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:500px){.reward-stats{grid-template-columns:1fr}.requirements-grid{grid-template-columns:1fr}}
+</style>
 <style id="adhem-account-menu-css">
 .adhem-account{position:relative;top:auto;right:auto;z-index:1001;font-family:'JetBrains Mono',monospace}
 .adhem-account-connect,.adhem-account-user{display:inline-flex;align-items:center;gap:9px;min-height:38px;padding:8px 12px;border:1px solid rgba(17,217,247,.45);background:rgba(5,7,10,.94);color:#11D9F7;text-decoration:none;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;box-shadow:0 6px 22px rgba(0,0,0,.28)}
@@ -184,35 +210,43 @@
 </div>
 
 </div><main>
-<div class="eyebrow">// Viewer Account</div>
-<h1>PROFILE <span>OVERVIEW</span></h1>
-<p class="lede">Your connected Twitch identity, profile completion and reward eligibility.</p>
+<div class="profile-hero">
+  <div>
+    <div class="eyebrow">// Viewer Account</div>
+    <h1>MY <span>PROFILE</span></h1>
+    <p class="lede">Your Twitch identity, progression and reward status — all in one place.</p>
+  </div>
+  <div class="hero-badge"><span>STATUS</span><strong id="profileHeroStatus">CHECKING</strong></div>
+</div>
 <div class="grid">
-<section class="card">
-<h2>Account Status</h2>
+<section class="card status-card">
+<h2>ACCOUNT STATUS</h2>
 <div class="row"><span class="label">Twitch</span><span class="status" id="profileTwitchStatus">Checking…</span></div>
 <div class="row"><span class="label">Profile</span><span class="status" id="profileCompleteStatus">Checking…</span></div>
 <div class="row"><span class="label">FNC eligibility</span><span class="status" id="fncEligibilityStatus">FNC OFF — project in development</span></div>
 <p class="note">FNC Points will stay disabled until the complete project is finished and tested. A viewer must be connected with Twitch and have a complete profile before rewards can be enabled.</p>
 <a class="cta" href="/settings/">COMPLETE PROFILE</a>
 </section>
-<section class="card">
+<section class="card progression-card">
 <h2>PROGRESSION</h2>
-<div class="row"><span class="label">FNC Points</span><span class="value" id="profileFncPoints">0</span></div>
-<div class="row"><span class="label">XP</span><span class="value" id="profileXp">0</span></div>
-<div class="row"><span class="label">Level</span><span class="value" id="profileLevel">1</span></div>
-<div class="row"><span class="label">Watch time</span><span class="value" id="profileWatchMinutes">0 min</span></div>
+<div class="reward-stats">
+  <div class="reward-stat"><span>FNC POINTS</span><strong id="profileFncPoints">0</strong></div>
+  <div class="reward-stat"><span>LEVEL</span><strong id="profileLevel">1</strong></div>
+  <div class="reward-stat"><span>WATCH TIME</span><strong id="profileWatchMinutes">0 min</strong></div>
+</div>
+<div class="xp-head"><span>XP PROGRESS</span><strong id="profileXp">0 XP</strong></div>
 <div class="progress"><span id="profileProgressBar"></span></div>
-<p class="note">Balances remain protected. Viewers cannot edit FNC Points, XP or level.</p>
+<p class="note">Keep watching and participating to build XP. FNC Points, XP and level are protected.</p>
 </section>
 </div>
-<div class="card" style="margin-top:16px">
-<h2>PROFILE REQUIREMENTS</h2>
-<div class="row"><span class="label">Twitch</span><span class="status" id="reqTwitch">Required</span></div>
-<div class="row"><span class="label">Email</span><span class="status" id="reqEmail">Required</span></div>
-<div class="row"><span class="label">Steam ID</span><span class="status" id="reqSteamId">Required</span></div>
-<div class="row"><span class="label">Steam profile</span><span class="status" id="reqSteamProfile">Required</span></div>
-<div class="row"><span class="label">Steam trade URL</span><span class="status" id="reqTradeUrl">Required</span></div>
+<div class="card requirements-card">
+<div class="section-head"><h2>PROFILE REQUIREMENTS</h2><a href="/settings/">EDIT PROFILE</a></div>
+<div class="requirements-grid">
+<div class="requirement"><span>Twitch</span><b id="reqTwitch">Required</b></div>
+<div class="requirement"><span>Email</span><b id="reqEmail">Required</b></div>
+<div class="requirement"><span>Steam profile</span><b id="reqSteamProfile">Required</b></div>
+<div class="requirement"><span>Steam trade URL</span><b id="reqTradeUrl">Required</b></div>
+</div>
 </div>
 <div class="profile-extra">
 <section class="card">
@@ -247,19 +281,22 @@ window.addEventListener('adhem:viewer', function(e){
   }
   if(twitch) twitch.textContent=(p&&p.twitch_username)?'Connected as '+p.twitch_username:'Connected';
   if(complete) complete.textContent=(p&&p.profile_complete)?'Complete':'Incomplete';
+  const hero=document.getElementById('profileHeroStatus');
+  if(hero) hero.textContent=(p&&p.profile_complete)?'PROFILE COMPLETE':(d.authId?'INCOMPLETE':'LOGIN REQUIRED');
   if(eligible) eligible.textContent=(p&&p.profile_complete)?'Profile ready — FNC still OFF':'Complete your profile first';
   document.getElementById('profileFncPoints').textContent=(p&&p.fnc_points)||0;
-  document.getElementById('profileXp').textContent=(p&&p.xp)||0;
+  const xp=Number((p&&p.xp)||0);
+  document.getElementById('profileXp').textContent=xp.toLocaleString()+' XP';
+  document.getElementById('profileProgressBar').style.width=Math.min(100,(xp%750)/750*100)+'%';
   document.getElementById('profileLevel').textContent=(p&&p.level)||1;
   document.getElementById('profileWatchMinutes').textContent=((p&&p.total_watch_minutes)||0)+' min';
   const checks=[
     ['reqTwitch',!!(p&&p.twitch_user_id)],
     ['reqEmail',!!(p&&p.email)],
-    ['reqSteamId',!!(p&&p.steam_id)],
     ['reqSteamProfile',!!(p&&p.steam_profile_url)],
     ['reqTradeUrl',!!(p&&p.steam_trade_url)]
   ];
-  checks.forEach(function(x){const el=document.getElementById(x[0]);if(el)el.textContent=x[1]?'Complete':'Required';});
+  checks.forEach(function(x){const el=document.getElementById(x[0]);if(el){el.textContent=x[1]?'Complete':'Required';el.classList.toggle('complete',x[1]);}});
 });
 </script>
 </body></html>
