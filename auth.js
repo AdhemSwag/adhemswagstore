@@ -1,131 +1,529 @@
-/* AdhemSwag viewer authentication + profile layer */
-(function(){
-  const SUPABASE_URL = 'https://lpmocfdfpebcaseffugg.supabase.co';
-  const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_vNkDqYd81b2krZAisUhb2g_c_uwyvRp';
-  const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
-  window.adhemSupabase = client;
+```javascript
+/* =========================================================
+   ADHEMSWAG AUTH
+   Twitch OAuth + Supabase
+   Production: https://adhemswag.com
+   ========================================================= */
 
-  async function getTwitchIdentity(user){
-    const { data, error } = await client.auth.getUserIdentities();
-    if(error || !data || !data.identities) return null;
-    return data.identities.find(function(i){ return i.provider === 'twitch'; }) || null;
+(() => {
+  'use strict';
+
+  /* =========================
+     SUPABASE CONFIG
+     ========================= */
+
+  const SUPABASE_URL =
+    'https://lpmocfdfpebcaseffugg.supabase.co';
+
+  const SUPABASE_ANON_KEY =
+    'sb_publishable_vNkDqYd81b2krZAisUhb2g_c_uwyvRp';
+
+  /* =========================
+     PRODUCTION CONFIG
+     ========================= */
+
+  const PRODUCTION_ORIGIN =
+    'https://adhemswag.com';
+
+  const PRODUCTION_REDIRECT =
+    PRODUCTION_ORIGIN + '/profile/';
+
+  /* =========================
+     SUPABASE CLIENT
+     ========================= */
+
+  if (!window.supabase) {
+    console.error(
+      '[AdhemSwag] Supabase CDN is not loaded.'
+    );
+    return;
   }
 
-  async function ensureProfile(user){
-    const { data: existing } = await client.from('users')
-      .select('id,twitch_user_id,twitch_username,email,steam_id,steam_profile_url,steam_trade_url,profile_complete,fnc_points,xp,level,total_watch_minutes,is_blocked')
-      .eq('id', user.id).maybeSingle();
+  const client = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY,
+    {
+      auth: {
+        flowType: 'pkce',
+        detectSessionInUrl: true,
+        persistSession: true,
+        autoRefreshToken: true,
+        storageKey: 'adhemswag-auth'
+      }
+    }
+  );
 
-    if(existing) return existing;
+  window.AdhemAuth = client;
 
-    const twitch = await getTwitchIdentity(user);
-    if(!twitch) return null;
+  /* =========================
+     OAUTH REDIRECT
+     ========================= */
 
-    const twitchId = twitch.provider_id || (twitch.identity_data && (twitch.identity_data.sub || twitch.identity_data.id));
-    const twitchName = twitch.identity_data && (twitch.identity_data.preferred_username || twitch.identity_data.user_name || twitch.identity_data.login || twitch.identity_data.name);
+  function getOAuthRedirect() {
+    const host = window.location.hostname;
 
-    if(!twitchId || !twitchName) return null;
+    /*
+      Local development:
+      http://localhost:3000/profile/
 
-    const { data, error } = await client.from('users').insert({
-      id: user.id,
-      twitch_user_id: String(twitchId),
-      twitch_username: String(twitchName)
-    }).select('id,twitch_user_id,twitch_username,email,steam_id,steam_profile_url,steam_trade_url,profile_complete,fnc_points,xp,level,total_watch_minutes,is_blocked').single();
+      Production:
+      https://adhemswag.com/profile/
+    */
 
-    if(error) {
-      console.error('AdhemSwag profile creation failed', error);
+    if (
+      host === 'localhost' ||
+      host === '127.0.0.1'
+    ) {
+      return window.location.origin + '/profile/';
+    }
+
+    return PRODUCTION_REDIRECT;
+  }
+
+  /* =========================
+     TWITCH LOGIN
+     ========================= */
+
+  async function loginWithTwitch() {
+    try {
+      const redirectTo = getOAuthRedirect();
+
+      console.log(
+        '[AdhemSwag] Twitch OAuth redirect:',
+        redirectTo
+      );
+
+      const { data, error } =
+        await client.auth.signInWithOAuth({
+          provider: 'twitch',
+
+          options: {
+            redirectTo: redirectTo,
+            skipBrowserRedirect: false
+          }
+        });
+
+      if (error) {
+        console.error(
+          '[AdhemSwag] Twitch login error:',
+          error
+        );
+
+        alert(
+          'Erreur de connexion Twitch : ' +
+          error.message
+        );
+
+        return false;
+      }
+
+      /*
+        Supabase normally redirects automatically.
+        This fallback handles cases where the browser
+        does not navigate automatically.
+      */
+
+      if (
+        data &&
+        data.url &&
+        window.location.href !== data.url
+      ) {
+        window.location.assign(data.url);
+      }
+
+      return true;
+
+    } catch (error) {
+      console.error(
+        '[AdhemSwag] Twitch login exception:',
+        error
+      );
+
+      alert(
+        'Impossible de se connecter avec Twitch.'
+      );
+
+      return false;
+    }
+  }
+
+  /* =========================
+     LOGOUT
+     ========================= */
+
+  async function logout() {
+    try {
+      const { error } =
+        await client.auth.signOut({
+          scope: 'local'
+        });
+
+      if (error) {
+        console.error(
+          '[AdhemSwag] Logout error:',
+          error
+        );
+      }
+
+      window.location.href = '/';
+
+    } catch (error) {
+      console.error(
+        '[AdhemSwag] Logout exception:',
+        error
+      );
+
+      window.location.href = '/';
+    }
+  }
+
+  /* =========================
+     GET TWITCH IDENTITY
+     ========================= */
+
+  async function getTwitchIdentity() {
+    try {
+      const {
+        data,
+        error
+      } = await client.auth.getUser();
+
+      if (error || !data || !data.user) {
+        return null;
+      }
+
+      const user = data.user;
+
+      const metadata =
+        user.user_metadata || {};
+
+      return {
+        authId: user.id,
+
+        twitchUserId:
+          metadata.provider_id ||
+          metadata.sub ||
+          metadata.user_id ||
+          null,
+
+        twitchUsername:
+          metadata.user_name ||
+          metadata.preferred_username ||
+          metadata.name ||
+          null,
+
+        email:
+          user.email || null,
+
+        avatar:
+          metadata.avatar_url ||
+          metadata.picture ||
+          null,
+
+        metadata: metadata
+      };
+
+    } catch (error) {
+      console.error(
+        '[AdhemSwag] Twitch identity error:',
+        error
+      );
+
       return null;
     }
-    return data;
   }
 
-  async function refreshAccountUI(){
-    const { data:{ session } } = await client.auth.getSession();
-    if(!session || !session.user){
-      window.dispatchEvent(new CustomEvent('adhem:viewer', {detail:null}));
+  /* =========================
+     ENSURE USER PROFILE
+     ========================= */
+
+  async function ensureProfile() {
+    try {
+      const {
+        data: sessionData,
+        error: sessionError
+      } = await client.auth.getSession();
+
+      if (
+        sessionError ||
+        !sessionData ||
+        !sessionData.session
+      ) {
+        return null;
+      }
+
+      const authUser =
+        sessionData.session.user;
+
+      if (!authUser) {
+        return null;
+      }
+
+      /* =========================
+         GET TWITCH DATA
+         ========================= */
+
+      const twitch =
+        await getTwitchIdentity();
+
+      if (!twitch) {
+        return null;
+      }
+
+      /* =========================
+         FIND EXISTING PROFILE
+         ========================= */
+
+      const {
+        data: existingProfile,
+        error: selectError
+      } = await client
+        .from('users')
+        .select(`
+          id,
+          twitch_user_id,
+          twitch_username,
+          email,
+          email_verified,
+          steam_id,
+          steam_profile_url,
+          steam_trade_url,
+          profile_complete,
+          fnc_points,
+          xp,
+          level,
+          total_watch_minutes,
+          monthly_xp,
+          streak,
+          is_blocked,
+          total_fnc_earned
+        `)
+        .eq('id', authUser.id)
+        .maybeSingle();
+
+      if (selectError) {
+        console.error(
+          '[AdhemSwag] Profile read error:',
+          selectError
+        );
+
+        return null;
+      }
+
+      /* =========================
+         PROFILE EXISTS
+         ========================= */
+
+      if (existingProfile) {
+        return existingProfile;
+      }
+
+      /* =========================
+         CREATE PROFILE
+         ========================= */
+
+      const newProfile = {
+        id: authUser.id,
+
+        twitch_user_id:
+          twitch.twitchUserId,
+
+        twitch_username:
+          twitch.twitchUsername
+      };
+
+      const {
+        data: createdProfile,
+        error: insertError
+      } = await client
+        .from('users')
+        .insert(newProfile)
+        .select(`
+          id,
+          twitch_user_id,
+          twitch_username,
+          email,
+          email_verified,
+          steam_id,
+          steam_profile_url,
+          steam_trade_url,
+          profile_complete,
+          fnc_points,
+          xp,
+          level,
+          total_watch_minutes,
+          monthly_xp,
+          streak,
+          is_blocked,
+          total_fnc_earned
+        `)
+        .single();
+
+      if (insertError) {
+        /*
+          A second tab may have created the profile
+          at the same time. Try reading it again.
+        */
+
+        console.warn(
+          '[AdhemSwag] Profile creation warning:',
+          insertError
+        );
+
+        const {
+          data: retryProfile
+        } = await client
+          .from('users')
+          .select(`
+            id,
+            twitch_user_id,
+            twitch_username,
+            email,
+            email_verified,
+            steam_id,
+            steam_profile_url,
+            steam_trade_url,
+            profile_complete,
+            fnc_points,
+            xp,
+            level,
+            total_watch_minutes,
+            monthly_xp,
+            streak,
+            is_blocked,
+            total_fnc_earned
+          `)
+          .eq('id', authUser.id)
+          .maybeSingle();
+
+        return retryProfile || null;
+      }
+
+      return createdProfile;
+
+    } catch (error) {
+      console.error(
+        '[AdhemSwag] ensureProfile exception:',
+        error
+      );
+
       return null;
     }
-
-    const user = session.user;
-    const profile = await ensureProfile(user);
-    const twitch = await getTwitchIdentity(user);
-    const meta = (twitch && twitch.identity_data) || {};
-    const viewer = {
-      id: user.id,
-      twitchUsername: (profile && profile.twitch_username) || meta.preferred_username || meta.user_name || meta.login || user.user_metadata?.user_name || user.user_metadata?.preferred_username || 'Viewer',
-      avatarUrl: meta.avatar_url || meta.profile_image_url || user.user_metadata?.avatar_url || ''
-    };
-    if(window.setAdhemViewer) window.setAdhemViewer(viewer);
-    window.dispatchEvent(new CustomEvent('adhem:viewer', {detail:{user:user,profile:profile}}));
-    return {user:user,profile:profile};
   }
 
-  async function loginTwitch(){
-    const status=document.getElementById('loginStatus');
-    if(status) status.textContent='CONNECTING TO TWITCH…';
-    const redirectTo = window.location.origin + '/profile/';
-    const { error } = await client.auth.signInWithOAuth({
-      provider:'twitch',
-      options:{ redirectTo:redirectTo }
-    });
-    if(error && status) status.textContent='TWITCH LOGIN ERROR: ' + error.message;
-  }
+  /* =========================
+     REFRESH ACCOUNT UI
+     ========================= */
 
-  async function logout(){
-    await client.auth.signOut();
-    window.location.href='/login/';
-  }
+  async function refreshAccountUI() {
+    try {
+      const {
+        data,
+        error
+      } = await client.auth.getSession();
 
-  function bindAccountMenu(){
-    const root=document.getElementById('adhemAccount');
-    if(!root)return;
-    const connect=document.getElementById('adhemAccountConnect');
-    const user=document.getElementById('adhemAccountUser');
-    const menu=document.getElementById('adhemAccountMenu');
-    const avatar=document.getElementById('adhemAccountAvatar');
-    const name=document.getElementById('adhemAccountName');
-    const disconnect=document.getElementById('adhemAccountDisconnect');
-    function setViewer(viewer){
-      if(!viewer || !viewer.twitchUsername)return;
-      name.textContent=viewer.twitchUsername;
-      if(viewer.avatarUrl){ avatar.src=viewer.avatarUrl; avatar.hidden=false; }
-      avatar.alt=viewer.twitchUsername;
-      connect.hidden=true;
-      user.hidden=false;
+      if (error) {
+        console.error(
+          '[AdhemSwag] Session error:',
+          error
+        );
+
+        return null;
+      }
+
+      const session = data.session;
+
+      if (!session) {
+        dispatchViewer(null);
+        updateAccountMenu(null);
+        return null;
+      }
+
+      const profile =
+        await ensureProfile();
+
+      const twitch =
+        await getTwitchIdentity();
+
+      if (!twitch) {
+        dispatchViewer(null);
+        updateAccountMenu(null);
+        return null;
+      }
+
+      const viewer = {
+        authId: twitch.authId,
+
+        twitchUserId:
+          twitch.twitchUserId,
+
+        twitchUsername:
+          twitch.twitchUsername,
+
+        email:
+          twitch.email,
+
+        avatar:
+          twitch.avatar,
+
+        profile:
+          profile || null
+      };
+
+      updateAccountMenu(viewer);
+      dispatchViewer(viewer);
+
+      return viewer;
+
+    } catch (error) {
+      console.error(
+        '[AdhemSwag] refreshAccountUI error:',
+        error
+      );
+
+      return null;
     }
-    window.setAdhemViewer=setViewer;
-    user.addEventListener('click',function(e){
-      e.stopPropagation();
-      const open=!menu.hidden;
-      menu.hidden=open;
-      user.setAttribute('aria-expanded',String(!open));
-    });
-    document.addEventListener('click',function(){menu.hidden=true;user.setAttribute('aria-expanded','false');});
-    menu.addEventListener('click',function(e){e.stopPropagation();});
-    if(disconnect) disconnect.addEventListener('click',logout);
   }
 
-  document.addEventListener('DOMContentLoaded', function(){
-    bindAccountMenu();
-    document.querySelectorAll('[data-provider="twitch"]').forEach(function(button){
-      button.addEventListener('click', loginTwitch);
-    });
-    document.querySelectorAll('[data-provider="kick"]').forEach(function(button){
-      button.addEventListener('click', function(){
-        const status=document.getElementById('loginStatus');
-        if(status) status.textContent='KICK CONNECTION WILL BE ADDED AFTER THE TWITCH PROFILE FOUNDATION.';
+  /* =========================
+     ACCOUNT MENU
+     ========================= */
+
+  function updateAccountMenu(viewer) {
+    const loginButtons =
+      document.querySelectorAll(
+        '[data-adhem-login]'
+      );
+
+    const accountButtons =
+      document.querySelectorAll(
+        '[data-adhem-account]'
+      );
+
+    const logoutButtons =
+      document.querySelectorAll(
+        '[data-adhem-logout]'
+      );
+
+    const accountNames =
+      document.querySelectorAll(
+        '[data-adhem-username]'
+      );
+
+    const accountAvatars =
+      document.querySelectorAll(
+        '[data-adhem-avatar]'
+      );
+
+    if (!viewer) {
+      loginButtons.forEach((element) => {
+        element.style.display = '';
       });
-    });
-    const disconnect=document.getElementById('adhemAccountDisconnect');
-    if(disconnect) disconnect.addEventListener('click', logout);
 
-    refreshAccountUI();
-  });
+      accountButtons.forEach((element) => {
+        element.style.display = 'none';
+      });
 
-  window.adhemAuth = {
-    client:client,
-    refresh:refreshAccountUI,
-    logout:logout,
-    getTwitchIdentity:getTwitchIdentity
-  };
-})();
+      logoutButtons.forEach((element) => {
+        e
+```
