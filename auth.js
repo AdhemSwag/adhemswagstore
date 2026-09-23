@@ -106,6 +106,7 @@
   }
 
   document.addEventListener('DOMContentLoaded', function(){
+    bindAccountMenu();
     document.querySelectorAll('[data-provider="twitch"]').forEach(function(button){
       button.addEventListener('click', loginTwitch);
     });
