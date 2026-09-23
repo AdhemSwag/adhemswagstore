@@ -76,6 +76,35 @@
     window.location.href='/login/';
   }
 
+  function bindAccountMenu(){
+    const root=document.getElementById('adhemAccount');
+    if(!root)return;
+    const connect=document.getElementById('adhemAccountConnect');
+    const user=document.getElementById('adhemAccountUser');
+    const menu=document.getElementById('adhemAccountMenu');
+    const avatar=document.getElementById('adhemAccountAvatar');
+    const name=document.getElementById('adhemAccountName');
+    const disconnect=document.getElementById('adhemAccountDisconnect');
+    function setViewer(viewer){
+      if(!viewer || !viewer.twitchUsername)return;
+      name.textContent=viewer.twitchUsername;
+      if(viewer.avatarUrl){ avatar.src=viewer.avatarUrl; avatar.hidden=false; }
+      avatar.alt=viewer.twitchUsername;
+      connect.hidden=true;
+      user.hidden=false;
+    }
+    window.setAdhemViewer=setViewer;
+    user.addEventListener('click',function(e){
+      e.stopPropagation();
+      const open=!menu.hidden;
+      menu.hidden=open;
+      user.setAttribute('aria-expanded',String(!open));
+    });
+    document.addEventListener('click',function(){menu.hidden=true;user.setAttribute('aria-expanded','false');});
+    menu.addEventListener('click',function(e){e.stopPropagation();});
+    if(disconnect) disconnect.addEventListener('click',logout);
+  }
+
   document.addEventListener('DOMContentLoaded', function(){
     document.querySelectorAll('[data-provider="twitch"]').forEach(function(button){
       button.addEventListener('click', loginTwitch);
