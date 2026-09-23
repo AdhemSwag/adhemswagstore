@@ -174,55 +174,76 @@ main{max-width:1080px;margin:0 auto;padding:70px 40px 80px}.eyebrow{font:11px 'J
   </div>
 </div>
 <main>
-<div class="eyebrow">// Viewer Account</div><h1>SETTINGS</h1>
-<p class="lede">Manage your connected platforms and viewer account preferences. CS2 settings are kept separately in CONFIG.</p>
+<div class="eyebrow">// Viewer Account</div>
+<h1>SETTINGS</h1>
+<p class="lede">Connect Twitch and complete the required profile before FNC Rewards can be enabled.</p>
 <div class="grid">
-<section class="card"><h2>Connected Accounts</h2>
-<div class="row"><span class="label">Twitch</span><span class="status">Not connected</span></div>
-<div class="row"><span class="label">Steam</span><span class="status">Not connected</span></div>
-<div class="row"><span class="label">Discord</span><span class="status">Optional</span></div>
-<div class="row"><span class="label">Kick</span><span class="status">Optional</span></div>
+<section class="card"><h2>CONNECTED ACCOUNTS</h2>
+<div class="row"><span class="label">Twitch</span><span class="status" id="settingsTwitchStatus">Checking…</span></div>
+<div class="row"><span class="label">Steam</span><span class="status" id="settingsSteamStatus">Required</span></div>
+<div class="row"><span class="label">Profile</span><span class="status" id="settingsProfileStatus">Checking…</span></div>
 </section>
-<section class="card"><h2>Preferences</h2>
-<div class="row"><span class="label">Notifications</span><span class="status">Enabled</span></div>
-<div class="row"><span class="label">Language</span><span class="status">English</span></div>
-<div class="row"><span class="label">Rewards</span><span class="status">FNC Rewards</span></div>
+<section class="card"><h2>REWARDS STATUS</h2>
+<div class="row"><span class="label">FNC Points</span><span class="status">OFF — project in development</span></div>
+<div class="row"><span class="label">Eligibility</span><span class="status" id="settingsEligibility">Complete profile first</span></div>
 </section>
 </div>
-<div class="note"><strong>Account safety:</strong> Your Twitch and Steam connections will be used for rewards eligibility and delivery. Sensitive account data will stay protected by the backend.</div>
+<section class="card" style="margin-top:16px">
+<h2>COMPLETE YOUR PROFILE</h2>
+<p class="note">These fields are required for future FNC rewards and CS2 skin delivery. FNC balances and reward fields are protected and cannot be edited here.</p>
+<form id="profileForm" style="display:grid;gap:12px;margin-top:18px">
+<label class="label">Email<input id="profileEmail" type="email" autocomplete="email" required></label>
+<label class="label">Steam ID<input id="steamId" type="text" autocomplete="off" required></label>
+<label class="label">Steam Profile URL<input id="steamProfileUrl" type="url" placeholder="https://steamcommunity.com/id/..." required></label>
+<label class="label">Steam Trade URL<input id="steamTradeUrl" type="url" placeholder="https://steamcommunity.com/tradeoffer/new/..." required></label>
+<button class="cta" id="saveProfileBtn" type="submit">SAVE PROFILE</button>
+<div class="code-status" id="profileSaveStatus">Connect Twitch first.</div>
+</form>
+</section>
+<div class="note"><strong>Account safety:</strong> Twitch identity is used for authentication. FNC Points, XP, level and reward balances are server-protected and will remain unavailable until the full project is finished and tested.</div>
 </main>
-<script id="adhem-account-menu-js">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/auth.js"></script>
+<script>
 (function(){
-  const root=document.getElementById('adhemAccount');
-  if(!root)return;
-  const connect=document.getElementById('adhemAccountConnect');
-  const user=document.getElementById('adhemAccountUser');
-  const menu=document.getElementById('adhemAccountMenu');
-  const avatar=document.getElementById('adhemAccountAvatar');
-  const name=document.getElementById('adhemAccountName');
-  const disconnect=document.getElementById('adhemAccountDisconnect');
-  function setViewer(viewer){
-    if(!viewer || !viewer.twitchUsername)return;
-    name.textContent=viewer.twitchUsername;
-    if(viewer.avatarUrl) avatar.src=viewer.avatarUrl;
-    avatar.alt=viewer.twitchUsername;
-    connect.hidden=true;
-    user.hidden=false;
+  const form=document.getElementById('profileForm');
+  const status=document.getElementById('profileSaveStatus');
+  function fill(p){
+    if(!p)return;
+    document.getElementById('profileEmail').value=p.email||'';
+    document.getElementById('steamId').value=p.steam_id||'';
+    document.getElementById('steamProfileUrl').value=p.steam_profile_url||'';
+    document.getElementById('steamTradeUrl').value=p.steam_trade_url||'';
+    document.getElementById('settingsTwitchStatus').textContent=p.twitch_username?'Connected as '+p.twitch_username:'Not connected';
+    document.getElementById('settingsSteamStatus').textContent=(p.steam_id&&p.steam_profile_url&&p.steam_trade_url)?'Complete':'Required';
+    document.getElementById('settingsProfileStatus').textContent=p.profile_complete?'Complete':'Incomplete';
+    document.getElementById('settingsEligibility').textContent=p.profile_complete?'Profile ready — FNC still OFF':'Complete profile first';
   }
-  window.setAdhemViewer=setViewer;
-  user.addEventListener('click',function(e){
-    e.stopPropagation();
-    const open=!menu.hidden;
-    menu.hidden=open;
-    user.setAttribute('aria-expanded',String(!open));
+  window.addEventListener('adhem:viewer',function(e){
+    if(!e.detail||!e.detail.user){
+      status.textContent='Connect Twitch first.';
+      form.querySelectorAll('input,button').forEach(function(x){x.disabled=true;});
+      return;
+    }
+    form.querySelectorAll('input,button').forEach(function(x){x.disabled=false;});
+    fill(e.detail.profile);
   });
-  document.addEventListener('click',function(){menu.hidden=true;user.setAttribute('aria-expanded','false');});
-  menu.addEventListener('click',function(e){e.stopPropagation();});
-  disconnect.addEventListener('click',function(){
-    window.dispatchEvent(new CustomEvent('adhem:disconnect'));
-    menu.hidden=true;
-    user.hidden=true;
-    connect.hidden=false;
+  form.addEventListener('submit',async function(e){
+    e.preventDefault();
+    const session=(await window.adhemSupabase.auth.getSession()).data.session;
+    if(!session){status.textContent='Connect Twitch first.';return;}
+    status.textContent='SAVING…';
+    const payload={
+      email:document.getElementById('profileEmail').value.trim(),
+      steam_id:document.getElementById('steamId').value.trim(),
+      steam_profile_url:document.getElementById('steamProfileUrl').value.trim(),
+      steam_trade_url:document.getElementById('steamTradeUrl').value.trim()
+    };
+    const {error}=await window.adhemSupabase.from('users').update(payload).eq('id',session.user.id);
+    if(error){status.textContent='SAVE ERROR: '+error.message;return;}
+    status.textContent='PROFILE SAVED.';
+    await window.adhemAuth.refresh();
   });
 })();
-</script></body></html>
+</script>
+</body></html>
