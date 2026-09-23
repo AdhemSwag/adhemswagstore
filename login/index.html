@@ -47,16 +47,16 @@ h1{font:700 38px/1 'Rajdhani',sans-serif;text-transform:uppercase;letter-spacing
 .intro{font-size:14px;line-height:1.6;color:var(--muted);margin-bottom:28px}
 .platforms{display:grid;gap:12px}
 .platform-btn{
-  width:100%;border:1px solid var(--line);background:#0b0f12;color:var(--white);
+  width:100%;border:1px solid var(--line);background:transparent;color:var(--white);
   min-height:56px;padding:0 18px;display:flex;align-items:center;gap:14px;
   font:600 12px 'JetBrains Mono',monospace;letter-spacing:.06em;text-transform:uppercase;
   cursor:pointer;transition:.2s
 }
 .platform-btn:hover{border-color:var(--cyan);background:rgba(17,217,247,.06);box-shadow:0 0 18px rgba(17,217,247,.12)}
-.platform-btn[data-provider="twitch"]{border-color:#9146ff;background:rgba(145,70,255,.12);}
+.platform-btn[data-provider="twitch"]{border-color:#9146ff;background:transparent !important;}
 .platform-btn[data-provider="twitch"] .platform-icon,.platform-btn[data-provider="twitch"] span:last-child{color:#9146ff;}
 .platform-btn[data-provider="twitch"]:hover{border-color:#9146ff;background:rgba(145,70,255,.2);box-shadow:0 0 20px rgba(145,70,255,.2);}
-.platform-btn[data-provider="kick"]{border-color:#53fc18;background:transparent;}
+.platform-btn[data-provider="kick"]{border-color:#53fc18;background:transparent !important;}
 .platform-btn[data-provider="kick"] .platform-icon,.platform-btn[data-provider="kick"] span:last-child{color:#53fc18;}
 .platform-btn[data-provider="kick"]:hover{border-color:#53fc18;background:rgba(83,252,24,.16);box-shadow:0 0 20px rgba(83,252,24,.18);}
 .platform-icon{width:22px;text-align:center;color:var(--cyan);font-size:18px}
