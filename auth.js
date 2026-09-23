@@ -116,14 +116,21 @@
   }
 
   function updateAccountMenu(viewer) {
+    const loggedIn = !!viewer;
+
     document.querySelectorAll('[data-adhem-login], #adhemAccountConnect').forEach(el => {
-      el.style.display = viewer ? 'none' : '';
+      el.style.display = loggedIn ? 'none' : '';
+      if ('hidden' in el) el.hidden = loggedIn;
     });
+
     document.querySelectorAll('[data-adhem-account], #adhemAccountUser').forEach(el => {
-      el.style.display = viewer ? '' : 'none';
+      el.style.display = loggedIn ? '' : 'none';
+      if ('hidden' in el) el.hidden = !loggedIn;
     });
+
     document.querySelectorAll('[data-adhem-logout], #adhemAccountDisconnect').forEach(el => {
-      el.style.display = viewer ? '' : 'none';
+      el.style.display = loggedIn ? '' : 'none';
+      if ('hidden' in el) el.hidden = !loggedIn;
     });
     document.querySelectorAll('[data-adhem-username], #adhemAccountName').forEach(el => {
       el.textContent = viewer?.twitchUsername || '';
@@ -186,8 +193,37 @@
     refreshAccountUI
   };
 
+  function bindAccountMenu() {
+    document.querySelectorAll('#adhemAccountUser').forEach(userButton => {
+      if (userButton.dataset.accountBound === '1') return;
+
+      const root = userButton.closest('#adhemAccount') || userButton.parentElement;
+      const menu = root?.querySelector('#adhemAccountMenu');
+      if (!menu) return;
+
+      userButton.dataset.accountBound = '1';
+      userButton.addEventListener('click', event => {
+        event.preventDefault();
+        event.stopPropagation();
+        menu.hidden = !menu.hidden;
+        userButton.setAttribute('aria-expanded', String(!menu.hidden));
+      });
+
+      menu.addEventListener('click', event => event.stopPropagation());
+    });
+
+    document.addEventListener('click', () => {
+      document.querySelectorAll('#adhemAccountMenu').forEach(menu => {
+        menu.hidden = true;
+      });
+      document.querySelectorAll('#adhemAccountUser').forEach(button => {
+        button.setAttribute('aria-expanded', 'false');
+      });
+    });
+  }
+
   function bindAuthButtons() {
-    document.querySelectorAll('[data-adhem-login]').forEach(button => {
+    document.querySelectorAll('[data-adhem-login], #adhemAccountConnect').forEach(button => {
       if (button.dataset.authBound === '1') return;
 
       button.dataset.authBound = '1';
@@ -204,7 +240,7 @@
       });
     });
 
-    document.querySelectorAll('[data-adhem-logout]').forEach(button => {
+    document.querySelectorAll('[data-adhem-logout], #adhemAccountDisconnect').forEach(button => {
       if (button.dataset.authBound === '1') return;
 
       button.dataset.authBound = '1';
@@ -216,6 +252,7 @@
   }
 
   async function init() {
+    bindAccountMenu();
     bindAuthButtons();
     await refreshAccountUI();
 
