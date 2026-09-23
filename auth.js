@@ -6,8 +6,14 @@
   const SUPABASE_ANON_KEY = 'sb_publishable_vNkDqYd81b2krZAisUhb2g_c_uwyvRp';
   const PRODUCTION_REDIRECT = 'https://adhemswag.com/profile/';
 
+  function setStatus(message) {
+    const status = document.getElementById('loginStatus');
+    if (status) status.textContent = message || '';
+  }
+
   if (!window.supabase) {
     console.error('[AdhemSwag] Supabase CDN not loaded');
+    setStatus('Service de connexion indisponible. Recharge la page.');
     return;
   }
 
@@ -37,29 +43,33 @@
 
   async function loginWithTwitch() {
     try {
+      setStatus('Connexion à Twitch...');
+
       const { data, error } = await client.auth.signInWithOAuth({
         provider: 'twitch',
         options: {
           redirectTo: getOAuthRedirect(),
-          skipBrowserRedirect: false
+          skipBrowserRedirect: true
         }
       });
 
       if (error) {
         console.error('[AdhemSwag] Twitch OAuth error:', error);
-        const status = document.getElementById('loginStatus');
-        if (status) status.textContent = 'Erreur Twitch : ' + error.message;
+        setStatus('Erreur Twitch : ' + error.message);
         return false;
       }
 
-      if (data && data.url) {
-        window.location.assign(data.url);
+      if (!data || !data.url) {
+        console.error('[AdhemSwag] Twitch OAuth returned no URL:', data);
+        setStatus('Twitch n’a pas fourni de lien de connexion.');
+        return false;
       }
+
+      window.location.assign(data.url);
       return true;
     } catch (error) {
       console.error('[AdhemSwag] Twitch login exception:', error);
-      const status = document.getElementById('loginStatus');
-      if (status) status.textContent = 'Impossible de se connecter avec Twitch.';
+      setStatus('Impossible de se connecter avec Twitch.');
       return false;
     }
   }
@@ -70,10 +80,8 @@
 
     const authUser = sessionData.session.user;
     const meta = authUser.user_metadata || {};
-    const twitchUserId =
-      meta.provider_id || meta.sub || meta.user_id || null;
-    const twitchUsername =
-      meta.user_name || meta.preferred_username || meta.name || null;
+    const twitchUserId = meta.provider_id || meta.sub || meta.user_id || null;
+    const twitchUsername = meta.user_name || meta.preferred_username || meta.name || null;
 
     let { data: profile, error } = await client
       .from('users')
@@ -137,6 +145,7 @@
   async function refreshAccountUI() {
     try {
       const { data, error } = await client.auth.getSession();
+
       if (error || !data?.session) {
         updateAccountMenu(null);
         dispatchViewer(null);
@@ -145,6 +154,7 @@
 
       const user = data.session.user;
       const meta = user.user_metadata || {};
+
       const viewer = {
         authId: user.id,
         twitchUserId: meta.provider_id || meta.sub || meta.user_id || null,
@@ -179,17 +189,24 @@
   function bindAuthButtons() {
     document.querySelectorAll('[data-adhem-login]').forEach(button => {
       if (button.dataset.authBound === '1') return;
+
       button.dataset.authBound = '1';
-      button.addEventListener('click', async (event) => {
+      button.addEventListener('click', async event => {
         event.preventDefault();
+        if (button.disabled) return;
+
         button.disabled = true;
-        await loginWithTwitch();
-        button.disabled = false;
+        try {
+          await loginWithTwitch();
+        } finally {
+          button.disabled = false;
+        }
       });
     });
 
     document.querySelectorAll('[data-adhem-logout]').forEach(button => {
       if (button.dataset.authBound === '1') return;
+
       button.dataset.authBound = '1';
       button.addEventListener('click', event => {
         event.preventDefault();
@@ -201,82 +218,17 @@
   async function init() {
     bindAuthButtons();
     await refreshAccountUI();
+
     client.auth.onAuthStateChange(() => {
       setTimeout(refreshAccountUI, 0);
     });
   }
+
+  window.AdhemSwagAuthReady = true;
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {
     init();
   }
-})()
-  function dispatchViewer(viewer) {
-    window.dispatchEvent(new CustomEvent('adhem:viewer', { detail: viewer }));
-  }
-
-  function updateAccountMenu(viewer) {
-    document.querySelectorAll('[data-adhem-login]').forEach(el => {
-      el.style.display = viewer ? 'none' : '';
-    });
-    document.querySelectorAll('[data-adhem-account]').forEach(el => {
-      el.style.display = viewer ? '' : 'none';
-    });
-    document.querySelectorAll('[data-adhem-username]').forEach(el => {
-      el.textContent = viewer?.twitchUsername || '';
-    });
-    document.querySelectorAll('[data-adhem-avatar]').forEach(el => {
-      if (viewer?.avatar) { el.src = viewer.avatar; el.hidden = false; }
-      else { el.hidden = true; }
-    });
-  }
-
-  function bindAuthButtons() {
-    document.querySelectorAll('[data-provider="twitch"]').forEach(button => {
-      if (button.dataset.adhemBound) return;
-      button.dataset.adhemBound = '1';
-      button.addEventListener('click', loginWithTwitch);
-    });
-
-    document.querySelectorAll('[data-provider="kick"]').forEach(button => {
-      if (button.dataset.adhemBound) return;
-      button.dataset.adhemBound = '1';
-      button.addEventListener('click', () => {
-        const status = document.getElementById('loginStatus');
-        if (status) status.textContent = 'KICK CONNECTION WILL BE ADDED LATER.';
-      });
-    });
-
-    document.querySelectorAll('[data-adhem-logout]').forEach(button => {
-      if (button.dataset.adhemBound) return;
-      button.dataset.adhemBound = '1';
-      button.addEventListener('click', logout);
-    });
-  }
-
-  document.addEventListener('DOMContentLoaded', async () => {
-    bindAuthButtons();
-    await refreshAccountUI();
-  });
-
-  client.auth.onAuthStateChange((event, session) => {
-    if (event === 'SIGNED_OUT' || !session) {
-      updateAccountMenu(null);
-      dispatchViewer(null);
-      return;
-    }
-    setTimeout(() => refreshAccountUI(), 0);
-  });
-
-  window.AdhemSwagAuth = {
-    client,
-    loginWithTwitch,
-    logout,
-    getTwitchIdentity,
-    ensureProfile,
-    refreshAccountUI
-  };
-
-  window.adhemAuth = window.AdhemSwagAuth;
 })();
