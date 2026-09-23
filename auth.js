@@ -13,7 +13,7 @@
 
   if (!window.supabase) {
     console.error('[AdhemSwag] Supabase CDN not loaded');
-    setStatus('Service de connexion indisponible. Recharge la page.');
+    setStatus('Connection service unavailable. Please reload the page.');
     return;
   }
 
@@ -43,7 +43,7 @@
 
   async function loginWithTwitch() {
     try {
-      setStatus('Connexion à Twitch...');
+      setStatus('Connecting to Twitch...');
 
       const { data, error } = await client.auth.signInWithOAuth({
         provider: 'twitch',
@@ -55,13 +55,13 @@
 
       if (error) {
         console.error('[AdhemSwag] Twitch OAuth error:', error);
-        setStatus('Erreur Twitch : ' + error.message);
+        setStatus('Twitch error: ' + error.message);
         return false;
       }
 
       if (!data || !data.url) {
         console.error('[AdhemSwag] Twitch OAuth returned no URL:', data);
-        setStatus('Twitch n’a pas fourni de lien de connexion.');
+        setStatus('Twitch did not provide a login link.');
         return false;
       }
 
@@ -69,7 +69,7 @@
       return true;
     } catch (error) {
       console.error('[AdhemSwag] Twitch login exception:', error);
-      setStatus('Impossible de se connecter avec Twitch.');
+      setStatus('Unable to connect to Twitch.');
       return false;
     }
   }
@@ -116,19 +116,19 @@
   }
 
   function updateAccountMenu(viewer) {
-    document.querySelectorAll('[data-adhem-login]').forEach(el => {
+    document.querySelectorAll('[data-adhem-login], #adhemAccountConnect').forEach(el => {
       el.style.display = viewer ? 'none' : '';
     });
-    document.querySelectorAll('[data-adhem-account]').forEach(el => {
+    document.querySelectorAll('[data-adhem-account], #adhemAccountUser').forEach(el => {
       el.style.display = viewer ? '' : 'none';
     });
-    document.querySelectorAll('[data-adhem-logout]').forEach(el => {
+    document.querySelectorAll('[data-adhem-logout], #adhemAccountDisconnect').forEach(el => {
       el.style.display = viewer ? '' : 'none';
     });
-    document.querySelectorAll('[data-adhem-username]').forEach(el => {
+    document.querySelectorAll('[data-adhem-username], #adhemAccountName').forEach(el => {
       el.textContent = viewer?.twitchUsername || '';
     });
-    document.querySelectorAll('[data-adhem-avatar]').forEach(el => {
+    document.querySelectorAll('[data-adhem-avatar], #adhemAccountAvatar').forEach(el => {
       if (viewer?.avatar) {
         el.src = viewer.avatar;
         el.style.display = '';
@@ -158,7 +158,7 @@
       const viewer = {
         authId: user.id,
         twitchUserId: meta.provider_id || meta.sub || meta.user_id || null,
-        twitchUsername: meta.user_name || meta.preferred_username || meta.name || null,
+        twitchUsername: meta.user_name || meta.preferred_username || meta.name || meta.full_name || null,
         email: user.email || null,
         avatar: meta.avatar_url || meta.picture || null,
         profile: await ensureProfile()
