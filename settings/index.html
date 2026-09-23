@@ -278,7 +278,6 @@ main.settings-main{max-width:1120px;margin:0 auto;padding:54px 40px 90px}
     <div class="settings-card-body">
       <form id="profileForm" class="settings-form">
         <div class="settings-field full"><label for="profileEmail">Email</label><input id="profileEmail" type="email" autocomplete="email" placeholder="your@email.com" required></div>
-        <div class="settings-field"><label for="steamId">Steam ID</label><input id="steamId" type="text" autocomplete="off" placeholder="7656119…" required></div>
         <div class="settings-field"><label for="steamProfileUrl">Steam Profile URL</label><input id="steamProfileUrl" type="url" placeholder="https://steamcommunity.com/id/…" required></div>
         <div class="settings-field full"><label for="steamTradeUrl">Steam Trade URL</label><input id="steamTradeUrl" type="url" placeholder="https://steamcommunity.com/tradeoffer/new/…" required></div>
         <div class="settings-actions">
@@ -300,7 +299,6 @@ main.settings-main{max-width:1120px;margin:0 auto;padding:54px 40px 90px}
   function fill(p){
     if(!p)return;
     document.getElementById('profileEmail').value=p.email||'';
-    document.getElementById('steamId').value=p.steam_id||'';
     document.getElementById('steamProfileUrl').value=p.steam_profile_url||'';
     document.getElementById('steamTradeUrl').value=p.steam_trade_url||'';
     const twitch=p.twitch_username?'Connected as '+p.twitch_username:'Not connected';
@@ -335,7 +333,6 @@ main.settings-main{max-width:1120px;margin:0 auto;padding:54px 40px 90px}
     status.textContent='SAVING…';
     const payload={
       email:document.getElementById('profileEmail').value.trim(),
-      steam_id:document.getElementById('steamId').value.trim(),
       steam_profile_url:document.getElementById('steamProfileUrl').value.trim(),
       steam_trade_url:document.getElementById('steamTradeUrl').value.trim()
     };
