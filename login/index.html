@@ -84,7 +84,7 @@ h1{font:700 38px/1 'Rajdhani',sans-serif;text-transform:uppercase;letter-spacing
     <p class="intro">Choose your platform<br>Sign in with Twitch or Kick. You can connect the other platform later.</p>
 
     <div class="platforms">
-      <button class="platform-btn" type="button" data-provider="twitch" data-adhem-login>
+      <button class="platform-btn" type="button" data-provider="twitch" data-adhem-login onclick="if(window.AdhemSwagAuth){window.AdhemSwagAuth.loginWithTwitch();}else{document.getElementById('loginStatus').textContent='Chargement de la connexion Twitch...';}">
         <span class="platform-icon">◉</span>
         <span>Continue with Twitch</span>
         <span>→</span>
