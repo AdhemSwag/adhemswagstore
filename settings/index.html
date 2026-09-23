@@ -26,6 +26,12 @@ main{max-width:1080px;margin:0 auto;padding:70px 40px 80px}.eyebrow{font:11px 'J
 .adhem-account-menu a,.adhem-account-menu button{display:flex;align-items:center;width:100%;padding:11px 12px;background:none;border:0;color:#b9c9cd;text-decoration:none;font:500 11px 'JetBrains Mono',monospace;text-transform:uppercase;text-align:left;cursor:pointer}
 .adhem-account-menu a:hover,.adhem-account-menu button:hover{background:rgba(17,217,247,.07);color:#11D9F7}
 .adhem-account-menu .account-menu-danger{color:#ff6262}
+.account-rewards{padding:11px 12px 10px;margin-bottom:5px;border-bottom:1px solid rgba(17,217,247,.12)}
+.account-rewards-title{font:600 8px 'JetBrains Mono',monospace;letter-spacing:.14em;color:#52636a;text-transform:uppercase;margin-bottom:9px}
+.account-rewards-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.account-rewards-grid div{padding:7px 5px;background:rgba(17,217,247,.035);border:1px solid rgba(17,217,247,.08);text-align:center}
+.account-rewards-grid span{display:block;font:8px 'JetBrains Mono',monospace;color:#617177;margin-bottom:3px}
+.account-rewards-grid strong{display:block;font:700 12px 'JetBrains Mono',monospace;color:#11D9F7}
 .adhem-account-menu .account-menu-danger:hover{color:#ff8b8b;background:rgba(255,59,59,.07)}
 .adhem-account[hidden],.adhem-account-user[hidden],.adhem-account-menu[hidden]{display:none!important}
 @media(max-width:700px){.adhem-account{top:auto;right:auto}.adhem-account-name{display:none}.adhem-account-connect{font-size:9px;padding:8px 10px}}
@@ -221,6 +227,14 @@ main.settings-main{max-width:1120px;margin:0 auto;padding:54px 40px 90px}
     <span class="adhem-account-chevron">⌄</span>
   </button>
   <div class="adhem-account-menu" id="adhemAccountMenu" hidden>
+    <div class="account-rewards">
+      <div class="account-rewards-title">MY REWARDS</div>
+      <div class="account-rewards-grid">
+        <div><span>LEVEL</span><strong id="adhemAccountLevel">1</strong></div>
+        <div><span>XP</span><strong id="adhemAccountXp">0</strong></div>
+        <div><span>FNC</span><strong id="adhemAccountFnc">0</strong></div>
+      </div>
+    </div>
     <a href="/profile/">PROFILE</a>
     <a href="/settings/">SETTINGS</a>
     <button type="button" class="account-menu-danger" id="adhemAccountDisconnect">DISCONNECT</button>
@@ -293,6 +307,9 @@ main.settings-main{max-width:1120px;margin:0 auto;padding:54px 40px 90px}
     document.getElementById('settingsTwitchStatus').textContent=twitch;
     document.getElementById('settingsAccountName').textContent=p.twitch_username||'Twitch account';
     document.getElementById('settingsAccountHint').textContent=p.twitch_username?'Twitch connected':'Connect Twitch to edit your profile';
+    document.getElementById('adhemAccountLevel').textContent=Number(p.level||1).toLocaleString();
+    document.getElementById('adhemAccountXp').textContent=Number(p.xp||0).toLocaleString();
+    document.getElementById('adhemAccountFnc').textContent=Number(p.fnc_points||0).toLocaleString();
     const steamComplete=!!(p.steam_id&&p.steam_profile_url&&p.steam_trade_url);
     document.getElementById('settingsSteamStatus').textContent=steamComplete?'Complete':'Required';
     document.getElementById('settingsProfileStatus').textContent=p.profile_complete?'Complete':'Incomplete';
