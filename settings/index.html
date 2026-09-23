@@ -220,7 +220,7 @@ main{max-width:1080px;margin:0 auto;padding:70px 40px 80px}.eyebrow{font:11px 'J
     document.getElementById('settingsEligibility').textContent=p.profile_complete?'Profile ready — FNC still OFF':'Complete profile first';
   }
   window.addEventListener('adhem:viewer',function(e){
-    if(!e.detail||!e.detail.user){
+    if(!e.detail||!e.detail.authId){
       status.textContent='Connect Twitch first.';
       form.querySelectorAll('input,button').forEach(function(x){x.disabled=true;});
       return;
