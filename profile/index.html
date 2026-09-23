@@ -180,19 +180,46 @@
     <button type="button" class="account-menu-danger" id="adhemAccountDisconnect">DISCONNECT</button>
   </div>
 </div>
-<main><div class="eyebrow">// Viewer Account</div><h1>PROFILE <span>OVERVIEW</span></h1><p class="lede">Your viewer profile, FNC rewards progression and account status.</p>
-<div class="grid"><section class="card"><h2>Account Status</h2><div class="row"><span class="label">Status</span><span class="ok">Ready to use</span></div><div class="row"><span class="label">Account type</span><span class="value">Viewer account</span></div><p class="note">You can earn points, join public giveaways, redeem available rewards, and build profile progression once the rewards system is activated.</p><a class="cta" href="/settings/">Complete Your Profile</a></section>
-<section class="card"><h2>Progression</h2><div class="row"><span class="label">FNC Points</span><span class="value">0</span></div><div class="row"><span class="label">XP</span><span class="value">0</span></div><div class="row"><span class="label">Level</span><span class="value">1</span></div><div class="progress"><span></span></div><p class="note">Your XP and FNC balance will update automatically when the rewards system is activated.</p></section></div>
-<div class="card" style="margin-top:16px"><h2>Complete Your Profile</h2><p class="note">Connect Twitch and Steam, add your email and Steam Trade Link, and optionally connect Discord or Kick to prepare your account for FNC Rewards.</p></div>
+<main>
+<div class="eyebrow">// Viewer Account</div>
+<h1>PROFILE <span>OVERVIEW</span></h1>
+<p class="lede">Your connected Twitch identity, profile completion and reward eligibility.</p>
+<div class="grid">
+<section class="card">
+<h2>Account Status</h2>
+<div class="row"><span class="label">Twitch</span><span class="status" id="profileTwitchStatus">Checking…</span></div>
+<div class="row"><span class="label">Profile</span><span class="status" id="profileCompleteStatus">Checking…</span></div>
+<div class="row"><span class="label">FNC eligibility</span><span class="status" id="fncEligibilityStatus">FNC OFF — project in development</span></div>
+<p class="note">FNC Points will stay disabled until the complete project is finished and tested. A viewer must be connected with Twitch and have a complete profile before rewards can be enabled.</p>
+<a class="cta" href="/settings/">COMPLETE PROFILE</a>
+</section>
+<section class="card">
+<h2>PROGRESSION</h2>
+<div class="row"><span class="label">FNC Points</span><span class="value" id="profileFncPoints">0</span></div>
+<div class="row"><span class="label">XP</span><span class="value" id="profileXp">0</span></div>
+<div class="row"><span class="label">Level</span><span class="value" id="profileLevel">1</span></div>
+<div class="row"><span class="label">Watch time</span><span class="value" id="profileWatchMinutes">0 min</span></div>
+<div class="progress"><span id="profileProgressBar"></span></div>
+<p class="note">Balances remain protected. Viewers cannot edit FNC Points, XP or level.</p>
+</section>
+</div>
+<div class="card" style="margin-top:16px">
+<h2>PROFILE REQUIREMENTS</h2>
+<div class="row"><span class="label">Twitch</span><span class="status" id="reqTwitch">Required</span></div>
+<div class="row"><span class="label">Email</span><span class="status" id="reqEmail">Required</span></div>
+<div class="row"><span class="label">Steam ID</span><span class="status" id="reqSteamId">Required</span></div>
+<div class="row"><span class="label">Steam profile</span><span class="status" id="reqSteamProfile">Required</span></div>
+<div class="row"><span class="label">Steam trade URL</span><span class="status" id="reqTradeUrl">Required</span></div>
+</div>
 <div class="profile-extra">
 <section class="card">
 <h2>LIVE CODES</h2>
-<p class="note">Redeem live codes to receive <b>FNC Points or XP.</b> Enter codes shared during AdhemSwag live streams to add the reward to your account.</p>
+<p class="note">Redeem live codes to receive <b>FNC Points or XP.</b> This feature remains locked until the rewards backend is finished.</p>
 <div class="code-box">
 <input id="redeemCodeInput" type="text" maxlength="64" placeholder="ENTER YOUR CODE" autocomplete="off">
 <button id="redeemCodeBtn" type="button">REDEEM</button>
 </div>
-<div class="code-status" id="redeemCodeStatus">Enter your live code above.</div>
+<div class="code-status" id="redeemCodeStatus">FNC Rewards are currently OFF.</div>
 </section>
 <section class="card">
 <h2>HISTORY</h2>
@@ -201,54 +228,35 @@
 </div>
 </section>
 </div>
-
 </main>
-<script id="adhem-account-menu-js">
-(function(){
-  const root=document.getElementById('adhemAccount');
-  if(!root)return;
-  const connect=document.getElementById('adhemAccountConnect');
-  const user=document.getElementById('adhemAccountUser');
-  const menu=document.getElementById('adhemAccountMenu');
-  const avatar=document.getElementById('adhemAccountAvatar');
-  const name=document.getElementById('adhemAccountName');
-  const disconnect=document.getElementById('adhemAccountDisconnect');
-  function setViewer(viewer){
-    if(!viewer || !viewer.twitchUsername)return;
-    name.textContent=viewer.twitchUsername;
-    if(viewer.avatarUrl) avatar.src=viewer.avatarUrl;
-    avatar.alt=viewer.twitchUsername;
-    connect.hidden=true;
-    user.hidden=false;
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/auth.js"></script>
+<script>
+window.addEventListener('adhem:viewer', function(e){
+  const d=e.detail||{}, p=d.profile;
+  const twitch=document.getElementById('profileTwitchStatus');
+  const complete=document.getElementById('profileCompleteStatus');
+  const eligible=document.getElementById('fncEligibilityStatus');
+  if(!d.user){
+    if(twitch) twitch.textContent='Not connected';
+    if(complete) complete.textContent='Connect Twitch first';
+    return;
   }
-  window.setAdhemViewer=setViewer;
-  user.addEventListener('click',function(e){
-    e.stopPropagation();
-    const open=!menu.hidden;
-    menu.hidden=open;
-    user.setAttribute('aria-expanded',String(!open));
-  });
-  document.addEventListener('click',function(){menu.hidden=true;user.setAttribute('aria-expanded','false');});
-  menu.addEventListener('click',function(e){e.stopPropagation();});
-  disconnect.addEventListener('click',function(){
-    window.dispatchEvent(new CustomEvent('adhem:disconnect'));
-    menu.hidden=true;
-    user.hidden=true;
-    connect.hidden=false;
-  });
-})();
-
-  const redeemBtn=document.getElementById('redeemCodeBtn');
-  const redeemInput=document.getElementById('redeemCodeInput');
-  const redeemStatus=document.getElementById('redeemCodeStatus');
-  if(redeemBtn){
-    redeemBtn.addEventListener('click',function(){
-      redeemStatus.textContent='Enter your live code above.';
-    });
-  }
-  if(redeemInput){
-    redeemInput.addEventListener('keydown',function(e){
-      if(e.key==='Enter') redeemBtn.click();
-    });
-  }
-</script></body></html>
+  if(twitch) twitch.textContent=(p&&p.twitch_username)?'Connected as '+p.twitch_username:'Connected';
+  if(complete) complete.textContent=(p&&p.profile_complete)?'Complete':'Incomplete';
+  if(eligible) eligible.textContent=(p&&p.profile_complete)?'Profile ready — FNC still OFF':'Complete your profile first';
+  document.getElementById('profileFncPoints').textContent=(p&&p.fnc_points)||0;
+  document.getElementById('profileXp').textContent=(p&&p.xp)||0;
+  document.getElementById('profileLevel').textContent=(p&&p.level)||1;
+  document.getElementById('profileWatchMinutes').textContent=((p&&p.total_watch_minutes)||0)+' min';
+  const checks=[
+    ['reqTwitch',!!(p&&p.twitch_user_id)],
+    ['reqEmail',!!(p&&p.email)],
+    ['reqSteamId',!!(p&&p.steam_id)],
+    ['reqSteamProfile',!!(p&&p.steam_profile_url)],
+    ['reqTradeUrl',!!(p&&p.steam_trade_url)]
+  ];
+  checks.forEach(function(x){const el=document.getElementById(x[0]);if(el)el.textContent=x[1]?'Complete':'Required';});
+});
+</script>
+</body></html>
