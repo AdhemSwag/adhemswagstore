@@ -237,7 +237,7 @@ window.addEventListener('adhem:viewer', function(e){
   const twitch=document.getElementById('profileTwitchStatus');
   const complete=document.getElementById('profileCompleteStatus');
   const eligible=document.getElementById('fncEligibilityStatus');
-  if(!d.user){
+  if(!d.authId){
     if(twitch) twitch.textContent='Not connected';
     if(complete) complete.textContent='Connect Twitch first';
     return;
