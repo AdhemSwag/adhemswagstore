@@ -32,6 +32,10 @@ main{max-width:1080px;margin:0 auto;padding:70px 40px 80px}.eyebrow{font:11px 'J
 .account-rewards-grid div{padding:7px 5px;background:rgba(17,217,247,.035);border:1px solid rgba(17,217,247,.08);text-align:center}
 .account-rewards-grid span{display:block;font:8px 'JetBrains Mono',monospace;color:#617177;margin-bottom:3px}
 .account-rewards-grid strong{display:block;font:700 12px 'JetBrains Mono',monospace;color:#11D9F7}
+.account-xp-card{grid-column:span 1}
+.account-xp-track{height:3px;background:#11191d;margin:5px 0 3px;overflow:hidden}
+.account-xp-track i{display:block;width:0;height:100%;background:#11D9F7;box-shadow:0 0 8px rgba(17,217,247,.5);transition:width .25s ease}
+.account-xp-card small{display:block;font:7px 'JetBrains Mono',monospace;color:#52636a;white-space:nowrap}
 .adhem-account-menu .account-menu-danger:hover{color:#ff8b8b;background:rgba(255,59,59,.07)}
 .adhem-account[hidden],.adhem-account-user[hidden],.adhem-account-menu[hidden]{display:none!important}
 @media(max-width:700px){.adhem-account{top:auto;right:auto}.adhem-account-name{display:none}.adhem-account-connect{font-size:9px;padding:8px 10px}}
@@ -231,8 +235,8 @@ main.settings-main{max-width:1120px;margin:0 auto;padding:54px 40px 90px}
       <div class="account-rewards-title">MY REWARDS</div>
       <div class="account-rewards-grid">
         <div><span>LEVEL</span><strong id="adhemAccountLevel">1</strong></div>
-        <div><span>XP</span><strong id="adhemAccountXp">0</strong></div>
-        <div><span>FNC</span><strong id="adhemAccountFnc">0</strong></div>
+        <div><span>FNC POINTS</span><strong id="adhemAccountFnc">0</strong></div>
+        <div class="account-xp-card"><span>XP</span><strong id="adhemAccountXp">0</strong><div class="account-xp-track"><i id="adhemAccountXpBar"></i></div><small id="adhemAccountXpProgress">0 / 750</small></div>
       </div>
     </div>
     <a href="/profile/">PROFILE</a>
@@ -308,11 +312,21 @@ main.settings-main{max-width:1120px;margin:0 auto;padding:54px 40px 90px}
     document.getElementById('adhemAccountLevel').textContent=Number(p.level||1).toLocaleString();
     document.getElementById('adhemAccountXp').textContent=Number(p.xp||0).toLocaleString();
     document.getElementById('adhemAccountFnc').textContent=Number(p.fnc_points||0).toLocaleString();
-    const steamComplete=!!(p.steam_id&&p.steam_profile_url&&p.steam_trade_url);
+    const xp=Number(p.xp||0);
+    const level=Math.max(1,Number(p.level||1));
+    const xpThresholds={1:0,2:750,3:1750,4:3000,5:4500,6:6250,7:8250,8:10500,9:13000,10:15750,11:18750,12:22000,13:25500,14:29250,15:33250,20:57000,25:87500,30:128250,40:223500,50:348750};
+    const currentThreshold=xpThresholds[level] ?? xp;
+    const knownNext=Object.keys(xpThresholds).map(Number).filter(function(n){return n>level;}).sort(function(a,b){return a-b;})[0];
+    const nextThreshold=knownNext?xpThresholds[knownNext]:currentThreshold+750;
+    const xpRange=Math.max(1,nextThreshold-currentThreshold);
+    const xpProgress=Math.max(0,Math.min(100,((xp-currentThreshold)/xpRange)*100));
+    document.getElementById('adhemAccountXpBar').style.width=xpProgress+'%';
+    document.getElementById('adhemAccountXpProgress').textContent=xp.toLocaleString()+' / '+nextThreshold.toLocaleString();
+    const steamComplete=!!(p.steam_profile_url&&p.steam_trade_url);
     document.getElementById('settingsSteamStatus').textContent=steamComplete?'Complete':'Required';
     document.getElementById('settingsProfileStatus').textContent=p.profile_complete?'Complete':'Incomplete';
-    const fields=[p.email,p.steam_id,p.steam_profile_url,p.steam_trade_url];
-    const pct=Math.round(fields.filter(Boolean).length/4*100);
+    const fields=[p.email,p.steam_profile_url,p.steam_trade_url];
+    const pct=Math.round(fields.filter(Boolean).length/3*100);
     document.getElementById('settingsProgressText').textContent=p.profile_complete?'100%':pct+'%';
     document.getElementById('settingsProgressFill').style.width=(p.profile_complete?100:pct)+'%';
   }
