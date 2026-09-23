@@ -211,4 +211,72 @@
   } else {
     init();
   }
+})()
+  function dispatchViewer(viewer) {
+    window.dispatchEvent(new CustomEvent('adhem:viewer', { detail: viewer }));
+  }
+
+  function updateAccountMenu(viewer) {
+    document.querySelectorAll('[data-adhem-login]').forEach(el => {
+      el.style.display = viewer ? 'none' : '';
+    });
+    document.querySelectorAll('[data-adhem-account]').forEach(el => {
+      el.style.display = viewer ? '' : 'none';
+    });
+    document.querySelectorAll('[data-adhem-username]').forEach(el => {
+      el.textContent = viewer?.twitchUsername || '';
+    });
+    document.querySelectorAll('[data-adhem-avatar]').forEach(el => {
+      if (viewer?.avatar) { el.src = viewer.avatar; el.hidden = false; }
+      else { el.hidden = true; }
+    });
+  }
+
+  function bindAuthButtons() {
+    document.querySelectorAll('[data-provider="twitch"]').forEach(button => {
+      if (button.dataset.adhemBound) return;
+      button.dataset.adhemBound = '1';
+      button.addEventListener('click', loginWithTwitch);
+    });
+
+    document.querySelectorAll('[data-provider="kick"]').forEach(button => {
+      if (button.dataset.adhemBound) return;
+      button.dataset.adhemBound = '1';
+      button.addEventListener('click', () => {
+        const status = document.getElementById('loginStatus');
+        if (status) status.textContent = 'KICK CONNECTION WILL BE ADDED LATER.';
+      });
+    });
+
+    document.querySelectorAll('[data-adhem-logout]').forEach(button => {
+      if (button.dataset.adhemBound) return;
+      button.dataset.adhemBound = '1';
+      button.addEventListener('click', logout);
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    bindAuthButtons();
+    await refreshAccountUI();
+  });
+
+  client.auth.onAuthStateChange((event, session) => {
+    if (event === 'SIGNED_OUT' || !session) {
+      updateAccountMenu(null);
+      dispatchViewer(null);
+      return;
+    }
+    setTimeout(() => refreshAccountUI(), 0);
+  });
+
+  window.AdhemSwagAuth = {
+    client,
+    loginWithTwitch,
+    logout,
+    getTwitchIdentity,
+    ensureProfile,
+    refreshAccountUI
+  };
+
+  window.adhemAuth = window.AdhemSwagAuth;
 })();
