@@ -82,36 +82,6 @@
 
   async function loginWithKick() {
     return loginWithProvider('kick');
-    try {
-      setStatus('Connecting to Twitch...');
-
-      const { data, error } = await client.auth.signInWithOAuth({
-        provider: 'twitch',
-        options: {
-          redirectTo: getOAuthRedirect(),
-          skipBrowserRedirect: true
-        }
-      });
-
-      if (error) {
-        console.error('[AdhemSwag] Twitch OAuth error:', error);
-        setStatus('Twitch error: ' + error.message);
-        return false;
-      }
-
-      if (!data || !data.url) {
-        console.error('[AdhemSwag] Twitch OAuth returned no URL:', data);
-        setStatus('Twitch did not provide a login link.');
-        return false;
-      }
-
-      window.location.assign(data.url);
-      return true;
-    } catch (error) {
-      console.error('[AdhemSwag] Twitch login exception:', error);
-      setStatus('Unable to connect to Twitch.');
-      return false;
-    }
   }
 
   async function ensureProfile() {
@@ -324,8 +294,7 @@
         authId: user.id,
         provider: user.app_metadata?.provider || user.identities?.[0]?.provider || 'twitch',
         twitchUserId: meta.provider_id || meta.sub || meta.user_id || null,
-        provider: user.app_metadata?.provider || user.identities?.[0]?.provider || 'twitch',
-      twitchUsername: meta.user_name || meta.preferred_username || meta.name || meta.full_name || null,
+        twitchUsername: meta.user_name || meta.preferred_username || meta.name || meta.full_name || null,
         kickUserId: meta.provider_id || meta.sub || meta.user_id || null,
         kickUsername: meta.user_name || meta.preferred_username || meta.name || meta.full_name || null,
         email: user.email || null,
