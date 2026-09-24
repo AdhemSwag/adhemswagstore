@@ -138,7 +138,7 @@
       const style = document.createElement('style');
       style.id = 'adhemSharedRewardsStyle';
       style.textContent = `
-        .adhem-topbar{position:fixed!important;top:0!important;left:200px!important;right:0!important;height:64px!important;min-height:64px!important;display:flex!important;align-items:center!important;justify-content:space-between!important;padding:8px 24px!important;background:rgba(5,7,10,.94)!important;border-bottom:1px solid rgba(17,217,247,.14)!important;backdrop-filter:blur(8px)!important;z-index:1000!important;box-sizing:border-box!important}
+        .adhem-topbar{position:fixed!important;top:0!important;left:200px!important;right:0!important;height:78px!important;min-height:78px!important;display:flex!important;align-items:center!important;justify-content:space-between!important;padding:8px 24px!important;background:rgba(5,7,10,.94)!important;border-bottom:1px solid rgba(17,217,247,.14)!important;backdrop-filter:blur(8px)!important;z-index:1000!important;box-sizing:border-box!important}
         .adhem-topbar-left{display:flex!important;align-items:center!important;gap:9px!important;min-width:0!important}
         .adhem-topbar-mark{width:7px!important;height:7px!important;border-radius:50%!important;background:#ff3b3b!important;box-shadow:0 0 8px rgba(255,59,59,.65)!important;flex:none!important}
         .adhem-topbar-brand{font:600 10px 'JetBrains Mono',monospace!important;letter-spacing:.12em!important;color:#b9c9cd!important;white-space:nowrap!important}
