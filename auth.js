@@ -126,13 +126,15 @@
         .adhem-account-menu .account-rewards{padding:11px 12px 10px;margin-bottom:5px;border-bottom:1px solid rgba(17,217,247,.12)}
         .adhem-account-menu .account-rewards-title{font:600 9px 'JetBrains Mono',monospace;letter-spacing:.14em;color:#52636a;text-transform:uppercase;margin-bottom:9px}
         .adhem-account-menu .account-rewards-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
-        .adhem-account-menu .account-rewards-grid>div{padding:7px 5px;background:rgba(17,217,247,.035);border:1px solid rgba(17,217,247,.08);text-align:center}
-        .adhem-account-menu .account-rewards-grid span{display:block;font:9px 'JetBrains Mono',monospace;color:#617177;margin-bottom:3px}
-        .adhem-account-menu .account-rewards-grid strong{display:block;font:700 14px 'JetBrains Mono',monospace;color:#11D9F7}
+        .adhem-account-menu .account-rewards-grid>div{padding:7px 8px;background:rgba(17,217,247,.035);border:1px solid rgba(17,217,247,.08);text-align:left}
+        .adhem-account-menu .reward-inline{display:flex!important;align-items:center;gap:7px}
+        .adhem-account-menu .reward-icon{width:16px;height:16px;display:inline-flex!important;align-items:center;justify-content:center;color:#11D9F7;margin:0!important}
+        .adhem-account-menu .reward-icon svg{width:16px;height:16px;display:block}
+        .adhem-account-menu .reward-inline-text{display:flex!important;align-items:baseline;gap:5px;margin:0!important}
+        .adhem-account-menu .account-rewards-grid span{display:inline!important;font:9px 'JetBrains Mono',monospace;color:#617177;margin:0}
+        .adhem-account-menu .account-rewards-grid strong{display:inline!important;font:700 14px 'JetBrains Mono',monospace;color:#11D9F7}
         .adhem-account-menu .account-xp-card{grid-column:1/-1;text-align:left!important;padding:8px 9px!important}
-        .adhem-account-menu .account-xp-card span{display:inline-block!important;font-size:10px!important}
-        .adhem-account-menu .account-xp-card strong{display:inline-block!important;margin-left:5px}
-        .adhem-account-menu .account-xp-track{height:4px;background:#11191d;margin:5px 0 3px;overflow:hidden}
+        .adhem-account-menu .account-xp-card .account-xp-track{height:4px;background:#11191d;margin:1px 0 4px;overflow:hidden}
         .adhem-account-menu .account-xp-track i{display:block;width:0;height:100%;background:#11D9F7;box-shadow:0 0 8px rgba(17,217,247,.5);transition:width .25s ease}
         .adhem-account-menu .account-xp-card small{display:block;font:9px 'JetBrains Mono',monospace;color:#52636a;white-space:nowrap}
       `;
@@ -146,9 +148,9 @@
       rewards.innerHTML = `
         <div class="account-rewards-title">MY REWARDS</div>
         <div class="account-rewards-grid">
-          <div><span>LEVEL</span><strong class="shared-account-level">1</strong></div>
-          <div><span>FNC POINTS</span><strong class="shared-account-fnc">0</strong></div>
-          <div class="account-xp-card"><span>XP</span><strong class="shared-account-xp">0</strong><div class="account-xp-track"><i class="shared-account-xp-bar"></i></div><small class="shared-account-xp-progress">0 / 750</small></div>
+          <div class="reward-inline"><span class="reward-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 4h8l1 5c0 3-2 5-5 6v3h4v2H8v-2h4v-3c-3-1-5-3-5-6l1-5Z"/><path d="M7 7H4v1c0 2 1 3 4 3M17 7h3v1c0 2-1 3-4 3"/></svg></span><span class="reward-inline-text"><span>LEVEL</span><strong class="shared-account-level">1</strong></span></div>
+          <div class="reward-inline"><span class="reward-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M12 7v10M9 9.5c.8-1 5.2-1 6 0 .8 1-1 2-3 2s-3.1 1-3 2.1c.1 1.4 5.1 1.5 6 .2M12 4v2M12 18v2"/></svg></span><span class="reward-inline-text"><span>FNC</span><strong class="shared-account-fnc">0</strong></span></div>
+          <div class="account-xp-card"><div class="account-xp-track"><i class="shared-account-xp-bar"></i></div><small class="shared-account-xp-progress">0 / 750 XP</small></div>
         </div>`;
       const firstLink = menu.querySelector('a');
       menu.insertBefore(rewards, firstLink || menu.firstChild);
@@ -171,7 +173,7 @@
     document.querySelectorAll('.shared-account-level, #adhemAccountLevel').forEach(el => el.textContent = level.toLocaleString());
     document.querySelectorAll('.shared-account-fnc, #adhemAccountFnc').forEach(el => el.textContent = fnc.toLocaleString());
     document.querySelectorAll('.shared-account-xp, #adhemAccountXp').forEach(el => el.textContent = xp.toLocaleString());
-    document.querySelectorAll('.shared-account-xp-progress, #adhemAccountXpProgress').forEach(el => el.textContent = xp.toLocaleString() + ' / ' + nextThreshold.toLocaleString());
+    document.querySelectorAll('.shared-account-xp-progress, #adhemAccountXpProgress').forEach(el => el.textContent = xp.toLocaleString() + ' / ' + nextThreshold.toLocaleString() + ' XP');
     document.querySelectorAll('.shared-account-xp-bar, #adhemAccountXpBar').forEach(el => el.style.width = progress + '%');
   }
 
