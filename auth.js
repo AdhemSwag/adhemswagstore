@@ -131,7 +131,7 @@
     /* Shared sidebar icon color — all pages */
     const sidebarStyle = document.createElement('style');
     sidebarStyle.id = 'adhemSharedSidebarIconStyle';
-    sidebarStyle.textContent = '.sidebar .sidebar-link[href^="/"] svg{color:#11D9F7!important;stroke:#11D9F7!important}.sidebar .sidebar-link[href^="/"] svg[fill="currentColor"]{fill:#11D9F7!important;stroke:none!important}.sidebar .sidebar-link img[alt="Faceit"]{filter:none!important}';
+    sidebarStyle.textContent = '.sidebar .sidebar-link[href^="/"] svg{color:#11D9F7!important;stroke:#11D9F7!important}.sidebar .sidebar-link[href^="/"] svg[fill="currentColor"]{fill:#11D9F7!important;stroke:none!important}.sidebar .sidebar-link[href*="twitch.tv"] svg{color:#9146FF!important;fill:#9146FF!important}.sidebar .sidebar-link[href*="kick.com"] svg{color:#53FC18!important;fill:#53FC18!important}.sidebar .sidebar-link[href*="instagram.com"] svg{color:#E1306C!important;fill:#E1306C!important}.sidebar .sidebar-link[href*="t.me/"] svg{color:#229ED9!important;fill:#229ED9!important}.sidebar .sidebar-link[href*="x.com"] svg{color:#FFFFFF!important;fill:#FFFFFF!important}.sidebar .sidebar-link[href*="tiktok.com"] svg{color:#FFFFFF!important;fill:#FFFFFF!important}.sidebar .sidebar-link[href*="discord.gg"] svg{color:#5865F2!important;fill:#5865F2!important}.sidebar .sidebar-link[href*="youtube.com"] svg{color:#FF0000!important;fill:#FF0000!important}.sidebar .sidebar-link img[alt="Faceit"]{filter:none!important}';
     document.head.appendChild(sidebarStyle);
 
     if (!document.getElementById('adhemSharedRewardsStyle')) {
