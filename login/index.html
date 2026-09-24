@@ -78,12 +78,17 @@ h1{font:700 38px/1 'Rajdhani',sans-serif;text-transform:uppercase;letter-spacing
   <section class="login-card">
     <div class="eyebrow">ACCOUNT ACCESS</div>
     <h1>Sign in</h1>
-    <p class="intro">Sign in with your Twitch account to access your AdhemSwag profile and rewards.</p>
+    <p class="intro">Choose your platform to access your AdhemSwag profile and rewards.</p>
 
     <div class="platforms">
-      <button class="platform-btn" type="button" data-provider="twitch" data-adhem-login onclick="if(window.AdhemSwagAuth){window.AdhemSwagAuth.loginWithTwitch();}else{document.getElementById('loginStatus').textContent='Connecting to Twitch...';}">
+      <button class="platform-btn" type="button" data-provider="twitch" data-adhem-login>
         <span class="platform-icon">◉</span>
         <span>Continue with Twitch</span>
+        <span>→</span>
+      </button>
+      <button class="platform-btn" type="button" data-provider="kick" data-adhem-login>
+        <span class="platform-icon">K</span>
+        <span>Continue with Kick</span>
         <span>→</span>
       </button>
     </div>
@@ -91,7 +96,7 @@ h1{font:700 38px/1 'Rajdhani',sans-serif;text-transform:uppercase;letter-spacing
     <div class="status" id="loginStatus" aria-live="polite"></div>
 
     <div class="note">
-      ONE PROFILE · TWITCH<br>
+      ONE PROFILE · CHOOSE YOUR PLATFORM<br>
       Your FNC balance stays on the same account. No double rewards.
     </div>
   </section>
