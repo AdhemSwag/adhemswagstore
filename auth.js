@@ -123,7 +123,7 @@
       if (button.querySelector('.adhem-avatar-rewards')) return;
       const box = document.createElement('div');
       box.className = 'adhem-avatar-rewards';
-      box.innerHTML = '<div class="adhem-avatar-fnc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M12 7v10M9 9.5c.8-1 5.2-1 6 0 .8 1-1 2-3 2s-3.1 1-3 2.1c.1 1.4 5.1 1.5 6 .2M12 4v2M12 18v2"/></svg><span class="shared-account-fnc">0</span> FNC</div><div class="adhem-avatar-xp"><div class="adhem-avatar-xp-track"><i class="shared-account-xp-bar"></i></div><span class="adhem-avatar-xp-label">Level <strong class="shared-account-level">1</strong> · <span class="shared-account-xp-progress">0 / 750 XP</span></span></div>';
+      box.innerHTML = '<div class="adhem-avatar-reward-row"><div class="adhem-avatar-fnc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M12 7v10M9 9.5c.8-1 5.2-1 6 0 .8 1-1 2-3 2s-3.1 1-3 2.1c.1 1.4 5.1 1.5 6 .2M12 4v2M12 18v2"/></svg><span class="shared-account-fnc">0</span> FNC</div><div class="adhem-avatar-level"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 4h8l1 5c0 3-2 5-5 6v3h4v2H8v-2h4v-3c-3-1-5-3-5-6l1-5Z"/><path d="M7 7H4v1c0 2 1 3 4 3M17 7h3v1c0 2-1 3-4 3"/></svg><span>Level <strong class="shared-account-level">1</strong></span></div></div><div class="adhem-avatar-xp"><div class="adhem-avatar-xp-track"><i class="shared-account-xp-bar"></i></div><span class="adhem-avatar-xp-label"><span class="shared-account-xp-progress">0 / 750 XP</span></span></div>';
       button.appendChild(box);
     });
 
@@ -131,19 +131,24 @@
       const style = document.createElement('style');
       style.id = 'adhemSharedRewardsStyle';
       style.textContent = `
-        .adhem-account-menu{min-width:230px;padding:4px 0 5px}
-        .adhem-account-user{display:grid!important;grid-template-columns:48px auto!important;grid-template-rows:auto auto auto!important;column-gap:8px!important;align-items:center!important;justify-content:start!important;gap:1px 8px!important;padding:7px 12px!important;min-width:205px!important}
-        .adhem-account-user .adhem-account-avatar{grid-column:1;grid-row:1 / 4;width:48px!important;height:48px!important;border-radius:50%!important;margin:0!important}
-        .adhem-account-user .adhem-account-name{grid-column:2;grid-row:1;font-size:12px!important;line-height:1.2;text-align:left}
+        .adhem-topbar .adhem-account{margin-left:auto!important;position:relative!important}
+        .adhem-account-menu{min-width:230px!important;padding:5px 0 6px!important}
+        .adhem-account-user{display:grid!important;grid-template-columns:52px minmax(150px,1fr)!important;grid-template-rows:auto auto auto auto!important;column-gap:10px!important;align-items:center!important;justify-content:start!important;gap:2px 10px!important;padding:8px 12px!important;min-width:240px!important}
+        .adhem-account-user .adhem-account-avatar{grid-column:1;grid-row:1 / 5;width:52px!important;height:52px!important;border-radius:50%!important;margin:0!important}
+        .adhem-account-user .adhem-account-name{grid-column:2;grid-row:1;font-size:12px!important;line-height:1.2;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
         .adhem-account-user .adhem-account-chevron{display:none!important}
-        .adhem-account-user .adhem-account-chevron{display:none!important}
-        .adhem-avatar-rewards{width:100%;margin-top:4px}
-        .adhem-avatar-fnc{display:flex;align-items:center;justify-content:center;gap:5px;font:700 11px 'JetBrains Mono',monospace;color:#11D9F7}
-        .adhem-avatar-fnc svg{width:13px;height:13px}
-        .adhem-avatar-xp{width:100%;margin-top:2px;display:flex;align-items:center;gap:7px}
-        .adhem-avatar-xp-track{height:5px;background:#11191d;overflow:hidden;flex:1;min-width:70px}
-        .adhem-avatar-xp-track i{display:block;width:0;height:100%;background:#11D9F7;box-shadow:0 0 7px rgba(17,217,247,.5)}
-        .adhem-avatar-xp-label{display:block;text-align:left;margin:0;font:9px 'JetBrains Mono',monospace;color:#87979d;white-space:nowrap}
+        .adhem-avatar-rewards{grid-column:2;grid-row:2 / 5;width:100%;margin-top:1px}
+        .adhem-avatar-reward-row{display:flex;align-items:center;justify-content:flex-start;gap:16px;line-height:1}
+        .adhem-avatar-fnc,.adhem-avatar-level{display:flex;align-items:center;gap:5px;font:700 10px 'JetBrains Mono',monospace;white-space:nowrap}
+        .adhem-avatar-fnc{color:#b7c0c4}
+        .adhem-avatar-level{color:#11D9F7}
+        .adhem-avatar-fnc svg,.adhem-avatar-level svg{width:13px;height:13px;flex:none}
+        .adhem-avatar-fnc svg{color:#aeb7bb}
+        .adhem-avatar-level svg{color:#11D9F7}
+        .adhem-avatar-xp{width:100%;margin-top:6px;display:block}
+        .adhem-avatar-xp-track{height:5px;width:100%;background:#11191d;overflow:hidden}
+        .adhem-avatar-xp-track i{display:block;width:0;height:100%;background:#11D9F7;box-shadow:0 0 7px rgba(17,217,247,.5);transition:width .25s ease}
+        .adhem-avatar-xp-label{display:block;text-align:left;margin-top:3px;font:9px 'JetBrains Mono',monospace;color:#87979d;white-space:nowrap}
         .adhem-account-menu .account-rewards{display:none!important}
         .adhem-account-menu .account-rewards{padding:13px 14px 12px;margin-bottom:6px;border-bottom:1px solid rgba(17,217,247,.12)}
         .adhem-account-menu .account-rewards-title{font:600 10px 'JetBrains Mono',monospace;letter-spacing:.14em;color:#52636a;text-transform:uppercase;margin-bottom:9px}
