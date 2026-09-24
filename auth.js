@@ -131,7 +131,7 @@
     /* Shared sidebar icon color — all pages */
     const sidebarStyle = document.createElement('style');
     sidebarStyle.id = 'adhemSharedSidebarIconStyle';
-    sidebarStyle.textContent = '.sidebar .sidebar-link svg{color:#11D9F7!important;stroke:#11D9F7!important}.sidebar .sidebar-link svg[fill="currentColor"]{fill:#11D9F7!important;stroke:none!important}.sidebar .sidebar-link img[alt="Faceit"]{filter:none!important}.sidebar .sidebar-link:hover svg,.sidebar .sidebar-link.active svg{color:#11D9F7!important;stroke:#11D9F7!important}.sidebar .sidebar-link:hover svg[fill="currentColor"],.sidebar .sidebar-link.active svg[fill="currentColor"]{fill:#11D9F7!important;stroke:none!important}';
+    sidebarStyle.textContent = '.sidebar .sidebar-link:not([href*="twitch.tv"]):not([href*="kick.com"]):not([href*="instagram.com"]):not([href*="t.me/"]):not([href*="x.com/"]):not([href*="tiktok.com"]):not([href*="discord.gg"]):not([href*="youtube.com"]) svg{color:#11D9F7!important;stroke:#11D9F7!important}.sidebar .sidebar-link:not([href*="twitch.tv"]):not([href*="kick.com"]):not([href*="instagram.com"]):not([href*="t.me/"]):not([href*="x.com/"]):not([href*="tiktok.com"]):not([href*="discord.gg"]):not([href*="youtube.com"]) svg[fill="currentColor"]{fill:#11D9F7!important;stroke:none!important}.sidebar .sidebar-link img[alt="Faceit"]{filter:none!important}';
     document.head.appendChild(sidebarStyle);
 
     if (!document.getElementById('adhemSharedRewardsStyle')) {
