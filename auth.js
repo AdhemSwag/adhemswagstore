@@ -119,11 +119,31 @@
     const menus = document.querySelectorAll('#adhemAccountMenu');
     if (!menus.length) return;
 
+    document.querySelectorAll('#adhemAccountUser').forEach(button => {
+      if (button.querySelector('.adhem-avatar-rewards')) return;
+      const box = document.createElement('div');
+      box.className = 'adhem-avatar-rewards';
+      box.innerHTML = '<div class="adhem-avatar-fnc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M12 7v10M9 9.5c.8-1 5.2-1 6 0 .8 1-1 2-3 2s-3.1 1-3 2.1c.1 1.4 5.1 1.5 6 .2M12 4v2M12 18v2"/></svg><span class="shared-account-fnc">0</span> FNC</div><div class="adhem-avatar-xp"><div class="adhem-avatar-xp-track"><i class="shared-account-xp-bar"></i></div><span class="adhem-avatar-xp-label">Level <strong class="shared-account-level">1</strong> · <span class="shared-account-xp-progress">0 / 750 XP</span></span></div>';
+      button.appendChild(box);
+    });
+
     if (!document.getElementById('adhemSharedRewardsStyle')) {
       const style = document.createElement('style');
       style.id = 'adhemSharedRewardsStyle';
       style.textContent = `
         .adhem-account-menu{min-width:230px;padding:4px 0 5px}
+        .adhem-account-user{flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:2px!important;padding:8px 12px!important;min-width:150px!important}
+        .adhem-account-user .adhem-account-avatar{width:38px!important;height:38px!important;margin-bottom:2px}
+        .adhem-account-user .adhem-account-name{font-size:11px!important;line-height:1.2}
+        .adhem-account-user .adhem-account-chevron{display:none!important}
+        .adhem-avatar-rewards{width:100%;margin-top:4px}
+        .adhem-avatar-fnc{display:flex;align-items:center;justify-content:center;gap:5px;font:700 11px 'JetBrains Mono',monospace;color:#11D9F7}
+        .adhem-avatar-fnc svg{width:13px;height:13px}
+        .adhem-avatar-xp{width:100%;margin-top:4px}
+        .adhem-avatar-xp-track{height:4px;background:#11191d;overflow:hidden}
+        .adhem-avatar-xp-track i{display:block;width:0;height:100%;background:#11D9F7;box-shadow:0 0 7px rgba(17,217,247,.5)}
+        .adhem-avatar-xp-label{display:block;text-align:center;margin-top:3px;font:9px 'JetBrains Mono',monospace;color:#87979d}
+        .adhem-account-menu .account-rewards{display:none!important}
         .adhem-account-menu .account-rewards{padding:13px 14px 12px;margin-bottom:6px;border-bottom:1px solid rgba(17,217,247,.12)}
         .adhem-account-menu .account-rewards-title{font:600 10px 'JetBrains Mono',monospace;letter-spacing:.14em;color:#52636a;text-transform:uppercase;margin-bottom:9px}
         .adhem-account-menu .account-rewards-grid{display:grid;grid-template-columns:1fr;gap:6px}
