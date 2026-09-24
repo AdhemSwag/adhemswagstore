@@ -51,7 +51,10 @@
         provider: supabaseProvider,
         options: {
           redirectTo: getOAuthRedirect(),
-          skipBrowserRedirect: true
+          skipBrowserRedirect: true,
+          queryParams: provider === 'twitch'
+            ? { force_verify: 'true' }
+            : { prompt: 'login' }
         }
       });
 
