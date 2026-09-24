@@ -41,7 +41,47 @@
     return PRODUCTION_REDIRECT;
   }
 
+  async function loginWithProvider(provider) {
+    try {
+      const label = provider === 'kick' ? 'Kick' : 'Twitch';
+      const supabaseProvider = provider === 'kick' ? 'custom:kick' : 'twitch';
+      setStatus('Connecting to ' + label + '...');
+
+      const { data, error } = await client.auth.signInWithOAuth({
+        provider: supabaseProvider,
+        options: {
+          redirectTo: getOAuthRedirect(),
+          skipBrowserRedirect: true
+        }
+      });
+
+      if (error) {
+        console.error('[AdhemSwag] ' + label + ' OAuth error:', error);
+        setStatus(label + ' error: ' + error.message);
+        return false;
+      }
+
+      if (!data || !data.url) {
+        console.error('[AdhemSwag] ' + label + ' OAuth returned no URL:', data);
+        setStatus(label + ' did not provide a login link.');
+        return false;
+      }
+
+      window.location.assign(data.url);
+      return true;
+    } catch (error) {
+      console.error('[AdhemSwag] ' + provider + ' login exception:', error);
+      setStatus('Unable to connect to ' + (provider === 'kick' ? 'Kick' : 'Twitch') + '.');
+      return false;
+    }
+  }
+
   async function loginWithTwitch() {
+    return loginWithProvider('twitch');
+  }
+
+  async function loginWithKick() {
+    return loginWithProvider('kick');
     try {
       setStatus('Connecting to Twitch...');
 
@@ -80,12 +120,14 @@
 
     const authUser = sessionData.session.user;
     const meta = authUser.user_metadata || {};
-    const twitchUserId = meta.provider_id || meta.sub || meta.user_id || null;
-    const twitchUsername = meta.user_name || meta.preferred_username || meta.name || null;
+    const appMeta = authUser.app_metadata || {};
+    const provider = appMeta.provider || authUser.identities?.[0]?.provider || 'twitch';
+    const externalUserId = meta.provider_id || meta.sub || meta.user_id || null;
+    const externalUsername = meta.user_name || meta.preferred_username || meta.name || meta.full_name || null;
 
     let { data: profile, error } = await client
       .from('users')
-      .select('id,twitch_user_id,twitch_username,email,email_verified,steam_id,steam_profile_url,steam_trade_url,profile_complete,fnc_points,xp,level,total_watch_minutes,monthly_xp,streak,is_blocked,total_fnc_earned')
+      .select('id,twitch_user_id,twitch_username,kick_user_id,kick_username,kick_connected,email,email_verified,steam_id,steam_profile_url,steam_trade_url,profile_complete,fnc_points,xp,level,total_watch_minutes,monthly_xp,streak,is_blocked,total_fnc_earned')
       .eq('id', authUser.id)
       .maybeSingle();
 
@@ -97,11 +139,18 @@
     if (!profile) {
       const result = await client
         .from('users')
-        .insert({
-          id: authUser.id,
-          twitch_user_id: twitchUserId,
-          twitch_username: twitchUsername
-        })
+        .insert(provider === 'custom:kick'
+          ? {
+              id: authUser.id,
+              kick_user_id: externalUserId,
+              kick_username: externalUsername,
+              kick_connected: true
+            }
+          : {
+              id: authUser.id,
+              twitch_user_id: externalUserId,
+              twitch_username: externalUsername
+            })
         .select('id,twitch_user_id,twitch_username,email,email_verified,steam_id,steam_profile_url,steam_trade_url,profile_complete,fnc_points,xp,level,total_watch_minutes,monthly_xp,streak,is_blocked,total_fnc_earned')
         .single();
 
@@ -240,7 +289,9 @@
       if ('hidden' in el) el.hidden = !loggedIn;
     });
     document.querySelectorAll('[data-adhem-username], #adhemAccountName').forEach(el => {
-      el.textContent = viewer?.twitchUsername || '';
+      el.textContent = viewer?.provider === 'custom:kick'
+        ? (viewer?.kickUsername || viewer?.twitchUsername || '')
+        : (viewer?.twitchUsername || viewer?.kickUsername || '');
     });
     document.querySelectorAll('[data-adhem-avatar], #adhemAccountAvatar').forEach(el => {
       if (viewer?.avatar) {
@@ -271,8 +322,12 @@
 
       const viewer = {
         authId: user.id,
+        provider: user.app_metadata?.provider || user.identities?.[0]?.provider || 'twitch',
         twitchUserId: meta.provider_id || meta.sub || meta.user_id || null,
-        twitchUsername: meta.user_name || meta.preferred_username || meta.name || meta.full_name || null,
+        provider: user.app_metadata?.provider || user.identities?.[0]?.provider || 'twitch',
+      twitchUsername: meta.user_name || meta.preferred_username || meta.name || meta.full_name || null,
+        kickUserId: meta.provider_id || meta.sub || meta.user_id || null,
+        kickUsername: meta.user_name || meta.preferred_username || meta.name || meta.full_name || null,
         email: user.email || null,
         avatar: meta.avatar_url || meta.picture || null,
         profile: await ensureProfile()
@@ -288,13 +343,18 @@
   }
 
   async function logout() {
-    await client.auth.signOut({ scope: 'local' });
-    window.location.href = '/';
+    try {
+      await client.auth.signOut({ scope: 'local' });
+    } finally {
+      window.location.replace('/login/');
+    }
   }
 
   window.AdhemSwagAuth = {
     client,
     loginWithTwitch,
+    loginWithKick,
+    loginWithProvider,
     logout,
     ensureProfile,
     refreshAccountUI
@@ -340,7 +400,8 @@
 
         button.disabled = true;
         try {
-          await loginWithTwitch();
+          const provider = button.dataset.provider || 'twitch';
+          await loginWithProvider(provider);
         } finally {
           button.disabled = false;
         }
