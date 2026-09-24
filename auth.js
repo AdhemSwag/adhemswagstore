@@ -132,17 +132,18 @@
       style.id = 'adhemSharedRewardsStyle';
       style.textContent = `
         .adhem-account-menu{min-width:230px;padding:4px 0 5px}
-        .adhem-account-user{flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:2px!important;padding:8px 12px!important;min-width:150px!important}
-        .adhem-account-user .adhem-account-avatar{width:38px!important;height:38px!important;margin-bottom:2px}
-        .adhem-account-user .adhem-account-name{font-size:11px!important;line-height:1.2}
+        .adhem-account-user{display:grid!important;grid-template-columns:48px auto!important;grid-template-rows:auto auto auto!important;column-gap:8px!important;align-items:center!important;justify-content:start!important;gap:1px 8px!important;padding:7px 12px!important;min-width:205px!important}
+        .adhem-account-user .adhem-account-avatar{grid-column:1;grid-row:1 / 4;width:48px!important;height:48px!important;border-radius:50%!important;margin:0!important}
+        .adhem-account-user .adhem-account-name{grid-column:2;grid-row:1;font-size:12px!important;line-height:1.2;text-align:left}
+        .adhem-account-user .adhem-account-chevron{display:none!important}
         .adhem-account-user .adhem-account-chevron{display:none!important}
         .adhem-avatar-rewards{width:100%;margin-top:4px}
         .adhem-avatar-fnc{display:flex;align-items:center;justify-content:center;gap:5px;font:700 11px 'JetBrains Mono',monospace;color:#11D9F7}
         .adhem-avatar-fnc svg{width:13px;height:13px}
-        .adhem-avatar-xp{width:100%;margin-top:4px}
-        .adhem-avatar-xp-track{height:4px;background:#11191d;overflow:hidden}
+        .adhem-avatar-xp{width:100%;margin-top:2px;display:flex;align-items:center;gap:7px}
+        .adhem-avatar-xp-track{height:5px;background:#11191d;overflow:hidden;flex:1;min-width:70px}
         .adhem-avatar-xp-track i{display:block;width:0;height:100%;background:#11D9F7;box-shadow:0 0 7px rgba(17,217,247,.5)}
-        .adhem-avatar-xp-label{display:block;text-align:center;margin-top:3px;font:9px 'JetBrains Mono',monospace;color:#87979d}
+        .adhem-avatar-xp-label{display:block;text-align:left;margin:0;font:9px 'JetBrains Mono',monospace;color:#87979d;white-space:nowrap}
         .adhem-account-menu .account-rewards{display:none!important}
         .adhem-account-menu .account-rewards{padding:13px 14px 12px;margin-bottom:6px;border-bottom:1px solid rgba(17,217,247,.12)}
         .adhem-account-menu .account-rewards-title{font:600 10px 'JetBrains Mono',monospace;letter-spacing:.14em;color:#52636a;text-transform:uppercase;margin-bottom:9px}
