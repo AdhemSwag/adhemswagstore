@@ -125,7 +125,7 @@
       style.textContent = `
         .adhem-account-menu .account-rewards{padding:11px 12px 10px;margin-bottom:5px;border-bottom:1px solid rgba(17,217,247,.12)}
         .adhem-account-menu .account-rewards-title{font:600 9px 'JetBrains Mono',monospace;letter-spacing:.14em;color:#52636a;text-transform:uppercase;margin-bottom:9px}
-        .adhem-account-menu .account-rewards-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+        .adhem-account-menu .account-rewards-grid{display:grid;grid-template-columns:1fr;gap:6px}
         .adhem-account-menu .account-rewards-grid>div{padding:7px 8px;background:rgba(17,217,247,.035);border:1px solid rgba(17,217,247,.08);text-align:left}
         .adhem-account-menu .reward-inline{display:flex!important;align-items:center;gap:7px}
         .adhem-account-menu .reward-icon{width:16px;height:16px;display:inline-flex!important;align-items:center;justify-content:center;color:#11D9F7;margin:0!important}
