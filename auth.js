@@ -266,6 +266,7 @@
       const { data, error } = await client.auth.getSession();
 
       if (error || !data?.session) {
+        stopWatchTracking();
         updateAccountMenu(null);
         dispatchViewer(null);
         return null;
@@ -286,6 +287,7 @@
       };
       updateAccountMenu(viewer);
       dispatchViewer(viewer);
+      startWatchTracking(viewer);
       return viewer;
     } catch (error) {
       console.error('[AdhemSwag] refreshAccountUI error:', error);
@@ -293,7 +295,46 @@
     }
   }
 
+  let watchHeartbeatTimer = null;
+  let watchHeartbeatInFlight = false;
+
+  async function sendWatchHeartbeat() {
+    if (document.visibilityState !== 'visible' || watchHeartbeatInFlight) return;
+    watchHeartbeatInFlight = true;
+    try {
+      const { data: sessionData } = await client.auth.getSession();
+      if (!sessionData?.session) return;
+      const { data, error } = await client.functions.invoke('watch-heartbeat', { body: {} });
+      if (error) console.warn('[AdhemSwag] Watch heartbeat:', error.message || error);
+      else if (data?.live === false) stopWatchTracking();
+    } catch (error) {
+      console.warn('[AdhemSwag] Watch heartbeat failed:', error);
+    } finally {
+      watchHeartbeatInFlight = false;
+    }
+  }
+
+  function stopWatchTracking() {
+    if (watchHeartbeatTimer) {
+      clearInterval(watchHeartbeatTimer);
+      watchHeartbeatTimer = null;
+    }
+  }
+
+  function startWatchTracking(viewer) {
+    stopWatchTracking();
+    if (!viewer?.authId) return;
+    sendWatchHeartbeat();
+    watchHeartbeatTimer = setInterval(sendWatchHeartbeat, 60000);
+    document.addEventListener('visibilitychange', handleWatchVisibility, { passive: true });
+  }
+
+  function handleWatchVisibility() {
+    if (document.visibilityState === 'visible') sendWatchHeartbeat();
+  }
+
   async function logout() {
+    stopWatchTracking();
     await client.auth.signOut({ scope: 'local' });
     window.location.href = '/';
   }
