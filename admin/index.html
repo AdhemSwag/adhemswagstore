@@ -200,6 +200,15 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
         <h2>System Controls</h2>
         <p>Global switches remain OFF until the full Twitch/EventSub, XP/FNC, Store and redemption workflow has passed testing.</p>
         <div class="actions"><button class="btn danger" disabled>FNC: OFF</button><button class="btn danger" disabled>XP: OFF</button><button class="btn danger" disabled>REWARDS: OFF</button></div>
+        <div class="notice" style="margin-top:18px">
+          <strong style="color:var(--cyan)">TWITCH WATCH TRACKING:</strong>
+          Direct Twitch watch-time sync uses Twitch's chatters endpoint. No browser page or extension is required for viewers after account connection.
+          <div class="actions">
+            <button class="btn primary" id="connectTwitchWatch" type="button">CONNECT TWITCH WATCH TRACKING</button>
+            <button class="btn" id="testTwitchWatch" type="button">TEST WATCH SYNC</button>
+          </div>
+          <div id="twitchWatchStatus" class="notice" style="display:none;margin-top:10px"></div>
+        </div>
       </div>
     </section>
   </main>
@@ -586,6 +595,28 @@ document.getElementById('clearGiveaway')?.addEventListener('click',()=>{
   document.getElementById('gwImageStatus').textContent='Choose an image — JPG, PNG, WEBP or GIF, max 5 MB.';
   document.getElementById('gwImagePreview').style.display='none';
   selectedGiveawayImage=null;
+});
+
+
+document.getElementById('connectTwitchWatch')?.addEventListener('click', async () => {
+  if (!adminReady) return;
+  if (!window.AdhemSwagAuth?.beginTwitchWatchAuthorization) {
+    const s=document.getElementById('twitchWatchStatus'); if(s){s.style.display='block';s.textContent='Auth module not ready.';} return;
+  }
+  await window.AdhemSwagAuth.beginTwitchWatchAuthorization();
+});
+
+document.getElementById('testTwitchWatch')?.addEventListener('click', async () => {
+  if (!adminReady) return;
+  const s=document.getElementById('twitchWatchStatus');
+  if(s){s.style.display='block';s.textContent='Testing Twitch watch sync…';}
+  try {
+    const { data, error } = await supabase.functions.invoke('twitch-chatters-sync', { body:{} });
+    if(error) throw error;
+    if(s){s.textContent=data?.ok ? ('OK — live: '+data.live+', matched viewers: '+(data.matched_viewers||0)) : ('Sync: '+JSON.stringify(data));}
+  } catch(error) {
+    if(s){s.textContent='Sync failed: '+(error?.message||'Unknown error');}
+  }
 });
 
 document.querySelectorAll('.nav-btn').forEach(btn=>{
