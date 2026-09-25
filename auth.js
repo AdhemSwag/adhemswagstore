@@ -474,17 +474,27 @@
     injectAccountRewards();
     bindAccountMenu();
     bindAuthButtons();
-    await refreshAccountUI();
-    await captureTwitchWatchProviderToken();
 
-    // Admin OAuth returns through the existing approved /profile/ redirect.
-    // Once the session is established, send the user back to the Admin Panel.
+    // Admin OAuth must return immediately after Supabase establishes the session.
+    // Do not wait for profile/watch queries here, because those are unrelated to
+    // the admin redirect and can delay or block access to /admin/.
     const returnTarget = new URLSearchParams(window.location.search).get('return');
     if (returnTarget === 'admin') {
-      window.history.replaceState({}, document.title, window.location.pathname);
-      window.location.assign('/admin/');
-      return;
+      try {
+        const { data, error } = await client.auth.getSession();
+        if (error) console.warn('[AdhemSwag] Admin return session check:', error);
+        if (data?.session?.user) {
+          window.history.replaceState({}, document.title, window.location.pathname);
+          window.location.assign('/admin/');
+          return;
+        }
+      } catch (error) {
+        console.warn('[AdhemSwag] Admin return exception:', error);
+      }
     }
+
+    await refreshAccountUI();
+    await captureTwitchWatchProviderToken();
 
     client.auth.onAuthStateChange(() => {
       setTimeout(async () => {
