@@ -157,6 +157,7 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
 <div class="field"><label>Giveaway title</label><input id="gwTitle" placeholder="Sport Gloves Giveaway"></div>
 <div class="field"><label>Reward</label><input id="gwReward" placeholder="Sport Gloves | Red Racer"></div>
 <div class="field full"><label>Description</label><textarea id="gwDescription" placeholder="Giveaway details..."></textarea></div>
+<div class="field full"><label>Reward image</label><input id="gwImage" type="file" accept="image/png,image/jpeg,image/webp,image/gif"><div id="gwImageStatus" class="upload">Choose an image — JPG, PNG, WEBP or GIF, max 5 MB.</div><img id="gwImagePreview" alt="Giveaway reward preview" style="display:none;max-width:260px;max-height:180px;margin-top:12px;border:1px solid var(--line);object-fit:contain"></div>
 <div class="field"><label>Winners</label><input id="gwWinners" type="number" min="1" value="1"></div>
 <div class="field"><label>Minimum level</label><input id="gwMinLevel" type="number" min="1" value="1"></div>
 <div class="field"><label>Minimum FNC</label><input id="gwMinFnc" type="number" min="0" value="0"></div>
@@ -190,6 +191,7 @@ const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
 const ADMIN_USER_ID = '18ca02b9-0e42-44c8-a2bb-673f8069da42';
 let adminReady = false;
 let selectedImage = null;
+let selectedGiveawayImage = null;
 
 function setSecurity(message, ok=false) {
   const el = document.getElementById('adminSecurity');
@@ -352,8 +354,21 @@ document.getElementById('createGiveaway')?.addEventListener('click',async()=>{
   const title=document.getElementById('gwTitle').value.trim(),reward=document.getElementById('gwReward').value.trim(),status=document.getElementById('gwStatus');
   if(!title||!reward){status.style.display='block';status.textContent='Title and reward are required.';return;}
   const {data:{user}}=await supabase.auth.getUser();
+  let rewardImageUrl=null;
+  try {
+    if(selectedGiveawayImage){
+      const ext=(selectedGiveawayImage.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'');
+      const imagePath='giveaways/'+crypto.randomUUID()+'.'+ext;
+      const {error:uploadError}=await supabase.storage.from('reward-images').upload(imagePath,selectedGiveawayImage,{contentType:selectedGiveawayImage.type,cacheControl:'3600',upsert:false});
+      if(uploadError) throw uploadError;
+      rewardImageUrl=supabase.storage.from('reward-images').getPublicUrl(imagePath).data.publicUrl;
+    }
+  } catch(error) {
+    status.style.display='block'; status.textContent='Image upload failed: '+(error?.message||'Unknown error'); return;
+  }
   const payload={
     title,reward_name:reward,
+    reward_image_url:rewardImageUrl,
     description:document.getElementById('gwDescription').value.trim()||null,
     winners_count:Number(document.getElementById('gwWinners').value||1),
     min_level:Number(document.getElementById('gwMinLevel').value||1),
@@ -370,8 +385,22 @@ document.getElementById('createGiveaway')?.addEventListener('click',async()=>{
   status.style.display='block';status.textContent=error?'Create failed: '+error.message:'Giveaway created as DRAFT.';
   if(data){await writeAdminLog('giveaway_created','giveaway',data.id,{title,reward});await loadGiveaways();await loadAdminLogs();}
 });
+document.getElementById('gwImage')?.addEventListener('change', event => {
+  selectedGiveawayImage = event.target.files?.[0] || null;
+  const status = document.getElementById('gwImageStatus');
+  const preview = document.getElementById('gwImagePreview');
+  if (!selectedGiveawayImage) { status.textContent='Choose an image — JPG, PNG, WEBP or GIF, max 5 MB.'; preview.style.display='none'; return; }
+  if (selectedGiveawayImage.size > 5*1024*1024) { status.textContent='Image is too large. Maximum is 5 MB.'; event.target.value=''; selectedGiveawayImage=null; preview.style.display='none'; return; }
+  status.textContent=selectedGiveawayImage.name;
+  preview.src=URL.createObjectURL(selectedGiveawayImage);
+  preview.style.display='block';
+});
+
 document.getElementById('clearGiveaway')?.addEventListener('click',()=>{
   document.querySelectorAll('#giveaways input,#giveaways textarea').forEach(el=>el.value='');
+  document.getElementById('gwImageStatus').textContent='Choose an image — JPG, PNG, WEBP or GIF, max 5 MB.';
+  document.getElementById('gwImagePreview').style.display='none';
+  selectedGiveawayImage=null;
 });
 
 document.querySelectorAll('.nav-btn').forEach(btn=>{
