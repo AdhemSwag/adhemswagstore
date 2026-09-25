@@ -299,7 +299,7 @@
     try {
       await client.auth.signOut({ scope: 'local' });
     } finally {
-      window.location.replace('/login/');
+      loginWithTwitch();
     }
   }
 
