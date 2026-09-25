@@ -220,12 +220,20 @@ function setSecurity(message, ok=false, showLogin=false) {
   if(showLogin) document.getElementById('adminLogin')?.addEventListener('click', loginAdmin);
 }
 async function loginAdmin() {
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: 'twitch',
-    options: { redirectTo: window.location.origin + '/profile/?return=admin', skipBrowserRedirect: true, queryParams: { force_verify: 'true' } }
-  });
-  if(error){ setSecurity('Twitch login failed: '+escapeHtml(error.message),false,true); return; }
-  if(data?.url) window.location.assign(data.url);
+  try {
+    setSecurity('Opening Twitch login…', false, false);
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'twitch',
+      options: {
+        redirectTo: window.location.origin + '/admin/',
+        queryParams: { force_verify: 'true' }
+      }
+    });
+    if(error) throw error;
+    if(data?.url) window.location.assign(data.url);
+  } catch(error) {
+    setSecurity('Twitch login failed: '+escapeHtml(error?.message||'Unknown error'), false, true);
+  }
 }
 
 function setControls(enabled) {
@@ -284,6 +292,12 @@ async function verifyAdmin() {
     return false;
   }
 }
+
+supabase.auth.onAuthStateChange((event, session) => {
+  if (event === 'SIGNED_IN' && session?.user) {
+    setTimeout(() => verifyAdmin(), 0);
+  }
+});
 
 let selectedAdminUser = null;
 
