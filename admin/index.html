@@ -274,6 +274,7 @@ async function verifyAdmin() {
     await loadAdminLogs();
     await loadUsers();
     await loadFncSettings();
+    await refreshDashboard(); await loadRedemptions(); await loadTransactions(); await loadLeaderboard(); await loadMedia(); await loadAdminAccess();
     return true;
   } catch (error) {
     setControls(false);
@@ -415,6 +416,69 @@ async function loadRewards() {
   tbody.innerHTML = data.map(r => '<tr><td>'+escapeHtml(r.name)+'</td><td>'+Number(r.fnc_cost||0).toLocaleString()+'</td><td>'+Number(r.level_required||1)+'</td><td>'+((r.stock ?? '∞'))+'</td><td>'+ (r.active ? 'ACTIVE' : 'OFF') +'</td><td>'+ (r.image_url ? '<a href="'+escapeAttr(r.image_url)+'" target="_blank" rel="noopener" style="color:var(--cyan)">VIEW</a>' : '—') +'</td></tr>').join('');
 }
 
+
+async function refreshDashboard(){
+ if(!adminReady)return;
+ const u=await supabase.from('users').select('id,fnc_points');
+ const r=await supabase.from('rewards').select('id',{count:'exact',head:true}).eq('active',true);
+ const d=await supabase.from('redemptions').select('id',{count:'exact',head:true}).eq('status','pending');
+ document.getElementById('metricUsers').textContent=(u.data||[]).length.toLocaleString();
+ document.getElementById('metricRewards').textContent=(r.count||0).toLocaleString();
+ document.getElementById('metricRedemptions').textContent=(d.count||0).toLocaleString();
+ document.getElementById('metricFnc').textContent=(u.data||[]).reduce((s,x)=>s+Number(x.fnc_points||0),0).toLocaleString();
+}
+async function loadRedemptions(){
+ if(!adminReady)return; const tbody=document.getElementById('redemptionList'); if(!tbody)return;
+ let q=supabase.from('redemptions').select('id,user_id,reward_id,fnc_spent,status,steam_trade_url_snapshot,created_at').order('created_at',{ascending:false}).limit(200);
+ const st=document.getElementById('redemptionStatusFilter')?.value||'pending'; if(st!=='all')q=q.eq('status',st);
+ const {data,error}=await q; if(error){tbody.innerHTML='<tr><td colspan="7">'+escapeHtml(error.message)+'</td></tr>';return;}
+ const us=await supabase.from('users').select('id,twitch_username,email'); const rw=await supabase.from('rewards').select('id,name');
+ const um=new Map((us.data||[]).map(x=>[x.id,x])), rm=new Map((rw.data||[]).map(x=>[x.id,x]));
+ const search=(document.getElementById('redemptionSearch')?.value||'').toLowerCase();
+ const rows=(data||[]).filter(x=>{const u=um.get(x.user_id)||{},r=rm.get(x.reward_id)||{};return !search||(u.twitch_username||u.email||'').toLowerCase().includes(search)||(r.name||'').toLowerCase().includes(search);});
+ tbody.innerHTML=rows.map(x=>{const u=um.get(x.user_id)||{},r=rm.get(x.reward_id)||{};return '<tr><td>'+escapeHtml(u.twitch_username||u.email||'—')+'</td><td>'+escapeHtml(r.name||'—')+'</td><td>'+Number(x.fnc_spent||0).toLocaleString()+'</td><td>'+(x.steam_trade_url_snapshot?'<a href="'+escapeAttr(x.steam_trade_url_snapshot)+'" target="_blank" rel="noopener" style="color:var(--cyan)">OPEN</a>':'—')+'</td><td>'+escapeHtml(x.status)+'</td><td>'+new Date(x.created_at).toLocaleString()+'</td><td>'+(x.status==='pending'?'<button class="btn" data-approve="'+x.id+'">APPROVE</button> <button class="btn danger" data-reject="'+x.id+'">REJECT + REFUND</button>':'—')+'</td></tr>';}).join('')||'<tr><td colspan="7">No redemptions found.</td></tr>';
+ tbody.querySelectorAll('[data-approve]').forEach(b=>b.onclick=()=>processRedemption(b.dataset.approve,'approve'));
+ tbody.querySelectorAll('[data-reject]').forEach(b=>b.onclick=()=>processRedemption(b.dataset.reject,'reject'));
+}
+async function processRedemption(id,action){
+ if(!adminReady)return; let reason=null;
+ if(action==='reject'){reason=prompt('Reason for rejection:','Rejected by admin');if(reason===null)return;}
+ if(!confirm(action==='approve'?'Approve this redemption?':'Reject and refund the FNC?'))return;
+ const {error}=await supabase.functions.invoke('admin-redemption-action',{body:{redemption_id:id,action,reason}});
+ const s=document.getElementById('redemptionStatus');s.style.display='block';s.style.borderLeftColor=error?'var(--danger)':'var(--ok)';s.textContent=error?'Action failed: '+error.message:(action==='approve'?'Redemption approved.':'Redemption rejected and FNC refunded.');
+ if(!error){await loadRedemptions();await refreshDashboard();await loadAdminLogs();}
+}
+async function loadTransactions(){
+ if(!adminReady)return;const tbody=document.getElementById('transactionList');if(!tbody)return;
+ let q=supabase.from('transactions').select('id,user_id,type,amount,source,external_event_id,created_at,platform').order('created_at',{ascending:false}).limit(200);
+ const type=document.getElementById('transactionType')?.value||'',platform=document.getElementById('transactionPlatform')?.value||'';
+ if(type)q=q.eq('type',type);if(platform)q=q.eq('platform',platform);
+ const {data,error}=await q;if(error){tbody.innerHTML='<tr><td colspan="7">'+escapeHtml(error.message)+'</td></tr>';return;}
+ const ids=[...new Set((data||[]).map(x=>x.user_id).filter(Boolean))];let um=new Map();
+ if(ids.length){const us=await supabase.from('users').select('id,twitch_username');um=new Map((us.data||[]).map(x=>[x.id,x]));}
+ tbody.innerHTML=(data||[]).map(x=>'<tr><td>'+new Date(x.created_at).toLocaleString()+'</td><td>'+escapeHtml(um.get(x.user_id)?.twitch_username||'—')+'</td><td>'+escapeHtml(x.type)+'</td><td>'+Number(x.amount||0).toLocaleString()+'</td><td>'+escapeHtml(x.platform||'—')+'</td><td>'+escapeHtml(x.source||'—')+'</td><td>'+escapeHtml(x.external_event_id||'—')+'</td></tr>').join('')||'<tr><td colspan="7">No transactions.</td></tr>';
+}
+async function loadLeaderboard(){
+ if(!adminReady)return;const tbody=document.getElementById('leaderboardList');if(!tbody)return;
+ const {data,error}=await supabase.from('users').select('twitch_username,fnc_points,xp,level,total_watch_minutes').order('fnc_points',{ascending:false}).order('xp',{ascending:false}).limit(100);
+ if(error){tbody.innerHTML='<tr><td colspan="6">'+escapeHtml(error.message)+'</td></tr>';return;}
+ tbody.innerHTML=(data||[]).map((x,i)=>'<tr><td>'+(i+1)+'</td><td>'+escapeHtml(x.twitch_username||'—')+'</td><td>'+Number(x.fnc_points||0).toLocaleString()+'</td><td>'+Number(x.xp||0).toLocaleString()+'</td><td>'+Number(x.level||1)+'</td><td>'+Number(x.total_watch_minutes||0).toLocaleString()+'</td></tr>').join('')||'<tr><td colspan="6">No users.</td></tr>';
+}
+async function loadMedia(){
+ if(!adminReady)return;const tbody=document.getElementById('mediaList');if(!tbody)return;
+ const {data,error}=await supabase.storage.from('reward-images').list('',{limit:100,sortBy:{column:'created_at',order:'desc'}});
+ if(error){tbody.innerHTML='<tr><td colspan="4">'+escapeHtml(error.message)+'</td></tr>';return;}
+ const files=(data||[]).filter(x=>x.name&&x.name!=='rewards'&&x.name!=='giveaways');
+ tbody.innerHTML=files.map(x=>'<tr><td>'+escapeHtml(x.name)+'</td><td>'+((Number(x.metadata?.size||0)/1024).toFixed(1))+' KB</td><td>'+new Date(x.updated_at||x.created_at||Date.now()).toLocaleString()+'</td><td><button class="btn danger" data-media="'+escapeAttr(x.name)+'">DELETE</button></td></tr>').join('')||'<tr><td colspan="4">No root files.</td></tr>';
+ tbody.querySelectorAll('[data-media]').forEach(b=>b.onclick=async()=>{if(!confirm('Delete image?'))return;const {error}=await supabase.storage.from('reward-images').remove([b.dataset.media]);if(error)alert(error.message);await loadMedia();});
+}
+async function loadAdminAccess(){
+ if(!adminReady)return;const tbody=document.getElementById('adminAccessList');if(!tbody)return;
+ const {data,error}=await supabase.from('admin_users').select('user_id,created_at').order('created_at',{ascending:true});
+ if(error){tbody.innerHTML='<tr><td colspan="3">'+escapeHtml(error.message)+'</td></tr>';return;}
+ tbody.innerHTML=(data||[]).map(x=>'<tr><td>'+escapeHtml(x.user_id)+'</td><td>'+new Date(x.created_at).toLocaleString()+'</td><td><button class="btn danger" data-revoke="'+x.user_id+'">REVOKE</button></td></tr>').join('');
+ tbody.querySelectorAll('[data-revoke]').forEach(b=>b.onclick=async()=>{if(!confirm('Revoke admin access?'))return;const {error}=await supabase.from('admin_users').delete().eq('user_id',b.dataset.revoke);if(error)alert(error.message);await loadAdminAccess();});
+}
 function escapeHtml(value){return String(value??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
 function escapeAttr(value){return escapeHtml(value);}
 
@@ -654,6 +718,20 @@ document.querySelectorAll('.nav-btn').forEach(btn=>{
     btn.classList.add('active');
     document.getElementById(btn.dataset.panel).classList.add('active');
   });
+});
+
+
+document.getElementById('refreshDashboard')?.addEventListener('click',refreshDashboard);
+document.getElementById('loadRedemptions')?.addEventListener('click',loadRedemptions);
+document.getElementById('loadTransactions')?.addEventListener('click',loadTransactions);
+document.getElementById('loadLeaderboard')?.addEventListener('click',loadLeaderboard);
+document.getElementById('loadMedia')?.addEventListener('click',loadMedia);
+document.getElementById('findAdminUser')?.addEventListener('click',async()=>{
+ if(!adminReady)return;const q=document.getElementById('adminUserSearch').value.trim();const out=document.getElementById('adminUserResult');if(!q)return;
+ const {data,error}=await supabase.from('users').select('id,twitch_username,email').ilike('twitch_username',q).maybeSingle();
+ out.style.display='block';if(error||!data){out.textContent=error?'Search failed: '+error.message:'User not found.';return;}
+ out.innerHTML='<strong>'+escapeHtml(data.twitch_username||data.email||data.id)+'</strong> — '+escapeHtml(data.id)+' <button class="btn primary" id="grantAdmin">GRANT ADMIN</button>';
+ document.getElementById('grantAdmin').onclick=async()=>{const {error}=await supabase.from('admin_users').insert({user_id:data.id});out.textContent=error?'Grant failed: '+error.message:'Admin access granted.';await loadAdminAccess();};
 });
 
 // Admin boot: verify access on page load (cache refresh commit).
