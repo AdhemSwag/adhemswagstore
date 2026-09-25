@@ -294,11 +294,8 @@
   }
 
   async function logout() {
-    try {
-      await client.auth.signOut({ scope: 'local' });
-    } finally {
-      loginWithTwitch();
-    }
+    await client.auth.signOut({ scope: 'local' });
+    window.location.href = '/';
   }
 
   window.AdhemSwagAuth = {
