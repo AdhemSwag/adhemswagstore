@@ -145,12 +145,17 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
         <h2>FNC Points <span style="color:var(--cyan)">SETTINGS</span></h2>
         <p>All values are configurable. The rewards engine will use the latest saved values automatically.</p>
         <div class="form-grid">
-          <div class="field"><label>FNC Points — Enabled</label><select id="fncEnabled"><option value="false">OFF</option><option value="true">ON</option></select></div>
-          <div class="field"><label>Interval (in minutes)</label><input id="fncInterval" type="number" min="1" value="1"><small style="color:var(--muted)">How often points are handed out.</small></div>
-          <div class="field"><label>Amount (FNC)</label><input id="fncAmount" type="number" min="0" value="1"><small style="color:var(--muted)">FNC earned per interval.</small></div>
+          <div class="field"><label>FNC Program</label><select id="fncEnabled"><option value="false">OFF</option><option value="true">ON</option></select></div>
+          <div class="field"><label>FNC per 10 minutes</label><input id="fncAmount" type="number" min="0" value="10"><small style="color:var(--muted)">Points awarded to active viewers.</small></div>
           <div class="field"><label>Subscriber multiplier</label><input id="fncMultiplier" type="number" min="0" step="0.1" value="3"></div>
+          <div class="field"><label>Chat FNC</label><input id="fncChat" type="number" min="0" value="0"><small style="color:var(--muted)">FNC per eligible chat message.</small></div>
+          <div class="field"><label>Chat cooldown (seconds)</label><input id="fncChatCooldown" type="number" min="0" value="60"></div>
+          <div class="field"><label>Daily FNC limit</label><input id="fncDailyLimit" type="number" min="0" value="0"><small style="color:var(--muted)">0 = unlimited.</small></div>
+          <div class="field"><label>XP per minute</label><input id="fncXpMinute" type="number" min="0" value="1"></div>
+          <div class="field"><label>Subscriber XP bonus</label><input id="fncXpSubBonus" type="number" min="0" value="0"></div>
         </div>
-        <div class="actions"><button class="btn primary" id="saveFncSettings">SAVE FNC SETTINGS</button><span id="fncSaveStatus" class="notice" style="display:none;margin-top:0"></span></div>
+        <div class="actions"><button class="btn primary" id="saveFncSettings">SAVE FNC SETTINGS</button><button class="btn" id="reloadFncSettings">RELOAD</button><span id="fncSaveStatus" class="notice" style="display:none;margin-top:0"></span></div>
+        <div class="notice"><strong style="color:var(--cyan)">SAFE MODE:</strong> The FNC Program stays OFF until you manually enable it. Saving settings does not distribute points.</div>
       </div>
       <div class="section">
         <h2>Bonuses</h2>
@@ -251,6 +256,7 @@ async function verifyAdmin() {
   await loadGiveaways();
   await loadAdminLogs();
   await loadUsers();
+  await loadFncSettings();
   return true;
 }
 
@@ -389,6 +395,46 @@ async function loadRewards() {
 
 function escapeHtml(value){return String(value??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
 function escapeAttr(value){return escapeHtml(value);}
+
+async function loadFncSettings(){
+  if(!adminReady)return;
+  const status=document.getElementById('fncSaveStatus');
+  const {data,error}=await supabase.from('fnc_settings').select('id,enabled,interval_minutes,amount,subscriber_multiplier,chat_fnc,chat_cooldown_seconds,daily_fnc_limit,xp_per_minute,subscriber_xp_bonus').eq('id',1).maybeSingle();
+  if(error){status.style.display='block';status.textContent='Unable to load FNC settings: '+error.message;return;}
+  if(!data)return;
+  document.getElementById('fncEnabled').value=String(!!data.enabled);
+  document.getElementById('fncAmount').value=Number(data.amount||0);
+  document.getElementById('fncMultiplier').value=Number(data.subscriber_multiplier||0);
+  document.getElementById('fncChat').value=Number(data.chat_fnc||0);
+  document.getElementById('fncChatCooldown').value=Number(data.chat_cooldown_seconds||0);
+  document.getElementById('fncDailyLimit').value=Number(data.daily_fnc_limit||0);
+  document.getElementById('fncXpMinute').value=Number(data.xp_per_minute||0);
+  document.getElementById('fncXpSubBonus').value=Number(data.subscriber_xp_bonus||0);
+}
+async function saveFncSettings(){
+  if(!adminReady)return;
+  const status=document.getElementById('fncSaveStatus');
+  const payload={
+    id:1,
+    enabled:document.getElementById('fncEnabled').value==='true',
+    interval_minutes:10,
+    amount:Math.max(0,Math.round(Number(document.getElementById('fncAmount').value||0))),
+    subscriber_multiplier:Math.max(0,Number(document.getElementById('fncMultiplier').value||0)),
+    chat_fnc:Math.max(0,Math.round(Number(document.getElementById('fncChat').value||0))),
+    chat_cooldown_seconds:Math.max(0,Math.round(Number(document.getElementById('fncChatCooldown').value||0))),
+    daily_fnc_limit:Math.max(0,Math.round(Number(document.getElementById('fncDailyLimit').value||0))),
+    xp_per_minute:Math.max(0,Math.round(Number(document.getElementById('fncXpMinute').value||0))),
+    subscriber_xp_bonus:Math.max(0,Math.round(Number(document.getElementById('fncXpSubBonus').value||0))),
+    updated_at:new Date().toISOString()
+  };
+  if(payload.enabled && !confirm('Enable the FNC Program? This allows the rewards engine to distribute points when it is running.'))return;
+  const {error}=await supabase.from('fnc_settings').upsert(payload,{onConflict:'id'});
+  if(error){status.style.display='block';status.textContent='Save failed: '+error.message;return;}
+  await writeAdminLog('fnc_settings_updated','fnc_settings',1,{enabled:payload.enabled,interval_minutes:10,amount:payload.amount,subscriber_multiplier:payload.subscriber_multiplier,chat_fnc:payload.chat_fnc,chat_cooldown_seconds:payload.chat_cooldown_seconds,daily_fnc_limit:payload.daily_fnc_limit,xp_per_minute:payload.xp_per_minute,subscriber_xp_bonus:payload.subscriber_xp_bonus});
+  status.style.display='block';status.textContent='FNC settings saved.';status.style.borderLeftColor='var(--ok)';
+}
+document.getElementById('saveFncSettings')?.addEventListener('click',saveFncSettings);
+document.getElementById('reloadFncSettings')?.addEventListener('click',loadFncSettings);
 
 document.getElementById('rewardImage')?.addEventListener('change', event => {
   selectedImage = event.target.files?.[0] || null;
