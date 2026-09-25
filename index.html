@@ -302,6 +302,10 @@
   .twitch-follow-btn:hover{ background:#7c2dff; box-shadow:0 0 16px rgba(145,70,255,0.4); }
   .twitch-sub-btn{ background:rgba(145,70,255,0.18); color:#b98cff; border:1px solid rgba(145,70,255,0.55); }
   .twitch-sub-btn:hover{ background:rgba(145,70,255,0.28); color:#fff; border-color:#9146FF; box-shadow:0 0 16px rgba(145,70,255,0.3); }
+  .kick-follow-btn{ background:#53FC18; color:#05070a; }
+  .kick-follow-btn:hover{ background:#43d913; box-shadow:0 0 16px rgba(83,252,24,0.4); }
+  .kick-sub-btn{ background:#1f2a22; color:#53FC18; border:1px solid rgba(83,252,24,0.55); }
+  .kick-sub-btn:hover{ background:#29392d; box-shadow:0 0 16px rgba(83,252,24,0.35); }
 
   /* points strip */
   .points-strip{
@@ -915,7 +919,7 @@ footer .footer-copy .row{margin:0;}
         <span class="bc-tr"></span><span class="bc-bl"></span>
         <div class="stream-top">
           <div class="live-tag" id="liveTag"><span class="live-dot" id="liveDot"></span> <span id="liveText">CHECKING…</span></div>
-          <div class="platform-tag" id="platformTag"></div>
+          <div class="platform-tag" id="platformTag">CHECKING</div>
         </div>
         <div class="stream-body" id="streamBody">
           <iframe
@@ -931,7 +935,7 @@ footer .footer-copy .row{margin:0;}
           <div class="stream-offline" id="streamOffline" hidden>
             <div class="stream-offline-icon">◉</div>
             <strong>OFFLINE</strong>
-            <span>Twitch is currently offline.</span>
+            <span>Twitch and Kick are currently offline.</span>
           </div>
         </div>
         <div class="stream-foot">
@@ -949,6 +953,17 @@ footer .footer-copy .row{margin:0;}
         <a href="https://www.twitch.tv/subs/AdhemSwag" target="_blank" rel="noopener" class="sub-btn twitch-sub-btn">
           <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
           Subscribe Twitch
+        </a>
+      </div>
+      
+      <div class="follow-sub-row" aria-label="Kick actions">
+        <a href="https://kick.com/adhemswag918" target="_blank" rel="noopener" class="kick-follow-btn follow-btn">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 4h14v4H9v3h6v4H9v5H5z"/></svg>
+          Follow Kick
+        </a>
+        <a href="https://kick.com/adhemswag918/subscribe" target="_blank" rel="noopener" class="kick-sub-btn sub-btn">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          Subscribe Kick
         </a>
       </div>
 
@@ -1262,10 +1277,13 @@ footer .footer-copy .row{margin:0;}
     }
   }
 
-  // Twitch-only live detection.
+  // Dual-platform live detection: Twitch has priority for the player.
   (async function(){
     const TWITCH_CHANNEL = 'adhemswag';
+    const KICK_CHANNEL = 'adhemswag918';
     const twitchPlayer = 'https://player.twitch.tv/?channel=adhemswag&parent=adhemswag.github.io&parent=live.adhemswag.com&parent=adhemswag.com&parent=www.adhemswag.com&muted=true';
+    const kickPlayer = 'https://player.kick.com/adhemswag918?autoplay=true&muted=true';
+
     const tag = document.getElementById('liveTag');
     const dot = document.getElementById('liveDot');
     const label = document.getElementById('liveText');
@@ -1275,35 +1293,74 @@ footer .footer-copy .row{margin:0;}
     const offline = document.getElementById('streamOffline');
     const viewerCounts = document.getElementById('viewerCounts');
     const platformStatus = document.getElementById('platformStatus');
-    try {
-      const uptime = await fetch('https://decapi.me/twitch/uptime/' + TWITCH_CHANNEL, {cache:'no-store'}).then(r=>r.text());
-      const live = !uptime.toLowerCase().includes('offline');
-      let viewers = null;
-      if (live) {
-        const raw = await fetch('https://decapi.me/twitch/viewercount/' + TWITCH_CHANNEL, {cache:'no-store'}).then(r=>r.text());
-        const n = parseInt(raw, 10);
-        if (!Number.isNaN(n)) viewers = n;
-      }
-      if (live) {
-        player.src = twitchPlayer; player.style.display = 'block'; offline.hidden = true;
-        tag.classList.remove('offline'); dot.classList.remove('offline');
-        label.textContent = 'LIVE NOW'; status.textContent = 'LIVE'; status.classList.add('status-live');
-        platform.innerHTML = '<span class="live-platform-twitch">TWITCH</span>';
-        platformStatus.innerHTML = '<span class="platform-twitch">TWITCH</span> <span class="viewer-platform viewer-twitch">' + (viewers == null ? '—' : viewers.toLocaleString()) + ' viewers</span>';
-        viewerCounts.hidden = false;
-      } else {
-        player.style.display = 'none'; offline.hidden = false;
-        tag.classList.add('offline'); dot.classList.add('offline');
-        label.textContent = 'OFFLINE'; status.textContent = 'OFFLINE'; status.classList.remove('status-live');
-        platform.textContent = ''; platformStatus.textContent = ''; viewerCounts.hidden = true;
-      }
-    } catch (error) {
-      player.style.display = 'none'; offline.hidden = false;
-      offline.querySelector('strong').textContent = 'STATUS UNAVAILABLE';
-      offline.querySelector('span').textContent = 'Unable to check Twitch right now.';
+
+    async function getTwitch(){
+      try{
+        const uptime = await fetch('https://decapi.me/twitch/uptime/' + TWITCH_CHANNEL, {cache:'no-store'}).then(r=>r.text());
+        const live = !uptime.toLowerCase().includes('offline');
+        let viewers = null;
+        if(live){
+          const raw = await fetch('https://decapi.me/twitch/viewercount/' + TWITCH_CHANNEL, {cache:'no-store'}).then(r=>r.text());
+          const n = parseInt(raw,10);
+          if(!Number.isNaN(n)) viewers=n;
+        }
+        return {live, viewers};
+      }catch(e){ return {live:false, viewers:null, error:true}; }
+    }
+
+    async function getKick(){
+      try{
+        const data = await fetch('https://kick.com/api/v2/channels/' + KICK_CHANNEL, {cache:'no-store'}).then(r=>{
+          if(!r.ok) throw new Error('Kick status unavailable');
+          return r.json();
+        });
+        const live = !!data.livestream;
+        const viewers = live && Number.isFinite(Number(data.livestream.viewer_count))
+          ? Number(data.livestream.viewer_count) : null;
+        return {live, viewers};
+      }catch(e){ return {live:false, viewers:null, error:true}; }
+    }
+
+    const [twitch, kick] = await Promise.all([getTwitch(), getKick()]);
+    const bothLive = twitch.live && kick.live;
+    const selected = twitch.live ? 'TWITCH' : (kick.live ? 'KICK' : 'OFFLINE');
+
+    if(selected === 'TWITCH'){
+      player.src = twitchPlayer;
+      player.style.display = 'block';
+      offline.hidden = true;
+      tag.classList.remove('offline'); dot.classList.remove('offline');
+      label.textContent = 'LIVE NOW · TWITCH';
+      status.textContent = 'LIVE';
+      status.classList.add('status-live');
+      platform.innerHTML = bothLive
+        ? '<span class="live-platform-twitch">TWITCH</span><span class="live-platform-separator">·</span><span style="color:#53FC18">KICK</span>'
+        : '<span class="live-platform-twitch">TWITCH</span>';
+      platformStatus.innerHTML = '<span class="platform-twitch">TWITCH</span> <span class="viewer-platform viewer-twitch">' + (twitch.viewers == null ? '—' : twitch.viewers.toLocaleString()) + ' viewers</span>';
+      viewerCounts.hidden = false;
+      viewerCounts.textContent = 'TWITCH ' + (twitch.viewers == null ? '—' : twitch.viewers.toLocaleString()) + ' · KICK ' + (kick.viewers == null ? '—' : kick.viewers.toLocaleString());
+    }else if(selected === 'KICK'){
+      player.src = kickPlayer;
+      player.style.display = 'block';
+      offline.hidden = true;
+      tag.classList.remove('offline'); dot.classList.remove('offline');
+      label.textContent = 'LIVE NOW · KICK';
+      status.textContent = 'LIVE';
+      status.classList.add('status-live');
+      platform.innerHTML = '<span style="color:#53FC18">KICK</span>';
+      platformStatus.innerHTML = '<span style="color:#53FC18">KICK</span> <span class="viewer-platform">' + (kick.viewers == null ? '—' : kick.viewers.toLocaleString()) + ' viewers</span>';
+      viewerCounts.hidden = false;
+      viewerCounts.textContent = 'TWITCH ' + (twitch.viewers == null ? '—' : twitch.viewers.toLocaleString()) + ' · KICK ' + (kick.viewers == null ? '—' : kick.viewers.toLocaleString());
+    }else{
+      player.style.display = 'none';
+      offline.hidden = false;
       tag.classList.add('offline'); dot.classList.add('offline');
-      label.textContent = 'CHECK ERROR'; status.textContent = 'CHECK ERROR'; status.classList.remove('status-live');
-      platform.textContent = ''; platformStatus.textContent = 'CHECK ERROR'; viewerCounts.hidden = true;
+      label.textContent = 'OFFLINE';
+      status.textContent = 'OFFLINE';
+      status.classList.remove('status-live');
+      platform.textContent = 'OFFLINE';
+      platformStatus.textContent = '';
+      viewerCounts.hidden = true;
     }
   })();
 </script>
