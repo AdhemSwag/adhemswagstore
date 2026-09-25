@@ -54,7 +54,7 @@
           skipBrowserRedirect: true,
           queryParams: provider === 'twitch'
             ? { force_verify: 'true' }
-            : { prompt: 'login' }
+            : undefined
         }
       });
 
@@ -94,9 +94,14 @@
     const authUser = sessionData.session.user;
     const meta = authUser.user_metadata || {};
     const appMeta = authUser.app_metadata || {};
-    const provider = appMeta.provider || authUser.identities?.[0]?.provider || 'twitch';
-    const externalUserId = meta.provider_id || meta.sub || meta.user_id || null;
-    const externalUsername = meta.user_name || meta.preferred_username || meta.name || meta.full_name || null;
+    const identity = authUser.identities?.find(i => i.provider === 'custom:kick' || i.provider === 'kick')
+      || authUser.identities?.[0]
+      || null;
+    const provider = appMeta.provider || identity?.provider || 'twitch';
+    const identityData = identity?.identity_data || {};
+    const isKick = provider === 'custom:kick' || provider === 'kick';
+    const externalUserId = identity?.provider_id || identityData.provider_id || meta.provider_id || meta.sub || meta.user_id || null;
+    const externalUsername = identityData.username || identityData.preferred_username || identityData.name || identityData.nickname || meta.user_name || meta.preferred_username || meta.name || meta.full_name || null;
 
     let { data: profile, error } = await client
       .from('users')
@@ -112,7 +117,7 @@
     if (!profile) {
       const result = await client
         .from('users')
-        .insert(provider === 'custom:kick'
+        .insert(isKick
           ? {
               id: authUser.id,
               kick_user_id: externalUserId,
@@ -124,7 +129,7 @@
               twitch_user_id: externalUserId,
               twitch_username: externalUsername
             })
-        .select('id,twitch_user_id,twitch_username,email,email_verified,steam_id,steam_profile_url,steam_trade_url,profile_complete,fnc_points,xp,level,total_watch_minutes,monthly_xp,streak,is_blocked,total_fnc_earned')
+        .select('id,twitch_user_id,twitch_username,kick_user_id,kick_username,kick_connected,email,email_verified,steam_id,steam_profile_url,steam_trade_url,discord_username,profile_complete,fnc_points,xp,level,total_watch_minutes,monthly_xp,streak,is_blocked,total_fnc_earned')
         .single();
 
       if (result.error) {
@@ -298,11 +303,11 @@
 
       const viewer = {
         authId: user.id,
-        provider: user.app_metadata?.provider || user.identities?.[0]?.provider || 'twitch',
-        twitchUserId: meta.provider_id || meta.sub || meta.user_id || null,
-        twitchUsername: meta.user_name || meta.preferred_username || meta.name || meta.full_name || null,
-        kickUserId: meta.provider_id || meta.sub || meta.user_id || null,
-        kickUsername: meta.user_name || meta.preferred_username || meta.name || meta.full_name || null,
+        provider: user.app_metadata?.provider || user.identities?.find(i => i.provider === 'custom:kick' || i.provider === 'kick')?.provider || user.identities?.[0]?.provider || 'twitch',
+        twitchUserId: user.identities?.find(i => i.provider === 'twitch')?.provider_id || null,
+        twitchUsername: user.identities?.find(i => i.provider === 'twitch')?.identity_data?.name || user.identities?.find(i => i.provider === 'twitch')?.identity_data?.preferred_username || null,
+        kickUserId: user.identities?.find(i => i.provider === 'custom:kick' || i.provider === 'kick')?.provider_id || null,
+        kickUsername: user.identities?.find(i => i.provider === 'custom:kick' || i.provider === 'kick')?.identity_data?.username || user.identities?.find(i => i.provider === 'custom:kick' || i.provider === 'kick')?.identity_data?.name || null,
         email: user.email || null,
         avatar: meta.avatar_url || meta.picture || null,
         profile: await ensureProfile()
