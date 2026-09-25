@@ -360,7 +360,7 @@ document.getElementById('removeUserXp')?.addEventListener('click',()=>{
   if(Number.isFinite(amount)&&amount>0)adjustSelectedUser({xpDelta:-Math.round(amount)});
 });
 document.getElementById('changeUserLevel')?.addEventListener('click',()=>{
-  const level=Number(prompt('New level: String',selectedAdminUser?.level||1));
+  const level=Number(prompt('New level:',selectedAdminUser?.level||1));
   if(Number.isInteger(level)&&level>=1)adjustSelectedUser({level});
 });
 document.getElementById('toggleUserBlock')?.addEventListener('click',()=>{
