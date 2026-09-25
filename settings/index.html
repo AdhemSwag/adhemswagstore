@@ -266,7 +266,7 @@ main.settings-main{max-width:1120px;margin:0 auto;padding:54px 40px 90px}
       </div>
       <div class="settings-status-list">
         <div class="settings-status-row"><span class="settings-status-label">Twitch</span><span class="settings-status-value" id="settingsTwitchStatus">Checking…</span></div>
-        <div class="settings-status-row"><span class="settings-status-label">Kick</span><span class="settings-status-value" id="settingsKickStatus">Checking…</span></div>
+        <div class="settings-status-row"><span class="settings-status-label">Kick</span><span class="settings-status-value" id="settingsKickStatus">Checking…</span></div><div class="settings-status-row" id="settingsKickActionRow" style="display:none"><span class="settings-status-label">Kick account</span><button type="button" class="settings-save" id="connectKickBtn" style="height:34px;padding:0 14px">CONNECT KICK</button></div>
         <div class="settings-status-row"><span class="settings-status-label">Steam delivery</span><span class="settings-status-value muted" id="settingsSteamStatus">Required</span></div>
         <div class="settings-status-row"><span class="settings-status-label">Profile</span><span class="settings-status-value muted" id="settingsProfileStatus">Checking…</span></div>
         <div class="settings-status-row"><span class="settings-status-label">FNC Rewards</span><span class="settings-status-value muted">OFF / IN DEVELOPMENT</span></div>
@@ -286,7 +286,7 @@ main.settings-main{max-width:1120px;margin:0 auto;padding:54px 40px 90px}
         <div class="settings-field full"><label for="profileEmail">Email</label><input id="profileEmail" type="email" autocomplete="email" placeholder="your@email.com" required></div>
         <div class="settings-field"><label for="steamProfileUrl">Steam Profile URL</label><input id="steamProfileUrl" type="url" placeholder="https://steamcommunity.com/id/…" required></div>
         <div class="settings-field full"><label for="steamTradeUrl">Steam Trade URL</label><input id="steamTradeUrl" type="url" placeholder="https://steamcommunity.com/tradeoffer/new/…" required></div>
-        <div class="settings-field full"><label for="discordUsername">Discord <span class="field-optional">OPTIONAL</span></label><input id="discordUsername" type="text" maxlength="100" autocomplete="off" placeholder="username or Discord ID"></div>
+        <div class="settings-field full"><label for="discordUsername">Discord <span class="field-optional">REQUIRED</span></label><input id="discordUsername" type="text" maxlength="100" autocomplete="off" placeholder="username or Discord ID"></div>
         <div class="settings-actions">
           <span class="settings-save-status" id="profileSaveStatus">Connect Twitch or Kick first.</span>
           <button class="settings-save" id="saveProfileBtn" type="submit">SAVE CHANGES</button>
@@ -333,14 +333,16 @@ main.settings-main{max-width:1120px;margin:0 auto;padding:54px 40px 90px}
     const steamComplete=!!(p.steam_profile_url&&p.steam_trade_url);
     document.getElementById('settingsSteamStatus').textContent=steamComplete?'Complete':'Required';
     document.getElementById('settingsProfileStatus').textContent=p.profile_complete?'Complete':'Incomplete';
-    const fields=[p.email,p.steam_profile_url,p.steam_trade_url];
-    const pct=Math.round(fields.filter(Boolean).length/3*100);
+    const fields=[p.email,p.steam_profile_url,p.steam_trade_url,p.discord_username];
+    const pct=Math.round(fields.filter(Boolean).length/4*100);
     document.getElementById('settingsProgressText').textContent=p.profile_complete?'100%':pct+'%';
     document.getElementById('settingsProgressFill').style.width=(p.profile_complete?100:pct)+'%';
+    const kickAction=document.getElementById('settingsKickActionRow');
+    if(kickAction) kickAction.style.display=p.kick_username?'none':'';
   }
   window.addEventListener('adhem:viewer',function(e){
     if(!e.detail||!e.detail.authId){
-      status.textContent='Connect Twitch first.';
+      status.textContent='Connect Twitch or Kick first.';
       form.querySelectorAll('input,button').forEach(function(x){x.disabled=true;});
       document.getElementById('settingsAccountHint').textContent='Connect Twitch or Kick to edit your profile';
       return;
