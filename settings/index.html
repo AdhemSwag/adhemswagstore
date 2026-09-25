@@ -251,7 +251,7 @@ main.settings-main{max-width:1120px;margin:0 auto;padding:54px 40px 90px}
   <div>
     <div class="settings-kicker">// Viewer Account / Control Panel</div>
     <h1 class="settings-title">ACCOUNT <span>SETTINGS</span></h1>
-    <p class="settings-subtitle">Manage your AdhemSwag profile, Steam delivery details and Twitch connection from one place. Your protected FNC and XP balances cannot be edited here.</p>
+    <p class="settings-subtitle">Manage your AdhemSwag profile, connected Twitch/Kick accounts and Steam delivery details from one place. Your protected FNC and XP balances cannot be edited here. Your protected FNC and XP balances cannot be edited here.</p>
   </div>
   <div class="settings-badge"><span class="settings-dot"></span> Secure profile</div>
 </section>
@@ -261,11 +261,12 @@ main.settings-main{max-width:1120px;margin:0 auto;padding:54px 40px 90px}
     <div class="settings-card-head"><h2>ACCOUNT STATUS</h2><small>Live</small></div>
     <div class="settings-card-body">
       <div class="account-state">
-        <div class="account-state-icon">TW</div>
-        <div><strong id="settingsAccountName">Twitch account</strong><span id="settingsAccountHint">Checking connection…</span></div>
+        <div class="account-state-icon" id="settingsAccountIcon">—</div>
+        <div><strong id="settingsAccountName">Account</strong><span id="settingsAccountHint">Checking connection…</span></div>
       </div>
       <div class="settings-status-list">
         <div class="settings-status-row"><span class="settings-status-label">Twitch</span><span class="settings-status-value" id="settingsTwitchStatus">Checking…</span></div>
+        <div class="settings-status-row"><span class="settings-status-label">Kick</span><span class="settings-status-value" id="settingsKickStatus">Checking…</span></div>
         <div class="settings-status-row"><span class="settings-status-label">Steam delivery</span><span class="settings-status-value muted" id="settingsSteamStatus">Required</span></div>
         <div class="settings-status-row"><span class="settings-status-label">Profile</span><span class="settings-status-value muted" id="settingsProfileStatus">Checking…</span></div>
         <div class="settings-status-row"><span class="settings-status-label">FNC Rewards</span><span class="settings-status-value muted">OFF / IN DEVELOPMENT</span></div>
@@ -287,11 +288,11 @@ main.settings-main{max-width:1120px;margin:0 auto;padding:54px 40px 90px}
         <div class="settings-field full"><label for="steamTradeUrl">Steam Trade URL</label><input id="steamTradeUrl" type="url" placeholder="https://steamcommunity.com/tradeoffer/new/…" required></div>
         <div class="settings-field full"><label for="discordUsername">Discord <span class="field-optional">OPTIONAL</span></label><input id="discordUsername" type="text" maxlength="100" autocomplete="off" placeholder="username or Discord ID"></div>
         <div class="settings-actions">
-          <span class="settings-save-status" id="profileSaveStatus">Connect Twitch first.</span>
+          <span class="settings-save-status" id="profileSaveStatus">Connect Twitch or Kick first.</span>
           <button class="settings-save" id="saveProfileBtn" type="submit">SAVE CHANGES</button>
         </div>
       </form>
-      <div class="settings-footer-note">Your Twitch identity is used for authentication. FNC points, XP, level and reward balances are server-protected and are not editable from this page.</div>
+      <div class="settings-footer-note">Twitch and Kick identities can be connected to the same AdhemSwag profile. FNC points, XP, level and reward balances are server-protected and are not editable from this page.</div>
     </div>
   </section>
 </div>
@@ -309,9 +310,13 @@ main.settings-main{max-width:1120px;margin:0 auto;padding:54px 40px 90px}
     document.getElementById('steamTradeUrl').value=p.steam_trade_url||'';
     document.getElementById('discordUsername').value=p.discord_username||'';
     const twitch=p.twitch_username?'Connected as '+p.twitch_username:'Not connected';
+    const kick=p.kick_username?'Connected as '+p.kick_username:'Not connected';
     document.getElementById('settingsTwitchStatus').textContent=twitch;
-    document.getElementById('settingsAccountName').textContent=p.twitch_username||'Twitch account';
-    document.getElementById('settingsAccountHint').textContent=p.twitch_username?'Twitch connected':'Connect Twitch to edit your profile';
+    document.getElementById('settingsKickStatus').textContent=kick;
+    const accountName=p.twitch_username||p.kick_username||'Connected account';
+    document.getElementById('settingsAccountName').textContent=accountName;
+    document.getElementById('settingsAccountIcon').textContent=p.twitch_username?'TW':(p.kick_username?'K':'—');
+    document.getElementById('settingsAccountHint').textContent=p.twitch_username&&p.kick_username?'Twitch + Kick connected':(p.twitch_username?'Twitch connected':(p.kick_username?'Kick connected':'Connect Twitch or Kick to edit your profile'));
     document.getElementById('adhemAccountLevel').textContent=Number(p.level||1).toLocaleString();
     document.getElementById('adhemAccountXp').textContent=Number(p.xp||0).toLocaleString();
     document.getElementById('adhemAccountFnc').textContent=Number(p.fnc_points||0).toLocaleString();
@@ -337,7 +342,7 @@ main.settings-main{max-width:1120px;margin:0 auto;padding:54px 40px 90px}
     if(!e.detail||!e.detail.authId){
       status.textContent='Connect Twitch first.';
       form.querySelectorAll('input,button').forEach(function(x){x.disabled=true;});
-      document.getElementById('settingsAccountHint').textContent='Connect Twitch to edit your profile';
+      document.getElementById('settingsAccountHint').textContent='Connect Twitch or Kick to edit your profile';
       return;
     }
     form.querySelectorAll('input,button').forEach(function(x){x.disabled=false;});
