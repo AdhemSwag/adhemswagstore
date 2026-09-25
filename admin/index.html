@@ -642,6 +642,10 @@ document.querySelectorAll('.nav-btn').forEach(btn=>{
     document.getElementById(btn.dataset.panel).classList.add('active');
   });
 });
+
+// Start the Admin access check when the page loads.
+verifyAdmin();
+
 </script>
 </body>
 </html>
