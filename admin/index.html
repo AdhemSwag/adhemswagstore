@@ -219,6 +219,10 @@ function setSecurity(message, ok=false, showLogin=false) {
   el.style.borderColor = ok ? 'rgba(60,231,165,.25)' : 'rgba(255,77,95,.25)';
   if(showLogin) document.getElementById('adminLogin')?.addEventListener('click', loginAdmin);
 }
+
+// Bind the initial login button immediately, before the first security check finishes.
+document.getElementById('adminLogin')?.addEventListener('click', loginAdmin);
+
 async function loginAdmin() {
   try {
     setSecurity('Opening Twitch login…', false, false);
