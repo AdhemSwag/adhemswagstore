@@ -94,7 +94,7 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
         </div>
         <div class="actions"><button class="btn primary" id="saveReward" disabled>SAVE REWARD</button><button class="btn" id="clearReward" disabled>CLEAR</button></div>
         <div id="rewardSaveStatus" class="notice" style="display:none"></div>
-        <div class="table-wrap"><table><thead><tr><th>Reward</th><th>FNC</th><th>Level</th><th>Stock</th><th>Status</th><th>Image</th></tr></thead><tbody id="rewardList"><tr><td colspan="6">Loading…</td></tr></tbody></table></div>
+        <div class="table-wrap"><table><thead><tr><th>Reward</th><th>FNC</th><th>Level</th><th>Stock</th><th>Status</th><th>Image</th><th>Actions</th></tr></thead><tbody id="rewardList"><tr><td colspan="7">Loading…</td></tr></tbody></table></div>
       </div>
     </section>
 
@@ -230,7 +230,8 @@ async function loginAdmin() {
 
 function setControls(enabled) {
   adminReady = enabled;
-  ['rewardImage','saveReward','clearReward'].forEach(id=>{
+  document.querySelectorAll('#rewards input,#rewards textarea,#giveaways input,#giveaways textarea,#giveaways select').forEach(el=>el.disabled=!enabled);
+  ['rewardImage','saveReward','clearReward','createGiveaway','clearGiveaway','connectTwitchWatch','testTwitchWatch','saveFncSettings','reloadFncSettings','saveBonusSettings','searchUsers','clearUsers','addUserFnc','removeUserFnc','addUserXp','removeUserXp','changeUserLevel','toggleUserBlock','loadRedemptions','loadTransactions','loadLeaderboard','loadMedia','findAdminUser','refreshDashboard','systemFnc','systemXp','systemRewards'].forEach(id=>{
     const el=document.getElementById(id);
     if(el) el.disabled=!enabled;
   });
@@ -413,7 +414,9 @@ async function loadRewards() {
     tbody.innerHTML = '<tr><td colspan="6">No rewards yet.</td></tr>';
     return;
   }
-  tbody.innerHTML = data.map(r => '<tr><td>'+escapeHtml(r.name)+'</td><td>'+Number(r.fnc_cost||0).toLocaleString()+'</td><td>'+Number(r.level_required||1)+'</td><td>'+((r.stock ?? '∞'))+'</td><td>'+ (r.active ? 'ACTIVE' : 'OFF') +'</td><td>'+ (r.image_url ? '<a href="'+escapeAttr(r.image_url)+'" target="_blank" rel="noopener" style="color:var(--cyan)">VIEW</a>' : '—') +'</td></tr>').join('');
+  tbody.innerHTML = data.map(r => '<tr><td>'+escapeHtml(r.name)+'</td><td>'+Number(r.fnc_cost||0).toLocaleString()+'</td><td>'+Number(r.level_required||1)+'</td><td>'+((r.stock ?? '∞'))+'</td><td>'+ (r.active ? 'ACTIVE' : 'OFF') +'</td><td>'+ (r.image_url ? '<a href="'+escapeAttr(r.image_url)+'" target="_blank" rel="noopener" style="color:var(--cyan)">VIEW</a>' : '—') +'</td><td><button class="btn" data-reward-toggle="'+r.id+'">'+(r.active?'DISABLE':'ACTIVATE')+'</button> <button class="btn danger" data-reward-delete="'+r.id+'">DELETE</button></td></tr>').join('');
+  tbody.querySelectorAll('[data-reward-toggle]').forEach(b=>b.onclick=async()=>{const id=b.dataset.rewardToggle;const row=data.find(x=>x.id===id);if(!row)return;const {error}=await supabase.from('rewards').update({active:!row.active,updated_at:new Date().toISOString()}).eq('id',id);if(error)alert(error.message);await loadRewards();await refreshDashboard();});
+  tbody.querySelectorAll('[data-reward-delete]').forEach(b=>b.onclick=async()=>{if(!confirm('Delete this reward?'))return;const {error}=await supabase.from('rewards').delete().eq('id',b.dataset.rewardDelete);if(error)alert(error.message);await loadRewards();await refreshDashboard();});
 }
 
 
