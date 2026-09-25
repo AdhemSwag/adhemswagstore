@@ -46,6 +46,8 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
     <div class="nav-label">Admin</div>
     <button class="nav-btn active" data-panel="dashboard">Dashboard</button>
     <button class="nav-btn" data-panel="rewards">Rewards / Store</button>
+    <button class="nav-btn" data-panel="giveaways">Giveaways</button>
+    <button class="nav-btn" data-panel="logs">Admin Logs</button>
     <button class="nav-btn" data-panel="redemptions">Redemptions</button>
     <button class="nav-btn" data-panel="viewers">Viewers</button>
     <button class="nav-btn" data-panel="transactions">Transactions</button>
@@ -149,7 +151,28 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
       </div>
     </section>
 
-        <section id="system" class="panel">
+        <section id="giveaways" class="panel">
+<div class="section"><h2>Giveaway Control</h2><p>Create and manage Twitch giveaways.</p>
+<div class="form-grid">
+<div class="field"><label>Giveaway title</label><input id="gwTitle" placeholder="Sport Gloves Giveaway"></div>
+<div class="field"><label>Reward</label><input id="gwReward" placeholder="Sport Gloves | Red Racer"></div>
+<div class="field full"><label>Description</label><textarea id="gwDescription" placeholder="Giveaway details..."></textarea></div>
+<div class="field"><label>Winners</label><input id="gwWinners" type="number" min="1" value="1"></div>
+<div class="field"><label>Minimum level</label><input id="gwMinLevel" type="number" min="1" value="1"></div>
+<div class="field"><label>Minimum FNC</label><input id="gwMinFnc" type="number" min="0" value="0"></div>
+<div class="field"><label>Entries per viewer</label><input id="gwEntries" type="number" min="1" value="1"></div>
+<div class="field"><label>Start time</label><input id="gwStart" type="datetime-local"></div>
+<div class="field"><label>End time</label><input id="gwEnd" type="datetime-local"></div>
+<div class="field"><label>Profile complete</label><select id="gwProfile"><option value="false">No</option><option value="true">Yes</option></select></div>
+<div class="field"><label>Subscriber only</label><select id="gwSub"><option value="false">No</option><option value="true">Yes</option></select></div>
+<div class="field"><label>Follower required</label><select id="gwFollow"><option value="false">No</option><option value="true">Yes</option></select></div>
+</div>
+<div class="actions"><button class="btn primary" id="createGiveaway">CREATE GIVEAWAY</button><button class="btn" id="clearGiveaway">CLEAR</button></div>
+<div id="gwStatus" class="notice" style="display:none"></div></div>
+<div class="section"><h2>Giveaway History</h2><div class="table-wrap"><table><thead><tr><th>Giveaway</th><th>Reward</th><th>Status</th><th>Entries</th><th>Winners</th><th>Actions</th></tr></thead><tbody id="giveawayList"><tr><td colspan="6">Loading…</td></tr></tbody></table></div></div>
+</section>
+<section id="logs" class="panel"><div class="section"><h2>Admin Logs</h2><p>Every important admin action is recorded for traceability.</p><div class="table-wrap"><table><thead><tr><th>Date</th><th>Action</th><th>Target</th><th>Details</th></tr></thead><tbody id="adminLogList"><tr><td colspan="4">Loading…</td></tr></tbody></table></div></div></section>
+<section id="system" class="panel">
       <div class="section">
         <h2>System Controls</h2>
         <p>Global switches remain OFF until the full Twitch/EventSub, XP/FNC, Store and redemption workflow has passed testing.</p>
