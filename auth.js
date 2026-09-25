@@ -351,10 +351,6 @@
         event.preventDefault();
         if (button.disabled) return;
 
-        if (button.id === 'adhemAccountConnect' && !button.dataset.provider) {
-          window.location.href = '/login/';
-          return;
-        }
         button.disabled = true;
         try {
           const provider = button.dataset.provider || 'twitch';
