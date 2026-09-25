@@ -248,6 +248,7 @@
 <div class="requirement"><span>Email</span><b id="reqEmail">Required</b></div>
 <div class="requirement"><span>Steam profile</span><b id="reqSteamProfile">Required</b></div>
 <div class="requirement"><span>Steam trade URL</span><b id="reqTradeUrl">Required</b></div>
+<div class="requirement"><span>Discord (optional)</span><b id="reqDiscord">Optional</b></div>
 </div>
 </div>
 <div class="profile-extra">
@@ -296,7 +297,8 @@ window.addEventListener('adhem:viewer', function(e){
     ['reqTwitch',!!(p&&p.twitch_user_id)],
     ['reqEmail',!!(p&&p.email)],
     ['reqSteamProfile',!!(p&&p.steam_profile_url)],
-    ['reqTradeUrl',!!(p&&p.steam_trade_url)]
+    ['reqTradeUrl',!!(p&&p.steam_trade_url)],
+    ['reqDiscord',!!(p&&p.discord_username)]
   ];
   checks.forEach(function(x){const el=document.getElementById(x[0]);if(el){el.textContent=x[1]?'Complete':'Required';el.classList.toggle('complete',x[1]);}});
 });
