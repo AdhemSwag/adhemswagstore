@@ -123,6 +123,14 @@
     const menus = document.querySelectorAll('#adhemAccountMenu');
     if (!menus.length) return;
 
+    document.querySelectorAll('#adhemAccountUser').forEach(button => {
+      if (button.querySelector('.adhem-avatar-rewards')) return;
+      const box = document.createElement('div');
+      box.className = 'adhem-avatar-rewards';
+      box.innerHTML = '<div class="adhem-avatar-reward-row"><span>FNC <strong class="shared-account-fnc">0</strong></span><span>LEVEL <strong class="shared-account-level">1</strong></span></div><div class="adhem-avatar-xp"><div class="adhem-avatar-xp-track"><i class="shared-account-xp-bar"></i></div><span class="shared-account-xp-progress">0 / 750 XP</span></div>';
+      button.appendChild(box);
+    });
+
     
     /* Shared sidebar icon color — all pages */
     const sidebarStyle = document.createElement('style');
@@ -147,9 +155,20 @@
         .adhem-account-user{display:inline-flex!important;align-items:center!important;gap:9px!important;padding:5px 10px 5px 5px!important;min-width:0!important;min-height:38px!important;border-radius:22px!important}
         .adhem-account-user .adhem-account-avatar{width:28px!important;height:28px!important;border-radius:50%!important;margin:0!important;flex:none!important}
         .adhem-account-user .adhem-account-name{font-size:10px!important;line-height:1.2;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .adhem-account-user{display:grid!important;grid-template-columns:28px minmax(120px,1fr) 12px!important;grid-template-rows:auto auto auto!important;column-gap:8px!important;align-items:center!important;padding:5px 9px 5px 5px!important;min-width:190px!important}
+        .adhem-account-user .adhem-account-avatar{grid-column:1;grid-row:1 / 4;width:28px!important;height:28px!important}
+        .adhem-account-user .adhem-account-name{grid-column:2;grid-row:1}
+        .adhem-account-user .adhem-account-chevron{grid-column:3;grid-row:1}
+        .adhem-avatar-rewards{grid-column:2;grid-row:2 / 4;width:100%;margin-top:1px}
+        .adhem-avatar-reward-row{display:flex;align-items:center;gap:12px;font:600 9px 'JetBrains Mono',monospace;line-height:1;color:#617177;white-space:nowrap}
+        .adhem-avatar-reward-row strong{font:600 9px 'JetBrains Mono',monospace;color:#617177}
+        .adhem-avatar-xp{width:100%;margin-top:5px}
+        .adhem-avatar-xp-track{height:3px;width:100%;background:#11191d;overflow:hidden}
+        .adhem-avatar-xp-track i{display:block;width:0;height:100%;background:#11D9F7;box-shadow:0 0 6px rgba(17,217,247,.45);transition:width .25s ease}
+        .adhem-avatar-xp .shared-account-xp-progress{display:block;margin-top:2px;font:8px 'JetBrains Mono',monospace;color:#52636a;white-space:nowrap}
         .adhem-account-menu .account-rewards{display:block!important;padding:12px 14px 11px;margin:0 0 6px;border-bottom:1px solid rgba(17,217,247,.12)}
         @media(max-width:1024px){.adhem-topbar{left:64px!important;padding:8px 16px!important}}
-        @media(max-width:640px){.adhem-topbar{left:52px!important;right:0!important;height:78px!important;min-height:78px!important;padding:8px!important}.adhem-topbar-brand{display:none!important}.adhem-topbar-left{gap:6px!important}.adhem-account-user{min-width:0!important;padding:4px!important;border-radius:28px!important}.adhem-account-user .adhem-account-avatar{width:48px!important;height:48px!important}.adhem-account-user .adhem-account-name{display:none!important}.adhem-account-menu{right:4px!important;top:42px!important;min-width:220px!important;max-width:calc(100vw - 62px)!important}.sidebar{width:52px!important;padding:14px 5px!important;gap:1px!important}.sidebar-brand{padding:7px 2px 12px!important}.sidebar-brand a{display:none!important}.sidebar-link{justify-content:center!important;gap:0!important;padding:10px 0!important}.sidebar-link span{display:none!important}.sidebar-divider{margin:8px 5px!important}main{width:auto!important;max-width:none!important;padding-left:12px!important;padding-right:12px!important}}
+        @media(max-width:640px){.adhem-topbar{left:52px!important;right:0!important;height:78px!important;min-height:78px!important;padding:8px!important}.adhem-topbar-brand{display:none!important}.adhem-topbar-left{gap:6px!important}.adhem-account-user{min-width:0!important;padding:4px!important;border-radius:28px!important}.adhem-account-user .adhem-account-avatar{width:48px!important;height:48px!important}.adhem-account-user .adhem-account-name{display:none!important}.adhem-avatar-rewards{min-width:105px!important}.adhem-avatar-reward-row{gap:8px!important;font-size:8px!important}.adhem-avatar-reward-row strong{font-size:8px!important}.adhem-avatar-xp{margin-top:4px!important}.adhem-account-menu{right:4px!important;top:42px!important;min-width:220px!important;max-width:calc(100vw - 62px)!important}.sidebar{width:52px!important;padding:14px 5px!important;gap:1px!important}.sidebar-brand{padding:7px 2px 12px!important}.sidebar-brand a{display:none!important}.sidebar-link{justify-content:center!important;gap:0!important;padding:10px 0!important}.sidebar-link span{display:none!important}.sidebar-divider{margin:8px 5px!important}main{width:auto!important;max-width:none!important;padding-left:12px!important;padding-right:12px!important}}
         .adhem-account-menu .account-rewards-title{font:600 10px 'JetBrains Mono',monospace;letter-spacing:.14em;color:#52636a;text-transform:uppercase;margin-bottom:9px}
         .adhem-account-menu .account-rewards-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
         .adhem-account-menu .account-rewards-grid>div{padding:8px 9px;background:rgba(17,217,247,.035);border:1px solid rgba(17,217,247,.08);text-align:left}
