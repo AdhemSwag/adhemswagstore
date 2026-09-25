@@ -477,6 +477,15 @@
     await refreshAccountUI();
     await captureTwitchWatchProviderToken();
 
+    // Admin OAuth returns through the existing approved /profile/ redirect.
+    // Once the session is established, send the user back to the Admin Panel.
+    const returnTarget = new URLSearchParams(window.location.search).get('return');
+    if (returnTarget === 'admin') {
+      window.history.replaceState({}, document.title, window.location.pathname);
+      window.location.assign('/admin/');
+      return;
+    }
+
     client.auth.onAuthStateChange(() => {
       setTimeout(async () => {
         await refreshAccountUI();
