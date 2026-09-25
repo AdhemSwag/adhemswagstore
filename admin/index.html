@@ -600,10 +600,24 @@ document.getElementById('clearGiveaway')?.addEventListener('click',()=>{
 
 document.getElementById('connectTwitchWatch')?.addEventListener('click', async () => {
   if (!adminReady) return;
-  if (!window.AdhemSwagAuth?.beginTwitchWatchAuthorization) {
-    const s=document.getElementById('twitchWatchStatus'); if(s){s.style.display='block';s.textContent='Auth module not ready.';} return;
+  const s=document.getElementById('twitchWatchStatus');
+  try {
+    localStorage.setItem('adhem_twitch_watch_connect','1');
+    const {data,error}=await supabase.auth.signInWithOAuth({
+      provider:'twitch',
+      options:{
+        redirectTo:'https://adhemswag.com/profile/',
+        skipBrowserRedirect:true,
+        scopes:'moderator:read:chatters',
+        queryParams:{force_verify:'true'}
+      }
+    });
+    if(error||!data?.url) throw error||new Error('Twitch did not provide an authorization URL.');
+    window.location.assign(data.url);
+  } catch(error) {
+    localStorage.removeItem('adhem_twitch_watch_connect');
+    if(s){s.style.display='block';s.textContent='Twitch authorization failed: '+(error?.message||'Unknown error');}
   }
-  await window.AdhemSwagAuth.beginTwitchWatchAuthorization();
 });
 
 document.getElementById('testTwitchWatch')?.addEventListener('click', async () => {
