@@ -325,6 +325,14 @@
         event.stopPropagation();
         menu.hidden = !menu.hidden;
         userButton.setAttribute('aria-expanded', String(!menu.hidden));
+
+        if (!menu.hidden) {
+          const rect = userButton.getBoundingClientRect();
+          menu.style.position = 'fixed';
+          menu.style.top = Math.round(rect.bottom + 8) + 'px';
+          menu.style.right = Math.max(4, Math.round(window.innerWidth - rect.right)) + 'px';
+          menu.style.left = 'auto';
+        }
       });
 
       menu.addEventListener('click', event => event.stopPropagation());
