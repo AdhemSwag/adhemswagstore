@@ -217,26 +217,36 @@
   </div>
   <div class="hero-badge"><span>STATUS</span><strong id="profileHeroStatus">CHECKING</strong></div>
 </div>
-<div class="grid">
-<section class="card status-card">
-<h2>ACCOUNT STATUS</h2>
-<div class="row"><span class="label">Twitch</span><span class="status" id="profileTwitchStatus">Checking…</span></div>
-<div class="row"><span class="label">Profile</span><span class="status" id="profileCompleteStatus">Checking…</span></div>
-<div class="row"><span class="label">FNC eligibility</span><span class="status" id="fncEligibilityStatus">FNC OFF — project in development</span></div>
-<p class="note">FNC Points will stay disabled until the complete project is finished and tested. A viewer must be connected with Twitch and have a complete profile before rewards can be enabled.</p>
-<a class="cta" href="/settings/">COMPLETE PROFILE</a>
-</section>
-<section class="card progression-card">
-<h2>PROGRESSION</h2>
-<div class="reward-stats">
-  <div class="reward-stat"><span>FNC POINTS</span><strong id="profileFncPoints">0</strong></div>
-  <div class="reward-stat"><span>LEVEL</span><strong id="profileLevel">1</strong></div>
-  <div class="reward-stat"><span>WATCH TIME</span><strong id="profileWatchMinutes">0 min</strong></div>
-</div>
-<div class="xp-head"><span>XP PROGRESS</span><strong id="profileXp">0 XP</strong></div>
-<div class="progress"><span id="profileProgressBar"></span></div>
-<p class="note">Keep watching and participating to build XP. FNC Points, XP and level are protected.</p>
-</section>
+
+<div class="profile-sections">
+  <section class="card status-card profile-account-card">
+    <div class="section-head">
+      <h2>MY PROFILE</h2>
+      <a href="/settings/">EDIT PROFILE</a>
+    </div>
+    <div class="profile-status-grid">
+      <div class="row"><span class="label">Twitch</span><span class="status" id="profileTwitchStatus">Checking…</span></div>
+      <div class="row"><span class="label">Profile</span><span class="status" id="profileCompleteStatus">Checking…</span></div>
+      <div class="row"><span class="label">FNC eligibility</span><span class="status" id="fncEligibilityStatus">FNC OFF — project in development</span></div>
+    </div>
+    <p class="note">FNC Points will stay disabled until the complete project is finished and tested. A viewer must be connected with Twitch and have a complete profile before rewards can be enabled.</p>
+    <a class="cta" href="/settings/">COMPLETE PROFILE</a>
+  </section>
+
+  <section class="card progression-card profile-rewards-card">
+    <div class="section-head">
+      <h2>FNC REWARDS</h2>
+      <span class="section-state">PROGRESSION</span>
+    </div>
+    <div class="reward-stats">
+      <div class="reward-stat"><span>FNC POINTS</span><strong id="profileFncPoints">0</strong></div>
+      <div class="reward-stat"><span>LEVEL</span><strong id="profileLevel">1</strong></div>
+      <div class="reward-stat"><span>WATCH TIME</span><strong id="profileWatchMinutes">0 min</strong></div>
+    </div>
+    <div class="xp-head"><span>XP PROGRESS</span><strong id="profileXp">0 XP</strong></div>
+    <div class="progress"><span id="profileProgressBar"></span></div>
+    <p class="note">Keep watching and participating to build XP. FNC Points, XP and level are protected.</p>
+  </section>
 </div>
 <div class="card requirements-card">
 <div class="section-head"><h2>PROFILE REQUIREMENTS</h2><a href="/settings/">EDIT PROFILE</a></div>
