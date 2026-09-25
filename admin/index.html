@@ -109,9 +109,26 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
 
     <section id="viewers" class="panel">
       <div class="section">
-        <h2>Viewers</h2>
-        <p>Search viewers, inspect FNC/XP/Level, profile status and account connections. Admin adjustments will be logged in transactions.</p>
-        <div class="actions"><button class="btn" disabled>SEARCH VIEWERS</button><button class="btn" disabled>ADD FNC</button><button class="btn" disabled>ADD XP</button><button class="btn danger" disabled>BLOCK ACCOUNT</button></div>
+        <h2>Users</h2>
+        <p>Search Twitch viewers, inspect progression and account connections, then make controlled admin adjustments. Sensitive changes are confirmed and recorded server-side.</p>
+        <div class="form-grid">
+          <div class="field full"><label>Search Twitch username / email</label><input id="userSearch" placeholder="adhemswag"></div>
+        </div>
+        <div class="actions"><button class="btn primary" id="searchUsers">SEARCH USERS</button><button class="btn" id="clearUsers">CLEAR</button></div>
+        <div id="userStatus" class="notice" style="display:none"></div>
+        <div class="table-wrap"><table><thead><tr><th>Twitch</th><th>FNC</th><th>XP</th><th>Level</th><th>Watch</th><th>Profile</th><th>Status</th><th>Created</th></tr></thead><tbody id="userList"><tr><td colspan="8">Search to load viewers.</td></tr></tbody></table></div>
+      </div>
+      <div class="section" id="userDetail" style="display:none">
+        <h2>User Details</h2>
+        <div id="userDetailBody"></div>
+        <div class="actions">
+          <button class="btn" id="addUserFnc">+ FNC</button>
+          <button class="btn" id="removeUserFnc">− FNC</button>
+          <button class="btn" id="addUserXp">+ XP</button>
+          <button class="btn" id="removeUserXp">− XP</button>
+          <button class="btn" id="changeUserLevel">CHANGE LEVEL</button>
+          <button class="btn danger" id="toggleUserBlock">BLOCK ACCOUNT</button>
+        </div>
       </div>
     </section>
 
@@ -230,8 +247,125 @@ async function verifyAdmin() {
   await loadRewards();
   await loadGiveaways();
   await loadAdminLogs();
+  await loadUsers();
   return true;
 }
+
+let selectedAdminUser = null;
+
+function showUserStatus(message, ok=false){
+  const el=document.getElementById('userStatus');
+  if(!el)return;
+  el.style.display='block';
+  el.textContent=message;
+  el.style.borderLeftColor=ok?'var(--ok)':'var(--danger)';
+}
+
+function renderUserDetail(user){
+  selectedAdminUser=user;
+  const detail=document.getElementById('userDetail');
+  const body=document.getElementById('userDetailBody');
+  if(!detail||!body)return;
+  detail.style.display='block';
+  body.innerHTML=
+    '<div class="form-grid">'+
+    '<div class="field"><label>Twitch</label><input value="'+escapeAttr(user.twitch_username||'—')+'" disabled></div>'+
+    '<div class="field"><label>Email</label><input value="'+escapeAttr(user.email||'—')+'" disabled></div>'+
+    '<div class="field"><label>FNC</label><input value="'+Number(user.fnc_points||0).toLocaleString()+'" disabled></div>'+
+    '<div class="field"><label>Total FNC earned</label><input value="'+Number(user.total_fnc_earned||0).toLocaleString()+'" disabled></div>'+
+    '<div class="field"><label>XP</label><input value="'+Number(user.xp||0).toLocaleString()+'" disabled></div>'+
+    '<div class="field"><label>Level</label><input value="'+Number(user.level||1)+'" disabled></div>'+
+    '<div class="field"><label>Watch time</label><input value="'+Number(user.total_watch_minutes||0).toLocaleString()+' min" disabled></div>'+
+    '<div class="field"><label>Profile</label><input value="'+(user.profile_complete?'COMPLETE':'INCOMPLETE')+'" disabled></div>'+
+    '<div class="field"><label>Steam</label><input value="'+escapeAttr(user.steam_id||'Not connected')+'" disabled></div>'+
+    '<div class="field"><label>Trade link</label><input value="'+escapeAttr(user.steam_trade_url||'Not set')+'" disabled></div>'+
+    '<div class="field"><label>Discord</label><input value="'+escapeAttr(user.discord_username||'Not set')+'" disabled></div>'+
+    '<div class="field"><label>Created</label><input value="'+new Date(user.created_at).toLocaleString()+'" disabled></div>'+
+    '</div>';
+  const block=document.getElementById('toggleUserBlock');
+  if(block)block.textContent=user.is_blocked?'UNBLOCK ACCOUNT':'BLOCK ACCOUNT';
+}
+
+async function loadUsers(search=''){
+  const tbody=document.getElementById('userList');
+  if(!tbody||!adminReady)return;
+  let query=supabase.from('users').select('id,twitch_username,email,fnc_points,total_fnc_earned,xp,level,total_watch_minutes,profile_complete,is_blocked,steam_id,steam_trade_url,discord_username,created_at').order('created_at',{ascending:false}).limit(100);
+  if(search.trim()) query=query.or('twitch_username.ilike.%'+search.trim()+'%,email.ilike.%'+search.trim()+'%');
+  const {data,error}=await query;
+  if(error){tbody.innerHTML='<tr><td colspan="8">Unable to load viewers: '+escapeHtml(error.message)+'</td></tr>';return;}
+  if(!data?.length){tbody.innerHTML='<tr><td colspan="8">No viewers found.</td></tr>';return;}
+  tbody.innerHTML=data.map(u=>
+    '<tr data-user-id="'+u.id+'" style="cursor:pointer">'+
+    '<td>'+escapeHtml(u.twitch_username||'—')+'</td>'+
+    '<td>'+Number(u.fnc_points||0).toLocaleString()+'</td>'+
+    '<td>'+Number(u.xp||0).toLocaleString()+'</td>'+
+    '<td>'+Number(u.level||1)+'</td>'+
+    '<td>'+Number(u.total_watch_minutes||0).toLocaleString()+' min</td>'+
+    '<td>'+(u.profile_complete?'YES':'NO')+'</td>'+
+    '<td>'+(u.is_blocked?'<span class="lock">BLOCKED</span>':'ACTIVE')+'</td>'+
+    '<td>'+new Date(u.created_at).toLocaleDateString()+'</td></tr>'
+  ).join('');
+  tbody.querySelectorAll('[data-user-id]').forEach(row=>row.addEventListener('click',()=>{
+    const user=data.find(u=>u.id===row.dataset.userId);
+    if(user)renderUserDetail(user);
+  }));
+}
+
+async function adjustSelectedUser({fncDelta=0,xpDelta=0,level=null,blocked=null}={}){
+  if(!adminReady||!selectedAdminUser)return;
+  const parts=[];
+  if(fncDelta)parts.push((fncDelta>0?'+':'')+fncDelta+' FNC');
+  if(xpDelta)parts.push((xpDelta>0?'+':'')+xpDelta+' XP');
+  if(level!==null)parts.push('Level '+level);
+  if(blocked!==null)parts.push(blocked?'BLOCK':'UNBLOCK');
+  if(!parts.length)return;
+  if(!confirm('Confirm: '+parts.join(', ')+' for '+(selectedAdminUser.twitch_username||'this user')+'?'))return;
+  const {data,error}=await supabase.rpc('admin_adjust_user',{
+    p_user_id:selectedAdminUser.id,
+    p_fnc_delta:fncDelta,
+    p_xp_delta:xpDelta,
+    p_level:level,
+    p_blocked:blocked
+  });
+  if(error){showUserStatus('Action failed: '+error.message);return;}
+  renderUserDetail(data);
+  showUserStatus('User updated and admin action logged.',true);
+  await loadUsers(document.getElementById('userSearch')?.value||'');
+  await loadAdminLogs();
+}
+
+document.getElementById('searchUsers')?.addEventListener('click',()=>loadUsers(document.getElementById('userSearch')?.value||''));
+document.getElementById('userSearch')?.addEventListener('keydown',e=>{if(e.key==='Enter')loadUsers(e.target.value)});
+document.getElementById('clearUsers')?.addEventListener('click',()=>{
+  document.getElementById('userSearch').value='';
+  document.getElementById('userDetail').style.display='none';
+  selectedAdminUser=null;
+  document.getElementById('userStatus').style.display='none';
+  loadUsers('');
+});
+document.getElementById('addUserFnc')?.addEventListener('click',()=>{
+  const amount=Number(prompt('FNC to add:','100'));
+  if(Number.isFinite(amount)&&amount>0)adjustSelectedUser({fncDelta:Math.round(amount)});
+});
+document.getElementById('removeUserFnc')?.addEventListener('click',()=>{
+  const amount=Number(prompt('FNC to remove:','100'));
+  if(Number.isFinite(amount)&&amount>0)adjustSelectedUser({fncDelta:-Math.round(amount)});
+});
+document.getElementById('addUserXp')?.addEventListener('click',()=>{
+  const amount=Number(prompt('XP to add:','100'));
+  if(Number.isFinite(amount)&&amount>0)adjustSelectedUser({xpDelta:Math.round(amount)});
+});
+document.getElementById('removeUserXp')?.addEventListener('click',()=>{
+  const amount=Number(prompt('XP to remove:','100'));
+  if(Number.isFinite(amount)&&amount>0)adjustSelectedUser({xpDelta:-Math.round(amount)});
+});
+document.getElementById('changeUserLevel')?.addEventListener('click',()=>{
+  const level=Number(prompt('New level: String',selectedAdminUser?.level||1));
+  if(Number.isInteger(level)&&level>=1)adjustSelectedUser({level});
+});
+document.getElementById('toggleUserBlock')?.addEventListener('click',()=>{
+  if(selectedAdminUser)adjustSelectedUser({blocked:!selectedAdminUser.is_blocked});
+});
 
 async function loadRewards() {
   const tbody = document.getElementById('rewardList');
