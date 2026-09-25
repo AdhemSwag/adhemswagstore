@@ -64,7 +64,7 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
       </div>
     </div>
 
-    <div class="security" id="adminSecurity"><strong>SECURITY:</strong> checking Twitch admin access… <button class="btn primary" id="adminLogin" style="margin-left:10px;padding:7px 12px">LOGIN WITH TWITCH</button></div>
+    <div class="security" id="adminSecurity"><strong>SECURITY:</strong> checking Twitch admin access… <button class="btn primary" id="adminLogin" type="button" onclick="window.loginAdmin && window.loginAdmin(event)" style="margin-left:10px;padding:7px 12px">LOGIN WITH TWITCH</button></div>
 
     <section id="dashboard" class="panel active">
       <div class="cards">
@@ -223,22 +223,28 @@ function setSecurity(message, ok=false, showLogin=false) {
 // Bind the initial login button immediately, before the first security check finishes.
 document.getElementById('adminLogin')?.addEventListener('click', loginAdmin);
 
-async function loginAdmin() {
+async function loginAdmin(event) {
   try {
+    if(event) event.preventDefault();
+    const btn = document.getElementById('adminLogin');
+    if(btn) { btn.disabled = true; btn.textContent = 'OPENING TWITCH…'; }
     setSecurity('Opening Twitch login…', false, false);
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'twitch',
       options: {
         redirectTo: window.location.origin + '/admin/',
+        skipBrowserRedirect: true,
         queryParams: { force_verify: 'true' }
       }
     });
     if(error) throw error;
-    if(data?.url) window.location.assign(data.url);
+    if(!data?.url) throw new Error('Supabase did not return the Twitch authorization URL.');
+    window.location.assign(data.url);
   } catch(error) {
     setSecurity('Twitch login failed: '+escapeHtml(error?.message||'Unknown error'), false, true);
   }
 }
+window.loginAdmin = loginAdmin;
 
 function setControls(enabled) {
   adminReady = enabled;
