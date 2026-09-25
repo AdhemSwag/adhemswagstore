@@ -87,6 +87,50 @@
     return loginWithProvider('kick');
   }
 
+  async function linkProvider(provider) {
+    try {
+      const { data: sessionData, error: sessionError } = await client.auth.getSession();
+      if (sessionError || !sessionData?.session?.user) {
+        setStatus('Connect Twitch or Kick first.');
+        return false;
+      }
+
+      const label = provider === 'kick' ? 'Kick' : 'Twitch';
+      const supabaseProvider = provider === 'kick' ? 'custom:kick' : 'twitch';
+      const { data, error } = await client.auth.linkIdentity({
+        provider: supabaseProvider,
+        options: {
+          redirectTo: getOAuthRedirect(),
+          skipBrowserRedirect: true
+        }
+      });
+
+      if (error) {
+        console.error('[AdhemSwag] ' + label + ' link error:', error);
+        setStatus(label + ' link error: ' + error.message);
+        return false;
+      }
+      if (!data?.url) {
+        setStatus(label + ' did not provide a connection link.');
+        return false;
+      }
+      window.location.assign(data.url);
+      return true;
+    } catch (error) {
+      console.error('[AdhemSwag] ' + provider + ' link exception:', error);
+      setStatus('Unable to connect ' + (provider === 'kick' ? 'Kick' : 'Twitch') + '.');
+      return false;
+    }
+  }
+
+  async function linkKick() {
+    return linkProvider('kick');
+  }
+
+  async function linkTwitch() {
+    return linkProvider('twitch');
+  }
+
   async function ensureProfile() {
     const { data: sessionData, error: sessionError } = await client.auth.getSession();
     if (sessionError || !sessionData?.session?.user) return null;
@@ -300,16 +344,22 @@
 
       const user = data.session.user;
       const meta = user.user_metadata || {};
+      const kickIdentity = user.identities?.find(i => i.provider === 'custom:kick' || i.provider === 'kick') || null;
+      const twitchIdentity = user.identities?.find(i => i.provider === 'twitch') || null;
+      const kickData = kickIdentity?.identity_data || {};
+      const twitchData = twitchIdentity?.identity_data || {};
 
       const viewer = {
         authId: user.id,
-        provider: user.app_metadata?.provider || user.identities?.find(i => i.provider === 'custom:kick' || i.provider === 'kick')?.provider || user.identities?.[0]?.provider || 'twitch',
-        twitchUserId: user.identities?.find(i => i.provider === 'twitch')?.provider_id || null,
-        twitchUsername: user.identities?.find(i => i.provider === 'twitch')?.identity_data?.name || user.identities?.find(i => i.provider === 'twitch')?.identity_data?.preferred_username || null,
-        kickUserId: user.identities?.find(i => i.provider === 'custom:kick' || i.provider === 'kick')?.provider_id || null,
-        kickUsername: user.identities?.find(i => i.provider === 'custom:kick' || i.provider === 'kick')?.identity_data?.username || user.identities?.find(i => i.provider === 'custom:kick' || i.provider === 'kick')?.identity_data?.name || null,
+        provider: user.app_metadata?.provider || kickIdentity?.provider || twitchIdentity?.provider || 'twitch',
+        twitchUserId: twitchIdentity?.provider_id || null,
+        twitchUsername: twitchData.name || twitchData.preferred_username || null,
+        kickUserId: kickIdentity?.provider_id || null,
+        kickUsername: kickData.username || kickData.preferred_username || kickData.name || kickData.nickname || null,
         email: user.email || null,
-        avatar: meta.avatar_url || meta.picture || null,
+        avatar: meta.avatar_url || meta.picture || meta.profile_picture || meta.profile_image_url
+          || kickData.avatar_url || kickData.picture || kickData.profile_picture || kickData.profile_picture_url || kickData.profile_image_url
+          || twitchData.avatar_url || twitchData.picture || null,
         profile: await ensureProfile()
       };
 
@@ -334,6 +384,9 @@
     client,
     loginWithTwitch,
     loginWithKick,
+    linkProvider,
+    linkKick,
+    linkTwitch,
     loginWithProvider,
     logout,
     ensureProfile,
