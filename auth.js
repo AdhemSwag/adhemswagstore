@@ -297,6 +297,7 @@
 
   let watchHeartbeatTimer = null;
   let watchHeartbeatInFlight = false;
+  let watchVisibilityBound = false;
 
   async function sendWatchHeartbeat() {
     if (document.visibilityState !== 'visible' || watchHeartbeatInFlight) return;
@@ -326,7 +327,10 @@
     if (!viewer?.authId) return;
     sendWatchHeartbeat();
     watchHeartbeatTimer = setInterval(sendWatchHeartbeat, 60000);
-    document.addEventListener('visibilitychange', handleWatchVisibility, { passive: true });
+    if (!watchVisibilityBound) {
+      document.addEventListener('visibilitychange', handleWatchVisibility, { passive: true });
+      watchVisibilityBound = true;
+    }
   }
 
   function handleWatchVisibility() {
