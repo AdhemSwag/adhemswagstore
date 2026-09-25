@@ -100,7 +100,7 @@
 
     let { data: profile, error } = await client
       .from('users')
-      .select('id,twitch_user_id,twitch_username,kick_user_id,kick_username,kick_connected,email,email_verified,steam_id,steam_profile_url,steam_trade_url,profile_complete,fnc_points,xp,level,total_watch_minutes,monthly_xp,streak,is_blocked,total_fnc_earned')
+      .select('id,twitch_user_id,twitch_username,kick_user_id,kick_username,kick_connected,email,email_verified,steam_id,steam_profile_url,steam_trade_url,discord_username,profile_complete,fnc_points,xp,level,total_watch_minutes,monthly_xp,streak,is_blocked,total_fnc_earned')
       .eq('id', authUser.id)
       .maybeSingle();
 
