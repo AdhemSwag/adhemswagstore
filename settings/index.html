@@ -285,6 +285,7 @@ main.settings-main{max-width:1120px;margin:0 auto;padding:54px 40px 90px}
         <div class="settings-field full"><label for="profileEmail">Email</label><input id="profileEmail" type="email" autocomplete="email" placeholder="your@email.com" required></div>
         <div class="settings-field"><label for="steamProfileUrl">Steam Profile URL</label><input id="steamProfileUrl" type="url" placeholder="https://steamcommunity.com/id/…" required></div>
         <div class="settings-field full"><label for="steamTradeUrl">Steam Trade URL</label><input id="steamTradeUrl" type="url" placeholder="https://steamcommunity.com/tradeoffer/new/…" required></div>
+        <div class="settings-field full"><label for="discordUsername">Discord <span class="field-optional">OPTIONAL</span></label><input id="discordUsername" type="text" maxlength="100" autocomplete="off" placeholder="username or Discord ID"></div>
         <div class="settings-actions">
           <span class="settings-save-status" id="profileSaveStatus">Connect Twitch first.</span>
           <button class="settings-save" id="saveProfileBtn" type="submit">SAVE CHANGES</button>
@@ -306,6 +307,7 @@ main.settings-main{max-width:1120px;margin:0 auto;padding:54px 40px 90px}
     document.getElementById('profileEmail').value=p.email||'';
     document.getElementById('steamProfileUrl').value=p.steam_profile_url||'';
     document.getElementById('steamTradeUrl').value=p.steam_trade_url||'';
+    document.getElementById('discordUsername').value=p.discord_username||'';
     const twitch=p.twitch_username?'Connected as '+p.twitch_username:'Not connected';
     document.getElementById('settingsTwitchStatus').textContent=twitch;
     document.getElementById('settingsAccountName').textContent=p.twitch_username||'Twitch account';
@@ -349,7 +351,8 @@ main.settings-main{max-width:1120px;margin:0 auto;padding:54px 40px 90px}
     const payload={
       email:document.getElementById('profileEmail').value.trim(),
       steam_profile_url:document.getElementById('steamProfileUrl').value.trim(),
-      steam_trade_url:document.getElementById('steamTradeUrl').value.trim()
+      steam_trade_url:document.getElementById('steamTradeUrl').value.trim(),
+      discord_username:document.getElementById('discordUsername').value.trim()
     };
     const {error}=await window.AdhemSwagAuth.client.from('users').update(payload).eq('id',session.user.id);
     if(error){status.textContent='SAVE ERROR: '+error.message;return;}
