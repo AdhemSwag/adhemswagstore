@@ -226,6 +226,8 @@ async function verifyAdmin() {
   setControls(true);
   setSecurity('Twitch admin verified. Reward image upload and reward management are enabled.', true);
   await loadRewards();
+  await loadGiveaways();
+  await loadAdminLogs();
   return true;
 }
 
@@ -293,6 +295,83 @@ document.getElementById('saveReward')?.addEventListener('click', async () => {
   } catch(error) {
     status.style.display='block';status.textContent='Save failed: '+(error?.message||'Unknown error');
   }
+});
+
+
+async function writeAdminLog(action,targetType,targetId,details={}){
+  if(!adminReady)return;
+  const {data:{user}}=await supabase.auth.getUser();
+  await supabase.from('admin_logs').insert({admin_user_id:user?.id||null,action,target_type:targetType||null,target_id:targetId?String(targetId):null,details});
+}
+async function loadGiveaways(){
+  const tbody=document.getElementById('giveawayList'); if(!tbody||!adminReady)return;
+  const {data,error}=await supabase.from('giveaways').select('id,title,reward_name,status,winners_count,created_at').order('created_at',{ascending:false});
+  if(error){tbody.innerHTML='<tr><td colspan="6">Unable to load giveaways.</td></tr>';return;}
+  if(!data?.length){tbody.innerHTML='<tr><td colspan="6">No giveaways yet.</td></tr>';return;}
+  const rows=[];
+  for(const g of data){
+    const e=await supabase.from('giveaway_entries').select('id',{count:'exact',head:true}).eq('giveaway_id',g.id);
+    const w=await supabase.from('giveaway_winners').select('id',{count:'exact',head:true}).eq('giveaway_id',g.id);
+    rows.push('<tr><td>'+escapeHtml(g.title)+'</td><td>'+escapeHtml(g.reward_name)+'</td><td>'+escapeHtml(g.status.toUpperCase())+'</td><td>'+(e.count||0)+'</td><td>'+(w.count||0)+' / '+g.winners_count+'</td><td>'+
+      (g.status==='draft'?'<button class="btn" data-gw-start="'+g.id+'">START</button> ':'')+
+      (g.status==='active'?'<button class="btn primary" data-gw-draw="'+g.id+'">DRAW WINNER</button> <button class="btn danger" data-gw-cancel="'+g.id+'">CANCEL</button> ':'')+
+      '</td></tr>');
+  }
+  tbody.innerHTML=rows.join('');
+  tbody.querySelectorAll('[data-gw-start]').forEach(b=>b.onclick=()=>startGiveaway(b.dataset.gwStart));
+  tbody.querySelectorAll('[data-gw-draw]').forEach(b=>b.onclick=()=>drawGiveaway(b.dataset.gwDraw));
+  tbody.querySelectorAll('[data-gw-cancel]').forEach(b=>b.onclick=()=>cancelGiveaway(b.dataset.gwCancel));
+}
+async function startGiveaway(id){
+  const {error}=await supabase.from('giveaways').update({status:'active',starts_at:new Date().toISOString(),updated_at:new Date().toISOString()}).eq('id',id);
+  if(!error){await writeAdminLog('giveaway_started','giveaway',id);await loadGiveaways();await loadAdminLogs();}
+}
+async function cancelGiveaway(id){
+  const {error}=await supabase.from('giveaways').update({status:'cancelled',updated_at:new Date().toISOString()}).eq('id',id);
+  if(!error){await writeAdminLog('giveaway_cancelled','giveaway',id);await loadGiveaways();await loadAdminLogs();}
+}
+async function drawGiveaway(id){
+  const {data:g}=await supabase.from('giveaways').select('id,winners_count').eq('id',id).single();
+  if(!g)return;
+  const {data:entries}=await supabase.from('giveaway_entries').select('user_id').eq('giveaway_id',id);
+  if(!entries?.length){alert('No entries yet.');return;}
+  const shuffled=[...entries].sort(()=>Math.random()-0.5).slice(0,Math.min(g.winners_count,entries.length));
+  for(let i=0;i<shuffled.length;i++)await supabase.from('giveaway_winners').upsert({giveaway_id:id,user_id:shuffled[i].user_id,position:i+1,status:'pending'});
+  await supabase.from('giveaways').update({status:'ended',updated_at:new Date().toISOString()}).eq('id',id);
+  await writeAdminLog('giveaway_draw','giveaway',id,{winner_count:shuffled.length});
+  await loadGiveaways();await loadAdminLogs();
+}
+async function loadAdminLogs(){
+  const tbody=document.getElementById('adminLogList');if(!tbody||!adminReady)return;
+  const {data,error}=await supabase.from('admin_logs').select('created_at,action,target_type,target_id,details').order('created_at',{ascending:false}).limit(100);
+  if(error){tbody.innerHTML='<tr><td colspan="4">Unable to load logs.</td></tr>';return;}
+  tbody.innerHTML=(data||[]).map(l=>'<tr><td>'+new Date(l.created_at).toLocaleString()+'</td><td>'+escapeHtml(l.action)+'</td><td>'+escapeHtml((l.target_type||'')+' '+(l.target_id||''))+'</td><td>'+escapeHtml(JSON.stringify(l.details||{}))+'</td></tr>').join('')||'<tr><td colspan="4">No logs yet.</td></tr>';
+}
+document.getElementById('createGiveaway')?.addEventListener('click',async()=>{
+  if(!adminReady)return;
+  const title=document.getElementById('gwTitle').value.trim(),reward=document.getElementById('gwReward').value.trim(),status=document.getElementById('gwStatus');
+  if(!title||!reward){status.style.display='block';status.textContent='Title and reward are required.';return;}
+  const {data:{user}}=await supabase.auth.getUser();
+  const payload={
+    title,reward_name:reward,
+    description:document.getElementById('gwDescription').value.trim()||null,
+    winners_count:Number(document.getElementById('gwWinners').value||1),
+    min_level:Number(document.getElementById('gwMinLevel').value||1),
+    min_fnc:Number(document.getElementById('gwMinFnc').value||0),
+    entries_per_user:Number(document.getElementById('gwEntries').value||1),
+    starts_at:document.getElementById('gwStart').value?new Date(document.getElementById('gwStart').value).toISOString():null,
+    ends_at:document.getElementById('gwEnd').value?new Date(document.getElementById('gwEnd').value).toISOString():null,
+    require_profile_complete:document.getElementById('gwProfile').value==='true',
+    require_subscriber:document.getElementById('gwSub').value==='true',
+    require_follower:document.getElementById('gwFollow').value==='true',
+    created_by:user.id
+  };
+  const {data,error}=await supabase.from('giveaways').insert(payload).select().single();
+  status.style.display='block';status.textContent=error?'Create failed: '+error.message:'Giveaway created as DRAFT.';
+  if(data){await writeAdminLog('giveaway_created','giveaway',data.id,{title,reward});await loadGiveaways();await loadAdminLogs();}
+});
+document.getElementById('clearGiveaway')?.addEventListener('click',()=>{
+  document.querySelectorAll('#giveaways input,#giveaways textarea').forEach(el=>el.value='');
 });
 
 document.querySelectorAll('.nav-btn').forEach(btn=>{
