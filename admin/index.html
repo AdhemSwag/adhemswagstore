@@ -247,26 +247,49 @@ function setControls(enabled) {
 }
 
 async function verifyAdmin() {
-  const { data, error } = await supabase.auth.getUser();
-  if (error || !data?.user) {
+  setSecurity('checking Twitch admin access…');
+  try {
+    const result = await Promise.race([
+      supabase.auth.getUser(),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('Authentication check timed out.')), 8000))
+    ]);
+    const { data, error } = result;
+    if (error || !data?.user) {
+      setControls(false);
+      setSecurity('Connect with your Twitch account to access the Admin Panel.', false, true);
+      return false;
+    }
+
+    const { data: admin, error: adminError } = await supabase
+      .from('admin_users')
+      .select('user_id')
+      .eq('user_id', data.user.id)
+      .maybeSingle();
+
+    if (adminError) {
+      setControls(false);
+      setSecurity('Admin check failed: '+escapeHtml(adminError.message), false, true);
+      return false;
+    }
+    if (!admin) {
+      setControls(false);
+      setSecurity('Admin access is not enabled for this account.', false, true);
+      return false;
+    }
+
+    setControls(true);
+    setSecurity('Twitch admin verified. Reward image upload and reward management are enabled.', true);
+    await loadRewards();
+    await loadGiveaways();
+    await loadAdminLogs();
+    await loadUsers();
+    await loadFncSettings();
+    return true;
+  } catch (error) {
     setControls(false);
-    setSecurity('Connect with your Twitch account to access the Admin Panel.', false, true);
+    setSecurity('Security check failed: '+escapeHtml(error?.message||'Unknown error'), false, true);
     return false;
   }
-  const { data: admin, error: adminError } = await supabase.from('admin_users').select('user_id').eq('user_id', data.user.id).maybeSingle();
-  if (adminError || !admin) {
-    setControls(false);
-    setSecurity('Admin access is not enabled for this account.');
-    return false;
-  }
-  setControls(true);
-  setSecurity('Twitch admin verified. Reward image upload and reward management are enabled.', true);
-  await loadRewards();
-  await loadGiveaways();
-  await loadAdminLogs();
-  await loadUsers();
-  await loadFncSettings();
-  return true;
 }
 
 let selectedAdminUser = null;
