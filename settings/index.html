@@ -286,7 +286,7 @@ main.settings-main{max-width:1120px;margin:0 auto;padding:54px 40px 90px}
         <div class="settings-field full"><label for="profileEmail">Email</label><input id="profileEmail" type="email" autocomplete="email" placeholder="your@email.com" required></div>
         <div class="settings-field"><label for="steamProfileUrl">Steam Profile URL</label><input id="steamProfileUrl" type="url" placeholder="https://steamcommunity.com/id/…" required></div>
         <div class="settings-field full"><label for="steamTradeUrl">Steam Trade URL</label><input id="steamTradeUrl" type="url" placeholder="https://steamcommunity.com/tradeoffer/new/…" required></div>
-        <div class="settings-field full"><label for="discordUsername">Discord <span class="field-optional">REQUIRED</span></label><input id="discordUsername" type="text" maxlength="100" autocomplete="off" placeholder="username or Discord ID"></div>
+        <div class="settings-field full"><label for="discordUsername">Discord <span class="field-optional">REQUIRED</span></label><input id="discordUsername" type="text" maxlength="100" required autocomplete="off" placeholder="username or Discord ID"></div>
         <div class="settings-actions">
           <span class="settings-save-status" id="profileSaveStatus">Connect Twitch or Kick first.</span>
           <button class="settings-save" id="saveProfileBtn" type="submit">SAVE CHANGES</button>
@@ -350,6 +350,20 @@ main.settings-main{max-width:1120px;margin:0 auto;padding:54px 40px 90px}
     form.querySelectorAll('input,button').forEach(function(x){x.disabled=false;});
     fill(e.detail.profile);
   });
+  const connectKickBtn=document.getElementById('connectKickBtn');
+  if(connectKickBtn){
+    connectKickBtn.addEventListener('click',async function(){
+      connectKickBtn.disabled=true;
+      status.textContent='CONNECTING KICK…';
+      if(window.AdhemSwagAuth?.linkKick){
+        await window.AdhemSwagAuth.linkKick();
+      }else{
+        status.textContent='Authentication service unavailable.';
+      }
+      connectKickBtn.disabled=false;
+    });
+  }
+
   form.addEventListener('submit',async function(e){
     e.preventDefault();
     const session=(await window.AdhemSwagAuth.client.auth.getSession()).data.session;
