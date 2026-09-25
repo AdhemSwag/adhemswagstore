@@ -52,7 +52,7 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
     <button class="nav-btn" data-panel="viewers">Viewers</button>
     <button class="nav-btn" data-panel="transactions">Transactions</button>
     <button class="nav-btn" data-panel="system">System</button>
-    <button class="nav-btn" data-panel="fnc-settings">FNC Points</button>
+    <button class="nav-btn" data-panel="fnc-settings">FNC Points</button><button class="nav-btn" data-panel="leaderboard">Leaderboard</button><button class="nav-btn" data-panel="media">Media</button><button class="nav-btn" data-panel="admin-access">Admin Access</button>
   </aside>
 
   <main class="main">
@@ -68,10 +68,10 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
 
     <section id="dashboard" class="panel active">
       <div class="cards">
-        <div class="card"><small>Total Viewers</small><div class="metric">—</div></div>
-        <div class="card"><small>Active Rewards</small><div class="metric">—</div></div>
-        <div class="card"><small>Pending Redemptions</small><div class="metric">—</div></div>
-        <div class="card"><small>FNC System</small><div class="metric">STOPPED</div></div>
+        <div class="card"><small>Total Users</small><div class="metric" id="metricUsers">—</div></div>
+        <div class="card"><small>Active Rewards</small><div class="metric" id="metricRewards">—</div></div>
+        <div class="card"><small>Pending Redemptions</small><div class="metric" id="metricRedemptions">—</div></div>
+        <div class="card"><small>Total FNC</small><div class="metric" id="metricFnc">—</div></div>
       </div>
       <div class="section">
         <h2>Admin workflow</h2>
@@ -195,6 +195,9 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
 <div class="section"><h2>Giveaway History</h2><div class="table-wrap"><table><thead><tr><th>Giveaway</th><th>Reward</th><th>Status</th><th>Entries</th><th>Winners</th><th>Actions</th></tr></thead><tbody id="giveawayList"><tr><td colspan="6">Loading…</td></tr></tbody></table></div></div>
 </section>
 <section id="logs" class="panel"><div class="section"><h2>Admin Logs</h2><p>Every important admin action is recorded for traceability.</p><div class="table-wrap"><table><thead><tr><th>Date</th><th>Action</th><th>Target</th><th>Details</th></tr></thead><tbody id="adminLogList"><tr><td colspan="4">Loading…</td></tr></tbody></table></div></div></section>
+<section id="leaderboard" class="panel"><div class="section"><h2>Leaderboard</h2><p>Admin preview of the current FNC/XP ranking. The public leaderboard remains unchanged.</p><div class="actions"><button class="btn primary" id="loadLeaderboard">LOAD LEADERBOARD</button></div><div class="table-wrap"><table><thead><tr><th>#</th><th>Twitch</th><th>FNC</th><th>XP</th><th>Level</th><th>Watch Minutes</th></tr></thead><tbody id="leaderboardList"><tr><td colspan="6">Not loaded.</td></tr></tbody></table></div></div></section>
+<section id="media" class="panel"><div class="section"><h2>Media Library</h2><p>Images stored in the reward-images bucket.</p><div class="actions"><button class="btn primary" id="loadMedia">REFRESH MEDIA</button></div><div id="mediaStatus" class="notice" style="display:none"></div><div class="table-wrap"><table><thead><tr><th>File</th><th>Size</th><th>Updated</th><th>Action</th></tr></thead><tbody id="mediaList"><tr><td colspan="4">Not loaded.</td></tr></tbody></table></div></div></section>
+<section id="admin-access" class="panel"><div class="section"><h2>Admin Access</h2><p>Find an existing user and grant Admin Panel access.</p><div class="form-grid"><div class="field full"><label>Twitch username</label><input id="adminUserSearch" placeholder="adhemswag"></div></div><div class="actions"><button class="btn primary" id="findAdminUser">FIND USER</button></div><div id="adminUserResult" class="notice" style="display:none"></div></div><div class="section"><h2>Current Admins</h2><div class="table-wrap"><table><thead><tr><th>User ID</th><th>Created</th><th>Action</th></tr></thead><tbody id="adminAccessList"><tr><td colspan="3">Loading…</td></tr></tbody></table></div></div></section>
 <section id="system" class="panel">
       <div class="section">
         <h2>System Controls</h2>
