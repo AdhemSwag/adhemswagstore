@@ -64,7 +64,7 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
       </div>
     </div>
 
-    <div class="security" id="adminSecurity"><strong>SECURITY:</strong> checking Twitch admin access… <button class="btn primary" id="adminLogin" type="button" onclick="window.loginAdmin && window.loginAdmin(event)" style="margin-left:10px;padding:7px 12px">LOGIN WITH TWITCH</button></div>
+    <div class="security" id="adminSecurity"><strong>SECURITY:</strong> checking Twitch admin access… <button class="btn primary" id="adminLogin" type="button" onclick="window.location.href='https://lpmocfdfpebcaseffugg.supabase.co/auth/v1/authorize?provider=twitch&redirect_to='+encodeURIComponent(window.location.origin+'/admin/')" style="margin-left:10px;padding:7px 12px">LOGIN WITH TWITCH</button></div>
 
     <section id="dashboard" class="panel active">
       <div class="cards">
@@ -215,7 +215,7 @@ let selectedGiveawayImage = null;
 
 function setSecurity(message, ok=false, showLogin=false) {
   const el = document.getElementById('adminSecurity');
-  el.innerHTML = '<strong>SECURITY:</strong> ' + message + ' <button class="btn" id="adminLogin" style="display:'+(showLogin?'inline-block':'none')+';margin-left:10px;padding:7px 12px">LOGIN WITH TWITCH</button>';
+  el.innerHTML = '<strong>SECURITY:</strong> ' + message + ' <button class="btn" id="adminLogin" type="button" onclick="window.location.href=\'https://lpmocfdfpebcaseffugg.supabase.co/auth/v1/authorize?provider=twitch&redirect_to=\'+encodeURIComponent(window.location.origin+\'/admin/\')" style="display:'+(showLogin?'inline-block':'none')+';margin-left:10px;padding:7px 12px">LOGIN WITH TWITCH</button>';
   el.style.borderColor = ok ? 'rgba(60,231,165,.25)' : 'rgba(255,77,95,.25)';
   if(showLogin) document.getElementById('adminLogin')?.addEventListener('click', loginAdmin);
 }
