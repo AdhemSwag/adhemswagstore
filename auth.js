@@ -41,94 +41,44 @@
     return PRODUCTION_REDIRECT;
   }
 
-  async function loginWithProvider(provider) {
+  async function loginWithProvider(provider = 'twitch') {
+    if (provider !== 'twitch') { setStatus('Only Twitch sign-in is available.'); return false; }
     try {
-      const label = provider === 'kick' ? 'Kick' : 'Twitch';
-      const supabaseProvider = provider === 'kick' ? 'custom:kick' : 'twitch';
-      setStatus('Connecting to ' + label + '...');
-
+      setStatus('Connecting to Twitch...');
       const { data, error } = await client.auth.signInWithOAuth({
-        provider: supabaseProvider,
-        options: {
-          redirectTo: getOAuthRedirect(),
-          skipBrowserRedirect: true,
-          queryParams: provider === 'twitch'
-            ? { force_verify: 'true' }
-            : undefined
-        }
+        provider: 'twitch',
+        options: { redirectTo: getOAuthRedirect(), skipBrowserRedirect: true, queryParams: { force_verify: 'true' } }
       });
-
-      if (error) {
-        console.error('[AdhemSwag] ' + label + ' OAuth error:', error);
-        setStatus(label + ' error: ' + error.message);
-        return false;
-      }
-
-      if (!data || !data.url) {
-        console.error('[AdhemSwag] ' + label + ' OAuth returned no URL:', data);
-        setStatus(label + ' did not provide a login link.');
-        return false;
-      }
-
+      if (error) { console.error('[AdhemSwag] Twitch OAuth error:', error); setStatus('Twitch error: ' + error.message); return false; }
+      if (!data?.url) { console.error('[AdhemSwag] Twitch OAuth returned no URL:', data); setStatus('Twitch did not provide a login link.'); return false; }
       window.location.assign(data.url);
       return true;
     } catch (error) {
-      console.error('[AdhemSwag] ' + provider + ' login exception:', error);
-      setStatus('Unable to connect to ' + (provider === 'kick' ? 'Kick' : 'Twitch') + '.');
+      console.error('[AdhemSwag] Twitch login exception:', error);
+      setStatus('Unable to connect to Twitch.');
       return false;
     }
   }
 
-  async function loginWithTwitch() {
-    return loginWithProvider('twitch');
-  }
-
-  async function loginWithKick() {
-    return loginWithProvider('kick');
-  }
-
-  async function linkProvider(provider) {
-    try {
-      const { data: sessionData, error: sessionError } = await client.auth.getSession();
-      if (sessionError || !sessionData?.session?.user) {
-        setStatus('Connect Twitch or Kick first.');
-        return false;
-      }
-
-      const label = provider === 'kick' ? 'Kick' : 'Twitch';
-      const supabaseProvider = provider === 'kick' ? 'custom:kick' : 'twitch';
-      const { data, error } = await client.auth.linkIdentity({
-        provider: supabaseProvider,
-        options: {
-          redirectTo: getOAuthRedirect(),
-          skipBrowserRedirect: true
-        }
-      });
-
-      if (error) {
-        console.error('[AdhemSwag] ' + label + ' link error:', error);
-        setStatus(label + ' link error: ' + error.message);
-        return false;
-      }
-      if (!data?.url) {
-        setStatus(label + ' did not provide a connection link.');
-        return false;
-      }
-      window.location.assign(data.url);
-      return true;
-    } catch (error) {
-      console.error('[AdhemSwag] ' + provider + ' link exception:', error);
-      setStatus('Unable to connect ' + (provider === 'kick' ? 'Kick' : 'Twitch') + '.');
-      return false;
-    }
-  }
-
-  async function linkKick() {
-    return linkProvider('kick');
-  }
+  async function loginWithTwitch() { return loginWithProvider('twitch'); }
 
   async function linkTwitch() {
-    return linkProvider('twitch');
+    try {
+      const { data: sessionData, error: sessionError } = await client.auth.getSession();
+      if (sessionError || !sessionData?.session?.user) { setStatus('Connect Twitch first.'); return false; }
+      const { data, error } = await client.auth.linkIdentity({
+        provider: 'twitch',
+        options: { redirectTo: getOAuthRedirect(), skipBrowserRedirect: true }
+      });
+      if (error) { console.error('[AdhemSwag] Twitch link error:', error); setStatus('Twitch link error: ' + error.message); return false; }
+      if (!data?.url) { setStatus('Twitch did not provide a connection link.'); return false; }
+      window.location.assign(data.url);
+      return true;
+    } catch (error) {
+      console.error('[AdhemSwag] Twitch link exception:', error);
+      setStatus('Unable to connect Twitch.');
+      return false;
+    }
   }
 
   async function ensureProfile() {
@@ -137,19 +87,14 @@
 
     const authUser = sessionData.session.user;
     const meta = authUser.user_metadata || {};
-    const appMeta = authUser.app_metadata || {};
-    const identity = authUser.identities?.find(i => i.provider === 'custom:kick' || i.provider === 'kick')
-      || authUser.identities?.[0]
-      || null;
-    const provider = appMeta.provider || identity?.provider || 'twitch';
+    const identity = authUser.identities?.find(i => i.provider === 'twitch') || authUser.identities?.[0] || null;
     const identityData = identity?.identity_data || {};
-    const isKick = provider === 'custom:kick' || provider === 'kick';
-    const externalUserId = identity?.provider_id || identityData.provider_id || meta.provider_id || meta.sub || meta.user_id || null;
-    const externalUsername = identityData.username || identityData.preferred_username || identityData.name || identityData.nickname || meta.user_name || meta.preferred_username || meta.name || meta.full_name || null;
+    const externalUserId = identity?.provider_id || identityData.provider_id || identityData.sub || meta.provider_id || meta.sub || null;
+    const externalUsername = identityData.preferred_username || identityData.name || identityData.nickname || meta.user_name || meta.preferred_username || meta.name || meta.full_name || null;
 
     let { data: profile, error } = await client
       .from('users')
-      .select('id,twitch_user_id,twitch_username,kick_user_id,kick_username,kick_connected,email,email_verified,steam_id,steam_profile_url,steam_trade_url,discord_username,profile_complete,fnc_points,xp,level,total_watch_minutes,monthly_xp,streak,is_blocked,total_fnc_earned')
+      .select('id,twitch_user_id,twitch_username,email,email_verified,steam_id,steam_profile_url,steam_trade_url,discord_username,profile_complete,fnc_points,xp,level,total_watch_minutes,monthly_xp,streak,is_blocked,total_fnc_earned')
       .eq('id', authUser.id)
       .maybeSingle();
 
@@ -161,21 +106,9 @@
     if (!profile) {
       const result = await client
         .from('users')
-        .insert(isKick
-          ? {
-              id: authUser.id,
-              kick_user_id: externalUserId,
-              kick_username: externalUsername,
-              kick_connected: true
-            }
-          : {
-              id: authUser.id,
-              twitch_user_id: externalUserId,
-              twitch_username: externalUsername
-            })
-        .select('id,twitch_user_id,twitch_username,kick_user_id,kick_username,kick_connected,email,email_verified,steam_id,steam_profile_url,steam_trade_url,discord_username,profile_complete,fnc_points,xp,level,total_watch_minutes,monthly_xp,streak,is_blocked,total_fnc_earned')
+        .insert({ id: authUser.id, twitch_user_id: externalUserId, twitch_username: externalUsername })
+        .select('id,twitch_user_id,twitch_username,email,email_verified,steam_id,steam_profile_url,steam_trade_url,discord_username,profile_complete,fnc_points,xp,level,total_watch_minutes,monthly_xp,streak,is_blocked,total_fnc_earned')
         .single();
-
       if (result.error) {
         console.error('[AdhemSwag] Profile creation error:', result.error);
         return null;
@@ -314,9 +247,7 @@
       if ('hidden' in el) el.hidden = !loggedIn;
     });
     document.querySelectorAll('[data-adhem-username], #adhemAccountName').forEach(el => {
-      el.textContent = viewer?.provider === 'custom:kick'
-        ? (viewer?.kickUsername || viewer?.twitchUsername || '')
-        : (viewer?.twitchUsername || viewer?.kickUsername || '');
+      el.textContent = viewer?.twitchUsername || '';
     });
     document.querySelectorAll('[data-adhem-avatar], #adhemAccountAvatar').forEach(el => {
       if (viewer?.avatar) {
@@ -344,25 +275,17 @@
 
       const user = data.session.user;
       const meta = user.user_metadata || {};
-      const kickIdentity = user.identities?.find(i => i.provider === 'custom:kick' || i.provider === 'kick') || null;
       const twitchIdentity = user.identities?.find(i => i.provider === 'twitch') || null;
-      const kickData = kickIdentity?.identity_data || {};
       const twitchData = twitchIdentity?.identity_data || {};
-
       const viewer = {
         authId: user.id,
-        provider: user.app_metadata?.provider || kickIdentity?.provider || twitchIdentity?.provider || 'twitch',
+        provider: 'twitch',
         twitchUserId: twitchIdentity?.provider_id || null,
-        twitchUsername: twitchData.name || twitchData.preferred_username || null,
-        kickUserId: kickIdentity?.provider_id || null,
-        kickUsername: kickData.username || kickData.preferred_username || kickData.name || kickData.nickname || null,
+        twitchUsername: twitchData.name || twitchData.preferred_username || twitchData.nickname || meta.user_name || meta.preferred_username || meta.name || null,
         email: user.email || null,
-        avatar: meta.avatar_url || meta.picture || meta.profile_picture || meta.profile_image_url
-          || kickData.avatar_url || kickData.picture || kickData.profile_picture || kickData.profile_picture_url || kickData.profile_image_url
-          || twitchData.avatar_url || twitchData.picture || null,
+        avatar: meta.avatar_url || meta.picture || meta.profile_picture || meta.profile_image_url || twitchData.avatar_url || twitchData.picture || null,
         profile: await ensureProfile()
       };
-
       updateAccountMenu(viewer);
       dispatchViewer(viewer);
       return viewer;
@@ -383,9 +306,6 @@
   window.AdhemSwagAuth = {
     client,
     loginWithTwitch,
-    loginWithKick,
-    linkProvider,
-    linkKick,
     linkTwitch,
     loginWithProvider,
     logout,
