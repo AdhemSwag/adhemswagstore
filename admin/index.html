@@ -6,6 +6,7 @@
 <title>AdhemSwag — Admin Panel</title>
 <meta name="robots" content="noindex,nofollow">
 <link rel="icon" href="/favicon.ico">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -61,7 +62,7 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
       </div>
     </div>
 
-    <div class="security"><strong>SECURITY:</strong> this panel UI is created, but privileged authentication and write actions are intentionally locked until the secure admin identity is connected to Supabase. No FNC or reward operation is executed by this page yet.</div>
+    <div class="security" id="adminSecurity"><strong>SECURITY:</strong> checking Twitch admin access…</div>
 
     <section id="dashboard" class="panel active">
       <div class="cards">
@@ -87,9 +88,11 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
           <div class="field"><label>Level required</label><input type="number" placeholder="15" disabled></div>
           <div class="field"><label>Stock</label><input type="number" placeholder="3" disabled></div>
           <div class="field full"><label>Description</label><textarea placeholder="Reward description..." disabled></textarea></div>
-          <div class="field full"><label>Reward image</label><div class="upload">UPLOAD IMAGE — secured Storage connection will be added here</div></div>
+          <div class="field full"><label>Reward image</label><input id="rewardImage" type="file" accept="image/png,image/jpeg,image/webp,image/gif" disabled><div id="rewardImageStatus" class="upload">Choose an image — JPG, PNG, WEBP or GIF, max 5 MB.</div><img id="rewardImagePreview" alt="Reward preview" style="display:none;max-width:220px;max-height:180px;margin-top:12px;border:1px solid var(--line);object-fit:contain"></div>
         </div>
-        <div class="actions"><button class="btn primary" disabled>SAVE REWARD</button><button class="btn" disabled>ACTIVATE</button></div>
+        <div class="actions"><button class="btn primary" id="saveReward" disabled>SAVE REWARD</button><button class="btn" id="clearReward" disabled>CLEAR</button></div>
+        <div id="rewardSaveStatus" class="notice" style="display:none"></div>
+        <div class="table-wrap"><table><thead><tr><th>Reward</th><th>FNC</th><th>Level</th><th>Stock</th><th>Status</th><th>Image</th></tr></thead><tbody id="rewardList"><tr><td colspan="6">Loading…</td></tr></tbody></table></div>
       </div>
     </section>
 
@@ -156,7 +159,121 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
   </main>
 </div>
 <script>
+const SUPABASE_URL = 'https://lpmocfdfpebcaseffugg.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_vNkDqYd81b2krZAisUhb2g_c_uwyvRp';
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+  auth: { autoRefreshToken: true, persistSession: true, detectSessionInUrl: true, storageKey: 'adhemswag-auth' }
+});
+const ADMIN_USER_ID = '18ca02b9-0e42-44c8-a2bb-673f8069da42';
+let adminReady = false;
+let selectedImage = null;
+
+function setSecurity(message, ok=false) {
+  const el = document.getElementById('adminSecurity');
+  el.innerHTML = '<strong>SECURITY:</strong> ' + message;
+  el.style.borderColor = ok ? 'rgba(60,231,165,.25)' : 'rgba(255,77,95,.25)';
+}
+
+function setControls(enabled) {
+  adminReady = enabled;
+  ['rewardImage','saveReward','clearReward'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.disabled=!enabled;
+  });
+}
+
+async function verifyAdmin() {
+  const { data, error } = await supabase.auth.getUser();
+  if (error || !data?.user) {
+    setControls(false);
+    setSecurity('Connect Twitch on the main site first, then return here.');
+    return false;
+  }
+  if (data.user.id !== ADMIN_USER_ID) {
+    setControls(false);
+    setSecurity('This Twitch account is not authorized for the Admin Panel.');
+    return false;
+  }
+  const { data: admin, error: adminError } = await supabase.from('admin_users').select('user_id').eq('user_id', data.user.id).maybeSingle();
+  if (adminError || !admin) {
+    setControls(false);
+    setSecurity('Admin access is not enabled for this account.');
+    return false;
+  }
+  setControls(true);
+  setSecurity('Twitch admin verified. Reward image upload and reward management are enabled.', true);
+  await loadRewards();
+  return true;
+}
+
+async function loadRewards() {
+  const tbody = document.getElementById('rewardList');
+  if (!tbody) return;
+  const { data, error } = await supabase.from('rewards').select('id,name,fnc_cost,level_required,stock,active,image_url').order('created_at',{ascending:false});
+  if (error) {
+    tbody.innerHTML = '<tr><td colspan="6">Unable to load rewards.</td></tr>';
+    return;
+  }
+  if (!data?.length) {
+    tbody.innerHTML = '<tr><td colspan="6">No rewards yet.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = data.map(r => '<tr><td>'+escapeHtml(r.name)+'</td><td>'+Number(r.fnc_cost||0).toLocaleString()+'</td><td>'+Number(r.level_required||1)+'</td><td>'+((r.stock ?? '∞'))+'</td><td>'+ (r.active ? 'ACTIVE' : 'OFF') +'</td><td>'+ (r.image_url ? '<a href="'+escapeAttr(r.image_url)+'" target="_blank" rel="noopener" style="color:var(--cyan)">VIEW</a>' : '—') +'</td></tr>').join('');
+}
+
+function escapeHtml(value){return String(value??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+function escapeAttr(value){return escapeHtml(value);}
+
+document.getElementById('rewardImage')?.addEventListener('change', event => {
+  selectedImage = event.target.files?.[0] || null;
+  const status = document.getElementById('rewardImageStatus');
+  const preview = document.getElementById('rewardImagePreview');
+  if (!selectedImage) { status.textContent='Choose an image — JPG, PNG, WEBP or GIF, max 5 MB.'; preview.style.display='none'; return; }
+  if (selectedImage.size > 5*1024*1024) { status.textContent='Image is too large. Maximum is 5 MB.'; event.target.value=''; selectedImage=null; preview.style.display='none'; return; }
+  status.textContent = selectedImage.name;
+  preview.src = URL.createObjectURL(selectedImage);
+  preview.style.display='block';
+});
+
+document.getElementById('clearReward')?.addEventListener('click', () => {
+  document.querySelectorAll('#rewards input,#rewards textarea').forEach(el=>el.value='');
+  document.getElementById('rewardImage').value='';
+  document.getElementById('rewardImageStatus').textContent='Choose an image — JPG, PNG, WEBP or GIF, max 5 MB.';
+  document.getElementById('rewardImagePreview').style.display='none';
+  selectedImage=null;
+});
+
+document.getElementById('saveReward')?.addEventListener('click', async () => {
+  if (!adminReady) return;
+  const name=document.querySelector('#rewards input[placeholder="Sport Gloves | Red Racer"]')?.value.trim();
+  const fnc=Number(document.querySelector('#rewards input[placeholder="20000"]')?.value||0);
+  const level=Number(document.querySelector('#rewards input[placeholder="15"]')?.value||1);
+  const stockRaw=document.querySelector('#rewards input[placeholder="3"]')?.value;
+  const description=document.querySelector('#rewards textarea')?.value.trim()||null;
+  const status=document.getElementById('rewardSaveStatus');
+  if(!name){status.style.display='block';status.textContent='Reward name is required.';return;}
+  if(!Number.isFinite(fnc)||fnc<0||!Number.isInteger(level)||level<1){status.style.display='block';status.textContent='Check FNC cost and level.';return;}
+  let imageUrl=null;
+  try {
+    if(selectedImage){
+      const ext=(selectedImage.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'');
+      const path='rewards/'+crypto.randomUUID()+'.'+ext;
+      const {error: uploadError}=await supabase.storage.from('reward-images').upload(path,selectedImage,{contentType:selectedImage.type,cacheControl:'3600',upsert:false});
+      if(uploadError) throw uploadError;
+      imageUrl=supabase.storage.from('reward-images').getPublicUrl(path).data.publicUrl;
+    }
+    const {error}=await supabase.from('rewards').insert({name,description,fnc_cost:Math.round(fnc),level_required:level,stock:stockRaw===''||stockRaw==null?null:Number(stockRaw),active:false,image_url:imageUrl}).select().single();
+    if(error) throw error;
+    status.style.display='block';status.textContent='Reward saved. It remains OFF until you activate it.';
+    document.getElementById('clearReward').click();
+    await loadRewards();
+  } catch(error) {
+    status.style.display='block';status.textContent='Save failed: '+(error?.message||'Unknown error');
+  }
+});
+
 document.querySelectorAll('.nav-btn').forEach(btn=>{
+
   btn.addEventListener('click',()=>{
     document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
     document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
@@ -167,3 +284,5 @@ document.querySelectorAll('.nav-btn').forEach(btn=>{
 </script>
 </body>
 </html>
+
+</script>
