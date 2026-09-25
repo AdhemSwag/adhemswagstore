@@ -306,7 +306,13 @@ window.addEventListener('adhem:viewer', function(e){
     ['reqTradeUrl',!!(p&&p.steam_trade_url)],
     ['reqDiscord',!!(p&&p.discord_username)]
   ];
-  checks.forEach(function(x){const el=document.getElementById(x[0]);if(el){el.textContent=x[1]?'Complete':'Required';el.classList.toggle('complete',x[1]);}});
+  checks.forEach(function(x){
+    const el=document.getElementById(x[0]);
+    if(!el)return;
+    const optional=x[0]==='reqKick';
+    el.textContent=x[1]?'Complete':(optional?'Optional':'Required');
+    el.classList.toggle('complete',x[1]);
+  });
 });
 </script>
 </body></html>
