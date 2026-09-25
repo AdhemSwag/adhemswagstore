@@ -320,12 +320,14 @@ async function adjustSelectedUser({fncDelta=0,xpDelta=0,level=null,blocked=null}
   if(blocked!==null)parts.push(blocked?'BLOCK':'UNBLOCK');
   if(!parts.length)return;
   if(!confirm('Confirm: '+parts.join(', ')+' for '+(selectedAdminUser.twitch_username||'this user')+'?'))return;
-  const {data,error}=await supabase.rpc('admin_adjust_user',{
-    p_user_id:selectedAdminUser.id,
-    p_fnc_delta:fncDelta,
-    p_xp_delta:xpDelta,
-    p_level:level,
-    p_blocked:blocked
+  const {data,error}=await supabase.functions.invoke('admin-adjust-user',{
+    body:{
+      user_id:selectedAdminUser.id,
+      fnc_delta:fncDelta,
+      xp_delta:xpDelta,
+      level,
+      blocked
+    }
   });
   if(error){showUserStatus('Action failed: '+error.message);return;}
   renderUserDetail(data);
