@@ -347,11 +347,57 @@
     window.location.href = '/';
   }
 
+  async function beginTwitchWatchAuthorization() {
+    try {
+      localStorage.setItem('adhem_twitch_watch_connect', '1');
+      const { data, error } = await client.auth.signInWithOAuth({
+        provider: 'twitch',
+        options: {
+          redirectTo: getOAuthRedirect(),
+          skipBrowserRedirect: true,
+          scopes: 'moderator:read:chatters',
+          queryParams: { force_verify: 'true' }
+        }
+      });
+      if (error || !data?.url) {
+        localStorage.removeItem('adhem_twitch_watch_connect');
+        console.error('[AdhemSwag] Twitch watch authorization error:', error);
+        return false;
+      }
+      window.location.assign(data.url);
+      return true;
+    } catch (error) {
+      localStorage.removeItem('adhem_twitch_watch_connect');
+      console.error('[AdhemSwag] Twitch watch authorization exception:', error);
+      return false;
+    }
+  }
+
+  async function captureTwitchWatchProviderToken() {
+    if (localStorage.getItem('adhem_twitch_watch_connect') !== '1') return;
+    const { data } = await client.auth.getSession();
+    const session = data?.session;
+    if (!session?.provider_token) return;
+    try {
+      const result = await client.rpc('admin_store_twitch_watch_credentials', {
+        p_access_token: session.provider_token,
+        p_refresh_token: session.provider_refresh_token || null
+      });
+      if (result.error) throw result.error;
+      localStorage.removeItem('adhem_twitch_watch_connect');
+      window.location.href = '/admin/?twitch_watch=connected';
+    } catch (error) {
+      console.error('[AdhemSwag] Unable to store Twitch watch credentials:', error);
+    }
+  }
+
   window.AdhemSwagAuth = {
     client,
     loginWithTwitch,
     linkTwitch,
     loginWithProvider,
+    beginTwitchWatchAuthorization,
+    captureTwitchWatchProviderToken,
     logout,
     ensureProfile,
     refreshAccountUI
@@ -429,9 +475,13 @@
     bindAccountMenu();
     bindAuthButtons();
     await refreshAccountUI();
+    await captureTwitchWatchProviderToken();
 
     client.auth.onAuthStateChange(() => {
-      setTimeout(refreshAccountUI, 0);
+      setTimeout(async () => {
+        await refreshAccountUI();
+        await captureTwitchWatchProviderToken();
+      }, 0);
     });
   }
 
