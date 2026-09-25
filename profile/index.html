@@ -216,7 +216,7 @@
   <div>
     <div class="eyebrow">// Viewer Account</div>
     <h1>MY <span>PROFILE</span></h1>
-    <p class="lede">Your Twitch identity, progression and reward status — all in one place.</p>
+    <p class="lede">Your Twitch and Kick identities, progression and reward status — all in one place.</p>
   </div>
   <div class="hero-badge"><span>STATUS</span><strong id="profileHeroStatus">CHECKING</strong></div>
 </div>
@@ -224,6 +224,7 @@
 <section class="card status-card">
 <h2>ACCOUNT STATUS</h2>
 <div class="row"><span class="label">Twitch</span><span class="status" id="profileTwitchStatus">Checking…</span></div>
+<div class="row"><span class="label">Kick</span><span class="status" id="profileKickStatus">Checking…</span></div>
 <div class="row"><span class="label">Profile</span><span class="status" id="profileCompleteStatus">Checking…</span></div>
 <div class="row"><span class="label">FNC eligibility</span><span class="status" id="fncEligibilityStatus">FNC OFF — project in development</span></div>
 <p class="note">FNC Points will stay disabled until the complete project is finished and tested. A viewer must be connected with Twitch and have a complete profile before rewards can be enabled.</p>
@@ -244,7 +245,8 @@
 <div class="card requirements-card">
 <div class="section-head"><h2>PROFILE REQUIREMENTS</h2><a href="/settings/">EDIT PROFILE</a></div>
 <div class="requirements-grid">
-<div class="requirement"><span>Twitch</span><b id="reqTwitch">Required</b></div>
+<div class="requirement"><span>Twitch</span><b id="reqTwitch">Connected / Optional</b></div>
+<div class="requirement"><span>Kick</span><b id="reqKick">Connected / Optional</b></div>
 <div class="requirement"><span>Email</span><b id="reqEmail">Required</b></div>
 <div class="requirement"><span>Steam profile</span><b id="reqSteamProfile">Required</b></div>
 <div class="requirement"><span>Steam trade URL</span><b id="reqTradeUrl">Required</b></div>
@@ -275,14 +277,17 @@
 window.addEventListener('adhem:viewer', function(e){
   const d=e.detail||{}, p=d.profile;
   const twitch=document.getElementById('profileTwitchStatus');
+  const kick=document.getElementById('profileKickStatus');
   const complete=document.getElementById('profileCompleteStatus');
   const eligible=document.getElementById('fncEligibilityStatus');
   if(!d.authId){
     if(twitch) twitch.textContent='Not connected';
-    if(complete) complete.textContent='Connect Twitch first';
+    if(kick) kick.textContent='Not connected';
+    if(complete) complete.textContent='Connect Twitch or Kick first';
     return;
   }
-  if(twitch) twitch.textContent=(p&&p.twitch_username)?'Connected as '+p.twitch_username:'Connected';
+  if(twitch) twitch.textContent=(p&&p.twitch_username)?'Connected as '+p.twitch_username:'Not connected';
+  if(kick) kick.textContent=(p&&p.kick_username)?'Connected as '+p.kick_username:'Not connected';
   if(complete) complete.textContent=(p&&p.profile_complete)?'Complete':'Incomplete';
   const hero=document.getElementById('profileHeroStatus');
   if(hero) hero.textContent=(p&&p.profile_complete)?'PROFILE COMPLETE':(d.authId?'INCOMPLETE':'LOGIN REQUIRED');
@@ -295,6 +300,7 @@ window.addEventListener('adhem:viewer', function(e){
   document.getElementById('profileWatchMinutes').textContent=((p&&p.total_watch_minutes)||0)+' min';
   const checks=[
     ['reqTwitch',!!(p&&p.twitch_user_id)],
+    ['reqKick',!!(p&&p.kick_user_id)],
     ['reqEmail',!!(p&&p.email)],
     ['reqSteamProfile',!!(p&&p.steam_profile_url)],
     ['reqTradeUrl',!!(p&&p.steam_trade_url)],
