@@ -120,8 +120,29 @@
   }
 
   function injectAccountRewards() {
+    /* Shared site chrome: identical sidebar and safe header flow on every page. */
+    if (!document.getElementById('adhemSharedChromeStyle')) {
+      const sharedStyle = document.createElement('style');
+      sharedStyle.id = 'adhemSharedChromeStyle';
+      sharedStyle.textContent = `
+        .sidebar{position:fixed!important;top:0!important;left:0!important;height:100vh!important;width:200px!important;z-index:50!important;background:rgba(5,7,10,.85)!important;backdrop-filter:blur(6px)!important;border-right:1px solid rgba(17,217,247,.14)!important;display:flex!important;flex-direction:column!important;padding:22px 12px!important;gap:2px!important;overflow-y:auto!important}
+        .sidebar-brand{display:flex!important;align-items:center!important;justify-content:center!important;padding:10px 8px 20px!important}
+        .sidebar-divider{height:1px!important;background:rgba(17,217,247,.14)!important;margin:14px 10px!important}
+        .sidebar-link{display:flex!important;align-items:center!important;gap:12px!important;padding:10px 10px!important;text-decoration:none!important;color:rgba(107,122,128,.85)!important;border-radius:3px!important;font-family:Inter,Arial,sans-serif!important;font-size:13px!important;font-weight:500!important;transition:all .2s ease!important;position:relative!important}
+        .sidebar-link:hover{color:#11D9F7!important;background:rgba(17,217,247,.05)!important}
+        .sidebar-link svg,.sidebar-link img{width:17px!important;height:17px!important;flex-shrink:0!important;opacity:.85!important}
+        .sidebar-link svg{color:#11D9F7!important;stroke:#11D9F7!important}
+        .sidebar-link svg[fill="currentColor"]{fill:#11D9F7!important;stroke:none!important}
+        .sidebar-link:hover svg,.sidebar-link:hover img{opacity:1!important}
+        body{padding-left:200px!important}
+        .adhem-topbar{position:sticky!important;top:0!important;left:0!important;right:auto!important;z-index:1000!important;box-sizing:border-box!important}
+        @media(max-width:1024px){.sidebar{width:64px!important}.sidebar-link span{display:none!important}.sidebar-link{justify-content:center!important;padding:12px 4px!important}body{padding-left:64px!important}}
+        @media(max-width:640px){.sidebar{width:52px!important;padding:14px 5px!important;gap:1px!important}.sidebar-brand{padding:7px 2px 12px!important}.sidebar-brand a{display:none!important}.sidebar-link{justify-content:center!important;gap:0!important;padding:10px 0!important}.sidebar-link svg,.sidebar-link img{width:18px!important;height:18px!important}.sidebar-divider{margin:8px 5px!important}body{padding-left:52px!important}}
+      `;
+      document.head.appendChild(sharedStyle);
+    }
+
     const menus = document.querySelectorAll('#adhemAccountMenu');
-    if (!menus.length) return;
 
     document.querySelectorAll('#adhemAccountUser').forEach(button => {
       if (button.querySelector('.adhem-avatar-rewards')) return;
@@ -132,17 +153,11 @@
     });
 
     
-    /* Shared sidebar icon color — all pages */
-    const sidebarStyle = document.createElement('style');
-    sidebarStyle.id = 'adhemSharedSidebarIconStyle';
-    sidebarStyle.textContent = '.sidebar .sidebar-link[href^="/"] svg{color:#11D9F7!important;stroke:#11D9F7!important}.sidebar .sidebar-link[href^="/"] svg[fill="currentColor"]{fill:#11D9F7!important;stroke:none!important}.sidebar .sidebar-link img[alt="Faceit"]{filter:none!important}';
-    document.head.appendChild(sidebarStyle);
-
     if (!document.getElementById('adhemSharedRewardsStyle')) {
       const style = document.createElement('style');
       style.id = 'adhemSharedRewardsStyle';
       style.textContent = `
-        .adhem-topbar{position:fixed!important;top:0!important;left:200px!important;right:0!important;height:78px!important;min-height:78px!important;display:flex!important;align-items:center!important;justify-content:space-between!important;padding:8px 24px!important;background:rgba(5,7,10,.94)!important;border-bottom:1px solid rgba(17,217,247,.14)!important;backdrop-filter:blur(8px)!important;z-index:1000!important;box-sizing:border-box!important}
+        .adhem-topbar{position:sticky!important;top:0!important;left:0!important;right:auto!important;height:78px!important;min-height:78px!important;display:flex!important;align-items:center!important;justify-content:space-between!important;padding:8px 24px!important;background:rgba(5,7,10,.94)!important;border-bottom:1px solid rgba(17,217,247,.14)!important;backdrop-filter:blur(8px)!important;z-index:1000!important;box-sizing:border-box!important}
         .adhem-account-connect{display:inline-flex;align-items:center!important;justify-content:center!important;gap:0!important;min-height:38px!important;padding:0 18px!important;border:1px solid rgba(17,217,247,.28)!important;border-radius:8px!important;background:rgba(17,217,247,.035)!important;color:#d9faff!important;text-decoration:none!important;font:700 11px 'JetBrains Mono',monospace!important;letter-spacing:.12em!important;box-shadow:0 0 10px rgba(17,217,247,.07),inset 0 0 10px rgba(17,217,247,.025)!important;transition:border-color .2s ease,box-shadow .2s ease,background .2s ease,color .2s ease!important}
         .adhem-account-connect span:first-child{display:none!important}
         .adhem-account-connect:hover{border-color:rgba(17,217,247,.72)!important;background:rgba(17,217,247,.08)!important;color:#fff!important;box-shadow:0 0 18px rgba(17,217,247,.22),inset 0 0 12px rgba(17,217,247,.04)!important}
@@ -167,8 +182,8 @@
         .adhem-avatar-xp-track i{display:block;width:0;height:100%;background:#11D9F7;box-shadow:0 0 6px rgba(17,217,247,.45);transition:width .25s ease}
         .adhem-avatar-xp .shared-account-xp-progress{display:block;margin-top:2px;font:8px 'JetBrains Mono',monospace;color:#52636a;white-space:nowrap}
         .adhem-account-menu .account-rewards{display:block!important;padding:12px 14px 11px;margin:0 0 6px;border-bottom:1px solid rgba(17,217,247,.12)}
-        @media(max-width:1024px){.adhem-topbar{left:64px!important;padding:8px 16px!important}}
-        @media(max-width:640px){.adhem-topbar{left:52px!important;right:0!important;height:78px!important;min-height:78px!important;padding:8px!important}.adhem-topbar-brand{display:none!important}.adhem-topbar-left{gap:6px!important}.adhem-account-user{min-width:0!important;padding:4px!important;border-radius:28px!important}.adhem-account-user .adhem-account-avatar{width:48px!important;height:48px!important}.adhem-account-user .adhem-account-name{display:none!important}.adhem-avatar-rewards{min-width:105px!important}.adhem-avatar-reward-row{gap:8px!important;font-size:8px!important}.adhem-avatar-reward-row strong{font-size:8px!important}.adhem-avatar-xp{margin-top:4px!important}.adhem-account-menu{right:4px!important;top:calc(100% + 6px)!important;min-width:220px!important;max-width:calc(100vw - 62px)!important}.sidebar{width:52px!important;padding:14px 5px!important;gap:1px!important}.sidebar-brand{padding:7px 2px 12px!important}.sidebar-brand a{display:none!important}.sidebar-link{justify-content:center!important;gap:0!important;padding:10px 0!important}.sidebar-link span{display:none!important}.sidebar-divider{margin:8px 5px!important}main{width:auto!important;max-width:none!important;padding-left:12px!important;padding-right:12px!important}}
+        @media(max-width:1024px){.adhem-topbar{left:0!important;padding:8px 16px!important}}
+        @media(max-width:640px){.adhem-topbar{left:0!important;right:auto!important;height:78px!important;min-height:78px!important;padding:8px!important}.adhem-topbar-brand{display:none!important}.adhem-topbar-left{gap:6px!important}.adhem-account-user{min-width:0!important;padding:4px!important;border-radius:28px!important}.adhem-account-user .adhem-account-avatar{width:48px!important;height:48px!important}.adhem-account-user .adhem-account-name{display:none!important}.adhem-avatar-rewards{min-width:105px!important}.adhem-avatar-reward-row{gap:8px!important;font-size:8px!important}.adhem-avatar-reward-row strong{font-size:8px!important}.adhem-avatar-xp{margin-top:4px!important}.adhem-account-menu{right:4px!important;top:calc(100% + 6px)!important;min-width:220px!important;max-width:calc(100vw - 62px)!important}.sidebar{width:52px!important;padding:14px 5px!important;gap:1px!important}.sidebar-brand{padding:7px 2px 12px!important}.sidebar-brand a{display:none!important}.sidebar-link{justify-content:center!important;gap:0!important;padding:10px 0!important}.sidebar-link span{display:none!important}.sidebar-divider{margin:8px 5px!important}main{width:auto!important;max-width:none!important;padding-left:12px!important;padding-right:12px!important}}
         .adhem-account-menu .account-rewards-title{font:600 10px 'JetBrains Mono',monospace;letter-spacing:.14em;color:#52636a;text-transform:uppercase;margin-bottom:9px}
         .adhem-account-menu .account-rewards-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
         .adhem-account-menu .account-rewards-grid>div{padding:8px 9px;background:rgba(17,217,247,.035);border:1px solid rgba(17,217,247,.08);text-align:left}
