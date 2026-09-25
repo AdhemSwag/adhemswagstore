@@ -189,22 +189,23 @@ function conditionList(g){
  return a;
 }
 async function load(){
- const {data,error}=await client.from('giveaways').select('id,title,description,reward_name,reward_image_url,status,starts_at,ends_at,winners_count,entry_count,min_level,min_fnc,require_profile_complete,require_subscriber,require_follower,entries_per_user').eq('status','active').order('created_at',{ascending:false}).limit(1);
+ const {data,error}=await client.from('giveaways').select('id,title,description,reward_name,reward_image_url,status,starts_at,ends_at,winners_count,entry_count,min_level,min_fnc,require_profile_complete,require_subscriber,require_follower,entries_per_user') .in('status',['active','ended']).order('created_at',{ascending:false}).limit(1);
  if(error){root.innerHTML='<div class="empty">GIVEAWAY IS CURRENTLY UNAVAILABLE.</div>';return;}
  const g=data?.[0];
  if(!g){root.innerHTML='<div class="empty">NO ACTIVE GIVEAWAY RIGHT NOW.</div>';return;}
+ const isActive=g.status==='active' && (!g.starts_at || new Date(g.starts_at)<=new Date()) && (!g.ends_at || new Date(g.ends_at)>new Date());
  const {data:{user}}=await client.auth.getUser();
  let joined=false;
- if(user){const own=await client.from('giveaway_entries').select('id').eq('giveaway_id',g.id).eq('user_id',user.id).maybeSingle();joined=!!own.data;}
+ if(user && isActive){const own=await client.from('giveaway_entries').select('id').eq('giveaway_id',g.id).eq('user_id',user.id).maybeSingle();joined=!!own.data;}
  const cond=conditionList(g);
  root.innerHTML='<article class="giveaway-card">'+
    (g.reward_image_url?'<img class="reward-image" src="'+esc(g.reward_image_url)+'" alt="'+esc(g.reward_name)+'">':'<div class="reward-image" aria-label="Giveaway reward image"></div>')+
-   '<div class="details"><span class="badge">ACTIVE</span><h2>'+esc(g.title)+'</h2><div class="reward">'+esc(g.reward_name)+'</div>'+
+   '<div class="details"><span class="badge '+(isActive?'':'ended')+'">'+(isActive?'ACTIVE':'ENDED')+'</span><h2>'+esc(g.title)+'</h2><div class="reward">'+esc(g.reward_name)+'</div>'+
    (g.description?'<p class="description">'+esc(g.description)+'</p>':'')+
    '<div class="stats"><div class="stat"><small>Entries</small><strong>'+Number(g.entry_count||0).toLocaleString()+'</strong></div><div class="stat"><small>Winners</small><strong>'+Number(g.winners_count||1)+'</strong></div><div class="stat"><small>Ends</small><strong style="font-size:14px">'+esc(date(g.ends_at))+'</strong></div></div>'+
    '<div class="conditions"><h3>Conditions</h3><ul>'+cond.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></div>'+
-   '<div class="actions"><button class="btn" id="joinBtn" '+(joined?'disabled':'')+'>'+ (joined?'JOINED':'JOIN GIVEAWAY') +'</button><span id="joinMsg" class="message"></span></div></div></article>';
- document.getElementById('joinBtn').onclick=()=>join(g);
+   '<div class="actions">'+(isActive?'<button class="btn" id="joinBtn" '+(joined?'disabled':'')+'>'+ (joined?'JOINED':'JOIN GIVEAWAY') +'</button>':'')+'<span id="joinMsg" class="message">'+(isActive?'':'This giveaway has ended.')+'</span></div></div></article>';
+ if(isActive) document.getElementById('joinBtn').onclick=()=>join(g);
 }
 async function join(g){
  const btn=document.getElementById('joinBtn'),msg=document.getElementById('joinMsg');btn.disabled=true;msg.textContent='Checking Twitch account…';
