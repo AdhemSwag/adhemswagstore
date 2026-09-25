@@ -247,7 +247,7 @@ function setControls(enabled) {
 }
 
 async function verifyAdmin() {
-  setSecurity('checking Twitch admin access…');
+  setSecurity('checking Twitch admin access…', false, true);
   try {
     const result = await Promise.race([
       supabase.auth.getUser(),
