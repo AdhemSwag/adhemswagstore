@@ -157,8 +157,8 @@
         .adhem-account-menu .reward-icon{width:16px;height:16px;display:inline-flex!important;align-items:center;justify-content:center;color:#11D9F7;margin:0!important}
         .adhem-account-menu .reward-icon svg{width:16px;height:16px;display:block}
         .adhem-account-menu .reward-inline-text{display:flex!important;align-items:baseline;gap:5px;margin:0!important}
-        .adhem-account-menu .account-rewards-grid span{display:inline!important;font:10px 'JetBrains Mono',monospace;color:#617177;margin:0}
-        .adhem-account-menu .account-rewards-grid strong{display:inline!important;font:600 10px 'JetBrains Mono',monospace;line-height:1;color:#617177}
+        .adhem-account-menu .account-rewards-grid span{display:inline!important;font:600 10px/1.2 'JetBrains Mono',monospace;color:#617177;margin:0}
+        .adhem-account-menu .account-rewards-grid strong{display:inline!important;font:600 10px/1.2 'JetBrains Mono',monospace;color:#617177;margin:0}
         .adhem-account-menu .account-xp-card{grid-column:1/-1;text-align:left!important;padding:8px 9px!important}
         .adhem-account-menu .account-xp-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px}
         .adhem-account-menu .account-xp-head span{font:10px 'JetBrains Mono',monospace;color:#617177;margin:0}
