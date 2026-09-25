@@ -232,7 +232,7 @@ function setSecurity(message, ok=false, showLogin=false) {
 async function loginAdmin() {
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'twitch',
-    options: { redirectTo: window.location.origin + '/admin/', skipBrowserRedirect: true, queryParams: { force_verify: 'true' } }
+    options: { redirectTo: window.location.origin + '/profile/?return=admin', skipBrowserRedirect: true, queryParams: { force_verify: 'true' } }
   });
   if(error){ setSecurity('Twitch login failed: '+escapeHtml(error.message),false,true); return; }
   if(data?.url) window.location.assign(data.url);
