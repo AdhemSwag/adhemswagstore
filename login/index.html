@@ -58,10 +58,6 @@ h1{font:700 38px/1 'Rajdhani',sans-serif;text-transform:uppercase;letter-spacing
 .platform-btn[data-provider="twitch"] .platform-icon{color:#9146ff;}
 .platform-btn[data-provider="twitch"] span:last-child{color:#9146ff;}
 .platform-btn[data-provider="twitch"]:hover{border-color:#9146ff;background:rgba(145,70,255,.16);box-shadow:0 0 18px rgba(145,70,255,.16)}
-.platform-btn[data-provider="kick"]{border-color:rgba(83,252,24,.42);background:linear-gradient(90deg,rgba(83,252,24,.12),rgba(83,252,24,.035));}
-.platform-btn[data-provider="kick"] .platform-icon{color:#53fc18;}
-.platform-btn[data-provider="kick"] span:last-child{color:#53fc18;}
-.platform-btn[data-provider="kick"]:hover{border-color:#53fc18;background:rgba(83,252,24,.14);box-shadow:0 0 18px rgba(83,252,24,.15)}
 .platform-icon{width:30px;height:30px;display:flex;align-items:center;justify-content:center;flex:none;border-radius:7px;background:rgba(255,255,255,.04);font-size:18px}
 .platform-icon svg{width:23px;height:23px;display:block}
 .platform-btn span:last-child{margin-left:auto;color:var(--cyan);font-size:18px}
@@ -87,7 +83,7 @@ h1{font:700 38px/1 'Rajdhani',sans-serif;text-transform:uppercase;letter-spacing
   <section class="login-card">
     <div class="eyebrow">ACCOUNT ACCESS</div>
     <h1>Sign in</h1>
-    <p class="intro">Choose your platform to access your AdhemSwag profile and rewards.</p>
+    <p class="intro">Sign in with Twitch to access your AdhemSwag profile, progress and rewards.</p>
 
     <div class="platforms">
       <button class="platform-btn" type="button" data-provider="twitch" data-adhem-login>
@@ -95,18 +91,13 @@ h1{font:700 38px/1 'Rajdhani',sans-serif;text-transform:uppercase;letter-spacing
         <span>Continue with Twitch</span>
         <span>→</span>
       </button>
-      <button class="platform-btn" type="button" data-provider="kick" data-adhem-login>
-        <span class="platform-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 3h16v4h-4v3h-3v3h3v4h-5v-3H8v3H4V3zm4 4v4h4V7H8z"/></svg></span>
-        <span>Continue with Kick</span>
-        <span>→</span>
-      </button>
-    </div>
+</div>
 
     <div class="status" id="loginStatus" aria-live="polite"></div>
 
     <div class="note">
-      ONE PROFILE · CHOOSE YOUR PLATFORM<br>
-      Your FNC balance stays on the same account. No double rewards.
+      YOUR ADHEMSWAG ACCOUNT · POWERED BY TWITCH<br>
+      Your profile, progress and rewards stay together in one account.
     </div>
   </section>
 
