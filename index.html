@@ -280,6 +280,7 @@
   .stream-foot .platform-twitch{color:#9146FF;}
   .stream-foot .viewer-platform{font-weight:700;letter-spacing:0.04em;}
   .stream-foot .viewer-twitch{color:#9146FF;}
+  .stream-foot .viewer-kick{color:#53FC18;}
   .stream-foot .viewer-platform b{font-weight:800;color:inherit;}
   .stream-foot .viewer-separator{color:var(--muted);margin:0 6px;}
   .stream-foot{gap:12px;align-items:center;flex-wrap:wrap;}
@@ -1325,32 +1326,35 @@ footer .footer-copy .row{margin:0;}
     const bothLive = twitch.live && kick.live;
     const selected = twitch.live ? 'TWITCH' : (kick.live ? 'KICK' : 'OFFLINE');
 
+    const viewerLabel = (name, value, cls) => '<span class="'+cls+'">'+name+' '+(value == null ? '—' : value.toLocaleString())+' viewers</span>';
+
     if(selected === 'TWITCH'){
       player.src = twitchPlayer;
       player.style.display = 'block';
       offline.hidden = true;
       tag.classList.remove('offline'); dot.classList.remove('offline');
-      label.textContent = 'LIVE NOW · TWITCH';
+      label.textContent = 'LIVE NOW';
       status.textContent = 'LIVE';
       status.classList.add('status-live');
       platform.innerHTML = bothLive
         ? '<span class="live-platform-twitch">TWITCH</span><span class="live-platform-separator">·</span><span style="color:#53FC18">KICK</span>'
         : '<span class="live-platform-twitch">TWITCH</span>';
-      platformStatus.innerHTML = '<span class="platform-twitch">TWITCH</span> <span class="viewer-platform viewer-twitch">' + (twitch.viewers == null ? '—' : twitch.viewers.toLocaleString()) + ' viewers</span>';
-      viewerCounts.hidden = false;
-      viewerCounts.textContent = 'TWITCH ' + (twitch.viewers == null ? '—' : twitch.viewers.toLocaleString()) + ' · KICK ' + (kick.viewers == null ? '—' : kick.viewers.toLocaleString());
+      platformStatus.innerHTML = viewerLabel('TWITCH', twitch.viewers, 'viewer-platform viewer-twitch') +
+        (kick.live ? '<span class="viewer-separator">·</span>' + viewerLabel('KICK', kick.viewers, 'viewer-platform viewer-kick') : '');
+      viewerCounts.hidden = true;
+      viewerCounts.textContent = '';
     }else if(selected === 'KICK'){
       player.src = kickPlayer;
       player.style.display = 'block';
       offline.hidden = true;
       tag.classList.remove('offline'); dot.classList.remove('offline');
-      label.textContent = 'LIVE NOW · KICK';
+      label.textContent = 'LIVE NOW';
       status.textContent = 'LIVE';
       status.classList.add('status-live');
       platform.innerHTML = '<span style="color:#53FC18">KICK</span>';
-      platformStatus.innerHTML = '<span style="color:#53FC18">KICK</span> <span class="viewer-platform">' + (kick.viewers == null ? '—' : kick.viewers.toLocaleString()) + ' viewers</span>';
-      viewerCounts.hidden = false;
-      viewerCounts.textContent = 'TWITCH ' + (twitch.viewers == null ? '—' : twitch.viewers.toLocaleString()) + ' · KICK ' + (kick.viewers == null ? '—' : kick.viewers.toLocaleString());
+      platformStatus.innerHTML = viewerLabel('KICK', kick.viewers, 'viewer-platform viewer-kick');
+      viewerCounts.hidden = true;
+      viewerCounts.textContent = '';
     }else{
       player.style.display = 'none';
       offline.hidden = false;
@@ -1358,9 +1362,10 @@ footer .footer-copy .row{margin:0;}
       label.textContent = 'OFFLINE';
       status.textContent = 'OFFLINE';
       status.classList.remove('status-live');
-      platform.textContent = 'OFFLINE';
+      platform.textContent = '';
       platformStatus.textContent = '';
       viewerCounts.hidden = true;
+      viewerCounts.textContent = '';
     }
   })();
 </script>
