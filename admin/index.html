@@ -98,14 +98,7 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
       </div>
     </section>
 
-    <section id="redemptions" class="panel">
-      <div class="section">
-        <h2>Redemption Queue</h2>
-        <p>Every redemption will show the viewer, reward, FNC spent, Steam Trade Link, date and action buttons.</p>
-        <div class="table-wrap"><table><thead><tr><th>Viewer</th><th>Reward</th><th>FNC</th><th>Steam Trade Link</th><th>Date</th><th>Actions</th></tr></thead><tbody><tr><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td><span class="lock">SECURE BACKEND REQUIRED</span></td></tr></tbody></table></div>
-        <div class="actions"><button class="btn primary" disabled>APPROVE</button><button class="btn danger" disabled>REJECT + REFUND</button></div>
-      </div>
-    </section>
+    <section id="redemptions" class="panel"><div class="section"><h2>Redemption Queue</h2><p>Approve reward claims or reject them and automatically refund FNC.</p><div class="form-grid"><div class="field"><label>Status</label><select id="redemptionStatusFilter"><option value="pending">Pending</option><option value="all">All</option><option value="approved">Approved</option><option value="rejected">Rejected</option><option value="sent">Sent</option></select></div><div class="field"><label>Search</label><input id="redemptionSearch" placeholder="Twitch username or reward"></div></div><div class="actions"><button class="btn primary" id="loadRedemptions">LOAD REDEMPTIONS</button></div><div id="redemptionStatus" class="notice" style="display:none"></div><div class="table-wrap"><table><thead><tr><th>Viewer</th><th>Reward</th><th>FNC</th><th>Steam Trade</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead><tbody id="redemptionList"><tr><td colspan="7">Load to view redemptions.</td></tr></tbody></table></div></div></section>
 
     <section id="viewers" class="panel">
       <div class="section">
@@ -132,13 +125,7 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
       </div>
     </section>
 
-    <section id="transactions" class="panel">
-      <div class="section">
-        <h2>Transactions</h2>
-        <p>Full audit history for watch, subscription, bits, donation, raid, redemption, import and admin adjustments.</p>
-        <div class="table-wrap"><table><thead><tr><th>Date</th><th>Viewer</th><th>Type</th><th>Amount</th><th>Source</th><th>Event ID</th></tr></thead><tbody><tr><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr></tbody></table></div>
-      </div>
-    </section>
+    <section id="transactions" class="panel"><div class="section"><h2>Transactions</h2><p>Audit watch, chat, subscription, Bits, Kick, donation, raid, redemption and admin activity.</p><div class="form-grid"><div class="field"><label>Type</label><select id="transactionType"><option value="">All types</option><option>watch</option><option>watch_xp</option><option>watch_fnc</option><option>chat</option><option>subscription</option><option>bits</option><option>kicks</option><option>donation</option><option>raid</option><option>redemption</option><option>admin_adjustment</option><option>import</option></select></div><div class="field"><label>Platform</label><select id="transactionPlatform"><option value="">All</option><option value="twitch">Twitch</option><option value="kick">Kick</option></select></div></div><div class="actions"><button class="btn primary" id="loadTransactions">LOAD TRANSACTIONS</button></div><div class="table-wrap"><table><thead><tr><th>Date</th><th>Viewer</th><th>Type</th><th>Amount</th><th>Platform</th><th>Source</th><th>Event ID</th></tr></thead><tbody id="transactionList"><tr><td colspan="7">Load to view transactions.</td></tr></tbody></table></div></div></section>
 
 <section id="fnc-settings" class="panel">
       <div class="section">
@@ -202,7 +189,7 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
       <div class="section">
         <h2>System Controls</h2>
         <p>Global switches remain OFF until the full Twitch/EventSub, XP/FNC, Store and redemption workflow has passed testing.</p>
-        <div class="actions"><button class="btn danger" disabled>FNC: OFF</button><button class="btn danger" disabled>XP: OFF</button><button class="btn danger" disabled>REWARDS: OFF</button></div>
+        <div class="actions"><button class="btn" id="systemFnc">FNC: OFF</button><button class="btn" id="systemXp">XP: OFF</button><button class="btn" id="systemRewards">REWARDS: OFF</button></div>
         <div class="notice" style="margin-top:18px">
           <strong style="color:var(--cyan)">TWITCH WATCH TRACKING:</strong>
           Direct Twitch watch-time sync uses Twitch's chatters endpoint. No browser page or extension is required for viewers after account connection.
