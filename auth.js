@@ -305,7 +305,11 @@
     try {
       const { data: sessionData } = await client.auth.getSession();
       if (!sessionData?.session) return;
-      const { data, error } = await client.functions.invoke('watch-heartbeat', { body: {} });
+      const accessToken = sessionData.session.access_token;
+      const { data, error } = await client.functions.invoke('watch-heartbeat', {
+        body: {},
+        headers: { Authorization: `Bearer ${accessToken}` }
+      });
       if (error) console.warn('[AdhemSwag] Watch heartbeat:', error.message || error);
       else if (data?.live === false) stopWatchTracking();
     } catch (error) {
