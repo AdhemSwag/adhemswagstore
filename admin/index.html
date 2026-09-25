@@ -64,7 +64,7 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
       </div>
     </div>
 
-    <div class="security" id="adminSecurity"><strong>SECURITY:</strong> checking Twitch admin access…</div>
+    <div class="security" id="adminSecurity"><strong>SECURITY:</strong> checking Twitch admin access… <button class="btn" id="adminLogin" style="display:none;margin-left:10px;padding:7px 12px">LOGIN WITH TWITCH</button></div>
 
     <section id="dashboard" class="panel active">
       <div class="cards">
@@ -205,15 +205,23 @@ const SUPABASE_KEY = 'sb_publishable_vNkDqYd81b2krZAisUhb2g_c_uwyvRp';
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
   auth: { autoRefreshToken: true, persistSession: true, detectSessionInUrl: true, storageKey: 'adhemswag-auth' }
 });
-const ADMIN_USER_ID = '18ca02b9-0e42-44c8-a2bb-673f8069da42';
 let adminReady = false;
 let selectedImage = null;
 let selectedGiveawayImage = null;
 
-function setSecurity(message, ok=false) {
+function setSecurity(message, ok=false, showLogin=false) {
   const el = document.getElementById('adminSecurity');
-  el.innerHTML = '<strong>SECURITY:</strong> ' + message;
+  el.innerHTML = '<strong>SECURITY:</strong> ' + message + ' <button class="btn" id="adminLogin" style="display:'+(showLogin?'inline-block':'none')+';margin-left:10px;padding:7px 12px">LOGIN WITH TWITCH</button>';
   el.style.borderColor = ok ? 'rgba(60,231,165,.25)' : 'rgba(255,77,95,.25)';
+  if(showLogin) document.getElementById('adminLogin')?.addEventListener('click', loginAdmin);
+}
+async function loginAdmin() {
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: 'twitch',
+    options: { redirectTo: window.location.origin + '/admin/', skipBrowserRedirect: true, queryParams: { force_verify: 'true' } }
+  });
+  if(error){ setSecurity('Twitch login failed: '+escapeHtml(error.message),false,true); return; }
+  if(data?.url) window.location.assign(data.url);
 }
 
 function setControls(enabled) {
@@ -228,12 +236,7 @@ async function verifyAdmin() {
   const { data, error } = await supabase.auth.getUser();
   if (error || !data?.user) {
     setControls(false);
-    setSecurity('Connect Twitch on the main site first, then return here.');
-    return false;
-  }
-  if (data.user.id !== ADMIN_USER_ID) {
-    setControls(false);
-    setSecurity('This Twitch account is not authorized for the Admin Panel.');
+    setSecurity('Connect with your Twitch account to access the Admin Panel.', false, true);
     return false;
   }
   const { data: admin, error: adminError } = await supabase.from('admin_users').select('user_id').eq('user_id', data.user.id).maybeSingle();
