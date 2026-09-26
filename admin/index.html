@@ -202,8 +202,8 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
 <div class="field"><label>Start time</label><input id="gwStart" type="datetime-local"></div>
 <div class="field"><label>End time</label><input id="gwEnd" type="datetime-local"></div>
 <div class="field"><label>Profile complete</label><select id="gwProfile"><option value="false">No</option><option value="true">Yes</option></select></div>
-<div class="field"><label>Subscriber only</label><select id="gwSub"><option value="false">No</option><option value="true">Yes</option></select></div>
-<div class="field"><label>Follower required</label><select id="gwFollow"><option value="false">No</option><option value="true">Yes</option></select></div>
+<div class="field"><label>Subscriber only <span style="opacity:.65">(Twitch verification pending)</span></label><select id="gwSub" disabled><option value="false">No</option></select></div>
+<div class="field"><label>Follower required <span style="opacity:.65">(Twitch verification pending)</span></label><select id="gwFollow" disabled><option value="false">No</option></select></div>
 </div>
 <div class="actions"><button class="btn primary" id="createGiveaway">CREATE GIVEAWAY</button><button class="btn" id="clearGiveaway">CLEAR</button></div>
 <div id="gwStatus" class="notice" style="display:none"></div></div>
@@ -830,8 +830,8 @@ document.getElementById('createGiveaway')?.addEventListener('click',async()=>{
       starts_at:document.getElementById('gwStart').value?new Date(document.getElementById('gwStart').value).toISOString():null,
       ends_at:document.getElementById('gwEnd').value?new Date(document.getElementById('gwEnd').value).toISOString():null,
       require_profile_complete:document.getElementById('gwProfile').value==='true',
-      require_subscriber:document.getElementById('gwSub').value==='true',
-      require_follower:document.getElementById('gwFollow').value==='true'
+      require_subscriber:false,
+      require_follower:false
     };
     const result=await giveawayAction('create',null,payload);
     status.style.display='block';status.textContent='Giveaway created as DRAFT. Admin identity was set server-side.';
