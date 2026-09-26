@@ -125,10 +125,17 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
       <div class="section">
         <h2>Users</h2>
         <p>Search Twitch viewers, inspect progression and account connections, then make controlled admin adjustments. Sensitive changes are confirmed and recorded server-side.</p>
-        <div class="form-grid">
-          <div class="field full"><label>Search Twitch username / email</label><input id="userSearch" placeholder="adhemswag"></div>
+        <div class="cards" style="margin-bottom:16px">
+          <div class="card"><small>VIEWERS</small><div class="metric" id="viewerMetricTotal">—</div></div>
+          <div class="card"><small>ACTIVE</small><div class="metric" id="viewerMetricActive">—</div></div>
+          <div class="card"><small>BLOCKED</small><div class="metric" id="viewerMetricBlocked">—</div></div>
+          <div class="card"><small>TOTAL FNC</small><div class="metric" id="viewerMetricFnc">—</div></div>
         </div>
-        <div class="actions"><button class="btn primary" id="searchUsers">SEARCH USERS</button><button class="btn" id="clearUsers">CLEAR</button></div>
+        <div class="form-grid">
+          <div class="field"><label>Search Twitch username / email</label><input id="userSearch" placeholder="adhemswag"></div>
+          <div class="field"><label>Status</label><select id="userStatusFilter"><option value="all">All viewers</option><option value="active">Active only</option><option value="blocked">Blocked only</option></select></div>
+        </div>
+        <div class="actions"><button class="btn primary" id="searchUsers">SEARCH USERS</button><button class="btn" id="clearUsers">CLEAR</button><button class="btn" id="refreshUsers">REFRESH</button></div>
         <div id="userStatus" class="notice" style="display:none"></div>
         <div class="table-wrap"><table><thead><tr><th>Twitch</th><th>FNC</th><th>XP</th><th>Level</th><th>Watch</th><th>Profile</th><th>Status</th><th>Created</th></tr></thead><tbody id="userList"><tr><td colspan="8">Search to load viewers.</td></tr></tbody></table></div>
       </div>
@@ -400,27 +407,38 @@ function renderUserDetail(user){
 async function loadUsers(search=''){
   const tbody=document.getElementById('userList');
   if(!tbody||!adminReady)return;
+  tbody.innerHTML='<tr><td colspan="8">Loading viewers…</td></tr>';
+  const filter=document.getElementById('userStatusFilter')?.value||'all';
   let query=supabase.from('users').select('id,twitch_username,email,fnc_points,total_fnc_earned,xp,level,total_watch_minutes,profile_complete,is_blocked,steam_id,steam_trade_url,discord_username,created_at').order('created_at',{ascending:false}).limit(100);
-  if(search.trim()) query=query.or('twitch_username.ilike.%'+search.trim()+'%,email.ilike.%'+search.trim()+'%');
+  const term=search.trim();
+  if(term) query=query.or('twitch_username.ilike.%'+term+'%,email.ilike.%'+term+'%');
+  if(filter==='active') query=query.eq('is_blocked',false);
+  if(filter==='blocked') query=query.eq('is_blocked',true);
   const {data,error}=await query;
   if(error){tbody.innerHTML='<tr><td colspan="8">Unable to load viewers: '+escapeHtml(error.message)+'</td></tr>';return;}
-  if(!data?.length){tbody.innerHTML='<tr><td colspan="8">No viewers found.</td></tr>';return;}
-  tbody.innerHTML=data.map(u=>
+  const rows=data||[];
+  document.getElementById('viewerMetricTotal').textContent=rows.length.toLocaleString();
+  document.getElementById('viewerMetricActive').textContent=rows.filter(u=>!u.is_blocked).length.toLocaleString();
+  document.getElementById('viewerMetricBlocked').textContent=rows.filter(u=>u.is_blocked).length.toLocaleString();
+  document.getElementById('viewerMetricFnc').textContent=rows.reduce((s,u)=>s+Number(u.fnc_points||0),0).toLocaleString();
+  if(!rows.length){tbody.innerHTML='<tr><td colspan="8">No viewers found.</td></tr>';return;}
+  tbody.innerHTML=rows.map(u=>
     '<tr data-user-id="'+u.id+'" style="cursor:pointer">'+
-    '<td>'+escapeHtml(u.twitch_username||'—')+'</td>'+
+    '<td><strong>'+escapeHtml(u.twitch_username||'—')+'</strong><br><small style="color:var(--muted)">'+escapeHtml(u.email||'')+'</small></td>'+
     '<td>'+Number(u.fnc_points||0).toLocaleString()+'</td>'+
     '<td>'+Number(u.xp||0).toLocaleString()+'</td>'+
     '<td>'+Number(u.level||1)+'</td>'+
     '<td>'+Number(u.total_watch_minutes||0).toLocaleString()+' min</td>'+
     '<td>'+(u.profile_complete?'YES':'NO')+'</td>'+
-    '<td>'+(u.is_blocked?'<span class="lock">BLOCKED</span>':'ACTIVE')+'</td>'+
+    '<td>'+(u.is_blocked?'<span class="lock">BLOCKED</span>':'<span style="color:var(--ok)">ACTIVE</span>')+'</td>'+
     '<td>'+new Date(u.created_at).toLocaleDateString()+'</td></tr>'
   ).join('');
   tbody.querySelectorAll('[data-user-id]').forEach(row=>row.addEventListener('click',()=>{
-    const user=data.find(u=>u.id===row.dataset.userId);
+    const user=rows.find(u=>u.id===row.dataset.userId);
     if(user)renderUserDetail(user);
   }));
 }
+
 
 async function adjustSelectedUser({fncDelta=0,xpDelta=0,level=null,blocked=null}={}){
   if(!adminReady||!selectedAdminUser)return;
@@ -448,9 +466,12 @@ async function adjustSelectedUser({fncDelta=0,xpDelta=0,level=null,blocked=null}
 }
 
 document.getElementById('searchUsers')?.addEventListener('click',()=>loadUsers(document.getElementById('userSearch')?.value||''));
+document.getElementById('refreshUsers')?.addEventListener('click',()=>loadUsers(document.getElementById('userSearch')?.value||''));
+document.getElementById('userStatusFilter')?.addEventListener('change',()=>loadUsers(document.getElementById('userSearch')?.value||''));
 document.getElementById('userSearch')?.addEventListener('keydown',e=>{if(e.key==='Enter')loadUsers(e.target.value)});
 document.getElementById('clearUsers')?.addEventListener('click',()=>{
   document.getElementById('userSearch').value='';
+  document.getElementById('userStatusFilter').value='all';
   document.getElementById('userDetail').style.display='none';
   selectedAdminUser=null;
   document.getElementById('userStatus').style.display='none';
