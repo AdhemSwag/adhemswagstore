@@ -208,6 +208,7 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
 <div class="actions"><button class="btn primary" id="createGiveaway">CREATE GIVEAWAY</button><button class="btn" id="clearGiveaway">CLEAR</button></div>
 <div id="gwStatus" class="notice" style="display:none"></div></div>
 <div class="section"><h2>Giveaway History</h2><div class="table-wrap"><table><thead><tr><th>Giveaway</th><th>Reward</th><th>Status</th><th>Entries</th><th>Winners</th><th>Actions</th></tr></thead><tbody id="giveawayList"><tr><td colspan="6">Loading…</td></tr></tbody></table></div></div>
+<div class="section"><h2>Winner Follow-up</h2><p>Track each winner from selected to contacted, delivered or declined. Notes stay in the admin audit trail.</p><div class="actions"><button class="btn primary" id="loadGiveawayWinners">LOAD WINNERS</button></div><div id="winnerStatus" class="notice" style="display:none"></div><div class="table-wrap"><table><thead><tr><th>Giveaway</th><th>Winner</th><th>#</th><th>Status</th><th>Selected</th><th>Contact note</th><th>Action</th></tr></thead><tbody id="giveawayWinnerList"><tr><td colspan="7">Load to view winners.</td></tr></tbody></table></div></div>
 </section>
 <section id="logs" class="panel"><div class="section"><h2>Admin Logs</h2><p>Every important admin action is recorded for traceability.</p><div class="actions"><button class="btn primary" id="refreshAdminLogs">REFRESH LOGS</button></div><div id="adminLogStatus" class="notice" style="display:none"></div><div class="table-wrap"><table><thead><tr><th>Date</th><th>Action</th><th>Target</th><th>Details</th></tr></thead><tbody id="adminLogList"><tr><td colspan="4">Loading…</td></tr></tbody></table></div></div></section>
 <section id="leaderboard" class="panel"><div class="section"><h2>Leaderboard</h2><p>Admin preview of the top 100 accounts for the selected metric. Search filters these results only; ranks stay tied to the original top-100 order. The public leaderboard remains unchanged.</p><div class="form-grid"><div class="field"><label>Search Twitch username</label><input id="leaderboardSearch" placeholder="adhemswag"></div><div class="field"><label>Ranking</label><select id="leaderboardRank"><option value="fnc">FNC Points</option><option value="xp">XP</option><option value="watch">Watch Minutes</option><option value="level">Level</option></select></div></div><div class="actions"><button class="btn primary" id="loadLeaderboard">LOAD LEADERBOARD</button><button class="btn" id="clearLeaderboard">CLEAR</button></div><div class="table-wrap"><table><thead><tr><th>#</th><th>Twitch</th><th>FNC</th><th>XP</th><th>Level</th><th>Watch Minutes</th></tr></thead><tbody id="leaderboardList"><tr><td colspan="6">Not loaded.</td></tr></tbody></table></div></div></section>
@@ -756,49 +757,44 @@ async function loadGiveaways(){
       '</td></tr>');
   }
   tbody.innerHTML=rows.join('');
-  tbody.querySelectorAll('[data-gw-start]').forEach(b=>b.onclick=()=>startGiveaway(b.dataset.gwStart));
-  tbody.querySelectorAll('[data-gw-draw]').forEach(b=>b.onclick=()=>drawGiveaway(b.dataset.gwDraw));
-  tbody.querySelectorAll('[data-gw-cancel]').forEach(b=>b.onclick=()=>cancelGiveaway(b.dataset.gwCancel));
+  tbody.querySelectorAll('[data-gw-start]').forEach(x=>x.onclick=()=>startGiveaway(x.dataset.gwStart));
+  tbody.querySelectorAll('[data-gw-draw]').forEach(x=>x.onclick=()=>drawGiveaway(x.dataset.gwDraw));
+  tbody.querySelectorAll('[data-gw-cancel]').forEach(x=>x.onclick=()=>cancelGiveaway(x.dataset.gwCancel));
+}
+async function giveawayAction(action,id,payload={}){
+  if(!adminReady)return null;
+  const {data,error}=await supabaseClient.functions.invoke('admin-giveaway-action',{body:{action,giveaway_id:id,payload}});
+  if(error) throw error;
+  if(data?.error) throw new Error(data.error);
+  return data;
 }
 async function startGiveaway(id){
-  const {error}=await supabaseClient.from('giveaways').update({status:'active',starts_at:new Date().toISOString(),updated_at:new Date().toISOString()}).eq('id',id);
-  if(!error){await writeAdminLog('giveaway_started','giveaway',id);await loadGiveaways();await loadAdminLogs();}
+  try{await giveawayAction('start',id);await loadGiveaways();await loadAdminLogs();}catch(e){alert('Start failed: '+(e?.message||'Unknown error'));}
 }
 async function cancelGiveaway(id){
-  const {error}=await supabaseClient.from('giveaways').update({status:'cancelled',updated_at:new Date().toISOString()}).eq('id',id);
-  if(!error){await writeAdminLog('giveaway_cancelled','giveaway',id);await loadGiveaways();await loadAdminLogs();}
-}
-function secureRandomIndex(max){
-  if(!Number.isSafeInteger(max)||max<1)throw new Error('Invalid random range.');
-  const range=0x100000000;
-  const limit=Math.floor(range/max)*max;
-  const values=new Uint32Array(1);
-  let value;
-  do{crypto.getRandomValues(values);value=values[0];}while(value>=limit);
-  return value%max;
+  if(!confirm('Cancel this active giveaway?'))return;
+  try{await giveawayAction('cancel',id);await loadGiveaways();await loadAdminLogs();}catch(e){alert('Cancel failed: '+(e?.message||'Unknown error'));}
 }
 async function drawGiveaway(id){
   if(!adminReady)return;
-  if(!confirm('Draw winners for this giveaway now? This action cannot be undone.'))return;
-  const {data:g,error:gError}=await supabaseClient.from('giveaways').select('id,winners_count,status').eq('id',id).single();
-  if(gError||!g){alert('Unable to load giveaway.');return;}
-  if(g.status!=='active'){alert('Only an active giveaway can be drawn.');return;}
-  const {data:entries,error:entryError}=await supabaseClient.from('giveaway_entries').select('user_id').eq('giveaway_id',id);
-  if(entryError){alert('Unable to load entries: '+entryError.message);return;}
-  const uniqueUsers=[...new Set((entries||[]).map(x=>x.user_id).filter(Boolean))];
-  if(!uniqueUsers.length){alert('No entries yet.');return;}
-  for(let i=uniqueUsers.length-1;i>0;i--){
-    const j=secureRandomIndex(i+1);
-    [uniqueUsers[i],uniqueUsers[j]]=[uniqueUsers[j],uniqueUsers[i]];
-  }
-  const winners=uniqueUsers.slice(0,Math.min(Math.max(1,Number(g.winners_count)||1),uniqueUsers.length));
-  const winnerRows=winners.map((user_id,i)=>({giveaway_id:id,user_id,position:i+1,status:'pending'}));
-  const {error:winnerError}=await supabaseClient.from('giveaway_winners').upsert(winnerRows,{onConflict:'giveaway_id,user_id'});
-  if(winnerError){alert('Could not save winners: '+winnerError.message);return;}
-  const {error:updateError}=await supabaseClient.from('giveaways').update({status:'ended',updated_at:new Date().toISOString()}).eq('id',id).eq('status','active');
-  if(updateError){alert('Winners saved, but giveaway status could not be updated: '+updateError.message);return;}
-  await writeAdminLog('giveaway_draw','giveaway',id,{winner_count:winners.length});
-  await loadGiveaways();await loadAdminLogs();
+  if(!confirm('Draw winners now? The draw is locked server-side and cannot be repeated.'))return;
+  try{
+    const result=await giveawayAction('draw',id);
+    alert('Winner draw completed: '+(result?.winner_count||0)+' winner(s).');
+    await loadGiveaways();await loadGiveawayWinners();await loadAdminLogs();
+  }catch(e){alert('Draw failed: '+(e?.message||'Unknown error'));}
+}
+async function loadGiveawayWinners(){
+  const tbody=document.getElementById('giveawayWinnerList'),status=document.getElementById('winnerStatus');if(!tbody||!adminReady)return;
+  tbody.innerHTML='<tr><td colspan="7">Loading…</td></tr>';
+  const {data,error}=await supabaseClient.from('giveaway_winners').select('id,giveaway_id,user_id,position,status,selected_at,contact_note,giveaways(title),users(twitch_username)').order('selected_at',{ascending:false}).limit(200);
+  if(error){tbody.innerHTML='<tr><td colspan="7">Unable to load winners: '+escapeHtml(error.message)+'</td></tr>';return;}
+  status.style.display='block';status.textContent='Loaded '+(data||[]).length+' winner records.';
+  tbody.innerHTML=(data||[]).map(w=>'<tr><td>'+escapeHtml(w.giveaways?.title||'—')+'</td><td>'+escapeHtml(w.users?.twitch_username||'—')+'</td><td>'+w.position+'</td><td>'+escapeHtml((w.status||'pending').toUpperCase())+'</td><td>'+new Date(w.selected_at).toLocaleString()+'</td><td>'+escapeHtml(w.contact_note||'—')+'</td><td><select data-winner-status="'+w.id+'" style="background:#070b0e;color:var(--white);border:1px solid var(--line);padding:7px"><option value="pending" '+(w.status==='pending'?'selected':'')+'>PENDING</option><option value="contacted" '+(w.status==='contacted'?'selected':'')+'>CONTACTED</option><option value="delivered" '+(w.status==='delivered'?'selected':'')+'>DELIVERED</option><option value="declined" '+(w.status==='declined'?'selected':'')+'>DECLINED</option></select></td></tr>').join('')||'<tr><td colspan="7">No winners yet.</td></tr>';
+  tbody.querySelectorAll('[data-winner-status]').forEach(sel=>sel.onchange=async()=>{
+    const note=prompt('Optional contact note:', '');
+    try{await giveawayAction('winner_status',sel.dataset.winnerStatus,{status:sel.value,contact_note:note||''});await loadGiveawayWinners();await loadAdminLogs();}catch(e){alert('Winner update failed: '+(e?.message||'Unknown error'));await loadGiveawayWinners();}
+  });
 }
 async function loadAdminLogs(){
   const tbody=document.getElementById('adminLogList');if(!tbody||!adminReady)return;
@@ -813,37 +809,35 @@ document.getElementById('createGiveaway')?.addEventListener('click',async()=>{
   if(!adminReady)return;
   const title=document.getElementById('gwTitle').value.trim(),reward=document.getElementById('gwReward').value.trim(),status=document.getElementById('gwStatus');
   if(!title||!reward){status.style.display='block';status.textContent='Title and reward are required.';return;}
-  const {data:{user}}=await supabaseClient.auth.getUser();
+  const winners=Math.max(1,Math.min(100,Number(document.getElementById('gwWinners').value||1)));
+  const minLevel=Math.max(1,Math.min(100,Number(document.getElementById('gwMinLevel').value||1)));
+  const minFnc=Math.max(0,Math.min(1000000000,Number(document.getElementById('gwMinFnc').value||0)));
+  const entries=Math.max(1,Math.min(100,Number(document.getElementById('gwEntries').value||1)));
+  if(!Number.isInteger(winners)||!Number.isInteger(minLevel)||!Number.isInteger(minFnc)||!Number.isInteger(entries)){status.style.display='block';status.textContent='Check giveaway numeric values.';return;}
   let rewardImageUrl=null;
-  try {
+  try{
     if(selectedGiveawayImage){
       const ext=(selectedGiveawayImage.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'');
       const imagePath='giveaways/'+crypto.randomUUID()+'.'+ext;
       const {error:uploadError}=await supabaseClient.storage.from('reward-images').upload(imagePath,selectedGiveawayImage,{contentType:selectedGiveawayImage.type,cacheControl:'3600',upsert:false});
-      if(uploadError) throw uploadError;
+      if(uploadError)throw uploadError;
       rewardImageUrl=supabaseClient.storage.from('reward-images').getPublicUrl(imagePath).data.publicUrl;
     }
-  } catch(error) {
-    status.style.display='block'; status.textContent='Image upload failed: '+(error?.message||'Unknown error'); return;
-  }
-  const payload={
-    title,reward_name:reward,
-    reward_image_url:rewardImageUrl,
-    description:document.getElementById('gwDescription').value.trim()||null,
-    winners_count:Number(document.getElementById('gwWinners').value||1),
-    min_level:Number(document.getElementById('gwMinLevel').value||1),
-    min_fnc:Number(document.getElementById('gwMinFnc').value||0),
-    entries_per_user:Number(document.getElementById('gwEntries').value||1),
-    starts_at:document.getElementById('gwStart').value?new Date(document.getElementById('gwStart').value).toISOString():null,
-    ends_at:document.getElementById('gwEnd').value?new Date(document.getElementById('gwEnd').value).toISOString():null,
-    require_profile_complete:document.getElementById('gwProfile').value==='true',
-    require_subscriber:document.getElementById('gwSub').value==='true',
-    require_follower:document.getElementById('gwFollow').value==='true',
-    created_by:user.id
-  };
-  const {data,error}=await supabaseClient.from('giveaways').insert(payload).select().single();
-  status.style.display='block';status.textContent=error?'Create failed: '+error.message:'Giveaway created as DRAFT.';
-  if(data){await writeAdminLog('giveaway_created','giveaway',data.id,{title,reward});await loadGiveaways();await loadAdminLogs();}
+    const payload={
+      title,reward_name:reward,reward_image_url:rewardImageUrl,
+      description:document.getElementById('gwDescription').value.trim()||null,
+      winners_count:winners,min_level:minLevel,min_fnc:minFnc,entries_per_user:entries,
+      starts_at:document.getElementById('gwStart').value?new Date(document.getElementById('gwStart').value).toISOString():null,
+      ends_at:document.getElementById('gwEnd').value?new Date(document.getElementById('gwEnd').value).toISOString():null,
+      require_profile_complete:document.getElementById('gwProfile').value==='true',
+      require_subscriber:document.getElementById('gwSub').value==='true',
+      require_follower:document.getElementById('gwFollow').value==='true'
+    };
+    const result=await giveawayAction('create',null,payload);
+    status.style.display='block';status.textContent='Giveaway created as DRAFT. Admin identity was set server-side.';
+    document.getElementById('clearGiveaway').click();
+    await loadGiveaways();await loadAdminLogs();
+  }catch(error){status.style.display='block';status.textContent='Create failed: '+(error?.message||'Unknown error');}
 });
 document.getElementById('gwImage')?.addEventListener('change', event => {
   selectedGiveawayImage = event.target.files?.[0] || null;
@@ -915,6 +909,7 @@ document.getElementById('loadRedemptions')?.addEventListener('click',loadRedempt
 document.getElementById('loadTransactions')?.addEventListener('click',loadTransactions);
 document.getElementById('clearTransactions')?.addEventListener('click',()=>{document.getElementById('transactionSearch').value='';document.getElementById('transactionType').value='';document.getElementById('transactionPlatform').value='';loadTransactions();});
 document.getElementById('transactionSearch')?.addEventListener('keydown',e=>{if(e.key==='Enter')loadTransactions();});
+document.getElementById('loadGiveawayWinners')?.addEventListener('click',loadGiveawayWinners);
 document.getElementById('loadLeaderboard')?.addEventListener('click',loadLeaderboard);
 document.getElementById('refreshAdminLogs')?.addEventListener('click',loadAdminLogs);
 document.getElementById('clearLeaderboard')?.addEventListener('click',()=>{document.getElementById('leaderboardSearch').value='';loadLeaderboard();});
