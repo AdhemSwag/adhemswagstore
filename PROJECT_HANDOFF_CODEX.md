@@ -86,8 +86,9 @@ HISTORY:
 ## 5. FNC RULES (CURRENT LOCKED VERSION)
 When rewards are eventually activated:
 - Normal viewer: 1 FNC per active minute
-- Subscriber: 3 FNC per active minute
-- Subscriber instant bonus: +500 FNC
+- Subscriber: ×2 for now (20 FNC per 10 minutes at the current 10 FNC / 10 minute base)
+- Future subscriber tiers: Tier 1 ×2 / Tier 2 ×3 / Tier 3 ×4
+- Subscriber instant bonus: not part of the current locked FNC rules
 - Bits: 1 FNC per Bit
 - Donation: 100 FNC per $1
 - Raid: +100 FNC to each participating eligible viewer
@@ -383,11 +384,12 @@ Old StreamElements leaderboard data MUST NOT be deleted yet.
 
 Current old leaderboard data is preserved in:
 - leaderboard/data.json
+- leaderboard/debug_snapshot.txt
 - old leaderboard implementation/workflow/script
 
-Old export contains roughly 1,500 staged viewer entries with username + points.
-The current Supabase staging table `public.fnc_imports` contains exactly 1,500 rows and 637,690 total old FNC.
-Those rows currently use temporary IDs in the form `legacy:<username>`, not canonical Twitch user IDs, so the migration is staged but NOT yet matched to live Twitch accounts.
+The latest StreamElements debug snapshot reports `_total: 1564` entries. `leaderboard/data.json` currently contains 1563 non-empty usernames because the raw snapshot includes one blank username.
+The current Supabase staging table `public.fnc_imports` contains 1626 rows and 655,115 total old FNC: 1500 rows have canonical Twitch user IDs and 126 rows do not. All 1563 non-empty usernames from `leaderboard/data.json` are present in the staging table; the extra 63 staging rows are usernames not present in the current GitHub export.
+No staged import has been claimed yet.
 It does not safely provide canonical Twitch IDs/avatars in the static export.
 
 Goal:
