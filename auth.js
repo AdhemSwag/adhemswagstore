@@ -4,7 +4,7 @@
 
   const SUPABASE_URL = 'https://lpmocfdfpebcaseffugg.supabase.co';
   const SUPABASE_ANON_KEY = 'sb_publishable_vNkDqYd81b2krZAisUhb2g_c_uwyvRp';
-  const PRODUCTION_REDIRECT = 'https://adhemswag.com/profile/';
+  const PRODUCTION_REDIRECT = 'https://adhemswag.com/dashboard/';
 
   function setStatus(message) {
     const status = document.getElementById('loginStatus');
