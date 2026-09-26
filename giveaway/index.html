@@ -211,8 +211,9 @@ async function join(g){
  const btn=document.getElementById('joinBtn'),msg=document.getElementById('joinMsg');btn.disabled=true;msg.textContent='Checking Twitch account…';
  const {data:{user}}=await client.auth.getUser();
  if(!user){msg.textContent='Connect your Twitch account first.';btn.disabled=false;return;}
- const {error}=await client.from('giveaway_entries').insert({giveaway_id:g.id,user_id:user.id,source:'base'});
- if(error){msg.textContent=error.code==='23505'?'You already joined this giveaway.':(error.message||'Unable to join.');btn.disabled=error.code==='23505';return;}
+ const {data,error}=await client.functions.invoke('join-giveaway',{body:{giveaway_id:g.id}});
+ if(error){msg.textContent=error.context?.message||error.message||'Unable to join.';btn.disabled=false;return;}
+ if(!data?.ok){msg.textContent=data?.message||'Unable to join.';btn.disabled=false;return;}
  msg.textContent='Entry added.';
  btn.textContent='JOINED';
  await load();
