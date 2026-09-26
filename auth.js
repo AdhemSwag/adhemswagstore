@@ -119,6 +119,27 @@
     return profile;
   }
 
+  function installPageLoader() {
+    const show = () => {
+      if (document.getElementById('adhemPageLoader')) return;
+      const loader = document.createElement('div');
+      loader.id = 'adhemPageLoader';
+      loader.setAttribute('aria-label', 'Loading');
+      loader.innerHTML = '<div class="adhem-loader-card"><img class="adhem-loader-logo" alt="AdhemSwag"><div class="adhem-loader-label">LOADING<span class="adhem-loader-dots">...</span></div><div class="adhem-loader-track"><i></i></div></div>';
+      const logo = document.querySelector('.sidebar-logo-img');
+      if (logo?.src) loader.querySelector('.adhem-loader-logo').src = logo.src;
+      document.body.appendChild(loader);
+      requestAnimationFrame(() => loader.classList.add('is-visible'));
+      const hide = () => { loader.classList.add('is-hidden'); window.setTimeout(() => loader.remove(), 420); };
+      if (document.readyState === 'complete') window.setTimeout(hide, 360);
+      else window.addEventListener('load', () => window.setTimeout(hide, 220), { once: true });
+      window.setTimeout(hide, 1600);
+    };
+    if (document.body) show();
+    else document.addEventListener('DOMContentLoaded', show, { once: true });
+  }
+
+  installPageLoader();
   function injectAccountRewards() {
     /* Shared site chrome: identical sidebar and safe header flow on every page. */
     if (!document.getElementById('adhemSharedChromeStyle')) {
