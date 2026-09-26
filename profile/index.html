@@ -261,10 +261,10 @@
 <div class="section-head"><h2>PROFILE REQUIREMENTS</h2><a href="/settings/">EDIT PROFILE</a></div>
 <div class="requirements-grid">
 <div class="requirement"><span>Twitch</span><b id="reqTwitch">Connected / Optional</b></div>
-<div class="requirement"><span>Email</span><b id="reqEmail">Required</b></div>
-<div class="requirement"><span>Steam profile</span><b id="reqSteamProfile">Required</b></div>
-<div class="requirement"><span>Steam trade URL</span><b id="reqTradeUrl">Required</b></div>
-<div class="requirement"><span>Discord</span><b id="reqDiscord">Required</b></div>
+<div class="requirement"><span>Email</span><b id="reqEmail">Optional</b></div>
+<div class="requirement"><span>Steam profile</span><b id="reqSteamProfile">Optional</b></div>
+<div class="requirement"><span>Steam trade URL</span><b id="reqTradeUrl">Optional</b></div>
+<div class="requirement"><span>Discord</span><b id="reqDiscord">Optional</b></div>
 </div>
 </div>
 <div class="profile-extra">
@@ -288,40 +288,35 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="/auth.js"></script>
 <script>
-window.addEventListener('adhem:viewer', function(e){
-  const d=e.detail||{}, p=d.profile;
-  const twitch=document.getElementById('profileTwitchStatus');
-  const complete=document.getElementById('profileCompleteStatus');
-  const eligible=document.getElementById('fncEligibilityStatus');
-  if(!d.authId){
-    if(twitch) twitch.textContent='Not connected';
-    if(complete) complete.textContent='Connect Twitch first';
-    return;
-  }
-  if(twitch) twitch.textContent=(p&&p.twitch_username)?'Connected as '+p.twitch_username:'Not connected';
-  if(complete) complete.textContent=(p&&p.profile_complete)?'Complete':'Incomplete';
-  const hero=document.getElementById('profileHeroStatus');
-  if(hero) hero.textContent=(p&&p.profile_complete)?'PROFILE COMPLETE':(d.authId?'INCOMPLETE':'LOGIN REQUIRED');
-  if(eligible) eligible.textContent=(p&&p.profile_complete)?'Profile ready — FNC still OFF':'Complete your profile first';
-  document.getElementById('profileFncPoints').textContent=(p&&p.fnc_points)||0;
-  const xp=Number((p&&p.xp)||0);
-  document.getElementById('profileXp').textContent=xp.toLocaleString()+' XP';
-  document.getElementById('profileProgressBar').style.width=Math.min(100,(xp%750)/750*100)+'%';
-  document.getElementById('profileLevel').textContent=(p&&p.level)||1;
-  document.getElementById('profileWatchMinutes').textContent=((p&&p.total_watch_minutes)||0)+' min';
-  const checks=[
-    ['reqTwitch',!!(p&&p.twitch_user_id)],
-    ['reqEmail',!!(p&&p.email)],
-    ['reqSteamProfile',!!(p&&p.steam_profile_url)],
-    ['reqTradeUrl',!!(p&&p.steam_trade_url)],
-    ['reqDiscord',!!(p&&p.discord_username)]
-  ];
-  checks.forEach(function(x){
-    const el=document.getElementById(x[0]);
-    if(!el)return;
-    el.textContent=x[1]?'Complete':'Required';
-    el.classList.toggle('complete',x[1]);
-  });
+window.addEventListener('adhem:viewer', async function(e){
+ const d=e.detail||{},p=d.profile,client=window.AdhemAuth,history=document.getElementById('profileHistory');
+ const set=(id,v)=>{const x=document.getElementById(id);if(x)x.textContent=v};
+ if(!d.authId){set('profileTwitchStatus','Not connected');set('profileCompleteStatus','Connect Twitch first');return}
+ set('profileTwitchStatus',p&&p.twitch_username?'Connected as '+p.twitch_username:'Not connected');
+ set('profileCompleteStatus',p&&p.profile_complete?'Complete':'Incomplete');
+ set('profileHeroStatus',p&&p.profile_complete?'PROFILE COMPLETE':'INCOMPLETE');
+ set('fncEligibilityStatus',p&&p.profile_complete?'Profile ready — FNC still OFF':'Complete your profile first');
+ set('profileFncPoints',Number(p&&p.fnc_points||0).toLocaleString());
+ const xp=Number(p&&p.xp||0),level=Number(p&&p.level||1);
+ set('profileXp',xp.toLocaleString()+' XP');set('profileLevel',level);set('profileWatchMinutes',Number(p&&p.total_watch_minutes||0)+' min');
+ const thresholds={1:0,2:750,3:1750,4:3000,5:4500,6:6250,7:8250,8:10500,9:13000,10:15750};
+ const cur=thresholds[level]??0,next=Object.keys(thresholds).map(Number).sort((a,b)=>a-b).find(x=>x>level);
+ const pct=next?Math.max(0,Math.min(100,(xp-cur)/(thresholds[next]-cur)*100)):100;
+ document.getElementById('profileProgressBar').style.width=pct+'%';
+ [['reqTwitch',!!p.twitch_user_id],['reqEmail',!!p.email],['reqSteamProfile',!!p.steam_profile_url],['reqTradeUrl',!!p.steam_trade_url],['reqDiscord',!!p.discord_username]].forEach(x=>{const el=document.getElementById(x[0]);if(el){el.textContent=x[1]?'Complete':'Optional';el.classList.toggle('complete',x[1])}});
+ if(!client||!history)return;
+ history.innerHTML='<div class="empty-history">Loading activity…</div>';
+ const [tx,rd]=await Promise.all([
+  client.from('transactions').select('id,type,amount,source,metadata,created_at,platform').eq('user_id',d.authId).order('created_at',{ascending:false}).limit(25),
+  client.from('redemptions').select('id,fnc_spent,status,rejection_reason,created_at,updated_at,reward_id,rewards(name)').eq('user_id',d.authId).order('created_at',{ascending:false}).limit(25)
+ ]);
+ const items=[];
+ (tx.data||[]).forEach(x=>items.push({date:x.created_at,type:x.type||'activity',desc:x.source||'FNC activity',amount:Number(x.amount||0)}));
+ (rd.data||[]).forEach(x=>items.push({date:x.created_at,type:'redemption',desc:(x.rewards&&x.rewards.name)||'Reward',amount:-Number(x.fnc_spent||0),status:x.status}));
+ items.sort((a,b)=>new Date(b.date)-new Date(a.date));
+ const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+ if(!items.length){history.innerHTML='<div class="empty-history">No activity yet. Your FNC earnings, XP activity, redemptions and refunds will appear here.</div>';return}
+ history.innerHTML=items.slice(0,30).map(x=>'<div class="history-item"><div class="history-type">'+esc(x.type)+'</div><div class="history-desc">'+esc(x.desc)+(x.status?' · '+esc(x.status.toUpperCase()):'')+'</div><div class="history-amount">'+(x.amount>0?'+':'')+x.amount.toLocaleString()+' FNC</div></div>').join('');
 });
 </script>
 </body></html>
