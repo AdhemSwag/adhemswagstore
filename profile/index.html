@@ -293,6 +293,17 @@ window.addEventListener('adhem:viewer', async function(e){
  const set=(id,v)=>{const x=document.getElementById(id);if(x)x.textContent=v};
  if(!d.authId){set('profileTwitchStatus','Not connected');set('profileCompleteStatus','Connect Twitch first');return}
  set('profileTwitchStatus',p&&p.twitch_username?'Connected as '+p.twitch_username:'Not connected');
+ if(p&&p.profile_complete&&client){
+   try{
+     const claim=await client.functions.invoke('claim-legacy-fnc',{body:{}});
+     const imported=claim.data&&claim.data.imported?Number(claim.data.amount||0):0;
+     if(imported>0){
+       set('fncEligibilityStatus','StreamElements legacy points imported: +'+imported.toLocaleString()+' FNC');
+       await window.AdhemSwagAuth.refreshAccountUI();
+       return;
+     }
+   }catch(err){ console.warn('Legacy FNC import unavailable',err); }
+ }
  set('profileCompleteStatus',p&&p.profile_complete?'Complete':'Incomplete');
  set('profileHeroStatus',p&&p.profile_complete?'PROFILE COMPLETE':'INCOMPLETE');
  set('fncEligibilityStatus',p&&p.profile_complete?'Profile ready — FNC still OFF':'Complete your profile first');
