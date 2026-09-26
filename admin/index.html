@@ -748,15 +748,36 @@ async function cancelGiveaway(id){
   const {error}=await supabaseClient.from('giveaways').update({status:'cancelled',updated_at:new Date().toISOString()}).eq('id',id);
   if(!error){await writeAdminLog('giveaway_cancelled','giveaway',id);await loadGiveaways();await loadAdminLogs();}
 }
+function secureRandomIndex(max){
+  if(!Number.isSafeInteger(max)||max<1)throw new Error('Invalid random range.');
+  const range=0x100000000;
+  const limit=Math.floor(range/max)*max;
+  const values=new Uint32Array(1);
+  let value;
+  do{crypto.getRandomValues(values);value=values[0];}while(value>=limit);
+  return value%max;
+}
 async function drawGiveaway(id){
-  const {data:g}=await supabaseClient.from('giveaways').select('id,winners_count').eq('id',id).single();
-  if(!g)return;
-  const {data:entries}=await supabaseClient.from('giveaway_entries').select('user_id').eq('giveaway_id',id);
-  if(!entries?.length){alert('No entries yet.');return;}
-  const shuffled=[...entries].sort(()=>Math.random()-0.5).slice(0,Math.min(g.winners_count,entries.length));
-  for(let i=0;i<shuffled.length;i++)await supabaseClient.from('giveaway_winners').upsert({giveaway_id:id,user_id:shuffled[i].user_id,position:i+1,status:'pending'});
-  await supabaseClient.from('giveaways').update({status:'ended',updated_at:new Date().toISOString()}).eq('id',id);
-  await writeAdminLog('giveaway_draw','giveaway',id,{winner_count:shuffled.length});
+  if(!adminReady)return;
+  if(!confirm('Draw winners for this giveaway now? This action cannot be undone.'))return;
+  const {data:g,error:gError}=await supabaseClient.from('giveaways').select('id,winners_count,status').eq('id',id).single();
+  if(gError||!g){alert('Unable to load giveaway.');return;}
+  if(g.status!=='active'){alert('Only an active giveaway can be drawn.');return;}
+  const {data:entries,error:entryError}=await supabaseClient.from('giveaway_entries').select('user_id').eq('giveaway_id',id);
+  if(entryError){alert('Unable to load entries: '+entryError.message);return;}
+  const uniqueUsers=[...new Set((entries||[]).map(x=>x.user_id).filter(Boolean))];
+  if(!uniqueUsers.length){alert('No entries yet.');return;}
+  for(let i=uniqueUsers.length-1;i>0;i--){
+    const j=secureRandomIndex(i+1);
+    [uniqueUsers[i],uniqueUsers[j]]=[uniqueUsers[j],uniqueUsers[i]];
+  }
+  const winners=uniqueUsers.slice(0,Math.min(Math.max(1,Number(g.winners_count)||1),uniqueUsers.length));
+  const winnerRows=winners.map((user_id,i)=>({giveaway_id:id,user_id,position:i+1,status:'pending'}));
+  const {error:winnerError}=await supabaseClient.from('giveaway_winners').upsert(winnerRows,{onConflict:'giveaway_id,user_id'});
+  if(winnerError){alert('Could not save winners: '+winnerError.message);return;}
+  const {error:updateError}=await supabaseClient.from('giveaways').update({status:'ended',updated_at:new Date().toISOString()}).eq('id',id).eq('status','active');
+  if(updateError){alert('Winners saved, but giveaway status could not be updated: '+updateError.message);return;}
+  await writeAdminLog('giveaway_draw','giveaway',id,{winner_count:winners.length});
   await loadGiveaways();await loadAdminLogs();
 }
 async function loadAdminLogs(){
