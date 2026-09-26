@@ -588,8 +588,9 @@ async function loadLeaderboard(){
  const orderField=rank==='xp'?'xp':rank==='watch'?'total_watch_minutes':rank==='level'?'level':'fnc_points';
  const {data,error}=await supabaseClient.from('users').select('twitch_username,fnc_points,xp,level,total_watch_minutes').order(orderField,{ascending:false}).limit(100);
  if(error){tbody.innerHTML='<tr><td colspan="6">'+escapeHtml(error.message)+'</td></tr>';return;}
- const rows=(data||[]).filter(x=>!term||(x.twitch_username||'').toLowerCase().includes(term));
- tbody.innerHTML=rows.map((x,i)=>'<tr><td>'+(i+1)+'</td><td>'+escapeHtml(x.twitch_username||'—')+'</td><td>'+Number(x.fnc_points||0).toLocaleString()+'</td><td>'+Number(x.xp||0).toLocaleString()+'</td><td>'+Number(x.level||1)+'</td><td>'+Number(x.total_watch_minutes||0).toLocaleString()+'</td></tr>').join('')||'<tr><td colspan="6">No users.</td></tr>';
+ const allRows=data||[];
+ const rows=allRows.map((x,i)=>({...x,rank:i+1})).filter(x=>!term||(x.twitch_username||'').toLowerCase().includes(term));
+ tbody.innerHTML=rows.map(x=>'<tr><td>'+x.rank+'</td><td>'+escapeHtml(x.twitch_username||'—')+'</td><td>'+Number(x.fnc_points||0).toLocaleString()+'</td><td>'+Number(x.xp||0).toLocaleString()+'</td><td>'+Number(x.level||1)+'</td><td>'+Number(x.total_watch_minutes||0).toLocaleString()+'</td></tr>').join('')||'<tr><td colspan="6">No users.</td></tr>';
 }
 async function loadMedia(){
  if(!adminReady)return;const tbody=document.getElementById('mediaList');if(!tbody)return;
