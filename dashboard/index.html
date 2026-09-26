@@ -328,6 +328,7 @@
   ::selection{ background:rgba(17,217,247,0.3); }
 
   .hero-faq{margin-top:-28px;margin-bottom:0;}
+  .fnc-twitch-only{margin:16px 0 18px;padding:12px 14px;border:1px solid rgba(145,70,255,.35);background:rgba(145,70,255,.06);color:#d9c9ff;font:700 11px/1.6 'JetBrains Mono',monospace;letter-spacing:.04em;}
   .hero-faq .fnc-faq-btn{padding:12px 20px;font-size:12px;}
 
   /* ---- FNC Points FAQ (button + popup) ---- */
@@ -898,7 +899,7 @@ footer .footer-copy .row{margin:0;}
         <div class="eyebrow">// tracking watch time<br>· earning rewards</div>
       </div>
       <h1>Turn watch time<br>into <span class="hl">real rewards</span></h1>
-      <p class="active-note">Active viewers only — watch and chat to earn points and unlock rewards to claim.</p>
+      <div class="fnc-twitch-only">⚠ FNC POINTS — TWITCH ONLY. Watch AdhemSwag live on Twitch to earn FNC. Kick does not earn FNC Points.</div><p class="active-note">Active viewers only — watch and chat to earn points and unlock rewards to claim.</p>
       <p class="lede">Watch AdhemSwag live, earn points every minute, and redeem exclusive rewards directly — CS2 skins, gear, shoutouts, perks, and more, made for the community.</p>
 
       <div class="cta-row">
@@ -908,9 +909,7 @@ footer .footer-copy .row{margin:0;}
 
       <div class="hero-faq">
         <div class="eyebrow" style="margin-bottom:8px;">// need help</div>
-        <button class="fnc-faq-btn" onclick="document.getElementById('fncFaqOverlay').classList.add('open')">
-          <span class="fnc-faq-btn-icon">?</span>FAQ
-        </button>
+        <a class="fnc-faq-btn" href="/faq/"><span class="fnc-faq-btn-icon">?</span>FNC POINTS FAQ</a>
       </div>
     </div>
 
@@ -999,14 +998,14 @@ footer .footer-copy .row{margin:0;}
             <button class="fnc-faq-q" onclick="this.parentElement.classList.toggle('active')">
               How do viewers earn points? <span class="fnc-faq-icon">+</span>
             </button>
-            <div class="fnc-faq-a">Every viewer watching the stream live on Twitch earns <strong>10 FNC every 10 minutes</strong>.</div>
+            <div class="fnc-faq-a">FNC Points are currently <strong>Twitch only</strong>. Every active viewer watching the live stream on Twitch earns <strong>10 FNC every 10 minutes</strong>. Kick viewing does not generate FNC Points.</div>
           </div>
 
           <div class="fnc-faq-item">
             <button class="fnc-faq-q" onclick="this.parentElement.classList.toggle('active')">
               Do subscribers earn more? <span class="fnc-faq-icon">+</span>
             </button>
-            <div class="fnc-faq-a">Yes. Active subscribers earn <strong>30 FNC every 10 minutes</strong> while watching live, on top of the one-time subscribe bonus below.</div>
+            <div class="fnc-faq-a">Yes. Active Twitch subscribers earn <strong>30 FNC every 10 minutes</strong> while watching live, on top of the one-time subscribe bonus below.</div>
           </div>
 
           <div class="fnc-faq-item">
@@ -1037,7 +1036,7 @@ footer .footer-copy .row{margin:0;}
             <button class="fnc-faq-q" onclick="this.parentElement.classList.toggle('active')">
               Do I earn points if the stream is offline? <span class="fnc-faq-icon">+</span>
             </button>
-            <div class="fnc-faq-a">No. Points only accumulate while you're actively watching a <strong>live</strong> stream on Twitch.</div>
+            <div class="fnc-faq-a">No. FNC Points only accumulate while you're actively watching a <strong>live Twitch</strong> stream.</div>
           </div>
 
           <div class="fnc-faq-section-label">Redemption Rules</div>
