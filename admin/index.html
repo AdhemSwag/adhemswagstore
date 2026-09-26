@@ -38,12 +38,12 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
 #adminLoader{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(5,7,10,.98);transition:opacity .35s ease,visibility .35s ease}
 #adminLoader.hidden{opacity:0;visibility:hidden;pointer-events:none}
 .loader-box{width:min(430px,calc(100% - 40px));text-align:center}
-.loader-logo{width:142px;height:142px;object-fit:contain;display:block;margin:0 auto 18px;filter:drop-shadow(0 0 22px rgba(17,217,247,.28))}
+.loader-logo{width:180px;height:180px;object-fit:contain;display:block;margin:0 auto 18px;filter:drop-shadow(0 0 22px rgba(17,217,247,.28))}
 .loader-title{font:700 27px Rajdhani,sans-serif;letter-spacing:.16em;text-transform:uppercase}
 .loader-title span{color:var(--cyan)}
 .loader-status{min-height:18px;margin-top:8px;color:var(--muted);font:10px 'JetBrains Mono',monospace}
-.loader-track{height:6px;margin-top:18px;background:#10161a;border:1px solid rgba(17,217,247,.16);overflow:hidden}
-.loader-bar{height:100%;width:0%;background:var(--cyan);box-shadow:0 0 12px rgba(17,217,247,.35);transition:width .35s ease}
+.loader-track{height:8px;margin-top:18px;background:#10161a;border:1px solid rgba(17,217,247,.16);overflow:hidden}
+.loader-bar{height:100%;width:0%;background:linear-gradient(90deg,rgba(17,217,247,.25),var(--cyan),rgba(255,255,255,.9),var(--cyan),rgba(17,217,247,.25));background-size:220% 100%;box-shadow:0 0 14px rgba(17,217,247,.55);transition:width .35s ease;animation:adminLoaderFlow 1.15s linear infinite}@keyframes adminLoaderFlow{0%{background-position:200% 0}100%{background-position:-20% 0}}
 .loader-percent{margin-top:8px;color:var(--cyan);font:600 10px 'JetBrains Mono',monospace}
 
 @media(max-width:900px){.admin-shell{grid-template-columns:1fr}.admin-nav{border-right:0;border-bottom:1px solid var(--line);display:flex;gap:5px;overflow:auto;padding:10px}.brand,.nav-label{display:none}.nav-btn{width:auto;white-space:nowrap}.main{padding:30px 20px 50px}.cards{grid-template-columns:repeat(2,1fr)}}
@@ -55,7 +55,7 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
   <div class="loader-box">
     <img class="loader-logo" src="/apple-touch-icon.png" alt="AdhemSwag">
     <div class="loader-title">ADHEMSWAG <span>ADMIN</span></div>
-    <div class="loader-status" id="loaderStatus">INITIALIZING ADMIN PANEL…</div>
+    <div class="loader-status" id="loaderStatus">INITIALIZING ADMIN PANEL…</div><div style="margin-top:10px;color:var(--cyan);font:700 9px 'JetBrains Mono',monospace;letter-spacing:.18em;opacity:.75">SECURE • TWITCH ADMIN • SUPABASE</div>
     <div class="loader-track"><div class="loader-bar" id="loaderBar"></div></div>
     <div class="loader-percent" id="loaderPercent">0%</div>
   </div>
@@ -153,7 +153,7 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
       </div>
     </section>
 
-    <section id="transactions" class="panel"><div class="section"><h2>Transactions</h2><p>Audit watch, chat, subscription, Bits, Kick, donation, raid, redemption and admin activity.</p><div class="form-grid"><div class="field"><label>Type</label><select id="transactionType"><option value="">All types</option><option>watch</option><option>watch_xp</option><option>watch_fnc</option><option>chat</option><option>subscription</option><option>bits</option><option>kicks</option><option>donation</option><option>raid</option><option>redemption</option><option>admin_adjustment</option><option>import</option></select></div><div class="field"><label>Platform</label><select id="transactionPlatform"><option value="">All</option><option value="twitch">Twitch</option><option value="kick">Kick</option></select></div></div><div class="actions"><button class="btn primary" id="loadTransactions">LOAD TRANSACTIONS</button></div><div class="table-wrap"><table><thead><tr><th>Date</th><th>Viewer</th><th>Type</th><th>Amount</th><th>Platform</th><th>Source</th><th>Event ID</th></tr></thead><tbody id="transactionList"><tr><td colspan="7">Load to view transactions.</td></tr></tbody></table></div></div></section>
+    <section id="transactions" class="panel"><div class="section"><h2>Transactions</h2><p>Audit every points and activity transaction with quick totals and filters.</p><div class="cards" style="margin-top:18px"><div class="card"><small>RESULTS</small><div class="metric" id="transactionMetricCount">—</div></div><div class="card"><small>TOTAL AMOUNT</small><div class="metric" id="transactionMetricAmount">—</div></div><div class="card"><small>TWITCH</small><div class="metric" id="transactionMetricTwitch">—</div></div><div class="card"><small>KICK</small><div class="metric" id="transactionMetricKick">—</div></div></div><div class="form-grid"><div class="field"><label>Type</label><select id="transactionType"><option value="">All types</option><option>watch</option><option>watch_xp</option><option>watch_fnc</option><option>chat</option><option>subscription</option><option>bits</option><option>kicks</option><option>donation</option><option>raid</option><option>redemption</option><option>admin_adjustment</option><option>import</option></select></div><div class="field"><label>Platform</label><select id="transactionPlatform"><option value="">All</option><option value="twitch">Twitch</option><option value="kick">Kick</option></select></div><div class="field"><label>Search viewer</label><input id="transactionSearch" placeholder="Twitch username"></div></div><div class="actions"><button class="btn primary" id="loadTransactions">LOAD TRANSACTIONS</button><button class="btn" id="clearTransactions">CLEAR</button></div><div class="table-wrap"><table><thead><tr><th>Date</th><th>Viewer</th><th>Type</th><th>Amount</th><th>Platform</th><th>Source</th><th>Event ID</th></tr></thead><tbody id="transactionList"><tr><td colspan="7">Load to view transactions.</td></tr></tbody></table></div></div></section>
 
 <section id="fnc-settings" class="panel">
       <div class="section">
@@ -568,13 +568,19 @@ async function processRedemption(id,action){
 }
 async function loadTransactions(){
  if(!adminReady)return;const tbody=document.getElementById('transactionList');if(!tbody)return;
+ tbody.innerHTML='<tr><td colspan="7">Loading transactions…</td></tr>';
  let q=supabase.from('transactions').select('id,user_id,type,amount,source,external_event_id,created_at,platform').order('created_at',{ascending:false}).limit(200);
- const type=document.getElementById('transactionType')?.value||'',platform=document.getElementById('transactionPlatform')?.value||'';
+ const type=document.getElementById('transactionType')?.value||'',platform=document.getElementById('transactionPlatform')?.value||'',term=(document.getElementById('transactionSearch')?.value||'').trim().toLowerCase();
  if(type)q=q.eq('type',type);if(platform)q=q.eq('platform',platform);
  const {data,error}=await q;if(error){tbody.innerHTML='<tr><td colspan="7">'+escapeHtml(error.message)+'</td></tr>';return;}
  const ids=[...new Set((data||[]).map(x=>x.user_id).filter(Boolean))];let um=new Map();
  if(ids.length){const us=await supabase.from('users').select('id,twitch_username');um=new Map((us.data||[]).map(x=>[x.id,x]));}
- tbody.innerHTML=(data||[]).map(x=>'<tr><td>'+new Date(x.created_at).toLocaleString()+'</td><td>'+escapeHtml(um.get(x.user_id)?.twitch_username||'—')+'</td><td>'+escapeHtml(x.type)+'</td><td>'+Number(x.amount||0).toLocaleString()+'</td><td>'+escapeHtml(x.platform||'—')+'</td><td>'+escapeHtml(x.source||'—')+'</td><td>'+escapeHtml(x.external_event_id||'—')+'</td></tr>').join('')||'<tr><td colspan="7">No transactions.</td></tr>';
+ const rows=(data||[]).filter(x=>!term||(um.get(x.user_id)?.twitch_username||'').toLowerCase().includes(term));
+ document.getElementById('transactionMetricCount').textContent=rows.length.toLocaleString();
+ document.getElementById('transactionMetricAmount').textContent=rows.reduce((s,x)=>s+Number(x.amount||0),0).toLocaleString();
+ document.getElementById('transactionMetricTwitch').textContent=rows.filter(x=>x.platform==='twitch').length.toLocaleString();
+ document.getElementById('transactionMetricKick').textContent=rows.filter(x=>x.platform==='kick').length.toLocaleString();
+ tbody.innerHTML=rows.map(x=>'<tr><td>'+new Date(x.created_at).toLocaleString()+'</td><td>'+escapeHtml(um.get(x.user_id)?.twitch_username||'—')+'</td><td>'+escapeHtml(x.type||'—')+'</td><td>'+Number(x.amount||0).toLocaleString()+'</td><td>'+escapeHtml(x.platform||'—')+'</td><td>'+escapeHtml(x.source||'—')+'</td><td>'+escapeHtml(x.external_event_id||'—')+'</td></tr>').join('')||'<tr><td colspan="7">No transactions found.</td></tr>';
 }
 async function loadLeaderboard(){
  if(!adminReady)return;const tbody=document.getElementById('leaderboardList');if(!tbody)return;
@@ -859,6 +865,8 @@ document.querySelectorAll('.nav-btn').forEach(btn=>{
 document.getElementById('refreshDashboard')?.addEventListener('click',refreshDashboard);
 document.getElementById('loadRedemptions')?.addEventListener('click',loadRedemptions);
 document.getElementById('loadTransactions')?.addEventListener('click',loadTransactions);
+document.getElementById('clearTransactions')?.addEventListener('click',()=>{document.getElementById('transactionSearch').value='';document.getElementById('transactionType').value='';document.getElementById('transactionPlatform').value='';loadTransactions();});
+document.getElementById('transactionSearch')?.addEventListener('keydown',e=>{if(e.key==='Enter')loadTransactions();});
 document.getElementById('loadLeaderboard')?.addEventListener('click',loadLeaderboard);
 document.getElementById('loadMedia')?.addEventListener('click',loadMedia);
 document.getElementById('findAdminUser')?.addEventListener('click',async()=>{
