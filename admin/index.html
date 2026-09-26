@@ -232,9 +232,9 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
   </main>
 </div>
 <script>
-const SUPABASE_URL = 'https://lpmocfdfpebcaseffugg.supabase.co';
+const SUPABASE_URL = 'https://lpmocfdfpebcaseffugg.supabaseClient.co';
 const SUPABASE_KEY = 'sb_publishable_vNkDqYd81b2krZAisUhb2g_c_uwyvRp';
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
   auth: { autoRefreshToken: true, persistSession: true, detectSessionInUrl: true, storageKey: 'adhemswag-auth' }
 });
 let adminReady = false;
@@ -257,7 +257,7 @@ async function loginAdmin(event) {
     const btn = document.getElementById('adminLogin');
     if(btn) { btn.disabled = true; btn.textContent = 'OPENING TWITCH…'; }
     setSecurity('Opening Twitch login…', false, false);
-    const { data, error } = await supabase.auth.signInWithOAuth({
+    const { data, error } = await supabaseClient.auth.signInWithOAuth({
       provider: 'twitch',
       options: {
         redirectTo: window.location.origin + '/admin/',
@@ -299,7 +299,7 @@ async function verifyAdmin() {
   setSecurity('checking Twitch admin access…', false, true);
   try {
     const result = await Promise.race([
-      supabase.auth.getUser(),
+      supabaseClient.auth.getUser(),
       new Promise((_, reject) => setTimeout(() => reject(new Error('Authentication check timed out.')), 8000))
     ]);
     const { data, error } = result;
@@ -363,7 +363,7 @@ async function verifyAdmin() {
   }
 }
 
-supabase.auth.onAuthStateChange((event, session) => {
+supabaseClient.auth.onAuthStateChange((event, session) => {
   if (event === 'SIGNED_IN' && session?.user) {
     setTimeout(() => verifyAdmin(), 0);
   }
@@ -409,7 +409,7 @@ async function loadUsers(search=''){
   if(!tbody||!adminReady)return;
   tbody.innerHTML='<tr><td colspan="8">Loading viewers…</td></tr>';
   const filter=document.getElementById('userStatusFilter')?.value||'all';
-  let query=supabase.from('users').select('id,twitch_username,email,fnc_points,total_fnc_earned,xp,level,total_watch_minutes,profile_complete,is_blocked,steam_id,steam_trade_url,discord_username,created_at').order('created_at',{ascending:false}).limit(100);
+  let query=supabaseClient.from('users').select('id,twitch_username,email,fnc_points,total_fnc_earned,xp,level,total_watch_minutes,profile_complete,is_blocked,steam_id,steam_trade_url,discord_username,created_at').order('created_at',{ascending:false}).limit(100);
   const term=search.trim();
   if(term) query=query.or('twitch_username.ilike.%'+term+'%,email.ilike.%'+term+'%');
   if(filter==='active') query=query.eq('is_blocked',false);
@@ -449,7 +449,7 @@ async function adjustSelectedUser({fncDelta=0,xpDelta=0,level=null,blocked=null}
   if(blocked!==null)parts.push(blocked?'BLOCK':'UNBLOCK');
   if(!parts.length)return;
   if(!confirm('Confirm: '+parts.join(', ')+' for '+(selectedAdminUser.twitch_username||'this user')+'?'))return;
-  const {data,error}=await supabase.functions.invoke('admin-adjust-user',{
+  const {data,error}=await supabaseClient.functions.invoke('admin-adjust-user',{
     body:{
       user_id:selectedAdminUser.id,
       fnc_delta:fncDelta,
@@ -504,7 +504,7 @@ document.getElementById('toggleUserBlock')?.addEventListener('click',()=>{
 async function loadRewards() {
   const tbody = document.getElementById('rewardList');
   if (!tbody) return;
-  const { data, error } = await supabase.from('rewards').select('id,name,description,fnc_cost,level_required,stock,active,image_url').order('created_at',{ascending:false});
+  const { data, error } = await supabaseClient.from('rewards').select('id,name,description,fnc_cost,level_required,stock,active,image_url').order('created_at',{ascending:false});
   if (error) {
     tbody.innerHTML = '<tr><td colspan="7">Unable to load rewards.</td></tr>';
     return;
@@ -530,16 +530,16 @@ async function loadRewards() {
     document.getElementById('saveReward').textContent='UPDATE REWARD';
     document.getElementById('rewards').scrollIntoView({behavior:'smooth',block:'start'});
   });
-  tbody.querySelectorAll('[data-reward-toggle]').forEach(b=>b.onclick=async()=>{const id=b.dataset.rewardToggle;const row=data.find(x=>x.id===id);if(!row)return;const {error}=await supabase.from('rewards').update({active:!row.active,updated_at:new Date().toISOString()}).eq('id',id);if(error)alert(error.message);await loadRewards();await refreshDashboard();});
-  tbody.querySelectorAll('[data-reward-delete]').forEach(b=>b.onclick=async()=>{if(!confirm('Delete this reward?'))return;const {error}=await supabase.from('rewards').delete().eq('id',b.dataset.rewardDelete);if(error)alert(error.message);await loadRewards();await refreshDashboard();});
+  tbody.querySelectorAll('[data-reward-toggle]').forEach(b=>b.onclick=async()=>{const id=b.dataset.rewardToggle;const row=data.find(x=>x.id===id);if(!row)return;const {error}=await supabaseClient.from('rewards').update({active:!row.active,updated_at:new Date().toISOString()}).eq('id',id);if(error)alert(error.message);await loadRewards();await refreshDashboard();});
+  tbody.querySelectorAll('[data-reward-delete]').forEach(b=>b.onclick=async()=>{if(!confirm('Delete this reward?'))return;const {error}=await supabaseClient.from('rewards').delete().eq('id',b.dataset.rewardDelete);if(error)alert(error.message);await loadRewards();await refreshDashboard();});
 }
 
 
 async function refreshDashboard(){
  if(!adminReady)return;
- const u=await supabase.from('users').select('id,fnc_points');
- const r=await supabase.from('rewards').select('id',{count:'exact',head:true}).eq('active',true);
- const d=await supabase.from('redemptions').select('id',{count:'exact',head:true}).eq('status','pending');
+ const u=await supabaseClient.from('users').select('id,fnc_points');
+ const r=await supabaseClient.from('rewards').select('id',{count:'exact',head:true}).eq('active',true);
+ const d=await supabaseClient.from('redemptions').select('id',{count:'exact',head:true}).eq('status','pending');
  document.getElementById('metricUsers').textContent=(u.data||[]).length.toLocaleString();
  document.getElementById('metricRewards').textContent=(r.count||0).toLocaleString();
  document.getElementById('metricRedemptions').textContent=(d.count||0).toLocaleString();
@@ -547,10 +547,10 @@ async function refreshDashboard(){
 }
 async function loadRedemptions(){
  if(!adminReady)return; const tbody=document.getElementById('redemptionList'); if(!tbody)return;
- let q=supabase.from('redemptions').select('id,user_id,reward_id,fnc_spent,status,steam_trade_url_snapshot,created_at').order('created_at',{ascending:false}).limit(200);
+ let q=supabaseClient.from('redemptions').select('id,user_id,reward_id,fnc_spent,status,steam_trade_url_snapshot,created_at').order('created_at',{ascending:false}).limit(200);
  const st=document.getElementById('redemptionStatusFilter')?.value||'pending'; if(st!=='all')q=q.eq('status',st);
  const {data,error}=await q; if(error){tbody.innerHTML='<tr><td colspan="7">'+escapeHtml(error.message)+'</td></tr>';return;}
- const us=await supabase.from('users').select('id,twitch_username,email'); const rw=await supabase.from('rewards').select('id,name');
+ const us=await supabaseClient.from('users').select('id,twitch_username,email'); const rw=await supabaseClient.from('rewards').select('id,name');
  const um=new Map((us.data||[]).map(x=>[x.id,x])), rm=new Map((rw.data||[]).map(x=>[x.id,x]));
  const search=(document.getElementById('redemptionSearch')?.value||'').toLowerCase();
  const rows=(data||[]).filter(x=>{const u=um.get(x.user_id)||{},r=rm.get(x.reward_id)||{};return !search||(u.twitch_username||u.email||'').toLowerCase().includes(search)||(r.name||'').toLowerCase().includes(search);});
@@ -562,19 +562,19 @@ async function processRedemption(id,action){
  if(!adminReady)return; let reason=null;
  if(action==='reject'){reason=prompt('Reason for rejection:','Rejected by admin');if(reason===null)return;}
  if(!confirm(action==='approve'?'Approve this redemption?':'Reject and refund the FNC?'))return;
- const {error}=await supabase.functions.invoke('admin-redemption-action',{body:{redemption_id:id,action,reason}});
+ const {error}=await supabaseClient.functions.invoke('admin-redemption-action',{body:{redemption_id:id,action,reason}});
  const s=document.getElementById('redemptionStatus');s.style.display='block';s.style.borderLeftColor=error?'var(--danger)':'var(--ok)';s.textContent=error?'Action failed: '+error.message:(action==='approve'?'Redemption approved.':'Redemption rejected and FNC refunded.');
  if(!error){await loadRedemptions();await refreshDashboard();await loadAdminLogs();}
 }
 async function loadTransactions(){
  if(!adminReady)return;const tbody=document.getElementById('transactionList');if(!tbody)return;
  tbody.innerHTML='<tr><td colspan="7">Loading transactions…</td></tr>';
- let q=supabase.from('transactions').select('id,user_id,type,amount,source,external_event_id,created_at,platform').order('created_at',{ascending:false}).limit(200);
+ let q=supabaseClient.from('transactions').select('id,user_id,type,amount,source,external_event_id,created_at,platform').order('created_at',{ascending:false}).limit(200);
  const type=document.getElementById('transactionType')?.value||'',platform=document.getElementById('transactionPlatform')?.value||'',term=(document.getElementById('transactionSearch')?.value||'').trim().toLowerCase();
  if(type)q=q.eq('type',type);if(platform)q=q.eq('platform',platform);
  const {data,error}=await q;if(error){tbody.innerHTML='<tr><td colspan="7">'+escapeHtml(error.message)+'</td></tr>';return;}
  const ids=[...new Set((data||[]).map(x=>x.user_id).filter(Boolean))];let um=new Map();
- if(ids.length){const us=await supabase.from('users').select('id,twitch_username');um=new Map((us.data||[]).map(x=>[x.id,x]));}
+ if(ids.length){const us=await supabaseClient.from('users').select('id,twitch_username');um=new Map((us.data||[]).map(x=>[x.id,x]));}
  const rows=(data||[]).filter(x=>!term||(um.get(x.user_id)?.twitch_username||'').toLowerCase().includes(term));
  document.getElementById('transactionMetricCount').textContent=rows.length.toLocaleString();
  document.getElementById('transactionMetricAmount').textContent=rows.reduce((s,x)=>s+Number(x.amount||0),0).toLocaleString();
@@ -586,7 +586,7 @@ async function loadLeaderboard(){
  if(!adminReady)return;const tbody=document.getElementById('leaderboardList');if(!tbody)return;
  const rank=document.getElementById('leaderboardRank')?.value||'fnc',term=(document.getElementById('leaderboardSearch')?.value||'').trim().toLowerCase();
  const orderField=rank==='xp'?'xp':rank==='watch'?'total_watch_minutes':rank==='level'?'level':'fnc_points';
- const {data,error}=await supabase.from('users').select('twitch_username,fnc_points,xp,level,total_watch_minutes').order(orderField,{ascending:false}).limit(100);
+ const {data,error}=await supabaseClient.from('users').select('twitch_username,fnc_points,xp,level,total_watch_minutes').order(orderField,{ascending:false}).limit(100);
  if(error){tbody.innerHTML='<tr><td colspan="6">'+escapeHtml(error.message)+'</td></tr>';return;}
  const rows=(data||[]).filter(x=>!term||(x.twitch_username||'').toLowerCase().includes(term));
  tbody.innerHTML=rows.map((x,i)=>'<tr><td>'+(i+1)+'</td><td>'+escapeHtml(x.twitch_username||'—')+'</td><td>'+Number(x.fnc_points||0).toLocaleString()+'</td><td>'+Number(x.xp||0).toLocaleString()+'</td><td>'+Number(x.level||1)+'</td><td>'+Number(x.total_watch_minutes||0).toLocaleString()+'</td></tr>').join('')||'<tr><td colspan="6">No users.</td></tr>';
@@ -594,22 +594,22 @@ async function loadLeaderboard(){
 async function loadMedia(){
  if(!adminReady)return;const tbody=document.getElementById('mediaList');if(!tbody)return;
  const folders=['rewards','giveaways'];let files=[];
- for(const folder of folders){const {data,error}=await supabase.storage.from('reward-images').list(folder,{limit:100,sortBy:{column:'created_at',order:'desc'}});if(error){tbody.innerHTML='<tr><td colspan="4">'+escapeHtml(error.message)+'</td></tr>';return;}for(const x of (data||[])){if(x.name)files.push({...x,path:folder+'/'+x.name});}}
+ for(const folder of folders){const {data,error}=await supabaseClient.storage.from('reward-images').list(folder,{limit:100,sortBy:{column:'created_at',order:'desc'}});if(error){tbody.innerHTML='<tr><td colspan="4">'+escapeHtml(error.message)+'</td></tr>';return;}for(const x of (data||[])){if(x.name)files.push({...x,path:folder+'/'+x.name});}}
  tbody.innerHTML=files.map(x=>'<tr><td>'+escapeHtml(x.path)+'</td><td>'+((Number(x.metadata?.size||0)/1024).toFixed(1))+' KB</td><td>'+new Date(x.updated_at||x.created_at||Date.now()).toLocaleString()+'</td><td><button class="btn danger" data-media="'+escapeAttr(x.path)+'">DELETE</button></td></tr>').join('')||'<tr><td colspan="4">No images uploaded yet.</td></tr>';
- tbody.querySelectorAll('[data-media]').forEach(b=>b.onclick=async()=>{if(!confirm('Delete image?'))return;const {error}=await supabase.storage.from('reward-images').remove([b.dataset.media]);if(error)alert(error.message);await loadMedia();});
+ tbody.querySelectorAll('[data-media]').forEach(b=>b.onclick=async()=>{if(!confirm('Delete image?'))return;const {error}=await supabaseClient.storage.from('reward-images').remove([b.dataset.media]);if(error)alert(error.message);await loadMedia();});
 }
 async function loadAdminAccess(){
  if(!adminReady)return;const tbody=document.getElementById('adminAccessList');if(!tbody)return;
- const {data,error}=await supabase.from('admin_users').select('user_id,created_at').order('created_at',{ascending:true});
+ const {data,error}=await supabaseClient.from('admin_users').select('user_id,created_at').order('created_at',{ascending:true});
  if(error){tbody.innerHTML='<tr><td colspan="3">'+escapeHtml(error.message)+'</td></tr>';return;}
  tbody.innerHTML=(data||[]).map(x=>'<tr><td>'+escapeHtml(x.user_id)+'</td><td>'+new Date(x.created_at).toLocaleString()+'</td><td><button class="btn danger" data-revoke="'+x.user_id+'">REVOKE</button></td></tr>').join('');
- tbody.querySelectorAll('[data-revoke]').forEach(b=>b.onclick=async()=>{if(!confirm('Revoke admin access?'))return;const {error}=await supabase.from('admin_users').delete().eq('user_id',b.dataset.revoke);if(error)alert(error.message);await loadAdminAccess();});
+ tbody.querySelectorAll('[data-revoke]').forEach(b=>b.onclick=async()=>{if(!confirm('Revoke admin access?'))return;const {error}=await supabaseClient.from('admin_users').delete().eq('user_id',b.dataset.revoke);if(error)alert(error.message);await loadAdminAccess();});
 }
 
 async function updateSystemButtons(){
  if(!adminReady)return;
- const f=await supabase.from('fnc_settings').select('enabled').eq('id',1).single();
- const s=await supabase.from('system_config').select('rewards_enabled,xp_enabled').eq('id',true).single();
+ const f=await supabaseClient.from('fnc_settings').select('enabled').eq('id',1).single();
+ const s=await supabaseClient.from('system_config').select('rewards_enabled,xp_enabled').eq('id',true).single();
  const set=(id,label,on)=>{const e=document.getElementById(id);if(e){e.textContent=label+': '+(on?'ON':'OFF');e.classList.toggle('primary',!!on);}};
  set('systemFnc','FNC',!!f.data?.enabled);set('systemXp','XP',!!s.data?.xp_enabled);set('systemRewards','REWARDS',!!s.data?.rewards_enabled);
 }
@@ -619,7 +619,7 @@ function escapeAttr(value){return escapeHtml(value);}
 async function loadFncSettings(){
   if(!adminReady)return;
   const status=document.getElementById('fncSaveStatus');
-  const {data,error}=await supabase.from('fnc_settings').select('id,enabled,interval_minutes,amount,subscriber_multiplier,chat_fnc,chat_cooldown_seconds,daily_fnc_limit,xp_per_minute,subscriber_xp_bonus').eq('id',1).maybeSingle();
+  const {data,error}=await supabaseClient.from('fnc_settings').select('id,enabled,interval_minutes,amount,subscriber_multiplier,chat_fnc,chat_cooldown_seconds,daily_fnc_limit,xp_per_minute,subscriber_xp_bonus').eq('id',1).maybeSingle();
   if(error){status.style.display='block';status.textContent='Unable to load FNC settings: '+error.message;return;}
   if(!data)return;
   document.getElementById('fncEnabled').value=String(!!data.enabled);
@@ -648,7 +648,7 @@ async function saveFncSettings(){
     updated_at:new Date().toISOString()
   };
   if(payload.enabled && !confirm('Enable the FNC Program? This allows the rewards engine to distribute points when it is running.'))return;
-  const {error}=await supabase.from('fnc_settings').upsert(payload,{onConflict:'id'});
+  const {error}=await supabaseClient.from('fnc_settings').upsert(payload,{onConflict:'id'});
   if(error){status.style.display='block';status.textContent='Save failed: '+error.message;return;}
   await writeAdminLog('fnc_settings_updated','fnc_settings',1,{enabled:payload.enabled,interval_minutes:10,amount:payload.amount,subscriber_multiplier:payload.subscriber_multiplier,chat_fnc:payload.chat_fnc,chat_cooldown_seconds:payload.chat_cooldown_seconds,daily_fnc_limit:payload.daily_fnc_limit,xp_per_minute:payload.xp_per_minute,subscriber_xp_bonus:payload.subscriber_xp_bonus});
   status.style.display='block';status.textContent='FNC settings saved.';status.style.borderLeftColor='var(--ok)';
@@ -692,18 +692,18 @@ document.getElementById('saveReward')?.addEventListener('click', async () => {
     if(selectedImage){
       const ext=(selectedImage.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'');
       const path='rewards/'+crypto.randomUUID()+'.'+ext;
-      const {error: uploadError}=await supabase.storage.from('reward-images').upload(path,selectedImage,{contentType:selectedImage.type,cacheControl:'3600',upsert:false});
+      const {error: uploadError}=await supabaseClient.storage.from('reward-images').upload(path,selectedImage,{contentType:selectedImage.type,cacheControl:'3600',upsert:false});
       if(uploadError) throw uploadError;
-      imageUrl=supabase.storage.from('reward-images').getPublicUrl(path).data.publicUrl;
+      imageUrl=supabaseClient.storage.from('reward-images').getPublicUrl(path).data.publicUrl;
     }
     const editId=document.getElementById('rewardEditId')?.value.trim();
     let result;
     if(editId){
       const payload={name,description,fnc_cost:Math.round(fnc),level_required:level,stock:stockRaw===''||stockRaw==null?null:Number(stockRaw),updated_at:new Date().toISOString()};
       if(imageUrl) payload.image_url=imageUrl;
-      result=await supabase.from('rewards').update(payload).eq('id',editId).select().single();
+      result=await supabaseClient.from('rewards').update(payload).eq('id',editId).select().single();
     }else{
-      result=await supabase.from('rewards').insert({name,description,fnc_cost:Math.round(fnc),level_required:level,stock:stockRaw===''||stockRaw==null?null:Number(stockRaw),active:false,image_url:imageUrl}).select().single();
+      result=await supabaseClient.from('rewards').insert({name,description,fnc_cost:Math.round(fnc),level_required:level,stock:stockRaw===''||stockRaw==null?null:Number(stockRaw),active:false,image_url:imageUrl}).select().single();
     }
     if(result.error) throw result.error;
     status.style.display='block';status.textContent=editId?'Reward updated successfully.':'Reward saved. It remains OFF until you activate it.';
@@ -717,18 +717,18 @@ document.getElementById('saveReward')?.addEventListener('click', async () => {
 
 async function writeAdminLog(action,targetType,targetId,details={}){
   if(!adminReady)return;
-  const {data:{user}}=await supabase.auth.getUser();
-  await supabase.from('admin_logs').insert({admin_user_id:user?.id||null,action,target_type:targetType||null,target_id:targetId?String(targetId):null,details});
+  const {data:{user}}=await supabaseClient.auth.getUser();
+  await supabaseClient.from('admin_logs').insert({admin_user_id:user?.id||null,action,target_type:targetType||null,target_id:targetId?String(targetId):null,details});
 }
 async function loadGiveaways(){
   const tbody=document.getElementById('giveawayList'); if(!tbody||!adminReady)return;
-  const {data,error}=await supabase.from('giveaways').select('id,title,reward_name,status,winners_count,created_at').order('created_at',{ascending:false});
+  const {data,error}=await supabaseClient.from('giveaways').select('id,title,reward_name,status,winners_count,created_at').order('created_at',{ascending:false});
   if(error){tbody.innerHTML='<tr><td colspan="6">Unable to load giveaways.</td></tr>';return;}
   if(!data?.length){tbody.innerHTML='<tr><td colspan="6">No giveaways yet.</td></tr>';return;}
   const rows=[];
   for(const g of data){
-    const e=await supabase.from('giveaway_entries').select('id',{count:'exact',head:true}).eq('giveaway_id',g.id);
-    const w=await supabase.from('giveaway_winners').select('id',{count:'exact',head:true}).eq('giveaway_id',g.id);
+    const e=await supabaseClient.from('giveaway_entries').select('id',{count:'exact',head:true}).eq('giveaway_id',g.id);
+    const w=await supabaseClient.from('giveaway_winners').select('id',{count:'exact',head:true}).eq('giveaway_id',g.id);
     rows.push('<tr><td>'+escapeHtml(g.title)+'</td><td>'+escapeHtml(g.reward_name)+'</td><td>'+escapeHtml(g.status.toUpperCase())+'</td><td>'+(e.count||0)+'</td><td>'+(w.count||0)+' / '+g.winners_count+'</td><td>'+
       (g.status==='draft'?'<button class="btn" data-gw-start="'+g.id+'">START</button> ':'')+
       (g.status==='active'?'<button class="btn primary" data-gw-draw="'+g.id+'">DRAW WINNER</button> <button class="btn danger" data-gw-cancel="'+g.id+'">CANCEL</button> ':'')+
@@ -740,28 +740,28 @@ async function loadGiveaways(){
   tbody.querySelectorAll('[data-gw-cancel]').forEach(b=>b.onclick=()=>cancelGiveaway(b.dataset.gwCancel));
 }
 async function startGiveaway(id){
-  const {error}=await supabase.from('giveaways').update({status:'active',starts_at:new Date().toISOString(),updated_at:new Date().toISOString()}).eq('id',id);
+  const {error}=await supabaseClient.from('giveaways').update({status:'active',starts_at:new Date().toISOString(),updated_at:new Date().toISOString()}).eq('id',id);
   if(!error){await writeAdminLog('giveaway_started','giveaway',id);await loadGiveaways();await loadAdminLogs();}
 }
 async function cancelGiveaway(id){
-  const {error}=await supabase.from('giveaways').update({status:'cancelled',updated_at:new Date().toISOString()}).eq('id',id);
+  const {error}=await supabaseClient.from('giveaways').update({status:'cancelled',updated_at:new Date().toISOString()}).eq('id',id);
   if(!error){await writeAdminLog('giveaway_cancelled','giveaway',id);await loadGiveaways();await loadAdminLogs();}
 }
 async function drawGiveaway(id){
-  const {data:g}=await supabase.from('giveaways').select('id,winners_count').eq('id',id).single();
+  const {data:g}=await supabaseClient.from('giveaways').select('id,winners_count').eq('id',id).single();
   if(!g)return;
-  const {data:entries}=await supabase.from('giveaway_entries').select('user_id').eq('giveaway_id',id);
+  const {data:entries}=await supabaseClient.from('giveaway_entries').select('user_id').eq('giveaway_id',id);
   if(!entries?.length){alert('No entries yet.');return;}
   const shuffled=[...entries].sort(()=>Math.random()-0.5).slice(0,Math.min(g.winners_count,entries.length));
-  for(let i=0;i<shuffled.length;i++)await supabase.from('giveaway_winners').upsert({giveaway_id:id,user_id:shuffled[i].user_id,position:i+1,status:'pending'});
-  await supabase.from('giveaways').update({status:'ended',updated_at:new Date().toISOString()}).eq('id',id);
+  for(let i=0;i<shuffled.length;i++)await supabaseClient.from('giveaway_winners').upsert({giveaway_id:id,user_id:shuffled[i].user_id,position:i+1,status:'pending'});
+  await supabaseClient.from('giveaways').update({status:'ended',updated_at:new Date().toISOString()}).eq('id',id);
   await writeAdminLog('giveaway_draw','giveaway',id,{winner_count:shuffled.length});
   await loadGiveaways();await loadAdminLogs();
 }
 async function loadAdminLogs(){
   const tbody=document.getElementById('adminLogList');if(!tbody||!adminReady)return;
   tbody.innerHTML='<tr><td colspan="4">Loading logs…</td></tr>';
-  const {data,error}=await supabase.from('admin_logs').select('created_at,action,target_type,target_id,details').order('created_at',{ascending:false}).limit(200);
+  const {data,error}=await supabaseClient.from('admin_logs').select('created_at,action,target_type,target_id,details').order('created_at',{ascending:false}).limit(200);
   const status=document.getElementById('adminLogStatus');
   if(error){tbody.innerHTML='<tr><td colspan="4">Unable to load logs: '+escapeHtml(error.message)+'</td></tr>';if(status){status.style.display='block';status.textContent=error.message;}return;}
   if(status){status.style.display='block';status.textContent='Loaded '+(data||[]).length+' admin log entries.';}
@@ -771,15 +771,15 @@ document.getElementById('createGiveaway')?.addEventListener('click',async()=>{
   if(!adminReady)return;
   const title=document.getElementById('gwTitle').value.trim(),reward=document.getElementById('gwReward').value.trim(),status=document.getElementById('gwStatus');
   if(!title||!reward){status.style.display='block';status.textContent='Title and reward are required.';return;}
-  const {data:{user}}=await supabase.auth.getUser();
+  const {data:{user}}=await supabaseClient.auth.getUser();
   let rewardImageUrl=null;
   try {
     if(selectedGiveawayImage){
       const ext=(selectedGiveawayImage.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'');
       const imagePath='giveaways/'+crypto.randomUUID()+'.'+ext;
-      const {error:uploadError}=await supabase.storage.from('reward-images').upload(imagePath,selectedGiveawayImage,{contentType:selectedGiveawayImage.type,cacheControl:'3600',upsert:false});
+      const {error:uploadError}=await supabaseClient.storage.from('reward-images').upload(imagePath,selectedGiveawayImage,{contentType:selectedGiveawayImage.type,cacheControl:'3600',upsert:false});
       if(uploadError) throw uploadError;
-      rewardImageUrl=supabase.storage.from('reward-images').getPublicUrl(imagePath).data.publicUrl;
+      rewardImageUrl=supabaseClient.storage.from('reward-images').getPublicUrl(imagePath).data.publicUrl;
     }
   } catch(error) {
     status.style.display='block'; status.textContent='Image upload failed: '+(error?.message||'Unknown error'); return;
@@ -799,7 +799,7 @@ document.getElementById('createGiveaway')?.addEventListener('click',async()=>{
     require_follower:document.getElementById('gwFollow').value==='true',
     created_by:user.id
   };
-  const {data,error}=await supabase.from('giveaways').insert(payload).select().single();
+  const {data,error}=await supabaseClient.from('giveaways').insert(payload).select().single();
   status.style.display='block';status.textContent=error?'Create failed: '+error.message:'Giveaway created as DRAFT.';
   if(data){await writeAdminLog('giveaway_created','giveaway',data.id,{title,reward});await loadGiveaways();await loadAdminLogs();}
 });
@@ -827,7 +827,7 @@ document.getElementById('connectTwitchWatch')?.addEventListener('click', async (
   const s=document.getElementById('twitchWatchStatus');
   try {
     localStorage.setItem('adhem_twitch_watch_connect','1');
-    const {data,error}=await supabase.auth.signInWithOAuth({
+    const {data,error}=await supabaseClient.auth.signInWithOAuth({
       provider:'twitch',
       options:{
         redirectTo:'https://adhemswag.com/profile/',
@@ -849,7 +849,7 @@ document.getElementById('testTwitchWatch')?.addEventListener('click', async () =
   const s=document.getElementById('twitchWatchStatus');
   if(s){s.style.display='block';s.textContent='Testing Twitch watch sync…';}
   try {
-    const { data, error } = await supabase.functions.invoke('twitch-chatters-sync', { body:{} });
+    const { data, error } = await supabaseClient.functions.invoke('twitch-chatters-sync', { body:{} });
     if(error) throw error;
     if(s){s.textContent=data?.ok ? ('OK — live: '+data.live+', matched viewers: '+(data.matched_viewers||0)) : ('Sync: '+JSON.stringify(data));}
   } catch(error) {
@@ -880,16 +880,16 @@ document.getElementById('leaderboardSearch')?.addEventListener('keydown',e=>{if(
 document.getElementById('loadMedia')?.addEventListener('click',loadMedia);
 document.getElementById('findAdminUser')?.addEventListener('click',async()=>{
  if(!adminReady)return;const q=document.getElementById('adminUserSearch').value.trim();const out=document.getElementById('adminUserResult');if(!q)return;
- const {data,error}=await supabase.from('users').select('id,twitch_username,email').ilike('twitch_username',q).maybeSingle();
+ const {data,error}=await supabaseClient.from('users').select('id,twitch_username,email').ilike('twitch_username',q).maybeSingle();
  out.style.display='block';if(error||!data){out.textContent=error?'Search failed: '+error.message:'User not found.';return;}
  out.innerHTML='<strong>'+escapeHtml(data.twitch_username||data.email||data.id)+'</strong> — '+escapeHtml(data.id)+' <button class="btn primary" id="grantAdmin">GRANT ADMIN</button>';
- document.getElementById('grantAdmin').onclick=async()=>{const {error}=await supabase.from('admin_users').insert({user_id:data.id});out.textContent=error?'Grant failed: '+error.message:'Admin access granted.';await loadAdminAccess();};
+ document.getElementById('grantAdmin').onclick=async()=>{const {error}=await supabaseClient.from('admin_users').insert({user_id:data.id});out.textContent=error?'Grant failed: '+error.message:'Admin access granted.';await loadAdminAccess();};
 });
 
 
-document.getElementById('systemFnc')?.addEventListener('click',async()=>{if(!adminReady)return;const {data}=await supabase.from('fnc_settings').select('enabled').eq('id',1).single();const enabled=!data?.enabled;if(enabled&&!confirm('Enable FNC distribution?'))return;const {error}=await supabase.from('fnc_settings').update({enabled,updated_at:new Date().toISOString()}).eq('id',1);if(error)alert(error.message);await updateSystemButtons();});
-document.getElementById('systemRewards')?.addEventListener('click',async()=>{if(!adminReady)return;const {data}=await supabase.from('system_config').select('rewards_enabled').eq('id',true).single();const enabled=!data?.rewards_enabled;const {error}=await supabase.from('system_config').update({rewards_enabled:enabled,updated_at:new Date().toISOString()}).eq('id',true);if(error)alert(error.message);await updateSystemButtons();});
-document.getElementById('systemXp')?.addEventListener('click',async()=>{if(!adminReady)return;const {data}=await supabase.from('system_config').select('xp_enabled').eq('id',true).single();const enabled=!data?.xp_enabled;const {error}=await supabase.from('system_config').update({xp_enabled:enabled,updated_at:new Date().toISOString()}).eq('id',true);if(error)alert(error.message);await updateSystemButtons();});
+document.getElementById('systemFnc')?.addEventListener('click',async()=>{if(!adminReady)return;const {data}=await supabaseClient.from('fnc_settings').select('enabled').eq('id',1).single();const enabled=!data?.enabled;if(enabled&&!confirm('Enable FNC distribution?'))return;const {error}=await supabaseClient.from('fnc_settings').update({enabled,updated_at:new Date().toISOString()}).eq('id',1);if(error)alert(error.message);await updateSystemButtons();});
+document.getElementById('systemRewards')?.addEventListener('click',async()=>{if(!adminReady)return;const {data}=await supabaseClient.from('system_config').select('rewards_enabled').eq('id',true).single();const enabled=!data?.rewards_enabled;const {error}=await supabaseClient.from('system_config').update({rewards_enabled:enabled,updated_at:new Date().toISOString()}).eq('id',true);if(error)alert(error.message);await updateSystemButtons();});
+document.getElementById('systemXp')?.addEventListener('click',async()=>{if(!adminReady)return;const {data}=await supabaseClient.from('system_config').select('xp_enabled').eq('id',true).single();const enabled=!data?.xp_enabled;const {error}=await supabaseClient.from('system_config').update({xp_enabled:enabled,updated_at:new Date().toISOString()}).eq('id',true);if(error)alert(error.message);await updateSystemButtons();});
 
 // Admin boot: verify access on page load (cache refresh commit).
 verifyAdmin();
