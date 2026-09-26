@@ -211,7 +211,7 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
 </section>
 <section id="logs" class="panel"><div class="section"><h2>Admin Logs</h2><p>Every important admin action is recorded for traceability.</p><div class="actions"><button class="btn primary" id="refreshAdminLogs">REFRESH LOGS</button></div><div id="adminLogStatus" class="notice" style="display:none"></div><div class="table-wrap"><table><thead><tr><th>Date</th><th>Action</th><th>Target</th><th>Details</th></tr></thead><tbody id="adminLogList"><tr><td colspan="4">Loading…</td></tr></tbody></table></div></div></section>
 <section id="leaderboard" class="panel"><div class="section"><h2>Leaderboard</h2><p>Admin preview of the top 100 accounts for the selected metric. Search filters these results only; ranks stay tied to the original top-100 order. The public leaderboard remains unchanged.</p><div class="form-grid"><div class="field"><label>Search Twitch username</label><input id="leaderboardSearch" placeholder="adhemswag"></div><div class="field"><label>Ranking</label><select id="leaderboardRank"><option value="fnc">FNC Points</option><option value="xp">XP</option><option value="watch">Watch Minutes</option><option value="level">Level</option></select></div></div><div class="actions"><button class="btn primary" id="loadLeaderboard">LOAD LEADERBOARD</button><button class="btn" id="clearLeaderboard">CLEAR</button></div><div class="table-wrap"><table><thead><tr><th>#</th><th>Twitch</th><th>FNC</th><th>XP</th><th>Level</th><th>Watch Minutes</th></tr></thead><tbody id="leaderboardList"><tr><td colspan="6">Not loaded.</td></tr></tbody></table></div></div></section>
-<section id="media" class="panel"><div class="section"><h2>Media Library</h2><p>Images stored in the reward-images bucket.</p><div class="actions"><button class="btn primary" id="loadMedia">REFRESH MEDIA</button></div><div id="mediaStatus" class="notice" style="display:none"></div><div class="table-wrap"><table><thead><tr><th>File</th><th>Size</th><th>Updated</th><th>Action</th></tr></thead><tbody id="mediaList"><tr><td colspan="4">Not loaded.</td></tr></tbody></table></div></div></section>
+<section id="media" class="panel"><div class="section"><h2>Media Library</h2><p>Images stored in the reward-images bucket. Upload images to the rewards or giveaways folder.</p><div class="form-grid"><div class="field"><label>Folder</label><select id="mediaUploadFolder"><option value="rewards">Rewards</option><option value="giveaways">Giveaways</option></select></div><div class="field"><label>Image file (max 5 MB)</label><input id="mediaUploadFile" type="file" accept="image/png,image/jpeg,image/webp,image/gif"></div></div><div class="actions"><button class="btn primary" id="uploadMedia">UPLOAD IMAGE</button><button class="btn" id="loadMedia">REFRESH MEDIA</button></div><div id="mediaStatus" class="notice" style="display:none"></div><div class="table-wrap"><table><thead><tr><th>File</th><th>Size</th><th>Updated</th><th>Action</th></tr></thead><tbody id="mediaList"><tr><td colspan="4">Not loaded.</td></tr></tbody></table></div></div></section>
 <section id="admin-access" class="panel"><div class="section"><h2>Admin Access</h2><p>Find an existing user and grant Admin Panel access.</p><div class="form-grid"><div class="field full"><label>Twitch username</label><input id="adminUserSearch" placeholder="adhemswag"></div></div><div class="actions"><button class="btn primary" id="findAdminUser">FIND USER</button></div><div id="adminUserResult" class="notice" style="display:none"></div></div><div class="section"><h2>Current Admins</h2><div class="table-wrap"><table><thead><tr><th>User ID</th><th>Created</th><th>Action</th></tr></thead><tbody id="adminAccessList"><tr><td colspan="3">Loading…</td></tr></tbody></table></div></div></section>
 <section id="system" class="panel">
       <div class="section">
@@ -592,6 +592,26 @@ async function loadLeaderboard(){
  const rows=allRows.map((x,i)=>({...x,rank:i+1})).filter(x=>!term||(x.twitch_username||'').toLowerCase().includes(term));
  tbody.innerHTML=rows.map(x=>'<tr><td>'+x.rank+'</td><td>'+escapeHtml(x.twitch_username||'—')+'</td><td>'+Number(x.fnc_points||0).toLocaleString()+'</td><td>'+Number(x.xp||0).toLocaleString()+'</td><td>'+Number(x.level||1)+'</td><td>'+Number(x.total_watch_minutes||0).toLocaleString()+'</td></tr>').join('')||'<tr><td colspan="6">No users.</td></tr>';
 }
+document.getElementById('uploadMedia')?.addEventListener('click',async()=>{
+ if(!adminReady)return;
+ const file=document.getElementById('mediaUploadFile')?.files?.[0];
+ const folder=document.getElementById('mediaUploadFolder')?.value;
+ const status=document.getElementById('mediaStatus');
+ if(!file){status.style.display='block';status.textContent='Choose an image first.';return;}
+ const allowed=['image/png','image/jpeg','image/webp','image/gif'];
+ if(!allowed.includes(file.type)||file.size>5*1024*1024){status.style.display='block';status.textContent='Only PNG, JPG, WEBP or GIF images up to 5 MB are allowed.';return;}
+ const ext=({ 'image/png':'png','image/jpeg':'jpg','image/webp':'webp','image/gif':'gif' })[file.type];
+ const path=folder+'/'+crypto.randomUUID()+'.'+ext;
+ const button=document.getElementById('uploadMedia');button.disabled=true;button.textContent='UPLOADING…';
+ try{
+   const {error}=await supabaseClient.storage.from('reward-images').upload(path,file,{contentType:file.type,cacheControl:'3600',upsert:false});
+   if(error)throw error;
+   status.style.display='block';status.textContent='Upload successful: '+path;
+   document.getElementById('mediaUploadFile').value='';
+   await loadMedia();
+ }catch(error){status.style.display='block';status.textContent='Upload failed: '+(error?.message||'Unknown error');}
+ finally{button.disabled=false;button.textContent='UPLOAD IMAGE';}
+});
 async function loadMedia(){
  if(!adminReady)return;const tbody=document.getElementById('mediaList');if(!tbody)return;
  const folders=['rewards','giveaways'];let files=[];
