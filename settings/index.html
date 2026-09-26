@@ -284,10 +284,10 @@ main.settings-main{max-width:1120px;margin:0 auto;padding:54px 40px 90px}
     <div class="settings-card-head"><h2>EDIT PROFILE</h2><small>Editable fields</small></div>
     <div class="settings-card-body">
       <form id="profileForm" class="settings-form">
-        <div class="settings-field full"><label for="profileEmail">Email</label><input id="profileEmail" type="email" autocomplete="email" placeholder="your@email.com" required></div>
-        <div class="settings-field"><label for="steamProfileUrl">Steam Profile URL</label><input id="steamProfileUrl" type="url" placeholder="https://steamcommunity.com/id/…" required></div>
-        <div class="settings-field full"><label for="steamTradeUrl">Steam Trade URL</label><input id="steamTradeUrl" type="url" placeholder="https://steamcommunity.com/tradeoffer/new/…" required></div>
-        <div class="settings-field full"><label for="discordUsername">Discord <span class="field-optional">REQUIRED</span></label><input id="discordUsername" type="text" maxlength="100" required autocomplete="off" placeholder="username or Discord ID"></div>
+        <div class="settings-field full"><label for="profileEmail">Email</label><input id="profileEmail" type="email" autocomplete="email" placeholder="your@email.com"></div>
+        <div class="settings-field"><label for="steamProfileUrl">Steam Profile URL</label><input id="steamProfileUrl" type="url" autocomplete="url" placeholder="https://steamcommunity.com/id/…"></div>
+        <div class="settings-field full"><label for="steamTradeUrl">Steam Trade URL</label><input id="steamTradeUrl" type="url" autocomplete="url" placeholder="https://steamcommunity.com/tradeoffer/new/…"></div>
+        <div class="settings-field full"><label for="discordUsername">Discord <span class="field-optional">OPTIONAL</span></label><input id="discordUsername" type="text" maxlength="100" autocomplete="off" placeholder="username or Discord ID"></div>
         <div class="settings-actions">
           <span class="settings-save-status" id="profileSaveStatus">Connect Twitch first.</span>
           <button class="settings-save" id="saveProfileBtn" type="submit">SAVE CHANGES</button>
@@ -348,21 +348,68 @@ main.settings-main{max-width:1120px;margin:0 auto;padding:54px 40px 90px}
     form.querySelectorAll('input,button').forEach(function(x){x.disabled=false;});
     fill(e.detail.profile,e.detail);
   });
+  let saveTimer=null;
+  let profileDirty=false;
+  let saveInFlight=false;
+  let saveQueued=false;
+
+  async function saveProfile(showSaved=true){
+    if(saveInFlight){saveQueued=true;return;}
+    const sessionResult=await window.AdhemSwagAuth.client.auth.getSession();
+    const session=sessionResult.data?.session;
+    if(!session){status.textContent='Connect Twitch first.';return;}
+    const payload={
+      email:document.getElementById('profileEmail').value.trim()||null,
+      steam_profile_url:document.getElementById('steamProfileUrl').value.trim()||null,
+      steam_trade_url:document.getElementById('steamTradeUrl').value.trim()||null,
+      discord_username:document.getElementById('discordUsername').value.trim()||null
+    };
+    saveInFlight=true;
+    status.textContent='SAVING…';
+    try{
+      const {error}=await window.AdhemSwagAuth.client.from('users').update(payload).eq('id',session.user.id);
+      if(error){status.textContent='SAVE ERROR: '+error.message;return;}
+      profileDirty=false;
+      status.textContent=showSaved?'PROFILE SAVED.':'AUTO-SAVED.';
+      await window.AdhemSwagAuth.refreshAccountUI();
+    }catch(error){
+      status.textContent='SAVE ERROR: '+(error?.message||'Please try again.');
+    }finally{
+      saveInFlight=false;
+      if(saveQueued){saveQueued=false;saveProfile(showSaved);}
+    }
+  }
+
+  form.querySelectorAll('input').forEach(function(input){
+    input.addEventListener('input',function(){
+      profileDirty=true;
+      status.textContent='UNSAVED CHANGES…';
+      if(saveTimer)clearTimeout(saveTimer);
+      saveTimer=setTimeout(function(){saveProfile(false);},900);
+    });
+    input.addEventListener('blur',function(){
+      if(profileDirty){
+        if(saveTimer)clearTimeout(saveTimer);
+        saveProfile(false);
+      }
+    });
+  });
+
+  window.addEventListener('adhem:viewer',function(e){
+    if(!e.detail||!e.detail.authId){
+      status.textContent='Connect Twitch first.';
+      form.querySelectorAll('input,button').forEach(function(x){x.disabled=true;});
+      document.getElementById('settingsAccountHint').textContent='Connect Twitch to edit your profile';
+      return;
+    }
+    form.querySelectorAll('input,button').forEach(function(x){x.disabled=false;});
+    if(!profileDirty)fill(e.detail.profile,e.detail);
+  });
+
   form.addEventListener('submit',async function(e){
     e.preventDefault();
-    const session=(await window.AdhemSwagAuth.client.auth.getSession()).data.session;
-    if(!session){status.textContent='Connect Twitch first.';return;}
-    status.textContent='SAVING…';
-    const payload={
-      email:document.getElementById('profileEmail').value.trim(),
-      steam_profile_url:document.getElementById('steamProfileUrl').value.trim(),
-      steam_trade_url:document.getElementById('steamTradeUrl').value.trim(),
-      discord_username:document.getElementById('discordUsername').value.trim()
-    };
-    const {error}=await window.AdhemSwagAuth.client.from('users').update(payload).eq('id',session.user.id);
-    if(error){status.textContent='SAVE ERROR: '+error.message;return;}
-    status.textContent='PROFILE SAVED.';
-    await window.AdhemSwagAuth.refreshAccountUI();
+    if(saveTimer)clearTimeout(saveTimer);
+    await saveProfile(true);
   });
 })();
 </script>
