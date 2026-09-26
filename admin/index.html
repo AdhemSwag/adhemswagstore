@@ -17,7 +17,7 @@ html,body{min-height:100%;background:var(--bg);color:var(--white);font-family:In
 body{background-image:linear-gradient(rgba(17,217,247,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(17,217,247,.035) 1px,transparent 1px);background-size:42px 42px}
 .admin-shell{display:grid;grid-template-columns:220px 1fr;min-height:100vh}
 .admin-nav{border-right:1px solid var(--line);background:rgba(5,7,10,.96);padding:22px 14px}
-.brand{display:block;padding:8px 10px 24px;text-decoration:none;color:var(--white);font:700 18px 'JetBrains Mono',monospace;letter-spacing:.08em}.brand span{color:var(--cyan)}
+.brand{display:flex;align-items:center;gap:10px;padding:8px 10px 24px;text-decoration:none;color:var(--white);font:700 18px 'JetBrains Mono',monospace;letter-spacing:.08em}.brand img{width:46px;height:46px;object-fit:contain;filter:drop-shadow(0 0 10px rgba(17,217,247,.2))}.brand span{color:var(--cyan)}
 .nav-label{font:10px 'JetBrains Mono',monospace;color:var(--muted);letter-spacing:.16em;text-transform:uppercase;padding:14px 10px 7px}
 .nav-btn{width:100%;border:0;background:transparent;color:var(--muted);padding:11px 10px;text-align:left;font:600 12px 'JetBrains Mono',monospace;cursor:pointer;border-radius:3px}
 .nav-btn:hover,.nav-btn.active{color:var(--cyan);background:rgba(17,217,247,.05)}
@@ -35,14 +35,34 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
 .notice{padding:12px 14px;margin-top:14px;border-left:2px solid var(--cyan);background:rgba(17,217,247,.03);color:var(--muted);font-size:12px;line-height:1.6}
 .table-wrap{overflow:auto;margin-top:18px;border:1px solid var(--line)}table{width:100%;border-collapse:collapse;min-width:760px}th,td{padding:12px;border-bottom:1px solid var(--line);text-align:left;font-size:12px}th{font:10px 'JetBrains Mono',monospace;color:var(--muted);text-transform:uppercase}td{color:var(--white)}
 .lock{color:var(--danger);font-family:'JetBrains Mono',monospace;font-size:11px}
+#adminLoader{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(5,7,10,.98);transition:opacity .35s ease,visibility .35s ease}
+#adminLoader.hidden{opacity:0;visibility:hidden;pointer-events:none}
+.loader-box{width:min(430px,calc(100% - 40px));text-align:center}
+.loader-logo{width:142px;height:142px;object-fit:contain;display:block;margin:0 auto 18px;filter:drop-shadow(0 0 22px rgba(17,217,247,.28))}
+.loader-title{font:700 27px Rajdhani,sans-serif;letter-spacing:.16em;text-transform:uppercase}
+.loader-title span{color:var(--cyan)}
+.loader-status{min-height:18px;margin-top:8px;color:var(--muted);font:10px 'JetBrains Mono',monospace}
+.loader-track{height:6px;margin-top:18px;background:#10161a;border:1px solid rgba(17,217,247,.16);overflow:hidden}
+.loader-bar{height:100%;width:0%;background:var(--cyan);box-shadow:0 0 12px rgba(17,217,247,.35);transition:width .35s ease}
+.loader-percent{margin-top:8px;color:var(--cyan);font:600 10px 'JetBrains Mono',monospace}
+
 @media(max-width:900px){.admin-shell{grid-template-columns:1fr}.admin-nav{border-right:0;border-bottom:1px solid var(--line);display:flex;gap:5px;overflow:auto;padding:10px}.brand,.nav-label{display:none}.nav-btn{width:auto;white-space:nowrap}.main{padding:30px 20px 50px}.cards{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:560px){.cards,.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}}
 </style>
 </head>
 <body>
+<div id="adminLoader" aria-live="polite">
+  <div class="loader-box">
+    <img class="loader-logo" src="/apple-touch-icon.png" alt="AdhemSwag">
+    <div class="loader-title">ADHEMSWAG <span>ADMIN</span></div>
+    <div class="loader-status" id="loaderStatus">INITIALIZING ADMIN PANEL…</div>
+    <div class="loader-track"><div class="loader-bar" id="loaderBar"></div></div>
+    <div class="loader-percent" id="loaderPercent">0%</div>
+  </div>
+</div>
 <div class="admin-shell">
   <aside class="admin-nav">
-    <a class="brand" href="/">ADHEMSWAG<span>.</span></a>
+    <a class="brand" href="/"><img src="/apple-touch-icon.png" alt="AdhemSwag logo"><span>ADHEMSWAG<span>.</span></span></a>
     <div class="nav-label">Admin</div>
     <button class="nav-btn active" data-panel="dashboard">Dashboard</button>
     <button class="nav-btn" data-panel="rewards">Rewards / Store</button>
@@ -83,16 +103,16 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
     <section id="rewards" class="panel">
       <div class="section">
         <h2>Add / Edit Reward</h2>
-        <p>This is the store management form that will become connected to Supabase after secure admin authentication is enabled.</p>
+        <p>Connected to Supabase. Add rewards, upload images, set FNC prices and Level requirements, then activate them when ready.</p>
         <div class="form-grid">
-          <div class="field"><label>Reward name</label><input placeholder="Sport Gloves | Red Racer" disabled></div>
-          <div class="field"><label>FNC cost</label><input type="number" placeholder="20000" disabled></div>
-          <div class="field"><label>Level required</label><input type="number" placeholder="15" disabled></div>
-          <div class="field"><label>Stock</label><input type="number" placeholder="3" disabled></div>
-          <div class="field full"><label>Description</label><textarea placeholder="Reward description..." disabled></textarea></div>
-          <div class="field full"><label>Reward image</label><input id="rewardImage" type="file" accept="image/png,image/jpeg,image/webp,image/gif" disabled><div id="rewardImageStatus" class="upload">Choose an image — JPG, PNG, WEBP or GIF, max 5 MB.</div><img id="rewardImagePreview" alt="Reward preview" style="display:none;max-width:220px;max-height:180px;margin-top:12px;border:1px solid var(--line);object-fit:contain"></div>
+          <div class="field"><label>Reward name</label><input placeholder="Sport Gloves | Red Racer"></div>
+          <div class="field"><label>FNC cost</label><input type="number" placeholder="20000"></div>
+          <div class="field"><label>Level required</label><input type="number" placeholder="15"></div>
+          <div class="field"><label>Stock</label><input type="number" placeholder="3"></div>
+          <div class="field full"><label>Description</label><textarea placeholder="Reward description..."></textarea></div>
+          <div class="field full"><label>Reward image</label><input id="rewardImage" type="file" accept="image/png,image/jpeg,image/webp,image/gif"><div id="rewardImageStatus" class="upload">Choose an image — JPG, PNG, WEBP or GIF, max 5 MB.</div><img id="rewardImagePreview" alt="Reward preview" style="display:none;max-width:220px;max-height:180px;margin-top:12px;border:1px solid var(--line);object-fit:contain"></div>
         </div>
-        <div class="actions"><button class="btn primary" id="saveReward" disabled>SAVE REWARD</button><button class="btn" id="clearReward" disabled>CLEAR</button></div>
+        <div class="actions"><button class="btn primary" id="saveReward">SAVE REWARD</button><button class="btn" id="clearReward">CLEAR</button></div>
         <div id="rewardSaveStatus" class="notice" style="display:none"></div>
         <div class="table-wrap"><table><thead><tr><th>Reward</th><th>FNC</th><th>Level</th><th>Stock</th><th>Status</th><th>Image</th><th>Actions</th></tr></thead><tbody id="rewardList"><tr><td colspan="7">Loading…</td></tr></tbody></table></div>
       </div>
@@ -246,6 +266,17 @@ async function loginAdmin(event) {
 }
 window.loginAdmin = loginAdmin;
 
+function updateLoader(percent, message) {
+  const bar=document.getElementById('loaderBar'), pct=document.getElementById('loaderPercent'), status=document.getElementById('loaderStatus');
+  const value=Math.max(0,Math.min(100,Math.round(percent)));
+  if(bar)bar.style.width=value+'%';
+  if(pct)pct.textContent=value+'%';
+  if(status)status.textContent=message;
+}
+function finishLoader() {
+  updateLoader(100,'ADMIN PANEL READY');
+  setTimeout(()=>document.getElementById('adminLoader')?.classList.add('hidden'),350);
+}
 function setControls(enabled) {
   adminReady = enabled;
   document.querySelectorAll('#rewards input,#rewards textarea,#giveaways input,#giveaways textarea,#giveaways select').forEach(el=>el.disabled=!enabled);
@@ -256,6 +287,7 @@ function setControls(enabled) {
 }
 
 async function verifyAdmin() {
+  updateLoader(8,'CHECKING TWITCH ADMIN ACCESS…');
   setSecurity('checking Twitch admin access…', false, true);
   try {
     const result = await Promise.race([
@@ -266,6 +298,7 @@ async function verifyAdmin() {
     if (error || !data?.user) {
       setControls(false);
       setSecurity('Connect with your Twitch account to access the Admin Panel.', false, true);
+      finishLoader();
       return false;
     }
 
@@ -278,27 +311,46 @@ async function verifyAdmin() {
     if (adminError) {
       setControls(false);
       setSecurity('Admin check failed: '+escapeHtml(adminError.message), false, true);
+      finishLoader();
       return false;
     }
     if (!admin) {
       setControls(false);
       setSecurity('Admin access is not enabled for this account.', false, true);
+      finishLoader();
       return false;
     }
 
     setControls(true);
     setSecurity('Twitch admin verified. Reward image upload and reward management are enabled.', true);
+    updateLoader(20,'ADMIN VERIFIED — LOADING REWARDS…');
     await loadRewards();
+    updateLoader(32,'LOADING GIVEAWAYS…');
     await loadGiveaways();
+    updateLoader(42,'LOADING ADMIN LOGS…');
     await loadAdminLogs();
+    updateLoader(52,'LOADING VIEWERS…');
     await loadUsers();
+    updateLoader(64,'LOADING FNC SETTINGS…');
     await loadFncSettings();
-    await refreshDashboard(); await loadRedemptions(); await loadTransactions(); await loadLeaderboard(); await loadMedia(); await loadAdminAccess();
+    updateLoader(74,'LOADING DASHBOARD…');
+    await refreshDashboard();
+    updateLoader(82,'LOADING REDEMPTIONS & TRANSACTIONS…');
+    await loadRedemptions();
+    await loadTransactions();
+    updateLoader(90,'LOADING LEADERBOARD & MEDIA…');
+    await loadLeaderboard();
+    await loadMedia();
+    updateLoader(96,'LOADING ADMIN ACCESS & SYSTEM…');
+    await loadAdminAccess();
     await updateSystemButtons();
+    finishLoader();
     return true;
   } catch (error) {
     setControls(false);
     setSecurity('Security check failed: '+escapeHtml(error?.message||'Unknown error'), false, true);
+    updateLoader(100,'ADMIN CHECK FINISHED — LOGIN REQUIRED');
+    finishLoader();
     return false;
   }
 }
