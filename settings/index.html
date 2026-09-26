@@ -268,7 +268,7 @@ main.settings-main{max-width:1120px;margin:0 auto;padding:54px 40px 90px}
       </div>
       <div class="settings-status-list">
         <div class="settings-status-row"><span class="settings-status-label">Twitch</span><span class="settings-status-value" id="settingsTwitchStatus">Checking…</span></div>
-<div class="settings-status-row"><span class="settings-status-label">Steam delivery</span><span class="settings-status-value muted" id="settingsSteamStatus">Required</span></div>
+<div class="settings-status-row"><span class="settings-status-label">Steam delivery</span><span class="settings-status-value muted" id="settingsSteamStatus">Optional</span></div>
         <div class="settings-status-row"><span class="settings-status-label">Profile</span><span class="settings-status-value muted" id="settingsProfileStatus">Checking…</span></div>
         <div class="settings-status-row"><span class="settings-status-label">FNC Rewards</span><span class="settings-status-value muted">OFF / IN DEVELOPMENT</span></div>
       </div>
@@ -276,7 +276,7 @@ main.settings-main{max-width:1120px;margin:0 auto;padding:54px 40px 90px}
         <div class="progress-meta"><span>Profile completion</span><span id="settingsProgressText">0%</span></div>
         <div class="progress-track"><div class="progress-fill" id="settingsProgressFill"></div></div>
       </div>
-      <div class="settings-note">Complete all profile fields to prepare your account for future FNC Rewards and CS2 skin delivery.</div>
+      <div class="settings-note">Profile details are optional for earning points. Add your Steam Trade URL when you want to claim a CS2 skin.</div>
     </div>
   </section>
 
@@ -331,7 +331,7 @@ main.settings-main{max-width:1120px;margin:0 auto;padding:54px 40px 90px}
     document.getElementById('adhemAccountXpBar').style.width=xpProgress+'%';
     document.getElementById('adhemAccountXpProgress').textContent=xp.toLocaleString()+' / '+nextThreshold.toLocaleString();
     const steamComplete=!!(p.steam_profile_url&&p.steam_trade_url);
-    document.getElementById('settingsSteamStatus').textContent=steamComplete?'Complete':'Required';
+    document.getElementById('settingsSteamStatus').textContent=steamComplete?'Added':'Optional';
     document.getElementById('settingsProfileStatus').textContent=p.profile_complete?'Complete':'Incomplete';
     const fields=[p.email,p.steam_profile_url,p.steam_trade_url,p.discord_username];
     const pct=Math.round(fields.filter(Boolean).length/4*100);
