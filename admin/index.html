@@ -95,7 +95,7 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
       </div>
       <div class="section">
         <h2>Admin workflow</h2>
-        <p>The final panel will let you add rewards, upload images, set FNC prices and Level requirements, manage stock, approve/reject redemptions, refund FNC automatically, and review transaction history.</p>
+        <p>Control your FNC store, giveaways, viewers, redemptions, transactions, leaderboard, media and system settings from one secure admin panel.</p>
         <div class="notice">Current database structure already contains rewards, redemptions, users and transactions. FNC/XP remain disabled until the complete system is tested.</div>
       </div>
     </section>
@@ -103,7 +103,8 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
     <section id="rewards" class="panel">
       <div class="section">
         <h2>Add / Edit Reward</h2>
-        <p>Connected to Supabase. Add rewards, upload images, set FNC prices and Level requirements, then activate them when ready.</p>
+        <p>Connected to Supabase. Create rewards, upload images, edit existing rewards and activate them when ready.</p>
+        <input type="hidden" id="rewardEditId" value="">
         <div class="form-grid">
           <div class="field"><label>Reward name</label><input placeholder="Sport Gloves | Red Racer"></div>
           <div class="field"><label>FNC cost</label><input type="number" placeholder="20000"></div>
@@ -482,7 +483,7 @@ document.getElementById('toggleUserBlock')?.addEventListener('click',()=>{
 async function loadRewards() {
   const tbody = document.getElementById('rewardList');
   if (!tbody) return;
-  const { data, error } = await supabase.from('rewards').select('id,name,fnc_cost,level_required,stock,active,image_url').order('created_at',{ascending:false});
+  const { data, error } = await supabase.from('rewards').select('id,name,description,fnc_cost,level_required,stock,active,image_url').order('created_at',{ascending:false});
   if (error) {
     tbody.innerHTML = '<tr><td colspan="6">Unable to load rewards.</td></tr>';
     return;
@@ -492,6 +493,22 @@ async function loadRewards() {
     return;
   }
   tbody.innerHTML = data.map(r => '<tr><td>'+escapeHtml(r.name)+'</td><td>'+Number(r.fnc_cost||0).toLocaleString()+'</td><td>'+Number(r.level_required||1)+'</td><td>'+((r.stock ?? '∞'))+'</td><td>'+ (r.active ? 'ACTIVE' : 'OFF') +'</td><td>'+ (r.image_url ? '<a href="'+escapeAttr(r.image_url)+'" target="_blank" rel="noopener" style="color:var(--cyan)">VIEW</a>' : '—') +'</td><td><button class="btn" data-reward-toggle="'+r.id+'">'+(r.active?'DISABLE':'ACTIVATE')+'</button> <button class="btn danger" data-reward-delete="'+r.id+'">DELETE</button></td></tr>').join('');
+  tbody.querySelectorAll('[data-reward-edit]').forEach(b=>b.onclick=()=>{
+    const row=data.find(x=>x.id===b.dataset.rewardEdit); if(!row)return;
+    document.getElementById('rewardEditId').value=row.id;
+    document.querySelector('#rewards input[placeholder="Sport Gloves | Red Racer"]').value=row.name||'';
+    document.querySelector('#rewards input[placeholder="20000"]').value=Number(row.fnc_cost||0);
+    document.querySelector('#rewards input[placeholder="15"]').value=Number(row.level_required||1);
+    document.querySelector('#rewards input[placeholder="3"]').value=row.stock??'';
+    document.querySelector('#rewards textarea').value=row.description||'';
+    selectedImage=null;
+    document.getElementById('rewardImage').value='';
+    const preview=document.getElementById('rewardImagePreview');
+    if(row.image_url){preview.src=row.image_url;preview.style.display='block';document.getElementById('rewardImageStatus').textContent='Current image — choose a new file to replace it.';}
+    else {preview.style.display='none';document.getElementById('rewardImageStatus').textContent='No image set — choose JPG, PNG, WEBP or GIF, max 5 MB.';}
+    document.getElementById('saveReward').textContent='UPDATE REWARD';
+    document.getElementById('rewards').scrollIntoView({behavior:'smooth',block:'start'});
+  });
   tbody.querySelectorAll('[data-reward-toggle]').forEach(b=>b.onclick=async()=>{const id=b.dataset.rewardToggle;const row=data.find(x=>x.id===id);if(!row)return;const {error}=await supabase.from('rewards').update({active:!row.active,updated_at:new Date().toISOString()}).eq('id',id);if(error)alert(error.message);await loadRewards();await refreshDashboard();});
   tbody.querySelectorAll('[data-reward-delete]').forEach(b=>b.onclick=async()=>{if(!confirm('Delete this reward?'))return;const {error}=await supabase.from('rewards').delete().eq('id',b.dataset.rewardDelete);if(error)alert(error.message);await loadRewards();await refreshDashboard();});
 }
@@ -621,8 +638,10 @@ document.getElementById('rewardImage')?.addEventListener('change', event => {
 });
 
 document.getElementById('clearReward')?.addEventListener('click', () => {
-  document.querySelectorAll('#rewards input,#rewards textarea').forEach(el=>el.value='');
+  document.querySelectorAll('#rewards input:not(#rewardEditId),#rewards textarea').forEach(el=>el.value='');
+  document.getElementById('rewardEditId').value='';
   document.getElementById('rewardImage').value='';
+  document.getElementById('saveReward').textContent='SAVE REWARD';
   document.getElementById('rewardImageStatus').textContent='Choose an image — JPG, PNG, WEBP or GIF, max 5 MB.';
   document.getElementById('rewardImagePreview').style.display='none';
   selectedImage=null;
@@ -647,9 +666,17 @@ document.getElementById('saveReward')?.addEventListener('click', async () => {
       if(uploadError) throw uploadError;
       imageUrl=supabase.storage.from('reward-images').getPublicUrl(path).data.publicUrl;
     }
-    const {error}=await supabase.from('rewards').insert({name,description,fnc_cost:Math.round(fnc),level_required:level,stock:stockRaw===''||stockRaw==null?null:Number(stockRaw),active:false,image_url:imageUrl}).select().single();
-    if(error) throw error;
-    status.style.display='block';status.textContent='Reward saved. It remains OFF until you activate it.';
+    const editId=document.getElementById('rewardEditId')?.value.trim();
+    let result;
+    if(editId){
+      const payload={name,description,fnc_cost:Math.round(fnc),level_required:level,stock:stockRaw===''||stockRaw==null?null:Number(stockRaw),updated_at:new Date().toISOString()};
+      if(imageUrl) payload.image_url=imageUrl;
+      result=await supabase.from('rewards').update(payload).eq('id',editId).select().single();
+    }else{
+      result=await supabase.from('rewards').insert({name,description,fnc_cost:Math.round(fnc),level_required:level,stock:stockRaw===''||stockRaw==null?null:Number(stockRaw),active:false,image_url:imageUrl}).select().single();
+    }
+    if(result.error) throw result.error;
+    status.style.display='block';status.textContent=editId?'Reward updated successfully.':'Reward saved. It remains OFF until you activate it.';
     document.getElementById('clearReward').click();
     await loadRewards();
   } catch(error) {
