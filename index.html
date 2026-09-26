@@ -1,5 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="robots" content="noindex,follow"><title>AdhemSwag</title><link rel="canonical" href="https://adhemswag.com/dashboard/"><script>window.location.replace('/dashboard/'+window.location.search+window.location.hash);</script></head>
-<body></body>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,follow">
+<title>AdhemSwag</title>
+<link rel="canonical" href="https://adhemswag.com/dashboard/">
+<style>
+  html,body{margin:0;width:100%;height:100%;background:#040608;overflow:hidden}
+  #adhemRootLoader{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;background:rgba(4,6,8,.985)}
+  .adhem-root-loader-card{width:min(380px,76vw);text-align:center}
+  .adhem-root-loader-logo{display:block;width:150px;height:150px;object-fit:contain;margin:0 auto 15px;filter:drop-shadow(0 0 8px rgba(17,217,247,.3));animation:adhemRootPulse 1.25s ease-in-out infinite}
+  .adhem-root-loader-label{font:700 12px JetBrains Mono,monospace;letter-spacing:.2em;color:#8fa1a7;margin-bottom:9px}
+  .adhem-root-loader-dots{display:inline-block;width:18px;text-align:left;animation:adhemRootDots 1s steps(4,end) infinite}
+  .adhem-root-loader-track{height:4px;width:100%;overflow:hidden;background:#11191d;border:1px solid rgba(17,217,247,.12);box-sizing:border-box}
+  .adhem-root-loader-track i{display:block;height:100%;width:38%;background:#11D9F7;box-shadow:0 0 9px rgba(17,217,247,.55);animation:adhemRootBar 1.05s ease-in-out infinite}
+  @keyframes adhemRootPulse{0%,100%{transform:scale(.96);opacity:.82}50%{transform:scale(1.03);opacity:1}}
+  @keyframes adhemRootDots{0%{width:0}100%{width:18px}}
+  @keyframes adhemRootBar{0%{transform:translateX(-110%)}100%{transform:translateX(290%)}}
+  @media(prefers-reduced-motion:reduce){.adhem-root-loader-logo,.adhem-root-loader-track i,.adhem-root-loader-dots{animation:none}}
+</style>
+</head>
+<body>
+<div id="adhemRootLoader" aria-label="Loading">
+  <div class="adhem-root-loader-card">
+    <img class="adhem-root-loader-logo" alt="AdhemSwag" src="/assets/logo.png" onerror="this.style.visibility='hidden'">
+    <div class="adhem-root-loader-label">LOADING<span class="adhem-root-loader-dots">...</span></div>
+    <div class="adhem-root-loader-track"><i></i></div>
+  </div>
+</div>
+<script>
+  setTimeout(function(){
+    window.location.replace('/dashboard/' + window.location.search + window.location.hash);
+  }, 3200);
+</script>
+</body>
 </html>
