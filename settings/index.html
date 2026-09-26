@@ -140,7 +140,7 @@ main.settings-main{max-width:1120px;margin:0 auto;padding:54px 40px 90px}
 .settings-field label{font:600 10px 'JetBrains Mono',monospace;color:#819197;text-transform:uppercase;letter-spacing:.08em}
 .settings-field input{width:100%;height:44px;padding:0 13px;border:1px solid rgba(17,217,247,.14);background:#070b0e;color:#eaf6f8;outline:0;font:12px Inter,sans-serif;transition:.2s}
 .settings-field input:focus{border-color:rgba(17,217,247,.65);box-shadow:0 0 0 3px rgba(17,217,247,.06)}
-.settings-field input::placeholder{color:#3f4d52}
+.settings-field input::placeholder{color:#3f4d52}.settings-field input[readonly]{cursor:default}.steam-profile-connect{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}.steam-link-btn{height:44px;padding:0 15px;border:1px solid rgba(17,217,247,.35);background:rgba(17,217,247,.055);color:#11d9f7;font:800 10px 'JetBrains Mono',monospace;letter-spacing:.07em;cursor:pointer;white-space:nowrap}.steam-link-btn:hover{background:rgba(17,217,247,.11);border-color:#11d9f7;box-shadow:0 0 16px rgba(17,217,247,.12)}.steam-link-btn:disabled{opacity:.45;cursor:wait}.steam-link-btn span{display:inline-grid;place-items:center;width:17px;height:17px;margin-right:6px;border:1px solid currentColor;border-radius:50%;font:800 9px Inter,sans-serif}@media(max-width:600px){.steam-profile-connect{grid-template-columns:1fr}.steam-link-btn{width:100%}}
 .settings-actions{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:15px;margin-top:2px;padding-top:16px;border-top:1px solid rgba(17,217,247,.09)}
 .settings-save{height:44px;padding:0 22px;border:1px solid #11d9f7;background:#11d9f7;color:#031015;font:800 11px 'JetBrains Mono',monospace;letter-spacing:.08em;cursor:pointer;text-transform:uppercase}
 .settings-save:hover{background:#5be7fa;box-shadow:0 0 22px rgba(17,217,247,.18)}
@@ -285,7 +285,7 @@ main.settings-main{max-width:1120px;margin:0 auto;padding:54px 40px 90px}
     <div class="settings-card-body">
       <form id="profileForm" class="settings-form">
         <div class="settings-field full"><label for="profileEmail">Email</label><input id="profileEmail" type="email" autocomplete="email" placeholder="your@email.com"></div>
-        <div class="settings-field"><label for="steamProfileUrl">Steam Profile URL</label><input id="steamProfileUrl" type="url" autocomplete="url" placeholder="https://steamcommunity.com/id/…"></div>
+        <div class="settings-field"><label for="steamProfileUrl">Steam Profile URL</label><div class="steam-profile-connect"><input id="steamProfileUrl" type="url" autocomplete="url" placeholder="Link your Steam account below" readonly><button type="button" id="linkSteamBtn" class="steam-link-btn"><span aria-hidden="true">S</span> LINK STEAM</button></div></div>
         <div class="settings-field full"><label for="steamTradeUrl">Steam Trade URL</label><input id="steamTradeUrl" type="url" autocomplete="url" placeholder="https://steamcommunity.com/tradeoffer/new/…"></div>
         <div class="settings-field full"><label for="discordUsername">Discord <span class="field-optional">OPTIONAL</span></label><input id="discordUsername" type="text" maxlength="100" autocomplete="off" placeholder="username or Discord ID"></div>
         <div class="settings-actions">
@@ -348,6 +348,37 @@ main.settings-main{max-width:1120px;margin:0 auto;padding:54px 40px 90px}
     form.querySelectorAll('input,button').forEach(function(x){x.disabled=false;});
     fill(e.detail.profile,e.detail);
   });
+  const steamLinkBtn=document.getElementById('linkSteamBtn');
+  const steamReturn=new URLSearchParams(window.location.search).get('steam');
+  if(steamReturn==='connected') status.textContent='STEAM CONNECTED.';
+  if(steamReturn==='error') status.textContent='STEAM CONNECTION FAILED.';
+  if(steamLinkBtn){
+    steamLinkBtn.addEventListener('click',async function(){
+      try{
+        const sessionResult=await window.AdhemSwagAuth.client.auth.getSession();
+        const session=sessionResult.data?.session;
+        if(!session){status.textContent='Connect Twitch first.';return;}
+        steamLinkBtn.disabled=true;
+        steamLinkBtn.innerHTML='<span aria-hidden="true">S</span> CONNECTING…';
+        const callbackUrl=window.location.origin+'/steam-callback/';
+        const params=new URLSearchParams({
+          openid_ns:'http://specs.openid.net/auth/2.0',
+          openid_mode:'checkid_setup',
+          openid_return_to:callbackUrl,
+          openid_realm:window.location.origin,
+          openid_identity:'http://specs.openid.net/auth/2.0/identifier_select',
+          openid_claimed_id:'http://specs.openid.net/auth/2.0/identifier_select'
+        });
+        window.location.assign('https://steamcommunity.com/openid/login?'+params.toString());
+      }catch(error){
+        console.error('[AdhemSwag] Steam link start error:',error);
+        status.textContent='STEAM CONNECTION FAILED.';
+        steamLinkBtn.disabled=false;
+        steamLinkBtn.innerHTML='<span aria-hidden="true">S</span> LINK STEAM';
+      }
+    });
+  }
+
   let saveTimer=null;
   let profileDirty=false;
   let saveInFlight=false;
