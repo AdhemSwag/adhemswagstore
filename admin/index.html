@@ -260,7 +260,7 @@ async function loginAdmin(event) {
     const { data, error } = await supabaseClient.auth.signInWithOAuth({
       provider: 'twitch',
       options: {
-        redirectTo: window.location.origin + '/admin/',
+        redirectTo: 'https://adhemswagstore.vercel.app/admin/',
         skipBrowserRedirect: true,
         queryParams: { force_verify: 'true' }
       }
