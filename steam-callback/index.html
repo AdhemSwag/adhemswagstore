@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>AdhemSwag — Steam Connection</title>
+<link rel="icon" href="/favicon.ico">
+<style>
+:root{--bg:#05070a;--cyan:#11d9f7;--muted:#718188;--white:#eaf6f8}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:#05070a;color:var(--white);font-family:Inter,Arial,sans-serif;display:grid;place-items:center}
+.card{width:min(440px,calc(100vw - 40px));padding:32px;background:#0b0f12;border:1px solid rgba(17,217,247,.16);text-align:center}
+.mark{font:800 14px 'Courier New',monospace;color:var(--cyan);letter-spacing:.15em}.title{margin:14px 0 8px;font:700 28px Arial,sans-serif;text-transform:uppercase}.msg{color:var(--muted);font-size:13px;line-height:1.6}.bar{height:4px;margin-top:22px;background:#11191d;overflow:hidden}.bar i{display:block;width:35%;height:100%;background:var(--cyan);animation:load 1s ease-in-out infinite}@keyframes load{0%{transform:translateX(-120%)}100%{transform:translateX(320%)}}a{color:var(--cyan);text-decoration:none}
+</style>
+</head>
+<body>
+<div class="card"><div class="mark">ADHEMSWAG // STEAM</div><div class="title" id="title">CONNECTING STEAM</div><div class="msg" id="msg">Verifying your Steam account securely…</div><div class="bar"><i></i></div></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(async function(){
+  const SUPABASE_URL='https://lpmocfdfpebcaseffugg.supabase.co';
+  const SUPABASE_ANON_KEY='sb_publishable_vNkDqYd81b2krZAisUhb2g_c_uwyvRp';
+  const client=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:true,storageKey:'adhemswag-auth'}});
+  const title=document.getElementById('title'),msg=document.getElementById('msg');
+  function fail(text){title.textContent='STEAM LINK FAILED';msg.innerHTML=text+'<br><br><a href="/settings/">Back to Settings</a>';document.querySelector('.bar').style.display='none';}
+  try{
+    const {data,error}=await client.auth.getSession();
+    const session=data?.session;
+    if(error||!session){fail('Your AdhemSwag session is missing. Please sign in with Twitch again.');return;}
+    const query=window.location.search;
+    const response=await fetch(SUPABASE_URL+'/functions/v1/steam-link',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token,'apikey':SUPABASE_ANON_KEY},
+      body:JSON.stringify({query})
+    });
+    const result=await response.json().catch(()=>({}));
+    if(!response.ok||!result?.ok){fail(result?.error||'Steam verification could not be completed.');return;}
+    title.textContent='STEAM CONNECTED';
+    msg.textContent='Your Steam profile has been linked automatically. Returning to Settings…';
+    setTimeout(()=>window.location.replace('/settings/?steam=connected'),900);
+  }catch(error){console.error(error);fail('A connection error occurred. Please try again.');}
+})();
+</script>
+</body>
+</html>
