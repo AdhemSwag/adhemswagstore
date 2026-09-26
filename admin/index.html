@@ -873,7 +873,10 @@ document.getElementById('loadRedemptions')?.addEventListener('click',loadRedempt
 document.getElementById('loadTransactions')?.addEventListener('click',loadTransactions);
 document.getElementById('clearTransactions')?.addEventListener('click',()=>{document.getElementById('transactionSearch').value='';document.getElementById('transactionType').value='';document.getElementById('transactionPlatform').value='';loadTransactions();});
 document.getElementById('transactionSearch')?.addEventListener('keydown',e=>{if(e.key==='Enter')loadTransactions();});
-document.getElementById('loadLeaderboard')?.addEventListener('click',loadLeaderboard);\ndocument.getElementById('refreshAdminLogs')?.addEventListener('click',loadAdminLogs);\ndocument.getElementById('clearLeaderboard')?.addEventListener('click',()=>{document.getElementById('leaderboardSearch').value='';loadLeaderboard();});\ndocument.getElementById('leaderboardSearch')?.addEventListener('keydown',e=>{if(e.key==='Enter')loadLeaderboard();});
+document.getElementById('loadLeaderboard')?.addEventListener('click',loadLeaderboard);
+document.getElementById('refreshAdminLogs')?.addEventListener('click',loadAdminLogs);
+document.getElementById('clearLeaderboard')?.addEventListener('click',()=>{document.getElementById('leaderboardSearch').value='';loadLeaderboard();});
+document.getElementById('leaderboardSearch')?.addEventListener('keydown',e=>{if(e.key==='Enter')loadLeaderboard();});
 document.getElementById('loadMedia')?.addEventListener('click',loadMedia);
 document.getElementById('findAdminUser')?.addEventListener('click',async()=>{
  if(!adminReady)return;const q=document.getElementById('adminUserSearch').value.trim();const out=document.getElementById('adminUserResult');if(!q)return;
