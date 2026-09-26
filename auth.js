@@ -137,9 +137,9 @@
       document.body.appendChild(loader);
       requestAnimationFrame(() => loader.classList.add('is-visible'));
       const hide = () => { loader.classList.add('is-hidden'); window.setTimeout(() => loader.remove(), 420); };
-      if (document.readyState === 'complete') window.setTimeout(hide, 360);
-      else window.addEventListener('load', () => window.setTimeout(hide, 220), { once: true });
-      window.setTimeout(hide, 1600);
+      if (document.readyState === 'complete') window.setTimeout(hide, 650);
+      else window.addEventListener('load', () => window.setTimeout(hide, 450), { once: true });
+      window.setTimeout(hide, 2400);
     };
     if (document.body) show();
     else document.addEventListener('DOMContentLoaded', show, { once: true });
