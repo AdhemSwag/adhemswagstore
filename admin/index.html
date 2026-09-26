@@ -485,14 +485,14 @@ async function loadRewards() {
   if (!tbody) return;
   const { data, error } = await supabase.from('rewards').select('id,name,description,fnc_cost,level_required,stock,active,image_url').order('created_at',{ascending:false});
   if (error) {
-    tbody.innerHTML = '<tr><td colspan="6">Unable to load rewards.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7">Unable to load rewards.</td></tr>';
     return;
   }
   if (!data?.length) {
-    tbody.innerHTML = '<tr><td colspan="6">No rewards yet.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7">No rewards yet.</td></tr>';
     return;
   }
-  tbody.innerHTML = data.map(r => '<tr><td>'+escapeHtml(r.name)+'</td><td>'+Number(r.fnc_cost||0).toLocaleString()+'</td><td>'+Number(r.level_required||1)+'</td><td>'+((r.stock ?? '∞'))+'</td><td>'+ (r.active ? 'ACTIVE' : 'OFF') +'</td><td>'+ (r.image_url ? '<a href="'+escapeAttr(r.image_url)+'" target="_blank" rel="noopener" style="color:var(--cyan)">VIEW</a>' : '—') +'</td><td><button class="btn" data-reward-toggle="'+r.id+'">'+(r.active?'DISABLE':'ACTIVATE')+'</button> <button class="btn danger" data-reward-delete="'+r.id+'">DELETE</button></td></tr>').join('');
+  tbody.innerHTML = data.map(r => '<tr><td>'+escapeHtml(r.name)+'</td><td>'+Number(r.fnc_cost||0).toLocaleString()+'</td><td>'+Number(r.level_required||1)+'</td><td>'+((r.stock ?? '∞'))+'</td><td>'+ (r.active ? 'ACTIVE' : 'OFF') +'</td><td>'+ (r.image_url ? '<a href="'+escapeAttr(r.image_url)+'" target="_blank" rel="noopener" style="color:var(--cyan)">VIEW</a>' : '—') +'</td><td><button class="btn" data-reward-edit="'+r.id+'">EDIT</button> <button class="btn" data-reward-toggle="'+r.id+'">'+(r.active?'DISABLE':'ACTIVATE')+'</button> <button class="btn danger" data-reward-delete="'+r.id+'">DELETE</button></td></tr>').join('');
   tbody.querySelectorAll('[data-reward-edit]').forEach(b=>b.onclick=()=>{
     const row=data.find(x=>x.id===b.dataset.rewardEdit); if(!row)return;
     document.getElementById('rewardEditId').value=row.id;
