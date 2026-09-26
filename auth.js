@@ -125,7 +125,7 @@
       if (!document.getElementById('adhemPageLoaderStyle')) {
         const style = document.createElement('style');
         style.id = 'adhemPageLoaderStyle';
-        style.textContent = '#adhemPageLoader{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;background:rgba(4,6,8,.985);opacity:0;visibility:hidden;transition:opacity .32s ease,visibility .32s ease}#adhemPageLoader.is-visible{opacity:1;visibility:visible}#adhemPageLoader.is-hidden{opacity:0;visibility:hidden;pointer-events:none}.adhem-loader-card{width:min(300px,68vw);text-align:center}.adhem-loader-logo{display:block;width:104px;height:104px;object-fit:contain;margin:0 auto 15px;filter:drop-shadow(0 0 8px rgba(17,217,247,.3));animation:adhemLoaderPulse 1.25s ease-in-out infinite}.adhem-loader-label{font:700 10px JetBrains Mono,monospace;letter-spacing:.2em;color:#8fa1a7;margin-bottom:9px}.adhem-loader-dots{display:inline-block;width:18px;text-align:left;animation:adhemLoaderDots 1s steps(4,end) infinite}.adhem-loader-track{height:3px;width:100%;overflow:hidden;background:#11191d;border:1px solid rgba(17,217,247,.12);box-sizing:border-box}.adhem-loader-track i{display:block;height:100%;width:38%;background:#11D9F7;box-shadow:0 0 9px rgba(17,217,247,.55);animation:adhemLoaderBar 1.05s ease-in-out infinite}@keyframes adhemLoaderPulse{0%,100%{transform:scale(.96);opacity:.82}50%{transform:scale(1.03);opacity:1}}@keyframes adhemLoaderDots{0%{width:0}100%{width:18px}}@keyframes adhemLoaderBar{0%{transform:translateX(-110%)}100%{transform:translateX(290%)}}@media(prefers-reduced-motion:reduce){#adhemPageLoader{transition:none}.adhem-loader-logo,.adhem-loader-track i,.adhem-loader-dots{animation:none}}';
+        style.textContent = '#adhemPageLoader{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;background:rgba(4,6,8,.985);opacity:0;visibility:hidden;transition:opacity .32s ease,visibility .32s ease}#adhemPageLoader.is-visible{opacity:1;visibility:visible}#adhemPageLoader.is-hidden{opacity:0;visibility:hidden;pointer-events:none}.adhem-loader-card{width:min(380px,76vw);text-align:center}.adhem-loader-logo{display:block;width:150px;height:150px;object-fit:contain;margin:0 auto 15px;filter:drop-shadow(0 0 8px rgba(17,217,247,.3));animation:adhemLoaderPulse 1.25s ease-in-out infinite}.adhem-loader-label{font:700 12px JetBrains Mono,monospace;letter-spacing:.2em;color:#8fa1a7;margin-bottom:9px}.adhem-loader-dots{display:inline-block;width:18px;text-align:left;animation:adhemLoaderDots 1s steps(4,end) infinite}.adhem-loader-track{height:4px;width:100%;overflow:hidden;background:#11191d;border:1px solid rgba(17,217,247,.12);box-sizing:border-box}.adhem-loader-track i{display:block;height:100%;width:38%;background:#11D9F7;box-shadow:0 0 9px rgba(17,217,247,.55);animation:adhemLoaderBar 1.05s ease-in-out infinite}@keyframes adhemLoaderPulse{0%,100%{transform:scale(.96);opacity:.82}50%{transform:scale(1.03);opacity:1}}@keyframes adhemLoaderDots{0%{width:0}100%{width:18px}}@keyframes adhemLoaderBar{0%{transform:translateX(-110%)}100%{transform:translateX(290%)}}@media(prefers-reduced-motion:reduce){#adhemPageLoader{transition:none}.adhem-loader-logo,.adhem-loader-track i,.adhem-loader-dots{animation:none}}';
         document.head.appendChild(style);
       }
       const loader = document.createElement('div');
@@ -137,9 +137,9 @@
       document.body.appendChild(loader);
       requestAnimationFrame(() => loader.classList.add('is-visible'));
       const hide = () => { loader.classList.add('is-hidden'); window.setTimeout(() => loader.remove(), 420); };
-      if (document.readyState === 'complete') window.setTimeout(hide, 650);
-      else window.addEventListener('load', () => window.setTimeout(hide, 450), { once: true });
-      window.setTimeout(hide, 2400);
+      if (document.readyState === 'complete') window.setTimeout(hide, 800);
+      else window.addEventListener('load', () => window.setTimeout(hide, 650), { once: true });
+      window.setTimeout(hide, 3200);
     };
     if (document.body) show();
     else document.addEventListener('DOMContentLoaded', show, { once: true });
