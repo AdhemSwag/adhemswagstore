@@ -145,7 +145,7 @@
     else document.addEventListener('DOMContentLoaded', show, { once: true });
   }
 
-  installPageLoader();
+  if (window.location.pathname === '/' || window.location.pathname === '/index.html') installPageLoader();
   function injectAccountRewards() {
     /* Shared site chrome: identical sidebar and safe header flow on every page. */
     if (!document.getElementById('adhemSharedChromeStyle')) {
