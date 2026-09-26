@@ -369,6 +369,12 @@ main.settings-main{max-width:1120px;margin:0 auto;padding:54px 40px 90px}
     try{
       const {error}=await window.AdhemSwagAuth.client.from('users').update(payload).eq('id',session.user.id);
       if(error){status.textContent='SAVE ERROR: '+error.message;return;}
+      try{
+        const claim=await window.AdhemSwagAuth.client.functions.invoke('claim-legacy-fnc',{body:{}});
+        if(claim.data&&claim.data.imported){
+          status.textContent='PROFILE SAVED — '+Number(claim.data.amount||0).toLocaleString()+' LEGACY FNC IMPORTED.';
+        }
+      }catch(err){ console.warn('Legacy FNC import unavailable',err); }
       profileDirty=false;
       status.textContent=showSaved?'PROFILE SAVED.':'AUTO-SAVED.';
       await window.AdhemSwagAuth.refreshAccountUI();
