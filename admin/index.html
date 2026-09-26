@@ -209,8 +209,8 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
 <div id="gwStatus" class="notice" style="display:none"></div></div>
 <div class="section"><h2>Giveaway History</h2><div class="table-wrap"><table><thead><tr><th>Giveaway</th><th>Reward</th><th>Status</th><th>Entries</th><th>Winners</th><th>Actions</th></tr></thead><tbody id="giveawayList"><tr><td colspan="6">Loading…</td></tr></tbody></table></div></div>
 </section>
-<section id="logs" class="panel"><div class="section"><h2>Admin Logs</h2><p>Every important admin action is recorded for traceability.</p><div class="table-wrap"><table><thead><tr><th>Date</th><th>Action</th><th>Target</th><th>Details</th></tr></thead><tbody id="adminLogList"><tr><td colspan="4">Loading…</td></tr></tbody></table></div></div></section>
-<section id="leaderboard" class="panel"><div class="section"><h2>Leaderboard</h2><p>Admin preview of the current FNC/XP ranking. The public leaderboard remains unchanged.</p><div class="actions"><button class="btn primary" id="loadLeaderboard">LOAD LEADERBOARD</button></div><div class="table-wrap"><table><thead><tr><th>#</th><th>Twitch</th><th>FNC</th><th>XP</th><th>Level</th><th>Watch Minutes</th></tr></thead><tbody id="leaderboardList"><tr><td colspan="6">Not loaded.</td></tr></tbody></table></div></div></section>
+<section id="logs" class="panel"><div class="section"><h2>Admin Logs</h2><p>Every important admin action is recorded for traceability.</p><div class="actions"><button class="btn primary" id="refreshAdminLogs">REFRESH LOGS</button></div><div id="adminLogStatus" class="notice" style="display:none"></div><div class="table-wrap"><table><thead><tr><th>Date</th><th>Action</th><th>Target</th><th>Details</th></tr></thead><tbody id="adminLogList"><tr><td colspan="4">Loading…</td></tr></tbody></table></div></div></section>
+<section id="leaderboard" class="panel"><div class="section"><h2>Leaderboard</h2><p>Admin preview of the current FNC/XP ranking. The public leaderboard remains unchanged.</p><div class="form-grid"><div class="field"><label>Search Twitch username</label><input id="leaderboardSearch" placeholder="adhemswag"></div><div class="field"><label>Ranking</label><select id="leaderboardRank"><option value="fnc">FNC Points</option><option value="xp">XP</option><option value="watch">Watch Minutes</option><option value="level">Level</option></select></div></div><div class="actions"><button class="btn primary" id="loadLeaderboard">LOAD LEADERBOARD</button><button class="btn" id="clearLeaderboard">CLEAR</button></div><div class="table-wrap"><table><thead><tr><th>#</th><th>Twitch</th><th>FNC</th><th>XP</th><th>Level</th><th>Watch Minutes</th></tr></thead><tbody id="leaderboardList"><tr><td colspan="6">Not loaded.</td></tr></tbody></table></div></div></section>
 <section id="media" class="panel"><div class="section"><h2>Media Library</h2><p>Images stored in the reward-images bucket.</p><div class="actions"><button class="btn primary" id="loadMedia">REFRESH MEDIA</button></div><div id="mediaStatus" class="notice" style="display:none"></div><div class="table-wrap"><table><thead><tr><th>File</th><th>Size</th><th>Updated</th><th>Action</th></tr></thead><tbody id="mediaList"><tr><td colspan="4">Not loaded.</td></tr></tbody></table></div></div></section>
 <section id="admin-access" class="panel"><div class="section"><h2>Admin Access</h2><p>Find an existing user and grant Admin Panel access.</p><div class="form-grid"><div class="field full"><label>Twitch username</label><input id="adminUserSearch" placeholder="adhemswag"></div></div><div class="actions"><button class="btn primary" id="findAdminUser">FIND USER</button></div><div id="adminUserResult" class="notice" style="display:none"></div></div><div class="section"><h2>Current Admins</h2><div class="table-wrap"><table><thead><tr><th>User ID</th><th>Created</th><th>Action</th></tr></thead><tbody id="adminAccessList"><tr><td colspan="3">Loading…</td></tr></tbody></table></div></div></section>
 <section id="system" class="panel">
@@ -584,9 +584,12 @@ async function loadTransactions(){
 }
 async function loadLeaderboard(){
  if(!adminReady)return;const tbody=document.getElementById('leaderboardList');if(!tbody)return;
- const {data,error}=await supabase.from('users').select('twitch_username,fnc_points,xp,level,total_watch_minutes').order('fnc_points',{ascending:false}).order('xp',{ascending:false}).limit(100);
+ const rank=document.getElementById('leaderboardRank')?.value||'fnc',term=(document.getElementById('leaderboardSearch')?.value||'').trim().toLowerCase();
+ const orderField=rank==='xp'?'xp':rank==='watch'?'total_watch_minutes':rank==='level'?'level':'fnc_points';
+ const {data,error}=await supabase.from('users').select('twitch_username,fnc_points,xp,level,total_watch_minutes').order(orderField,{ascending:false}).limit(100);
  if(error){tbody.innerHTML='<tr><td colspan="6">'+escapeHtml(error.message)+'</td></tr>';return;}
- tbody.innerHTML=(data||[]).map((x,i)=>'<tr><td>'+(i+1)+'</td><td>'+escapeHtml(x.twitch_username||'—')+'</td><td>'+Number(x.fnc_points||0).toLocaleString()+'</td><td>'+Number(x.xp||0).toLocaleString()+'</td><td>'+Number(x.level||1)+'</td><td>'+Number(x.total_watch_minutes||0).toLocaleString()+'</td></tr>').join('')||'<tr><td colspan="6">No users.</td></tr>';
+ const rows=(data||[]).filter(x=>!term||(x.twitch_username||'').toLowerCase().includes(term));
+ tbody.innerHTML=rows.map((x,i)=>'<tr><td>'+(i+1)+'</td><td>'+escapeHtml(x.twitch_username||'—')+'</td><td>'+Number(x.fnc_points||0).toLocaleString()+'</td><td>'+Number(x.xp||0).toLocaleString()+'</td><td>'+Number(x.level||1)+'</td><td>'+Number(x.total_watch_minutes||0).toLocaleString()+'</td></tr>').join('')||'<tr><td colspan="6">No users.</td></tr>';
 }
 async function loadMedia(){
  if(!adminReady)return;const tbody=document.getElementById('mediaList');if(!tbody)return;
@@ -757,9 +760,12 @@ async function drawGiveaway(id){
 }
 async function loadAdminLogs(){
   const tbody=document.getElementById('adminLogList');if(!tbody||!adminReady)return;
-  const {data,error}=await supabase.from('admin_logs').select('created_at,action,target_type,target_id,details').order('created_at',{ascending:false}).limit(100);
-  if(error){tbody.innerHTML='<tr><td colspan="4">Unable to load logs.</td></tr>';return;}
-  tbody.innerHTML=(data||[]).map(l=>'<tr><td>'+new Date(l.created_at).toLocaleString()+'</td><td>'+escapeHtml(l.action)+'</td><td>'+escapeHtml((l.target_type||'')+' '+(l.target_id||''))+'</td><td>'+escapeHtml(JSON.stringify(l.details||{}))+'</td></tr>').join('')||'<tr><td colspan="4">No logs yet.</td></tr>';
+  tbody.innerHTML='<tr><td colspan="4">Loading logs…</td></tr>';
+  const {data,error}=await supabase.from('admin_logs').select('created_at,action,target_type,target_id,details').order('created_at',{ascending:false}).limit(200);
+  const status=document.getElementById('adminLogStatus');
+  if(error){tbody.innerHTML='<tr><td colspan="4">Unable to load logs: '+escapeHtml(error.message)+'</td></tr>';if(status){status.style.display='block';status.textContent=error.message;}return;}
+  if(status){status.style.display='block';status.textContent='Loaded '+(data||[]).length+' admin log entries.';}
+  tbody.innerHTML=(data||[]).map(l=>'<tr><td>'+new Date(l.created_at).toLocaleString()+'</td><td>'+escapeHtml(l.action||'—')+'</td><td>'+escapeHtml((l.target_type||'')+' '+(l.target_id||''))+'</td><td>'+escapeHtml(JSON.stringify(l.details||{}))+'</td></tr>').join('')||'<tr><td colspan="4">No logs yet.</td></tr>';
 }
 document.getElementById('createGiveaway')?.addEventListener('click',async()=>{
   if(!adminReady)return;
@@ -867,7 +873,7 @@ document.getElementById('loadRedemptions')?.addEventListener('click',loadRedempt
 document.getElementById('loadTransactions')?.addEventListener('click',loadTransactions);
 document.getElementById('clearTransactions')?.addEventListener('click',()=>{document.getElementById('transactionSearch').value='';document.getElementById('transactionType').value='';document.getElementById('transactionPlatform').value='';loadTransactions();});
 document.getElementById('transactionSearch')?.addEventListener('keydown',e=>{if(e.key==='Enter')loadTransactions();});
-document.getElementById('loadLeaderboard')?.addEventListener('click',loadLeaderboard);
+document.getElementById('loadLeaderboard')?.addEventListener('click',loadLeaderboard);\ndocument.getElementById('refreshAdminLogs')?.addEventListener('click',loadAdminLogs);\ndocument.getElementById('clearLeaderboard')?.addEventListener('click',()=>{document.getElementById('leaderboardSearch').value='';loadLeaderboard();});\ndocument.getElementById('leaderboardSearch')?.addEventListener('keydown',e=>{if(e.key==='Enter')loadLeaderboard();});
 document.getElementById('loadMedia')?.addEventListener('click',loadMedia);
 document.getElementById('findAdminUser')?.addEventListener('click',async()=>{
  if(!adminReady)return;const q=document.getElementById('adminUserSearch').value.trim();const out=document.getElementById('adminUserResult');if(!q)return;
