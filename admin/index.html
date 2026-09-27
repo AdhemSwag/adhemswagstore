@@ -253,7 +253,7 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, 
   auth: { flowType: 'pkce', autoRefreshToken: true, persistSession: true, detectSessionInUrl: true, storageKey: 'adhemswag-auth' }
 });
 const twitchWatchClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
-  auth: { flowType: 'implicit', autoRefreshToken: true, persistSession: true, detectSessionInUrl: true, storageKey: 'adhemswag-twitch-watch' }
+  auth: { flowType: 'pkce', autoRefreshToken: true, persistSession: true, detectSessionInUrl: true, storageKey: 'adhemswag-twitch-watch' }
 });
 let adminReady = false;
 let selectedImage = null;
