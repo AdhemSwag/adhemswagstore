@@ -46,11 +46,15 @@
     // In both cases, keep the root loader alive long enough for auth.js to
     // capture the provider token and finish the admin callback.
     if (watchConnect && (oauthCode || oauthHash || oauthError)) {
+      // This page is only an OAuth handoff for Twitch Watch Tracking.
+      // Do not show the normal AdhemSwag loading screen during this callback.
+      const loader = document.getElementById('adhemRootLoader');
+      if (loader) loader.remove();
+      // auth.js owns the provider-token capture. This is only a safety fallback
+      // if the callback capture cannot complete.
       setTimeout(function(){
-        // If OAuth handling fails, recover instead of leaving the site blocked forever.
-        localStorage.removeItem('adhem_twitch_watch_connect');
         window.location.replace('/admin/');
-      }, 20000);
+      }, 8000);
       return;
     }
 
