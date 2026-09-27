@@ -472,6 +472,7 @@
       });
       if (result.error) throw result.error;
 
+      localStorage.setItem('adhem_twitch_watch_connected','1');
       localStorage.removeItem('adhem_twitch_watch_connect');
       localStorage.removeItem('adhem_twitch_provider_token');
       localStorage.removeItem('adhem_twitch_provider_refresh_token');
