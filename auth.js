@@ -34,6 +34,26 @@
 
   window.AdhemAuth = client;
 
+  // Capture Twitch provider tokens immediately when Supabase restores the OAuth session.
+  // Supabase recommends registering this listener right after createClient because the
+  // provider token is available on the callback session and is not persisted in DB.
+  client.auth.onAuthStateChange((event, session) => {
+    try {
+      if (session?.provider_token) {
+        localStorage.setItem('adhem_twitch_provider_token', session.provider_token);
+      }
+      if (session?.provider_refresh_token) {
+        localStorage.setItem('adhem_twitch_provider_refresh_token', session.provider_refresh_token);
+      }
+      if (event === 'SIGNED_OUT') {
+        localStorage.removeItem('adhem_twitch_provider_token');
+        localStorage.removeItem('adhem_twitch_provider_refresh_token');
+      }
+    } catch (error) {
+      console.warn('[AdhemSwag] Twitch provider token capture:', error);
+    }
+  });
+
   function getOAuthRedirect() {
     const host = window.location.hostname;
     if (host === 'localhost' || host === '127.0.0.1') {
@@ -428,36 +448,30 @@
     if (localStorage.getItem('adhem_twitch_watch_connect') !== '1') return false;
 
     try {
-      // Twitch Watch Tracking uses the PKCE callback on /. If Supabase has not
-      // finished its automatic URL detection yet, explicitly exchange the code
-      // here before trying to read provider_token.
-      const code = new URLSearchParams(window.location.search).get('code');
-      if (code) {
-        const exchange = await client.auth.exchangeCodeForSession(code);
-        if (exchange.error) {
-          console.warn('[AdhemSwag] Twitch PKCE exchange:', exchange.error.message);
-        } else {
-          const cleanUrl = window.location.pathname + window.location.hash;
-          window.history.replaceState({}, document.title, cleanUrl);
-        }
-      }
-
+      // detectSessionInUrl handles the PKCE code exchange automatically.
+      // The early auth listener above captures provider_token as soon as the
+      // callback session is restored, so we do not race a second code exchange.
       const { data, error } = await client.auth.getSession();
       if (error) throw error;
 
       const session = data?.session;
-      if (!session?.provider_token) {
+      const accessToken = session?.provider_token || localStorage.getItem('adhem_twitch_provider_token');
+      const refreshToken = session?.provider_refresh_token || localStorage.getItem('adhem_twitch_provider_refresh_token') || null;
+      if (!session?.user || !accessToken) {
         console.warn('[AdhemSwag] Twitch callback reached /. Provider token is not available yet.');
         return false;
       }
 
       const result = await client.rpc('admin_store_twitch_watch_credentials', {
-        p_access_token: session.provider_token,
-        p_refresh_token: session.provider_refresh_token || null
+        p_access_token: accessToken,
+        p_refresh_token: refreshToken
       });
       if (result.error) throw result.error;
 
       localStorage.removeItem('adhem_twitch_watch_connect');
+      localStorage.removeItem('adhem_twitch_provider_token');
+      localStorage.removeItem('adhem_twitch_provider_refresh_token');
+      window.history.replaceState({}, document.title, window.location.pathname);
       window.location.replace('/admin/?twitch_watch=connected');
       return true;
     } catch (error) {
