@@ -216,18 +216,32 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
 <section id="admin-access" class="panel"><div class="section"><h2>Admin Access</h2><p>Find an existing user and grant Admin Panel access.</p><div class="form-grid"><div class="field full"><label>Twitch username</label><input id="adminUserSearch" placeholder="adhemswag"></div></div><div class="actions"><button class="btn primary" id="findAdminUser">FIND USER</button></div><div id="adminUserResult" class="notice" style="display:none"></div></div><div class="section"><h2>Current Admins</h2><div class="table-wrap"><table><thead><tr><th>User ID</th><th>Created</th><th>Action</th></tr></thead><tbody id="adminAccessList"><tr><td colspan="3">Loading…</td></tr></tbody></table></div></div></section>
 <section id="system" class="panel">
       <div class="section">
-        <h2>System Controls</h2>
-        <p>Global switches remain OFF until the full Twitch/EventSub, XP/FNC, Store and redemption workflow has passed testing.</p>
-        <div class="actions"><button class="btn" id="systemFnc">FNC: OFF</button><button class="btn" id="systemPoints">POINTS: OFF</button><button class="btn" id="systemXp">XP: OFF</button><button class="btn" id="systemRewards">REWARDS: OFF</button></div>
-        <div class="notice" style="margin-top:18px">
-          <strong style="color:var(--cyan)">TWITCH WATCH TRACKING:</strong>
-          Tracking uses Twitch's chatters endpoint: it can match connected accounts present in chat, not everyone watching the video. Twitch does not expose a reliable per-viewer playback list. No browser page or extension is required for chatters after account connection.
-          <div class="actions">
-            <button class="btn primary" id="connectTwitchWatch" type="button">CONNECT TWITCH WATCH TRACKING</button>
-            <button class="btn" id="testTwitchWatch" type="button">TEST WATCH SYNC</button>
-          </div>
-          <div id="twitchWatchStatus" class="notice" style="display:none;margin-top:10px"></div>
+        <h2>System <span style="color:var(--cyan)">CONTROLS</span></h2>
+        <p>All global switches and Twitch Watch Tracking controls are here. Nothing distributes points until you enable it.</p>
+        <div class="cards" style="margin-top:18px">
+          <div class="card"><small>FNC PROGRAM</small><div class="metric" id="systemFncState">OFF</div></div>
+          <div class="card"><small>GLOBAL POINTS</small><div class="metric" id="systemPointsState">OFF</div></div>
+          <div class="card"><small>XP</small><div class="metric" id="systemXpState">OFF</div></div>
+          <div class="card"><small>REWARDS</small><div class="metric" id="systemRewardsState">OFF</div></div>
         </div>
+        <div class="actions">
+          <button class="btn" id="systemFnc">FNC: OFF</button>
+          <button class="btn" id="systemPoints">POINTS: OFF</button>
+          <button class="btn" id="systemXp">XP: OFF</button>
+          <button class="btn" id="systemRewards">REWARDS: OFF</button>
+        </div>
+      </div>
+      <div class="section">
+        <h2>Twitch <span style="color:var(--cyan)">WATCH TRACKING</span></h2>
+        <p>Connect your Twitch account once. The backend then checks Twitch chatters while you are live and matches connected viewer accounts. This is chat presence, not a reliable video-player viewer list.</p>
+        <div class="notice">
+          <strong style="color:var(--cyan)">STATUS:</strong> <span id="twitchWatchState">Not connected</span>
+        </div>
+        <div class="actions">
+          <button class="btn primary" id="connectTwitchWatch" type="button">CONNECT TWITCH WATCH TRACKING</button>
+          <button class="btn" id="testTwitchWatch" type="button">TEST WATCH SYNC</button>
+        </div>
+        <div id="twitchWatchStatus" class="notice" style="display:none;margin-top:10px"></div>
       </div>
     </section>
   </main>
@@ -746,7 +760,10 @@ async function updateSystemButtons(){
  const f=await supabaseClient.from('fnc_settings').select('enabled').eq('id',1).single();
  const s=await supabaseClient.from('system_config').select('points_enabled,rewards_enabled,xp_enabled').eq('id',true).single();
  const set=(id,label,on)=>{const e=document.getElementById(id);if(e){e.textContent=label+': '+(on?'ON':'OFF');e.classList.toggle('primary',!!on);}};
- set('systemFnc','FNC',!!f.data?.enabled);set('systemPoints','POINTS',!!s.data?.points_enabled);set('systemXp','XP',!!s.data?.xp_enabled);set('systemRewards','REWARDS',!!s.data?.rewards_enabled);
+ const states=[['systemFnc','FNC',!!f.data?.enabled,'systemFncState'],['systemPoints','POINTS',!!s.data?.points_enabled,'systemPointsState'],['systemXp','XP',!!s.data?.xp_enabled,'systemXpState'],['systemRewards','REWARDS',!!s.data?.rewards_enabled,'systemRewardsState']];
+ states.forEach(([id,label,on,stateId])=>{set(id,label,on);const state=document.getElementById(stateId);if(state){state.textContent=on?'ON':'OFF';state.style.color=on?'var(--ok)':'var(--muted)';}});
+ const watchState=document.getElementById('twitchWatchState');
+ if(watchState)watchState.textContent=localStorage.getItem('adhem_twitch_watch_connected')==='1'?'Connected':'Not connected';
 }
 function escapeHtml(value){return String(value??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
 function escapeAttr(value){return escapeHtml(value);}
@@ -1007,12 +1024,14 @@ document.getElementById('testTwitchWatch')?.addEventListener('click', async () =
 });
 
 document.querySelectorAll('.nav-btn').forEach(btn=>{
-
   btn.addEventListener('click',()=>{
     document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
     document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
     btn.classList.add('active');
-    document.getElementById(btn.dataset.panel).classList.add('active');
+    const panel=document.getElementById(btn.dataset.panel);
+    if(!panel)return;
+    panel.classList.add('active');
+    requestAnimationFrame(()=>window.scrollTo({top:0,behavior:'smooth'}));
   });
 });
 
