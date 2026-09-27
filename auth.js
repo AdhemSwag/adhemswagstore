@@ -422,10 +422,14 @@
     window.location.href = '/';
   }
 
+  const twitchWatchClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    auth: { flowType: 'implicit', detectSessionInUrl: true, persistSession: true, autoRefreshToken: true, storageKey: 'adhemswag-twitch-watch' }
+  });
+
   async function beginTwitchWatchAuthorization() {
     try {
       localStorage.setItem('adhem_twitch_watch_connect', '1');
-      const { data, error } = await client.auth.signInWithOAuth({
+      const { data, error } = await twitchWatchClient.auth.signInWithOAuth({
         provider: 'twitch',
         options: {
           redirectTo: getWatchOAuthRedirect(),
