@@ -321,13 +321,22 @@
     const xp = Number(profile?.xp || 0);
     const level = Number(profile?.level || 1);
     const fnc = Number(profile?.fnc_points || 0);
-    const thresholds = {1:0,2:750,3:1750,4:3000,5:4500,6:6250,7:8250,8:10500,9:13000,10:15750,11:18750,12:22000,13:25500,14:29250,15:33250,20:57000,25:87500,30:128250,40:223500,50:348750};
-    const next = Object.keys(thresholds).map(Number).sort((a,b)=>a-b).find(l => l > level);
-    const currentThreshold = thresholds[level] ?? 0;
-    const nextThreshold = next ? thresholds[next] : currentThreshold;
-    const progress = next && nextThreshold > currentThreshold
-      ? Math.max(0, Math.min(100, ((xp-currentThreshold)/(nextThreshold-currentThreshold))*100))
-      : 100;
+    const getLevelThreshold = (l) => {
+      const n = Math.max(1, Math.min(100, Number(l || 1)));
+      if (n === 1) return 0;
+      if (n <= 10) return 125 * (n - 1) * (n + 4);
+      if (n === 11) return 18750; if (n === 12) return 22000; if (n === 13) return 25500; if (n === 14) return 29250; if (n === 15) return 33250;
+      if (n <= 20) return 33250 + (n - 15) * 4750;
+      if (n <= 25) return 57000 + (n - 20) * 6100;
+      if (n <= 30) return 87500 + (n - 25) * 8150;
+      if (n <= 40) return 128250 + (n - 30) * 9525;
+      if (n <= 50) return 223500 + (n - 40) * 12525;
+      return 348750 + (n - 50) * 10000;
+    };
+    const currentThreshold = getLevelThreshold(level);
+    const nextLevel = Math.min(100, level + 1);
+    const nextThreshold = getLevelThreshold(nextLevel);
+    const progress = level >= 100 ? 100 : Math.max(0, Math.min(100, ((xp-currentThreshold)/(nextThreshold-currentThreshold))*100));
 
     document.querySelectorAll('.shared-account-level, #adhemAccountLevel').forEach(el => el.textContent = level.toLocaleString());
     document.querySelectorAll('.shared-account-fnc, #adhemAccountFnc').forEach(el => el.textContent = fnc.toLocaleString());
