@@ -285,6 +285,7 @@ main.settings-main{max-width:1120px;margin:0 auto;padding:54px 40px 90px}
     <div class="settings-card-body">
       <form id="profileForm" class="settings-form">
         <div class="settings-field full"><label for="profileEmail">Email</label><input id="profileEmail" type="email" autocomplete="email" placeholder="your@email.com"></div>
+        <div class="settings-field full"><label for="steamProfileUrl">Steam Profile URL</label><input id="steamProfileUrl" type="url" autocomplete="url" placeholder="https://steamcommunity.com/id/yourname/"></div>
         <div class="settings-field full"><label for="steamTradeUrl">Steam Trade URL</label><input id="steamTradeUrl" type="url" autocomplete="url" placeholder="https://steamcommunity.com/tradeoffer/new/…"></div>
         <div class="settings-field full"><label for="discordUsername">Discord <span class="field-optional">OPTIONAL</span></label><input id="discordUsername" type="text" maxlength="100" autocomplete="off" placeholder="username or Discord ID"></div>
         <div class="settings-actions">
@@ -306,6 +307,7 @@ main.settings-main{max-width:1120px;margin:0 auto;padding:54px 40px 90px}
   function fill(p,viewer){
     if(!p)return;
     document.getElementById('profileEmail').value=p.email||'';
+    document.getElementById('steamProfileUrl').value=p.steam_profile_url||'';
     document.getElementById('steamTradeUrl').value=p.steam_trade_url||'';
     document.getElementById('discordUsername').value=p.discord_username||'';
     const twitch=p.twitch_username?'Connected as '+p.twitch_username:'Not connected';
@@ -331,8 +333,8 @@ main.settings-main{max-width:1120px;margin:0 auto;padding:54px 40px 90px}
     const steamComplete=!!p.steam_trade_url;
     document.getElementById('settingsSteamStatus').textContent=steamComplete?'Added':'Optional';
     document.getElementById('settingsProfileStatus').textContent=p.profile_complete?'Complete':'Incomplete';
-    const fields=[p.email,p.steam_trade_url,p.discord_username];
-    const pct=Math.round(fields.filter(Boolean).length/3*100);
+    const fields=[p.email,p.steam_profile_url,p.steam_trade_url,p.discord_username];
+    const pct=Math.round(fields.filter(Boolean).length/4*100);
     document.getElementById('settingsProgressText').textContent=p.profile_complete?'100%':pct+'%';
     document.getElementById('settingsProgressFill').style.width=(p.profile_complete?100:pct)+'%';
   }
@@ -358,6 +360,7 @@ main.settings-main{max-width:1120px;margin:0 auto;padding:54px 40px 90px}
     if(!session){status.textContent='Connect Twitch first.';return;}
     const payload={
       email:document.getElementById('profileEmail').value.trim()||null,
+      steam_profile_url:document.getElementById('steamProfileUrl').value.trim()||null,
       steam_trade_url:document.getElementById('steamTradeUrl').value.trim()||null,
       discord_username:document.getElementById('discordUsername').value.trim()||null
     };
