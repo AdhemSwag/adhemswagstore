@@ -393,8 +393,17 @@ async function verifyAdmin() {
 }
 
 supabaseClient.auth.onAuthStateChange((event, session) => {
+  if (session?.provider_token) {
+    localStorage.setItem('adhem_twitch_provider_token', session.provider_token);
+  }
+  if (session?.provider_refresh_token) {
+    localStorage.setItem('adhem_twitch_provider_refresh_token', session.provider_refresh_token);
+  }
   if (event === 'SIGNED_IN' && session?.user) {
-    setTimeout(() => verifyAdmin(), 0);
+    setTimeout(async () => {
+      await captureTwitchWatchCallback();
+      await verifyAdmin();
+    }, 0);
   }
 });
 
