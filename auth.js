@@ -423,7 +423,7 @@
   }
 
   const twitchWatchClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-    auth: { flowType: 'implicit', detectSessionInUrl: true, persistSession: true, autoRefreshToken: true, storageKey: 'adhemswag-twitch-watch' }
+    auth: { flowType: 'pkce', detectSessionInUrl: true, persistSession: true, autoRefreshToken: true, storageKey: 'adhemswag-twitch-watch' }
   });
 
   twitchWatchClient.auth.onAuthStateChange((event, session) => {
