@@ -458,6 +458,20 @@ supabaseClient.auth.onAuthStateChange((event, session) => {
   }
 });
 
+// Twitch Watch uses a dedicated Supabase client so its OAuth session/provider token
+// is captured independently from the normal Admin login session.
+twitchWatchClient.auth.onAuthStateChange((event, session) => {
+  if (session?.provider_token) {
+    localStorage.setItem('adhem_twitch_provider_token', session.provider_token);
+  }
+  if (session?.provider_refresh_token) {
+    localStorage.setItem('adhem_twitch_provider_refresh_token', session.provider_refresh_token);
+  }
+  if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session?.user) {
+    setTimeout(() => captureTwitchWatchCallback(), 0);
+  }
+});
+
 let selectedAdminUser = null;
 
 function showUserStatus(message, ok=false){
