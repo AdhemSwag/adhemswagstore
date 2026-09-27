@@ -262,6 +262,7 @@
 <div class="requirements-grid">
 <div class="requirement"><span>Twitch</span><b id="reqTwitch">Connected / Optional</b></div>
 <div class="requirement"><span>Email</span><b id="reqEmail">Optional</b></div>
+<div class="requirement"><span>Steam Profile URL</span><b id="reqSteamProfileUrl">Optional</b></div>
 <div class="requirement"><span>Steam trade URL</span><b id="reqTradeUrl">Optional</b></div>
 <div class="requirement"><span>Discord</span><b id="reqDiscord">Optional</b></div>
 </div>
@@ -313,7 +314,7 @@ window.addEventListener('adhem:viewer', async function(e){
  const cur=thresholds[level]??0,next=Object.keys(thresholds).map(Number).sort((a,b)=>a-b).find(x=>x>level);
  const pct=next?Math.max(0,Math.min(100,(xp-cur)/(thresholds[next]-cur)*100)):100;
  document.getElementById('profileProgressBar').style.width=pct+'%';
- [['reqTwitch',!!p.twitch_user_id],['reqEmail',!!p.email],['reqTradeUrl',!!p.steam_trade_url],['reqDiscord',!!p.discord_username]].forEach(x=>{const el=document.getElementById(x[0]);if(el){el.textContent=x[1]?'Complete':'Optional';el.classList.toggle('complete',x[1])}});
+ [['reqTwitch',!!p.twitch_user_id],['reqEmail',!!p.email],['reqSteamProfileUrl',!!p.steam_profile_url],['reqTradeUrl',!!p.steam_trade_url],['reqDiscord',!!p.discord_username]].forEach(x=>{const el=document.getElementById(x[0]);if(el){el.textContent=x[1]?'Complete':'Optional';el.classList.toggle('complete',x[1])}});
  if(!client||!history)return;
  history.innerHTML='<div class="empty-history">Loading activity…</div>';
  const [tx,rd]=await Promise.all([
