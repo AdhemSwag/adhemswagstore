@@ -236,9 +236,9 @@
     <div class="profile-status-grid">
       <div class="row"><span class="label">Twitch</span><span class="status" id="profileTwitchStatus">Checking…</span></div>
       <div class="row"><span class="label">Profile</span><span class="status" id="profileCompleteStatus">Checking…</span></div>
-      <div class="row"><span class="label">FNC eligibility</span><span class="status" id="fncEligibilityStatus">FNC OFF — project in development</span></div>
+      <div class="row"><span class="label">FNC eligibility</span><span class="status" id="fncEligibilityStatus">FNC REWARDS — ACTIVE</span></div>
     </div>
-    <p class="note">FNC Points will stay disabled until the complete project is finished and tested. A viewer must be connected with Twitch and have a complete profile before rewards can be enabled.</p>
+    <p class="note">FNC Points and rewards are active. A viewer must be connected with Twitch and have a complete profile before earning or redeeming rewards.</p>
     <a class="cta" href="/settings/">COMPLETE PROFILE</a>
   </section>
 
@@ -262,7 +262,6 @@
 <div class="requirements-grid">
 <div class="requirement"><span>Twitch</span><b id="reqTwitch">Connected / Optional</b></div>
 <div class="requirement"><span>Email</span><b id="reqEmail">Optional</b></div>
-<div class="requirement"><span>Steam profile</span><b id="reqSteamProfile">Optional</b></div>
 <div class="requirement"><span>Steam trade URL</span><b id="reqTradeUrl">Optional</b></div>
 <div class="requirement"><span>Discord</span><b id="reqDiscord">Optional</b></div>
 </div>
@@ -275,7 +274,7 @@
 <input id="redeemCodeInput" type="text" maxlength="64" placeholder="ENTER YOUR CODE" autocomplete="off">
 <button id="redeemCodeBtn" type="button">REDEEM</button>
 </div>
-<div class="code-status" id="redeemCodeStatus">FNC Rewards are currently OFF.</div>
+<div class="code-status" id="redeemCodeStatus">FNC Rewards are active for eligible viewers.</div>
 </section>
 <section class="card">
 <h2>HISTORY</h2>
@@ -306,7 +305,7 @@ window.addEventListener('adhem:viewer', async function(e){
  }
  set('profileCompleteStatus',p&&p.profile_complete?'Complete':'Incomplete');
  set('profileHeroStatus',p&&p.profile_complete?'PROFILE COMPLETE':'INCOMPLETE');
- set('fncEligibilityStatus',p&&p.profile_complete?'Profile ready — FNC still OFF':'Complete your profile first');
+ set('fncEligibilityStatus',p&&p.profile_complete?'Profile ready — FNC active':'Complete your profile first');
  set('profileFncPoints',Number(p&&p.fnc_points||0).toLocaleString());
  const xp=Number(p&&p.xp||0),level=Number(p&&p.level||1);
  set('profileXp',xp.toLocaleString()+' XP');set('profileLevel',level);set('profileWatchMinutes',Number(p&&p.total_watch_minutes||0)+' min');
@@ -314,7 +313,7 @@ window.addEventListener('adhem:viewer', async function(e){
  const cur=thresholds[level]??0,next=Object.keys(thresholds).map(Number).sort((a,b)=>a-b).find(x=>x>level);
  const pct=next?Math.max(0,Math.min(100,(xp-cur)/(thresholds[next]-cur)*100)):100;
  document.getElementById('profileProgressBar').style.width=pct+'%';
- [['reqTwitch',!!p.twitch_user_id],['reqEmail',!!p.email],['reqSteamProfile',!!p.steam_profile_url],['reqTradeUrl',!!p.steam_trade_url],['reqDiscord',!!p.discord_username]].forEach(x=>{const el=document.getElementById(x[0]);if(el){el.textContent=x[1]?'Complete':'Optional';el.classList.toggle('complete',x[1])}});
+ [['reqTwitch',!!p.twitch_user_id],['reqEmail',!!p.email],['reqTradeUrl',!!p.steam_trade_url],['reqDiscord',!!p.discord_username]].forEach(x=>{const el=document.getElementById(x[0]);if(el){el.textContent=x[1]?'Complete':'Optional';el.classList.toggle('complete',x[1])}});
  if(!client||!history)return;
  history.innerHTML='<div class="empty-history">Loading activity…</div>';
  const [tx,rd]=await Promise.all([
