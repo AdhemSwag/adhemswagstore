@@ -997,7 +997,7 @@ document.getElementById('connectTwitchWatch')?.addEventListener('click', async (
   const s=document.getElementById('twitchWatchStatus');
   try {
     localStorage.setItem('adhem_twitch_watch_connect','1');
-    const {data,error}=await supabaseClient.auth.signInWithOAuth({
+    const {data,error}=await twitchWatchClient.auth.signInWithOAuth({
       provider:'twitch',
       options:{
         redirectTo:'https://adhemswag.com/admin/',
