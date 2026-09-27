@@ -426,6 +426,19 @@
     auth: { flowType: 'implicit', detectSessionInUrl: true, persistSession: true, autoRefreshToken: true, storageKey: 'adhemswag-twitch-watch' }
   });
 
+  twitchWatchClient.auth.onAuthStateChange((event, session) => {
+    try {
+      if (session?.provider_token) localStorage.setItem('adhem_twitch_provider_token', session.provider_token);
+      if (session?.provider_refresh_token) localStorage.setItem('adhem_twitch_provider_refresh_token', session.provider_refresh_token);
+      if (event === 'SIGNED_OUT') {
+        localStorage.removeItem('adhem_twitch_provider_token');
+        localStorage.removeItem('adhem_twitch_provider_refresh_token');
+      } else if (session?.provider_token && localStorage.getItem('adhem_twitch_watch_connect') === '1') {
+        setTimeout(() => captureTwitchWatchProviderToken(), 0);
+      }
+    } catch (error) { console.warn('[AdhemSwag] Twitch Watch provider token capture:', error); }
+  });
+
   async function beginTwitchWatchAuthorization() {
     try {
       localStorage.setItem('adhem_twitch_watch_connect', '1');
@@ -459,7 +472,7 @@
       // detectSessionInUrl handles the PKCE code exchange automatically.
       // The early auth listener above captures provider_token as soon as the
       // callback session is restored, so we do not race a second code exchange.
-      const { data, error } = await client.auth.getSession();
+      const { data, error } = await twitchWatchClient.auth.getSession();
       if (error) throw error;
 
       const session = data?.session;
@@ -470,7 +483,7 @@
         return false;
       }
 
-      const result = await client.rpc('admin_store_twitch_watch_credentials', {
+      const result = await twitchWatchClient.rpc('admin_store_twitch_watch_credentials', {
         p_access_token: accessToken,
         p_refresh_token: refreshToken
       });
