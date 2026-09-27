@@ -260,7 +260,7 @@ footer a{color:var(--cyan);text-decoration:none}
   </div>
 
   <div class="store-toolbar">
-    <div class="store-balance">YOUR BALANCE: <strong id="storeFncBalance">— FNC</strong></div>
+    <div class="store-balance">YOUR BALANCE: <strong id="storeFncBalance">— FNC</strong></div><div class="store-balance">VIEWER STATUS: <strong id="storeViewerStatus">CHECKING…</strong></div>
     <a class="btn" style="cursor:pointer;margin-top:0" href="/profile/">MY PROFILE</a>
   </div>
   <div class="store-message" id="storeMessage"></div>
@@ -300,6 +300,7 @@ footer a{color:var(--cyan);text-decoration:none}
   const statusTitle = document.getElementById('storeStatusTitle');
   const statusText = document.getElementById('storeStatusText');
   const statusDot = document.getElementById('storeStatusDot');
+  const viewerStatus = document.getElementById('storeViewerStatus');
   const modal = document.getElementById('tradeModal');
   const tradeUrl = document.getElementById('tradeUrl');
   const tradeCancel = document.getElementById('tradeCancel');
@@ -328,18 +329,24 @@ footer a{color:var(--cyan);text-decoration:none}
     statusDot.style.background = active ? '#36d58a' : '#ff3b3b';
     statusDot.style.boxShadow = active ? '0 0 10px rgba(54,213,138,.7)' : '0 0 10px rgba(255,59,59,.7)';
     balance.textContent = viewer ? money(viewer.fnc_points)+' FNC' : 'SIGN IN';
-    await loadRewards(active);
+    let activeViewer = false;
+    if (viewer) {
+      const { data: session } = await client.from('watch_sessions').select('active_minutes,last_seen_at,ended_at').eq('user_id',viewer.id).eq('platform','twitch').is('ended_at',null).gte('last_seen_at',new Date(Date.now()-120000).toISOString()).order('last_seen_at',{ascending:false}).limit(1).maybeSingle();
+      activeViewer = !!session && Number(session.active_minutes||0) >= 10;
+    }
+    viewerStatus.textContent = !viewer ? 'SIGN IN' : activeViewer ? '🟢 ACTIVE' : '🔒 WATCH 10 MIN';
+    await loadRewards(active, activeViewer);
   }
 
-  async function loadRewards(active) {
+  async function loadRewards(active, activeViewer) {
     const {data, error} = await client.from('rewards').select('id,name,description,fnc_cost,xp_required,level_required,stock,active,image_url').eq('active',true).order('created_at',{ascending:false});
     if (error) { grid.innerHTML='<div class="empty-rewards">UNABLE TO LOAD REWARDS.</div>'; return; }
     if (!data?.length) { grid.innerHTML='<div class="empty-rewards">NO ACTIVE REWARDS YET — CHECK BACK SOON.</div>'; return; }
     grid.innerHTML = data.map(r => {
       const stock = r.stock == null ? 'UNLIMITED' : (Number(r.stock) > 0 ? Number(r.stock)+' LEFT' : 'SOLD OUT');
-      const can = !!viewer && active && !viewer.is_blocked && viewer.profile_complete && Number(viewer.fnc_points||0) >= Number(r.fnc_cost||0) && Number(viewer.xp||0) >= Number(r.xp_required||0) && Number(viewer.level||1) >= Number(r.level_required||1) && (r.stock == null || Number(r.stock)>0);
+      const can = !!viewer && active && activeViewer && !viewer.is_blocked && viewer.profile_complete && Number(viewer.fnc_points||0) >= Number(r.fnc_cost||0) && Number(viewer.xp||0) >= Number(r.xp_required||0) && Number(viewer.level||1) >= Number(r.level_required||1) && (r.stock == null || Number(r.stock)>0);
       const image = r.image_url ? '<img class="reward-image" src="'+esc(r.image_url)+'" alt="'+esc(r.name)+'">' : '<div class="reward-image empty">ADHEMSWAG REWARD</div>';
-      return '<article class="reward-card">'+image+'<div class="reward-body"><h3>'+esc(r.name)+'</h3><div class="reward-desc">'+esc(r.description||'AdhemSwag reward.')+'</div><div class="reward-meta"><span class="reward-chip"><strong>'+money(r.fnc_cost)+' FNC</strong></span><span class="reward-chip">LEVEL <strong>'+Number(r.level_required||1)+'</strong></span><span class="reward-chip">XP <strong>'+money(r.xp_required)+'</strong></span><span class="reward-chip">'+esc(stock)+'</span></div><button class="reward-redeem" data-id="'+r.id+'" '+(can?'':'disabled')+'>'+(!viewer?'SIGN IN TO REDEEM':(!active?'STOPPED':(!viewer.profile_complete?'COMPLETE PROFILE':(!can?'REQUIREMENTS NOT MET':'REDEEM REWARD'))))+'</button></div></article>';
+      return '<article class="reward-card">'+image+'<div class="reward-body"><h3>'+esc(r.name)+'</h3><div class="reward-desc">'+esc(r.description||'AdhemSwag reward.')+'</div><div class="reward-meta"><span class="reward-chip"><strong>'+money(r.fnc_cost)+' FNC</strong></span><span class="reward-chip">LEVEL <strong>'+Number(r.level_required||1)+'</strong></span><span class="reward-chip">XP <strong>'+money(r.xp_required)+'</strong></span><span class="reward-chip">'+esc(stock)+'</span></div><button class="reward-redeem" data-id="'+r.id+'" '+(can?'':'disabled')+'>'+(!viewer?'SIGN IN TO REDEEM':(!active?'STOPPED':(!viewer.profile_complete?'COMPLETE PROFILE':(!activeViewer?'WATCH 10 MIN':(!can?'REQUIREMENTS NOT MET':'REDEEM REWARD')))))+'</button></div></article>';
     }).join('');
     grid.querySelectorAll('.reward-redeem:not(:disabled)').forEach(btn => btn.addEventListener('click',()=>openRedeem(data.find(r=>r.id===btn.dataset.id))));
   }
