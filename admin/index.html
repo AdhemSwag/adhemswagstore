@@ -148,6 +148,7 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
           <button class="btn" id="addUserXp">+ XP</button>
           <button class="btn" id="removeUserXp">− XP</button>
           <button class="btn" id="changeUserLevel">CHANGE LEVEL</button>
+          <button class="btn primary" id="viewPublicProfile" type="button">VIEW PUBLIC PROFILE</button>
           <button class="btn danger" id="toggleUserBlock">BLOCK ACCOUNT</button>
         </div>
       </div>
@@ -609,6 +610,11 @@ document.getElementById('removeUserXp')?.addEventListener('click',()=>{
 document.getElementById('changeUserLevel')?.addEventListener('click',()=>{
   const level=Number(prompt('New level:',selectedAdminUser?.level||1));
   if(Number.isInteger(level)&&level>=1)adjustSelectedUser({level});
+});
+document.getElementById('viewPublicProfile')?.addEventListener('click',()=>{
+  if(!adminReady||!selectedAdminUser?.twitch_username)return;
+  const username=encodeURIComponent(selectedAdminUser.twitch_username);
+  window.open('/profile/?admin_preview='+username,'_blank','noopener');
 });
 document.getElementById('toggleUserBlock')?.addEventListener('click',()=>{
   if(selectedAdminUser)adjustSelectedUser({blocked:!selectedAdminUser.is_blocked});
