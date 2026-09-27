@@ -909,7 +909,7 @@ document.getElementById('connectTwitchWatch')?.addEventListener('click', async (
     const {data,error}=await supabaseClient.auth.signInWithOAuth({
       provider:'twitch',
       options:{
-        redirectTo:'https://adhemswag.com/profile/',
+        redirectTo:'https://adhemswag.com/',
         skipBrowserRedirect:true,
         scopes:'moderator:read:chatters channel:read:subscriptions',
         queryParams:{force_verify:'true'}
