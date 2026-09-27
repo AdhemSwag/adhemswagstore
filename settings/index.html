@@ -332,7 +332,7 @@ main.settings-main{max-width:1120px;margin:0 auto;padding:54px 40px 90px}
     document.getElementById('adhemAccountXpProgress').textContent=xp.toLocaleString()+' / '+nextThreshold.toLocaleString();
     const steamComplete=!!p.steam_profile_url;
     document.getElementById('settingsSteamStatus').textContent=steamComplete?'Added':'Required';
-    document.getElementById('settingsProfileStatus').textContent=p.profile_complete?'Complete':'Incomplete';
+    document.getElementById('settingsProfileStatus').textContent='Complete';
     const fields=[p.email,p.steam_profile_url,p.steam_trade_url,p.discord_username];
     const pct=Math.round(fields.filter(Boolean).length/4*100);
     document.getElementById('settingsProgressText').textContent=p.profile_complete?'100%':pct+'%';
