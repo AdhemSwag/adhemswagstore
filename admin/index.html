@@ -252,6 +252,9 @@ const SUPABASE_KEY = 'sb_publishable_vNkDqYd81b2krZAisUhb2g_c_uwyvRp';
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
   auth: { flowType: 'pkce', autoRefreshToken: true, persistSession: true, detectSessionInUrl: true, storageKey: 'adhemswag-auth' }
 });
+const twitchWatchClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+  auth: { flowType: 'implicit', autoRefreshToken: true, persistSession: true, detectSessionInUrl: true, storageKey: 'adhemswag-twitch-watch' }
+});
 let adminReady = false;
 let selectedImage = null;
 let selectedGiveawayImage = null;
@@ -265,7 +268,7 @@ async function captureTwitchWatchCallback() {
     const params = new URLSearchParams(window.location.search);
     const code = params.get('code');
     if (code) {
-      const exchange = await supabaseClient.auth.exchangeCodeForSession(code);
+      const exchange = await twitchWatchClient.auth.exchangeCodeForSession(code);
       // If detectSessionInUrl already exchanged it, Supabase can report that the
       // code was already consumed; in that case continue with the existing session.
       if (exchange.error && !/code.*(invalid|already|used|exchange)/i.test(exchange.error.message || '')) {
@@ -275,7 +278,7 @@ async function captureTwitchWatchCallback() {
 
     let session = null;
     for (let attempt = 0; attempt < 12; attempt++) {
-      const { data, error } = await supabaseClient.auth.getSession();
+      const { data, error } = await twitchWatchClient.auth.getSession();
       if (error) throw error;
       session = data?.session || null;
       const accessToken = session?.provider_token || localStorage.getItem('adhem_twitch_provider_token');
@@ -293,7 +296,7 @@ async function captureTwitchWatchCallback() {
       return false;
     }
 
-    const result = await supabaseClient.rpc('admin_store_twitch_watch_credentials', {
+    const result = await twitchWatchClient.rpc('admin_store_twitch_watch_credentials', {
       p_access_token: accessToken,
       p_refresh_token: refreshToken
     });
