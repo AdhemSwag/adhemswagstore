@@ -262,7 +262,7 @@
         .adhem-topbar .adhem-account{margin-left:auto!important;position:relative!important}
         .adhem-account-menu{min-width:240px!important;padding:5px 0 6px!important;z-index:1100!important;top:calc(100% + 8px)!important}
         .adhem-account-user[hidden],.adhem-account-connect[hidden],.adhem-account-menu[hidden]{display:none!important}
-        .adhem-account-user{display:inline-flex!important;align-items:center!important;gap:9px!important;padding:5px 10px 5px 5px!important;min-width:0!important;min-height:38px!important;border-radius:22px!important}
+        .adhem-account-user{appearance:none!important;-webkit-appearance:none!important;background:rgba(5,7,10,.94)!important;color:#d9faff!important;border:1px solid rgba(17,217,247,.22)!important;box-shadow:0 0 12px rgba(17,217,247,.05)!important;cursor:pointer!important;text-align:left!important;font-family:'JetBrains Mono',monospace!important;display:inline-flex!important;align-items:center!important;gap:9px!important;padding:5px 10px 5px 5px!important;min-width:0!important;min-height:38px!important;border-radius:22px!important}
         .adhem-account-user .adhem-account-avatar{width:28px!important;height:28px!important;border-radius:50%!important;margin:0!important;flex:none!important}
         .adhem-account-user .adhem-account-name{font-size:10px!important;line-height:1.2;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
         .adhem-account-user{display:grid!important;grid-template-columns:28px minmax(120px,1fr) 12px!important;grid-template-rows:auto auto auto!important;column-gap:8px!important;align-items:center!important;padding:5px 9px 5px 5px!important;min-width:190px!important}
