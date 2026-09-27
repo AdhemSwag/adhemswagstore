@@ -263,17 +263,14 @@ async function captureTwitchWatchCallback() {
   if (localStorage.getItem('adhem_twitch_watch_connect') !== '1') return false;
   const status = document.getElementById('twitchWatchStatus');
   try {
-    // Explicitly finish the PKCE callback on /admin/. This avoids depending only
-    // on detectSessionInUrl/onAuthStateChange when the browser returns from Twitch.
+    // The Watch client uses PKCE + detectSessionInUrl, so Supabase completes
+    // the one-time code exchange automatically on this page. Do not exchange
+    // the same code a second time.
     const params = new URLSearchParams(window.location.search);
     const code = params.get('code');
-    if (code) {
-      const exchange = await twitchWatchClient.auth.exchangeCodeForSession(code);
-      // If detectSessionInUrl already exchanged it, Supabase can report that the
-      // code was already consumed; in that case continue with the existing session.
-      if (exchange.error && !/code.*(invalid|already|used|exchange)/i.test(exchange.error.message || '')) {
-        throw exchange.error;
-      }
+    if (code && status) {
+      status.style.display='block';
+      status.textContent='Twitch callback detected. Restoring Watch session…';
     }
 
     let session = null;
@@ -321,6 +318,19 @@ async function captureTwitchWatchCallback() {
     return false;
   }
 }
+twitchWatchClient.auth.onAuthStateChange((event, session) => {
+  if (session?.provider_token) {
+    localStorage.setItem('adhem_twitch_provider_token', session.provider_token);
+  }
+  if (session?.provider_refresh_token) {
+    localStorage.setItem('adhem_twitch_provider_refresh_token', session.provider_refresh_token);
+  }
+  if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session?.user &&
+      localStorage.getItem('adhem_twitch_watch_connect') === '1') {
+    setTimeout(() => captureTwitchWatchCallback(), 0);
+  }
+});
+
 function setSecurity(message, ok=false, showLogin=false) {
   const el = document.getElementById('adminSecurity');
   el.innerHTML = '<strong>SECURITY:</strong> ' + message + ' <button class="btn primary" id="adminLogin" type="button" style="display:'+(showLogin?'inline-block':'none')+';margin-left:10px;padding:7px 12px">LOGIN WITH TWITCH</button>';
