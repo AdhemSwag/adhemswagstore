@@ -244,13 +244,40 @@ let selectedGiveawayImage = null;
 
 async function captureTwitchWatchCallback() {
   if (localStorage.getItem('adhem_twitch_watch_connect') !== '1') return false;
+  const status = document.getElementById('twitchWatchStatus');
   try {
-    const { data, error } = await supabaseClient.auth.getSession();
-    if (error) throw error;
-    const session = data?.session;
+    // Explicitly finish the PKCE callback on /admin/. This avoids depending only
+    // on detectSessionInUrl/onAuthStateChange when the browser returns from Twitch.
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get('code');
+    if (code) {
+      const exchange = await supabaseClient.auth.exchangeCodeForSession(code);
+      // If detectSessionInUrl already exchanged it, Supabase can report that the
+      // code was already consumed; in that case continue with the existing session.
+      if (exchange.error && !/code.*(invalid|already|used|exchange)/i.test(exchange.error.message || '')) {
+        throw exchange.error;
+      }
+    }
+
+    let session = null;
+    for (let attempt = 0; attempt < 12; attempt++) {
+      const { data, error } = await supabaseClient.auth.getSession();
+      if (error) throw error;
+      session = data?.session || null;
+      const accessToken = session?.provider_token || localStorage.getItem('adhem_twitch_provider_token');
+      if (session?.user && accessToken) break;
+      await new Promise(resolve => setTimeout(resolve, 250));
+    }
+
     const accessToken = session?.provider_token || localStorage.getItem('adhem_twitch_provider_token');
     const refreshToken = session?.provider_refresh_token || localStorage.getItem('adhem_twitch_provider_refresh_token') || null;
-    if (!session?.user || !accessToken) return false;
+    if (!session?.user || !accessToken) {
+      if (status) {
+        status.style.display='block';
+        status.textContent='Twitch returned to Admin, but the provider token was not captured. Please try CONNECT again.';
+      }
+      return false;
+    }
 
     const result = await supabaseClient.rpc('admin_store_twitch_watch_credentials', {
       p_access_token: accessToken,
@@ -261,10 +288,18 @@ async function captureTwitchWatchCallback() {
     localStorage.removeItem('adhem_twitch_watch_connect');
     localStorage.removeItem('adhem_twitch_provider_token');
     localStorage.removeItem('adhem_twitch_provider_refresh_token');
-    window.history.replaceState({}, document.title, window.location.pathname);
+    if (code) window.history.replaceState({}, document.title, window.location.pathname);
+    if (status) {
+      status.style.display='block';
+      status.textContent='Twitch Watch Tracking connected. Credentials saved securely.';
+    }
     return true;
   } catch (error) {
     console.error('[AdhemSwag Admin] Twitch Watch callback capture failed:', error);
+    if (status) {
+      status.style.display='block';
+      status.textContent='Twitch callback failed: '+(error?.message||'Unknown error');
+    }
     return false;
   }
 }
