@@ -48,6 +48,10 @@
       if (event === 'SIGNED_OUT') {
         localStorage.removeItem('adhem_twitch_provider_token');
         localStorage.removeItem('adhem_twitch_provider_refresh_token');
+      } else if (session?.provider_token && localStorage.getItem('adhem_twitch_watch_connect') === '1') {
+        // The callback can fire after init() has already checked getSession().
+        // Retry the credential capture immediately when the provider token arrives.
+        setTimeout(() => captureTwitchWatchProviderToken(), 0);
       }
     } catch (error) {
       console.warn('[AdhemSwag] Twitch provider token capture:', error);
