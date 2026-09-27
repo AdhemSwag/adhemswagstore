@@ -425,20 +425,44 @@
   }
 
   async function captureTwitchWatchProviderToken() {
-    if (localStorage.getItem('adhem_twitch_watch_connect') !== '1') return;
-    const { data } = await client.auth.getSession();
-    const session = data?.session;
-    if (!session?.provider_token) return;
+    if (localStorage.getItem('adhem_twitch_watch_connect') !== '1') return false;
+
     try {
+      // Twitch Watch Tracking uses the PKCE callback on /. If Supabase has not
+      // finished its automatic URL detection yet, explicitly exchange the code
+      // here before trying to read provider_token.
+      const code = new URLSearchParams(window.location.search).get('code');
+      if (code) {
+        const exchange = await client.auth.exchangeCodeForSession(code);
+        if (exchange.error) {
+          console.warn('[AdhemSwag] Twitch PKCE exchange:', exchange.error.message);
+        } else {
+          const cleanUrl = window.location.pathname + window.location.hash;
+          window.history.replaceState({}, document.title, cleanUrl);
+        }
+      }
+
+      const { data, error } = await client.auth.getSession();
+      if (error) throw error;
+
+      const session = data?.session;
+      if (!session?.provider_token) {
+        console.warn('[AdhemSwag] Twitch callback reached /. Provider token is not available yet.');
+        return false;
+      }
+
       const result = await client.rpc('admin_store_twitch_watch_credentials', {
         p_access_token: session.provider_token,
         p_refresh_token: session.provider_refresh_token || null
       });
       if (result.error) throw result.error;
+
       localStorage.removeItem('adhem_twitch_watch_connect');
-      window.location.href = '/admin/?twitch_watch=connected';
+      window.location.replace('/admin/?twitch_watch=connected');
+      return true;
     } catch (error) {
-      console.error('[AdhemSwag] Unable to store Twitch watch credentials:', error);
+      console.error('[AdhemSwag] Unable to capture Twitch Watch credentials:', error);
+      return false;
     }
   }
 
@@ -544,13 +568,16 @@
       }
     }
 
-    await refreshAccountUI();
+    // Handle the Twitch Watch Tracking callback before normal profile/UI work.
+    // This prevents unrelated profile queries from delaying the OAuth exchange.
     await captureTwitchWatchProviderToken();
+
+    await refreshAccountUI();
 
     client.auth.onAuthStateChange(() => {
       setTimeout(async () => {
-        await refreshAccountUI();
         await captureTwitchWatchProviderToken();
+        await refreshAccountUI();
       }, 0);
     });
   }
