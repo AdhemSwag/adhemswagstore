@@ -342,6 +342,44 @@ footer .footer-copy .row{margin:0;}
   }
 
 </style>
+
+<style id="leaderboard-upgrade-css">
+.lb-dashboard,.lb-section{margin-bottom:28px}
+.lb-dashboard{background:var(--bg-panel);border:1px solid var(--line);padding:22px}
+.lb-dashboard-head,.lb-section-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px}
+.lb-kicker{font:600 10px 'JetBrains Mono',monospace;letter-spacing:.16em;color:var(--cyan-dim);text-transform:uppercase}
+.lb-viewer-name{font:700 24px 'Rajdhani',sans-serif;margin-top:5px}
+.lb-profile-link{color:var(--cyan);text-decoration:none;font:600 11px 'JetBrains Mono',monospace;border:1px solid var(--line);padding:9px 12px}
+.lb-profile-link:hover{border-color:var(--cyan);background:rgba(17,217,247,.06)}
+.lb-stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:18px}
+.lb-stat{background:rgba(17,217,247,.035);border:1px solid var(--line);padding:15px}
+.lb-stat span,.lb-card-label{display:block;color:var(--muted);font:600 9px 'JetBrains Mono',monospace;letter-spacing:.12em}
+.lb-stat strong{display:block;color:var(--cyan);font:700 25px 'Rajdhani',sans-serif;margin-top:3px}
+.lb-stat small,.lb-next-card small{display:block;color:var(--muted);font-size:10px;margin-top:2px}
+.lb-progress-wrap{margin-top:15px}
+.lb-progress-label{display:flex;justify-content:space-between;color:var(--muted);font:10px 'JetBrains Mono',monospace;margin-bottom:6px}
+.lb-progress{height:7px;background:#11171b;border:1px solid var(--line);overflow:hidden}
+.lb-progress span{display:block;width:0;height:100%;background:var(--cyan);box-shadow:0 0 12px rgba(17,217,247,.5);transition:width .35s ease}
+.lb-next-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.lb-next-card{border:1px solid var(--line);padding:14px;background:rgba(17,217,247,.02)}
+.lb-next-card strong{display:block;font:700 17px 'Rajdhani',sans-serif;margin-top:5px;color:var(--white)}
+.lb-section-head{margin-bottom:12px;align-items:end}
+.lb-section-head h2{font:700 24px 'Rajdhani',sans-serif;margin-top:3px;text-transform:uppercase}
+.lb-section-head h2 span{color:var(--cyan)}
+.lb-tabs{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.lb-tab{appearance:none;background:var(--bg-panel);border:1px solid var(--line);color:var(--muted);font:600 9px 'JetBrains Mono',monospace;letter-spacing:.06em;padding:9px 10px;cursor:pointer}
+.lb-tab:hover{border-color:var(--cyan);color:var(--cyan)}
+.lb-tab.active{background:rgba(17,217,247,.1);border-color:var(--cyan);color:var(--cyan)}
+.watcher-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:9px}
+.watcher-card{background:var(--bg-panel);border:1px solid var(--line);padding:15px;min-width:0}
+.watcher-rank{font:700 10px 'JetBrains Mono',monospace;color:var(--cyan-dim)}
+.watcher-name{font:700 16px 'Rajdhani',sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:5px}
+.watcher-minutes{font:700 21px 'JetBrains Mono',monospace;color:var(--cyan);margin-top:8px}
+.watcher-minutes small{font:400 9px;color:var(--muted)}
+.watcher-level{font:10px 'JetBrains Mono',monospace;color:var(--muted);margin-top:4px}
+@media(max-width:850px){.lb-stats-grid{grid-template-columns:repeat(2,1fr)}.watcher-grid{grid-template-columns:repeat(2,1fr)}.lb-section-head{align-items:flex-start;flex-direction:column}.lb-tabs{justify-content:flex-start}}
+@media(max-width:560px){.lb-dashboard{padding:15px}.lb-dashboard-head{flex-direction:column}.lb-next-grid{grid-template-columns:1fr}.watcher-grid{grid-template-columns:1fr}.lb-stats-grid{grid-template-columns:1fr 1fr}.lb-tab{font-size:8px;padding:8px 7px}}
+</style>
 </head>
 <body>
 
@@ -437,13 +475,76 @@ footer .footer-copy .row{margin:0;}
 
 
 </div><main>
-  <div class="eyebrow" style="margin-bottom:10px;">// FNC Points</div>
+  <div class="eyebrow" style="margin-bottom:10px;">// FNC • XP • WATCH</div>
   <h1>Leader<span>board</span></h1>
-  <p class="page-sub">Viewers appear here automatically after completing their profile. FNC Points and rankings update from the live site balance.</p>
+  <p class="page-sub">Track your XP, Level, FNC Points and watch time. Keep watching, level up and climb the ranks.</p>
 
-  <div class="lb-table bracket" id="lbTable"><div class="lb-loading">Loading FNC leaderboard…</div></div>
-  <div class="lb-pagination" id="lbPagination" hidden></div>
-  <div class="lb-note" id="lbNote">Only completed, non-blocked viewer profiles are shown.</div></main>
+  <section class="lb-dashboard bracket" id="viewerDashboard">
+    <div class="lb-dashboard-head">
+      <div>
+        <div class="lb-kicker">// MY PROGRESS</div>
+        <div class="lb-viewer-name" id="viewerName">Connect Twitch to see your progress</div>
+      </div>
+      <a class="lb-profile-link" href="/profile/">MY PROFILE →</a>
+    </div>
+    <div class="lb-stats-grid">
+      <div class="lb-stat"><span>RANK</span><strong id="viewerRank">—</strong><small>FNC ranking</small></div>
+      <div class="lb-stat"><span>LEVEL</span><strong id="viewerLevel">—</strong><small id="viewerXpText">XP —</small></div>
+      <div class="lb-stat"><span>FNC POINTS</span><strong id="viewerFnc">—</strong><small id="viewerFncRate">WATCH • EARN</small></div>
+      <div class="lb-stat"><span>WATCH TIME</span><strong id="viewerWatch">—</strong><small id="viewerStreak">Streak —</small></div>
+    </div>
+    <div class="lb-progress-wrap">
+      <div class="lb-progress-label"><span>XP PROGRESS</span><span id="viewerProgressText">—</span></div>
+      <div class="lb-progress"><span id="viewerProgressBar"></span></div>
+    </div>
+    <div class="lb-next-grid">
+      <div class="lb-next-card">
+        <span class="lb-card-label">NEXT REWARD</span>
+        <strong id="nextRewardName">—</strong>
+        <small id="nextRewardReq">Keep watching to unlock rewards.</small>
+      </div>
+      <div class="lb-next-card">
+        <span class="lb-card-label">WATCHING NOW</span>
+        <strong id="activeViewers">0 viewers</strong>
+        <small id="nextTickText">Live watch tracking status</small>
+      </div>
+    </div>
+  </section>
+
+  <section class="lb-section">
+    <div class="lb-section-head">
+      <div>
+        <div class="lb-kicker">// GLOBAL RANKING</div>
+        <h2>Climb the <span>ranks</span></h2>
+      </div>
+      <div class="lb-tabs" role="tablist">
+        <button class="lb-tab active" data-board="fnc" type="button">FNC POINTS</button>
+        <button class="lb-tab" data-board="xp" type="button">XP</button>
+        <button class="lb-tab" data-board="earned" type="button">ALL-TIME FNC EARNED</button>
+      </div>
+    </div>
+    <div class="lb-table bracket" id="lbTable"><div class="lb-loading">Loading leaderboard…</div></div>
+    <div class="lb-pagination" id="lbPagination" hidden></div>
+  </section>
+
+  <section class="lb-section lb-watch-section">
+    <div class="lb-section-head">
+      <div>
+        <div class="lb-kicker">// WATCHERS</div>
+        <h2>Top <span>watchers</span></h2>
+      </div>
+      <div class="lb-tabs" role="tablist" id="watchTabs">
+        <button class="lb-tab active" data-period="today" type="button">TODAY</button>
+        <button class="lb-tab" data-period="week" type="button">WEEK</button>
+        <button class="lb-tab" data-period="month" type="button">MONTH</button>
+        <button class="lb-tab" data-period="all" type="button">ALL TIME</button>
+      </div>
+    </div>
+    <div class="watcher-grid" id="watcherGrid"><div class="lb-loading">Loading watch stats…</div></div>
+  </section>
+
+  <div class="lb-note" id="lbNote">Only completed, non-blocked viewer profiles are shown. XP and FNC balances are server-protected.</div>
+</main>
 
 <footer>
   <div class="footer-inner">
@@ -472,23 +573,100 @@ footer .footer-copy .row{margin:0;}
 (function(){
   const SUPABASE_URL='https://lpmocfdfpebcaseffugg.supabase.co';
   const SUPABASE_KEY='sb_publishable_vNkDqYd81b2krZAisUhb2g_c_uwyvRp';
-  const PAGE_SIZE=100;
+  const PAGE_SIZE=50;
   const client=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
   const table=document.getElementById('lbTable'), pagination=document.getElementById('lbPagination');
-  let rows=[], page=1;
+  let rows=[], board='fnc', page=1;
+
   const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-  function render(){
-    const start=(page-1)*PAGE_SIZE, items=rows.slice(start,start+PAGE_SIZE);
-    if(!items.length){table.innerHTML='<div class="lb-loading">No completed profiles yet.</div>';pagination.hidden=true;return;}
-    let html='<div class="lb-row lb-head"><div>RANK</div><div>VIEWER</div><div style="text-align:right">FNC POINTS</div></div>';
-    for(const u of items){const r=Number(u.rank),cls=r===1?' top1':r===2?' top2':r===3?' top3':'';html+=`<div class="lb-row${cls}"><div class="lb-rank">#${r}</div><div class="lb-user">${esc(u.twitch_username)}</div><div class="lb-points">${Number(u.fnc_points||0).toLocaleString()} <span>FNC</span></div></div>`;}
+  const fmt=n=>Number(n||0).toLocaleString();
+  const mins=n=>{n=Number(n||0);return n<60?fmt(n)+' min':fmt(Math.floor(n/60))+'h '+(n%60)+'m';};
+
+  const xpThresholds={1:0,2:750,3:1750,4:3000,5:4500,6:6250,7:8250,8:10500,9:13000,10:15750,11:18750,12:22000,13:25500,14:29250,15:33250,20:57000,25:87500,30:128250,40:223500,50:348750};
+  function xpProgress(xp,level){
+    const current=xpThresholds[level];
+    const next=xpThresholds[level+1];
+    if(current===undefined || next===undefined) return {pct:0,text:fmt(xp)+' XP'};
+    const pct=Math.max(0,Math.min(100,((xp-current)/(next-current))*100));
+    return {pct,text:fmt(xp-current)+' / '+fmt(next-current)+' XP'};
+  }
+
+  function renderBoard(){
+    const sorted=[...rows].sort((a,b)=>{
+      const av=board==='xp'?Number(a.xp):board==='earned'?Number(a.total_fnc_earned):Number(a.fnc_points);
+      const bv=board==='xp'?Number(b.xp):board==='earned'?Number(b.total_fnc_earned):Number(b.fnc_points);
+      return bv-av || String(a.twitch_username).localeCompare(String(b.twitch_username));
+    });
+    const start=(page-1)*PAGE_SIZE, items=sorted.slice(start,start+PAGE_SIZE);
+    if(!items.length){table.innerHTML='<div class="lb-loading">No completed viewer profiles yet.</div>';pagination.hidden=true;return;}
+    const label=board==='xp'?'XP':board==='earned'?'ALL-TIME FNC EARNED':'FNC POINTS';
+    let html='<div class="lb-row lb-head"><div>RANK</div><div>VIEWER</div><div style="text-align:right">'+label+'</div></div>';
+    items.forEach((u,i)=>{
+      const r=start+i+1,cls=r===1?' top1':r===2?' top2':r===3?' top3':'';
+      const value=board==='xp'?fmt(u.xp):board==='earned'?fmt(u.total_fnc_earned):fmt(u.fnc_points);
+      html+=`<div class="lb-row${cls}"><div class="lb-rank">#${r}</div><div class="lb-user">${esc(u.twitch_username)} <span style="color:var(--muted);font-size:10px">LVL ${Number(u.level||1)}</span></div><div class="lb-points">${value} <span>${label==='XP'?'XP':'FNC'}</span></div></div>`;
+    });
     table.innerHTML=html;
-    const pages=Math.ceil(rows.length/PAGE_SIZE); pagination.hidden=pages<=1;
+    const pages=Math.ceil(sorted.length/PAGE_SIZE);pagination.hidden=pages<=1;
     pagination.innerHTML=`<button class="lb-page-btn" ${page<=1?'disabled':''} data-p="-1">Previous</button><span class="lb-page-info">Page ${page} / ${pages}</span><button class="lb-page-btn" ${page>=pages?'disabled':''} data-p="1">Next</button>`;
   }
-  pagination.addEventListener('click',e=>{const b=e.target.closest('[data-p]');if(!b)return;page=Math.max(1,Math.min(Math.ceil(rows.length/PAGE_SIZE),page+Number(b.dataset.p)));render();window.scrollTo({top:0,behavior:'smooth'});});
-  async function load(){const {data,error}=await client.rpc('get_fnc_leaderboard');if(error){console.error(error);table.innerHTML='<div class="lb-loading">Leaderboard temporarily unavailable.</div>';return;}rows=Array.isArray(data)?data:[];page=1;render();const note=document.getElementById('lbNote');if(note)note.textContent=rows.length?rows.length+' completed viewer profile'+(rows.length===1?'':'s')+' on the FNC leaderboard.':'No completed viewer profiles yet.';}
-  load();setInterval(load,60000);
+
+  async function loadBoard(){
+    const {data,error}=await client.rpc('get_leaderboard_full');
+    if(error){console.error(error);table.innerHTML='<div class="lb-loading">Leaderboard temporarily unavailable.</div>';return;}
+    rows=Array.isArray(data)?data:[];page=1;renderBoard();
+    const note=document.getElementById('lbNote');
+    if(note)note.textContent=rows.length?rows.length+' completed viewer profiles • live site data':'No completed viewer profiles yet.';
+  }
+
+  async function loadDashboard(){
+    const {data,error}=await client.rpc('get_leaderboard_dashboard');
+    if(error){console.warn('[AdhemSwag] leaderboard dashboard:',error);return;}
+    const v=data?.viewer;
+    document.getElementById('activeViewers').textContent=fmt(data?.active_viewers)+' viewer'+(Number(data?.active_viewers)===1?'':'s')+' now';
+    const interval=Math.max(1,Number(data?.fnc_interval_minutes||1));
+    const minute=new Date().getMinutes();
+    const until=interval-(minute%interval||interval);
+    document.getElementById('nextTickText').textContent=data?.points_enabled?'Next FNC tick in ~'+until+' min':'FNC earning is currently paused';
+    if(!v){
+      document.getElementById('viewerName').textContent='Connect Twitch to see your progress';
+      return;
+    }
+    document.getElementById('viewerName').textContent='@'+(v.username||'Viewer');
+    document.getElementById('viewerRank').textContent='#'+fmt(v.rank);
+    document.getElementById('viewerLevel').textContent='LVL '+fmt(v.level);
+    document.getElementById('viewerFnc').textContent=fmt(v.fnc_points);
+    document.getElementById('viewerWatch').textContent=mins(v.total_watch_minutes);
+    document.getElementById('viewerXpText').textContent=fmt(v.xp)+' XP';
+    document.getElementById('viewerStreak').textContent=fmt(v.streak)+' day streak';
+    document.getElementById('viewerFncRate').textContent=data?.points_enabled?fmt(data.fnc_base_amount)+' FNC / '+interval+' min base':'FNC paused';
+    const prog=xpProgress(Number(v.xp||0),Number(v.level||1));
+    document.getElementById('viewerProgressBar').style.width=prog.pct+'%';
+    document.getElementById('viewerProgressText').textContent=prog.text;
+    const reward=data?.next_reward;
+    document.getElementById('nextRewardName').textContent=reward?.name||'More rewards coming soon';
+    document.getElementById('nextRewardReq').textContent=reward?[
+      Number(reward.fnc_cost)>0?fmt(reward.fnc_cost)+' FNC':'',
+      Number(reward.level_required)>1?'Level '+reward.level_required:'',
+      Number(reward.xp_required)>0?fmt(reward.xp_required)+' XP':''
+    ].filter(Boolean).join(' • ')||'Check the STORE':'Keep watching to unlock rewards.';
+  }
+
+  async function loadWatchers(period='today'){
+    const grid=document.getElementById('watcherGrid');
+    const {data,error}=await client.rpc('get_watcher_leaderboard',{p_period:period});
+    if(error){console.error(error);grid.innerHTML='<div class="lb-loading">Watch stats temporarily unavailable.</div>';return;}
+    const items=Array.isArray(data)?data:[];
+    if(!items.length){grid.innerHTML='<div class="lb-loading">No watch activity recorded for this period yet.</div>';return;}
+    grid.innerHTML=items.map(u=>`<div class="watcher-card"><div class="watcher-rank">#${u.rank}</div><div class="watcher-name">${esc(u.twitch_username)}</div><div class="watcher-minutes">${fmt(u.watch_minutes)} <small>MIN</small></div><div class="watcher-level">LEVEL ${fmt(u.level)} • ${fmt(u.xp)} XP</div></div>`).join('');
+  }
+
+  pagination.addEventListener('click',e=>{const b=e.target.closest('[data-p]');if(!b)return;page=Math.max(1,page+Number(b.dataset.p));renderBoard();window.scrollTo({top:0,behavior:'smooth'});});
+  document.querySelectorAll('[data-board]').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('[data-board]').forEach(x=>x.classList.remove('active'));b.classList.add('active');board=b.dataset.board;page=1;renderBoard();}));
+  document.querySelectorAll('[data-period]').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('[data-period]').forEach(x=>x.classList.remove('active'));b.classList.add('active');loadWatchers(b.dataset.period);}));
+
+  loadBoard();loadDashboard();loadWatchers('today');
+  setInterval(loadBoard,60000);setInterval(loadDashboard,30000);setInterval(()=>loadWatchers(document.querySelector('[data-period].active')?.dataset.period||'today'),60000);
 })();
 </script></body>
 </html>
