@@ -5,6 +5,7 @@
   const SUPABASE_URL = 'https://lpmocfdfpebcaseffugg.supabase.co';
   const SUPABASE_ANON_KEY = 'sb_publishable_vNkDqYd81b2krZAisUhb2g_c_uwyvRp';
   const PRODUCTION_REDIRECT = 'https://adhemswag.com/dashboard/';
+  const PRODUCTION_WATCH_REDIRECT = 'https://adhemswag.com/profile/';
 
   function setStatus(message) {
     const status = document.getElementById('loginStatus');
@@ -39,6 +40,14 @@
       return window.location.origin + '/profile/';
     }
     return PRODUCTION_REDIRECT;
+  }
+
+  function getWatchOAuthRedirect() {
+    const host = window.location.hostname;
+    if (host === 'localhost' || host === '127.0.0.1') {
+      return window.location.origin + '/profile/';
+    }
+    return PRODUCTION_WATCH_REDIRECT;
   }
 
   async function loginWithProvider(provider = 'twitch') {
@@ -395,7 +404,7 @@
       const { data, error } = await client.auth.signInWithOAuth({
         provider: 'twitch',
         options: {
-          redirectTo: getOAuthRedirect(),
+          redirectTo: getWatchOAuthRedirect(),
           skipBrowserRedirect: true,
           scopes: 'moderator:read:chatters channel:read:subscriptions',
           queryParams: { force_verify: 'true' }
