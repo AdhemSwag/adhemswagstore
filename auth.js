@@ -397,7 +397,7 @@
         options: {
           redirectTo: getOAuthRedirect(),
           skipBrowserRedirect: true,
-          scopes: 'moderator:read:chatters',
+          scopes: 'moderator:read:chatters channel:read:subscriptions',
           queryParams: { force_verify: 'true' }
         }
       });
