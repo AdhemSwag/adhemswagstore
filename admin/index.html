@@ -546,6 +546,49 @@ async function refreshDashboard(){
  document.getElementById('metricRedemptions').textContent=(d.count||0).toLocaleString();
  document.getElementById('metricFnc').textContent=(u.data||[]).reduce((s,x)=>s+Number(x.fnc_points||0),0).toLocaleString();
 }
+let lastPendingRedemptionIds = new Set();
+let redemptionNoticePrimed = false;
+let redemptionPollTimer = null;
+
+function notifyNewRedemptions(rows){
+  const pending = (rows||[]).filter(x=>x.status==='pending');
+  const ids = new Set(pending.map(x=>x.id));
+  if (!redemptionNoticePrimed) {
+    lastPendingRedemptionIds = ids;
+    redemptionNoticePrimed = true;
+    return;
+  }
+  const fresh = pending.filter(x=>!lastPendingRedemptionIds.has(x.id));
+  lastPendingRedemptionIds = ids;
+  if (!fresh.length) return;
+  const title = fresh.length === 1 ? 'AdhemSwag FNC Store' : 'AdhemSwag FNC Store — New redemptions';
+  const body = fresh.length === 1 ? 'A viewer has redeemed a reward.' : fresh.length+' new viewer redemptions are waiting.';
+  try { if ('Notification' in window && Notification.permission === 'granted') new Notification(title,{body}); } catch(e){}
+  try {
+    const ctx = new (window.AudioContext||window.webkitAudioContext)();
+    const osc = ctx.createOscillator(), gain = ctx.createGain();
+    osc.frequency.value = 880; gain.gain.value = 0.06;
+    osc.connect(gain); gain.connect(ctx.destination); osc.start();
+    setTimeout(()=>{osc.stop();ctx.close();},180);
+  } catch(e){}
+}
+async function requestRedemptionNotifications(){
+  try {
+    if ('Notification' in window && Notification.permission === 'default') await Notification.requestPermission();
+  } catch(e){}
+}
+async function pollRedemptionNotifications(){
+  if (!adminReady) return;
+  const {data,error}=await supabaseClient.from('redemptions').select('id,status').eq('status','pending').order('created_at',{ascending:false}).limit(100);
+  if(!error) notifyNewRedemptions(data||[]);
+}
+function startRedemptionNotifications(){
+  requestRedemptionNotifications();
+  pollRedemptionNotifications();
+  clearInterval(redemptionPollTimer);
+  redemptionPollTimer=setInterval(pollRedemptionNotifications,10000);
+}
+
 async function loadRedemptions(){
  if(!adminReady)return; const tbody=document.getElementById('redemptionList'); if(!tbody)return;
  let q=supabaseClient.from('redemptions').select('id,user_id,reward_id,fnc_spent,status,steam_trade_url_snapshot,created_at').order('created_at',{ascending:false}).limit(200);
@@ -931,6 +974,7 @@ document.getElementById('systemXp')?.addEventListener('click',async()=>{if(!admi
 
 // Admin boot: verify access on page load (cache refresh commit).
 verifyAdmin();
+setTimeout(startRedemptionNotifications, 1500);
 
 </script>
 </body>
