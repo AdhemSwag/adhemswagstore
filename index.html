@@ -35,11 +35,17 @@
 <script>
   (function(){
     const watchConnect = localStorage.getItem('adhem_twitch_watch_connect') === '1';
-    const oauthCode = new URLSearchParams(window.location.search).get('code');
+    const params = new URLSearchParams(window.location.search);
+    const oauthCode = params.get('code');
+    const oauthError = params.get('error') || params.get('error_description');
+    const hash = window.location.hash || '';
+    const oauthHash = /(?:^|[#&])(access_token|provider_token|provider_refresh_token|refresh_token|code|error)=/i.test(hash);
 
-    // Only keep the root loader during an actual Twitch PKCE callback.
-    // A stale localStorage flag must never leave the whole site stuck on LOADING.
-    if (watchConnect && oauthCode) {
+    // Twitch/Supabase may return the OAuth callback in either PKCE query form
+    // (?code=...) or hash-token form (#access_token=...&provider_token=...).
+    // In both cases, keep the root loader alive long enough for auth.js to
+    // capture the provider token and finish the admin callback.
+    if (watchConnect && (oauthCode || oauthHash || oauthError)) {
       setTimeout(function(){
         // If OAuth handling fails, recover instead of leaving the site blocked forever.
         localStorage.removeItem('adhem_twitch_watch_connect');
@@ -48,7 +54,8 @@
       return;
     }
 
-    if (watchConnect && !oauthCode) {
+    if (watchConnect) {
+      // No OAuth callback is present: this is a stale connection flag.
       localStorage.removeItem('adhem_twitch_watch_connect');
     }
 
