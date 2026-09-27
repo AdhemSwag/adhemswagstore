@@ -268,8 +268,6 @@ async function captureTwitchWatchCallback() {
     return false;
   }
 }
-let selectedGiveawayImage = null;
-
 function setSecurity(message, ok=false, showLogin=false) {
   const el = document.getElementById('adminSecurity');
   el.innerHTML = '<strong>SECURITY:</strong> ' + message + ' <button class="btn primary" id="adminLogin" type="button" style="display:'+(showLogin?'inline-block':'none')+';margin-left:10px;padding:7px 12px">LOGIN WITH TWITCH</button>';
