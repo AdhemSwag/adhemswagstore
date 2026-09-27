@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AdhemSwag Reward Alert</title>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:transparent;font-family:Arial,sans-serif}
+#alert{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(.86);width:min(900px,90vw);padding:28px 34px;border:1px solid rgba(17,217,247,.7);background:rgba(5,7,10,.94);box-shadow:0 0 35px rgba(17,217,247,.25);color:#eaf6f8;opacity:0;visibility:hidden;text-align:center;transition:opacity .25s,transform .25s}
+#alert.show{opacity:1;visibility:visible;transform:translate(-50%,-50%) scale(1)}
+.kicker{font:700 16px monospace;letter-spacing:.18em;color:#11d9f7;text-transform:uppercase}
+.reward{margin-top:8px;font:700 clamp(28px,4vw,54px) Arial;text-transform:uppercase}
+.cost{margin-top:8px;font:700 14px monospace;color:#91a6ac}
+@keyframes pulse{0%,100%{box-shadow:0 0 25px rgba(17,217,247,.2)}50%{box-shadow:0 0 55px rgba(17,217,247,.55)}}
+#alert.show{animation:pulse 1.2s ease-in-out infinite}
+</style>
+</head>
+<body>
+<div id="alert"><div class="kicker">FNC REWARD REDEEMED</div><div class="reward" id="reward"></div><div class="cost" id="cost"></div></div>
+<script>
+const endpoint='https://lpmocfdfpebcaseffugg.supabase.co/functions/v1/stream-reward-alert';
+const box=document.getElementById('alert'),reward=document.getElementById('reward'),cost=document.getElementById('cost');
+let since=new Date().toISOString(),seen=new Set(),busy=false;
+function show(a){
+  reward.textContent=a.reward||'FNC Reward';
+  cost.textContent=Number(a.fnc||0).toLocaleString('en-US')+' FNC';
+  box.classList.add('show');
+  try{
+    const C=window.AudioContext||window.webkitAudioContext;
+    if(C){const c=new C(),o=c.createOscillator(),g=c.createGain();o.frequency.value=740;g.gain.value=.08;o.connect(g);g.connect(c.destination);o.start();setTimeout(()=>{o.stop();c.close()},180);}
+  }catch(e){}
+  setTimeout(()=>box.classList.remove('show'),7000);
+}
+async function poll(){
+  if(busy)return;busy=true;
+  try{
+    const r=await fetch(endpoint+'?since='+encodeURIComponent(since),{cache:'no-store'});
+    const j=await r.json();
+    for(const a of (j.alerts||[])){
+      if(!seen.has(a.id)){seen.add(a.id);show(a);}
+      if(a.created_at>since)since=a.created_at;
+    }
+    if((j.alerts||[]).length && seen.size>200)seen=new Set([...seen].slice(-100));
+  }catch(e){} finally{busy=false}
+}
+setInterval(poll,3000);poll();
+</script>
+</body>
+</html>
