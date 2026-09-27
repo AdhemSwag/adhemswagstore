@@ -30,10 +30,20 @@
     <div class="adhem-root-loader-track"><i></i></div>
   </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/auth.js"></script>
 <script>
-  setTimeout(function(){
-    window.location.replace('/dashboard/' + window.location.search + window.location.hash);
-  }, 2000);
+  (function(){
+    const watchConnect = localStorage.getItem('adhem_twitch_watch_connect') === '1';
+    if (watchConnect) {
+      // OAuth callback for Twitch Watch Tracking is handled by auth.js.
+      // Stay on this page until auth.js captures the provider token and redirects to /admin/.
+      return;
+    }
+    setTimeout(function(){
+      window.location.replace('/dashboard/' + window.location.search + window.location.hash);
+    }, 2000);
+  })();
 </script>
 </body>
 </html>
