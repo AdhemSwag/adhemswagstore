@@ -35,14 +35,26 @@
 <script>
   (function(){
     const watchConnect = localStorage.getItem('adhem_twitch_watch_connect') === '1';
-    if (watchConnect) {
-      // OAuth callback for Twitch Watch Tracking is handled by auth.js.
-      // Stay on this page until auth.js captures the provider token and redirects to /admin/.
+    const oauthCode = new URLSearchParams(window.location.search).get('code');
+
+    // Only keep the root loader during an actual Twitch PKCE callback.
+    // A stale localStorage flag must never leave the whole site stuck on LOADING.
+    if (watchConnect && oauthCode) {
+      setTimeout(function(){
+        // If OAuth handling fails, recover instead of leaving the site blocked forever.
+        localStorage.removeItem('adhem_twitch_watch_connect');
+        window.location.replace('/admin/');
+      }, 20000);
       return;
     }
+
+    if (watchConnect && !oauthCode) {
+      localStorage.removeItem('adhem_twitch_watch_connect');
+    }
+
     setTimeout(function(){
       window.location.replace('/dashboard/' + window.location.search + window.location.hash);
-    }, 2000);
+    }, 300);
   })();
 </script>
 </body>
