@@ -409,20 +409,44 @@
   let watchHeartbeatTimer = null;
   let watchHeartbeatInFlight = false;
   let watchVisibilityBound = false;
+  let watchActivityBound = false;
+  let lastWatchActivityAt = Date.now();
+  const WATCH_AFK_GRACE_MS = 5 * 60 * 1000;
+
+  function markWatchActivity() {
+    lastWatchActivityAt = Date.now();
+  }
+
+  function bindWatchActivity() {
+    if (watchActivityBound) return;
+    watchActivityBound = true;
+    ['pointerdown','keydown','scroll','touchstart'].forEach(type => {
+      window.addEventListener(type, markWatchActivity, { passive: true });
+    });
+  }
 
   async function sendWatchHeartbeat() {
-    if (document.visibilityState !== 'visible' || watchHeartbeatInFlight) return;
+    if (watchHeartbeatInFlight) return;
     watchHeartbeatInFlight = true;
     try {
       const { data: sessionData } = await client.auth.getSession();
       if (!sessionData?.session) return;
+
       const accessToken = sessionData.session.access_token;
+      const isVisible = document.visibilityState === 'visible';
+      const isRecentlyActive = (Date.now() - lastWatchActivityAt) < WATCH_AFK_GRACE_MS;
+      const activity = isVisible && isRecentlyActive;
+
       const { data, error } = await client.functions.invoke('watch-heartbeat', {
-        body: {},
+        body: { activity },
         headers: { Authorization: `Bearer ${accessToken}` }
       });
-      if (error) console.warn('[AdhemSwag] Watch heartbeat:', error.message || error);
-      else if (data?.live === false) stopWatchTracking();
+
+      if (error) {
+        console.warn('[AdhemSwag] Watch heartbeat:', error.message || error);
+      } else if (data?.live === false) {
+        stopWatchTracking();
+      }
     } catch (error) {
       console.warn('[AdhemSwag] Watch heartbeat failed:', error);
     } finally {
@@ -440,6 +464,8 @@
   function startWatchTracking(viewer) {
     stopWatchTracking();
     if (!viewer?.authId) return;
+    lastWatchActivityAt = Date.now();
+    bindWatchActivity();
     sendWatchHeartbeat();
     watchHeartbeatTimer = setInterval(sendWatchHeartbeat, 60000);
     if (!watchVisibilityBound) {
@@ -449,7 +475,12 @@
   }
 
   function handleWatchVisibility() {
-    if (document.visibilityState === 'visible') sendWatchHeartbeat();
+    if (document.visibilityState === 'visible') {
+      markWatchActivity();
+      sendWatchHeartbeat();
+    } else {
+      sendWatchHeartbeat();
+    }
   }
 
   async function logout() {
