@@ -379,7 +379,7 @@ function finishLoader() {
 function setControls(enabled) {
   adminReady = enabled;
   document.querySelectorAll('#rewards input,#rewards textarea,#giveaways input,#giveaways textarea,#giveaways select').forEach(el=>el.disabled=!enabled);
-  ['rewardImage','saveReward','clearReward','createGiveaway','clearGiveaway','connectTwitchWatch','testTwitchWatch','saveFncSettings','reloadFncSettings','saveBonusSettings','searchUsers','clearUsers','addUserFnc','removeUserFnc','addUserXp','removeUserXp','changeUserLevel','toggleUserBlock','loadRedemptions','loadTransactions','loadLeaderboard','loadMedia','findAdminUser','refreshDashboard','systemFnc','systemPoints','systemXp','systemRewards'].forEach(id=>{
+  ['rewardImage','saveReward','clearReward','createGiveaway','clearGiveaway','connectTwitchWatch','testTwitchWatch','saveFncSettings','reloadFncSettings','saveBonusSettings','searchUsers','clearUsers','addUserFnc','removeUserFnc','addUserXp','removeUserXp','changeUserLevel','viewPublicProfile','toggleUserBlock','loadRedemptions','loadTransactions','loadLeaderboard','loadMedia','findAdminUser','refreshDashboard','systemFnc','systemPoints','systemXp','systemRewards'].forEach(id=>{
     const el=document.getElementById(id);
     if(el) el.disabled=!enabled;
   });
