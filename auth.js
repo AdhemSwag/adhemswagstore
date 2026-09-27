@@ -31,7 +31,8 @@
       setTopbarStatus(data?.live ? 'live' : 'offline');
     } catch (error) {
       console.warn('[AdhemSwag] Twitch live status:', error);
-      setTopbarStatus('offline');
+      // Keep the indicator orange when the status check fails; red is reserved for a confirmed offline response.
+      setTopbarStatus('checking');
     }
   }
 
