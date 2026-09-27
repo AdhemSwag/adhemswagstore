@@ -7,6 +7,40 @@
   const PRODUCTION_REDIRECT = 'https://adhemswag.com/dashboard/';
   const PRODUCTION_WATCH_REDIRECT = 'https://adhemswag.com/admin/';
 
+  let topbarStatusTimer = null;
+
+  function setTopbarStatus(state) {
+    const mark = document.querySelector('.adhem-topbar-mark');
+    if (!mark) return;
+    mark.classList.remove('status-green', 'status-orange', 'status-red');
+    mark.classList.add(
+      state === 'live' ? 'status-green' :
+      state === 'checking' ? 'status-orange' : 'status-red'
+    );
+    mark.title =
+      state === 'live' ? 'Twitch LIVE — FNC Points active' :
+      state === 'checking' ? 'Checking Twitch / FNC status…' :
+      'Twitch offline — FNC Points paused';
+  }
+
+  async function refreshTopbarStatus() {
+    setTopbarStatus('checking');
+    try {
+      const { data, error } = await client.functions.invoke('twitch-live-status');
+      if (error) throw error;
+      setTopbarStatus(data?.live ? 'live' : 'offline');
+    } catch (error) {
+      console.warn('[AdhemSwag] Twitch live status:', error);
+      setTopbarStatus('offline');
+    }
+  }
+
+  function startTopbarStatus() {
+    if (topbarStatusTimer) clearInterval(topbarStatusTimer);
+    refreshTopbarStatus();
+    topbarStatusTimer = window.setInterval(refreshTopbarStatus, 30000);
+  }
+
   function setStatus(message) {
     const status = document.getElementById('loginStatus');
     if (status) status.textContent = message || '';
@@ -222,7 +256,7 @@
         .adhem-account-connect span:first-child{display:none!important}
         .adhem-account-connect:hover{border-color:rgba(17,217,247,.72)!important;background:rgba(17,217,247,.08)!important;color:#fff!important;box-shadow:0 0 18px rgba(17,217,247,.22),inset 0 0 12px rgba(17,217,247,.04)!important}
         .adhem-topbar-left{display:flex!important;align-items:center!important;gap:9px!important;min-width:0!important}
-        .adhem-topbar-mark{width:7px!important;height:7px!important;border-radius:50%!important;background:#ff3b3b!important;box-shadow:0 0 8px rgba(255,59,59,.65)!important;flex:none!important}
+        .adhem-topbar-mark{width:7px!important;height:7px!important;border-radius:50%!important;background:#ff3b3b!important;box-shadow:0 0 8px rgba(255,59,59,.65)!important;flex:none!important;transition:background .2s ease,box-shadow .2s ease!important}.adhem-topbar-mark.status-green{background:#22c55e!important;box-shadow:0 0 8px rgba(34,197,94,.7)!important}.adhem-topbar-mark.status-orange{background:#f59e0b!important;box-shadow:0 0 8px rgba(245,158,11,.7)!important}.adhem-topbar-mark.status-red{background:#ff3b3b!important;box-shadow:0 0 8px rgba(255,59,59,.65)!important}
         .adhem-topbar-brand{font:600 10px 'JetBrains Mono',monospace!important;letter-spacing:.12em!important;color:#b9c9cd!important;white-space:nowrap!important}
         .adhem-topbar-brand span{color:#11D9F7!important}
         .adhem-topbar .adhem-account{margin-left:auto!important;position:relative!important}
@@ -583,6 +617,7 @@
 
   async function init() {
     injectAccountRewards();
+    startTopbarStatus();
     bindAccountMenu();
     bindAuthButtons();
 
