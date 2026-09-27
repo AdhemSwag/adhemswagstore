@@ -284,10 +284,10 @@ main.settings-main{max-width:1120px;margin:0 auto;padding:54px 40px 90px}
     <div class="settings-card-head"><h2>EDIT PROFILE</h2><small>Editable fields</small></div>
     <div class="settings-card-body">
       <form id="profileForm" class="settings-form">
-        <div class="settings-field full"><label for="profileEmail">Email</label><input id="profileEmail" type="email" autocomplete="email" placeholder="your@email.com"></div>
+        <div class="settings-field full"><label for="profileEmail">Email <span class="field-required">REQUIRED</span></label><input id="profileEmail" type="email" autocomplete="email" placeholder="your@email.com"></div>
         <div class="settings-field full"><label for="steamProfileUrl">Steam Profile URL</label><input id="steamProfileUrl" type="url" autocomplete="url" placeholder="https://steamcommunity.com/id/yourname/"></div>
-        <div class="settings-field full"><label for="steamTradeUrl">Steam Trade URL</label><input id="steamTradeUrl" type="url" autocomplete="url" placeholder="https://steamcommunity.com/tradeoffer/new/…"></div>
-        <div class="settings-field full"><label for="discordUsername">Discord <span class="field-optional">OPTIONAL</span></label><input id="discordUsername" type="text" maxlength="100" autocomplete="off" placeholder="username or Discord ID"></div>
+        <div class="settings-field full"><label for="steamTradeUrl">Steam Trade URL <span class="field-required">REQUIRED</span></label><input id="steamTradeUrl" type="url" autocomplete="url" placeholder="https://steamcommunity.com/tradeoffer/new/…"></div>
+        <div class="settings-field full"><label for="discordUsername">Discord ID <span class="field-required">REQUIRED</span></label><input id="discordUsername" type="text" maxlength="100" autocomplete="off" placeholder="username or Discord ID"></div>
         <div class="settings-actions">
           <span class="settings-save-status" id="profileSaveStatus">Connect Twitch first.</span>
           <button class="settings-save" id="saveProfileBtn" type="submit">SAVE CHANGES</button>
