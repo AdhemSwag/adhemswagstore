@@ -145,6 +145,8 @@ footer a{color:var(--cyan);text-decoration:none}
 .reward-meta{display:flex;flex-wrap:wrap;gap:7px;margin-top:5px}
 .reward-chip{padding:6px 8px;border:1px solid rgba(17,217,247,.1);background:rgba(17,217,247,.025);font:10px 'JetBrains Mono',monospace;color:#71848a}
 .reward-chip strong{color:#d8f7fb}
+.reward-status{min-height:30px;padding:7px 9px;border:1px solid rgba(255,59,59,.16);background:rgba(255,59,59,.035);color:#8d9da1;font:700 9px 'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.03em;line-height:1.35}
+.reward-status.ready{border-color:rgba(54,213,138,.2);background:rgba(54,213,138,.035);color:#63d99a}
 .reward-redeem{margin-top:auto;width:100%;padding:12px;border:1px solid rgba(17,217,247,.35);background:rgba(17,217,247,.05);color:#11D9F7;font:700 10px 'JetBrains Mono',monospace;text-transform:uppercase;cursor:pointer}
 .reward-redeem:hover{background:rgba(17,217,247,.1);border-color:#11D9F7}
 .reward-redeem:disabled{opacity:.45;cursor:not-allowed}
@@ -357,27 +359,36 @@ footer a{color:var(--cyan);text-decoration:none}
       const fncCost = Number(r.fnc_cost||0);
       const levelRequired = Number(r.level_required||1);
       const stockAvailable = r.stock == null || Number(r.stock) > 0;
-      const can = !!viewer && active && !viewer.is_blocked && viewer.profile_complete && Number(viewer.fnc_points||0) >= fncCost && Number(viewer.level||1) >= levelRequired && stockAvailable;
-      const signIn = !viewer;
-      const buttonLabel = !viewer
-        ? 'SIGN IN TO REDEEM'
-        : !active
-          ? 'STOPPED'
-          : viewer.is_blocked
-            ? 'ACCOUNT BLOCKED'
-            : !viewer.profile_complete
-              ? 'COMPLETE PROFILE'
-              : !stockAvailable
-                  ? 'SOLD OUT'
-                  : Number(viewer.fnc_points||0) < fncCost
-                    ? money(fncCost)+' FNC REQUIRED'
-                    : Number(viewer.level||1) < levelRequired
-                      ? 'LEVEL '+levelRequired+' REQUIRED'
-                      : 'REDEEM FOR '+money(fncCost)+' FNC';
+      const signedIn = !!viewer;
+      const profileComplete = !!viewer?.profile_complete;
+      const blocked = !!viewer?.is_blocked;
+      const enoughFnc = Number(viewer?.fnc_points||0) >= fncCost;
+      const currentLevel = Number(viewer?.level||1);
+      const enoughLevel = currentLevel >= levelRequired;
+      const can = signedIn && active && !blocked && profileComplete && enoughFnc && enoughLevel && stockAvailable;
+      let status = '';
+      if (!signedIn) {
+        status = 'SIGN IN WITH TWITCH TO REDEEM';
+      } else if (!active) {
+        status = 'REWARDS SYSTEM IS CURRENTLY STOPPED';
+      } else if (blocked) {
+        status = 'ACCOUNT BLOCKED';
+      } else if (!profileComplete) {
+        status = 'PROFILE INCOMPLETE — COMPLETE YOUR PROFILE';
+      } else if (!stockAvailable) {
+        status = 'SOLD OUT';
+      } else if (!enoughFnc) {
+        const missing = Math.max(0, fncCost - Number(viewer.fnc_points||0));
+        status = 'INSUFFICIENT FNC — '+money(missing)+' MORE NEEDED';
+      } else if (!enoughLevel) {
+        const levelsAway = Math.max(0, levelRequired - currentLevel);
+        status = levelsAway === 1 ? '1 LEVEL AWAY FROM REDEEMING' : levelsAway+' LEVELS AWAY FROM REDEEMING';
+      } else {
+        status = 'READY TO REDEEM';
+      }
       const image = r.image_url ? '<img class="reward-image" src="'+esc(r.image_url)+'" alt="'+esc(r.name)+'">' : '<div class="reward-image empty">ADHEMSWAG REWARD</div>';
-      return '<article class="reward-card">'+image+'<div class="reward-body"><h3>'+esc(r.name)+'</h3><div class="reward-desc">'+esc(r.description||'AdhemSwag reward.')+'</div><div class="reward-meta"><span class="reward-chip"><strong>'+money(fncCost)+' FNC</strong></span><span class="reward-chip">LEVEL <strong>'+levelRequired+'</strong></span><span class="reward-chip">'+esc(stock)+'</span></div><button class="reward-redeem" data-id="'+r.id+'" data-signin="'+(signIn?'1':'0')+'" '+((signIn||can)?'':'disabled')+'>'+buttonLabel+'</button></div></article>';
-    }).join('');
-    grid.querySelectorAll('.reward-redeem:not(:disabled)').forEach(btn => btn.addEventListener('click',async()=>{
+      return '<article class="reward-card">'+image+'<div class="reward-body"><h3>'+esc(r.name)+'</h3><div class="reward-desc">'+esc(r.description||'AdhemSwag reward.')+'</div><div class="reward-meta"><span class="reward-chip"><strong>'+money(fncCost)+' FNC</strong></span><span class="reward-chip">LEVEL <strong>'+levelRequired+'</strong></span><span class="reward-chip">'+esc(stock)+'</span></div><div class="reward-status '+(can?'ready':'')+'">'+esc(status)+'</div><button class="reward-redeem" data-id="'+r.id+'" data-signin="'+(!signedIn?'1':'0')+'" '+((!signedIn||can)?'':'disabled')+'>'+(!signedIn?'SIGN IN TO REDEEM':'REDEEM')+'</button></div></article>';
+    }).join('');    grid.querySelectorAll('.reward-redeem:not(:disabled)').forEach(btn => btn.addEventListener('click',async()=>{
       if(btn.dataset.signin==='1'){
         const {error}=await client.auth.signInWithOAuth({provider:'twitch',options:{redirectTo:window.location.href}});
         if(error) say('Twitch sign-in failed: '+(error.message||'Unknown error'),'error');
