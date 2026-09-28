@@ -339,14 +339,14 @@ footer a{color:var(--cyan);text-decoration:none}
   }
 
   async function loadRewards(active, activeViewer) {
-    const {data, error} = await client.from('rewards').select('id,name,description,fnc_cost,xp_required,level_required,stock,active,image_url').eq('active',true).order('created_at',{ascending:false});
+    const {data, error} = await client.from('rewards').select('id,name,description,fnc_cost,level_required,stock,active,image_url').eq('active',true).order('created_at',{ascending:false});
     if (error) { grid.innerHTML='<div class="empty-rewards">UNABLE TO LOAD REWARDS.</div>'; return; }
     if (!data?.length) { grid.innerHTML='<div class="empty-rewards">NO ACTIVE REWARDS YET — CHECK BACK SOON.</div>'; return; }
     grid.innerHTML = data.map(r => {
       const stock = r.stock == null ? 'UNLIMITED' : (Number(r.stock) > 0 ? Number(r.stock)+' LEFT' : 'SOLD OUT');
-      const can = !!viewer && active && activeViewer && !viewer.is_blocked && viewer.profile_complete && Number(viewer.fnc_points||0) >= Number(r.fnc_cost||0) && Number(viewer.xp||0) >= Number(r.xp_required||0) && Number(viewer.level||1) >= Number(r.level_required||1) && (r.stock == null || Number(r.stock)>0);
+      const can = !!viewer && active && activeViewer && !viewer.is_blocked && viewer.profile_complete && Number(viewer.fnc_points||0) >= Number(r.fnc_cost||0) && Number(viewer.level||1) >= Number(r.level_required||1) && (r.stock == null || Number(r.stock)>0);
       const image = r.image_url ? '<img class="reward-image" src="'+esc(r.image_url)+'" alt="'+esc(r.name)+'">' : '<div class="reward-image empty">ADHEMSWAG REWARD</div>';
-      return '<article class="reward-card">'+image+'<div class="reward-body"><h3>'+esc(r.name)+'</h3><div class="reward-desc">'+esc(r.description||'AdhemSwag reward.')+'</div><div class="reward-meta"><span class="reward-chip"><strong>'+money(r.fnc_cost)+' FNC</strong></span><span class="reward-chip">LEVEL <strong>'+Number(r.level_required||1)+'</strong></span><span class="reward-chip">XP <strong>'+money(r.xp_required)+'</strong></span><span class="reward-chip">'+esc(stock)+'</span></div><button class="reward-redeem" data-id="'+r.id+'" '+(can?'':'disabled')+'>'+(!viewer?'SIGN IN TO REDEEM':(!active?'STOPPED':(!viewer.profile_complete?'COMPLETE PROFILE':(!activeViewer?'WATCH 10 MIN':(!can?'REQUIREMENTS NOT MET':'REDEEM REWARD')))))+'</button></div></article>';
+      return '<article class="reward-card">'+image+'<div class="reward-body"><h3>'+esc(r.name)+'</h3><div class="reward-desc">'+esc(r.description||'AdhemSwag reward.')+'</div><div class="reward-meta"><span class="reward-chip"><strong>'+money(r.fnc_cost)+' FNC</strong></span><span class="reward-chip">LEVEL <strong>'+Number(r.level_required||1)+'</strong></span><span class="reward-chip">'+esc(stock)+'</span></div><button class="reward-redeem" data-id="'+r.id+'" '+(can?'':'disabled')+'>'+(!viewer?'SIGN IN TO REDEEM':(!active?'STOPPED':(!viewer.profile_complete?'COMPLETE PROFILE':(!activeViewer?'WATCH 10 MIN':(!can?'REQUIREMENTS NOT MET':'REDEEM REWARD')))))+'</button></div></article>';
     }).join('');
     grid.querySelectorAll('.reward-redeem:not(:disabled)').forEach(btn => btn.addEventListener('click',()=>openRedeem(data.find(r=>r.id===btn.dataset.id))));
   }
@@ -369,7 +369,11 @@ footer a{color:var(--cyan);text-decoration:none}
     const {data,error} = await client.functions.invoke('redeem-reward',{body:{reward_id:reward.id,steam_trade_url:url||null}});
     if (error) { say(error.context?.message || error.message || 'Redemption failed.','error'); return; }
     if (!data?.ok) { say(data?.message || 'Redemption failed.','error'); return; }
-    say('Redemption submitted. FNC has been reserved and your request is now pending admin delivery.','ok');
+    if (data.access_code) {
+      say('ACCESS CODE DELIVERED — check MY PROFILE to copy your code.','ok');
+    } else {
+      say(data.status==='sent' ? 'Reward delivered successfully. Check MY PROFILE.' : 'Redemption submitted. FNC has been reserved and your request is pending admin delivery.','ok');
+    }
     await init();
   }
   init();
