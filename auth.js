@@ -559,11 +559,18 @@
         return false;
       }
 
-      const result = await twitchWatchClient.rpc('admin_store_twitch_watch_credentials', {
-        p_access_token: accessToken,
-        p_refresh_token: refreshToken
-      });
-      if (result.error) throw result.error;
+      const { data: storeData, error: storeError } = await twitchWatchClient.functions.invoke(
+        'admin-store-twitch-watch-credentials',
+        {
+          body: {
+            access_token: accessToken,
+            refresh_token: refreshToken
+          },
+          headers: { Authorization: `Bearer ${session.access_token}` }
+        }
+      );
+      if (storeError) throw storeError;
+      if (!storeData?.ok) throw new Error('credential_store_failed');
 
       localStorage.setItem('adhem_twitch_watch_connected','1');
       localStorage.removeItem('adhem_twitch_watch_connect');
