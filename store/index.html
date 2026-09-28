@@ -357,7 +357,7 @@ footer a{color:var(--cyan);text-decoration:none}
       const fncCost = Number(r.fnc_cost||0);
       const levelRequired = Number(r.level_required||1);
       const stockAvailable = r.stock == null || Number(r.stock) > 0;
-      const can = !!viewer && active && activeViewer && !viewer.is_blocked && viewer.profile_complete && Number(viewer.fnc_points||0) >= fncCost && Number(viewer.level||1) >= levelRequired && stockAvailable;
+      const can = !!viewer && active && !viewer.is_blocked && viewer.profile_complete && Number(viewer.fnc_points||0) >= fncCost && Number(viewer.level||1) >= levelRequired && stockAvailable;
       const signIn = !viewer;
       const buttonLabel = !viewer
         ? 'SIGN IN TO REDEEM'
@@ -367,9 +367,7 @@ footer a{color:var(--cyan);text-decoration:none}
             ? 'ACCOUNT BLOCKED'
             : !viewer.profile_complete
               ? 'COMPLETE PROFILE'
-              : !activeViewer
-                ? 'WATCH 10 MIN'
-                : !stockAvailable
+              : !stockAvailable
                   ? 'SOLD OUT'
                   : Number(viewer.fnc_points||0) < fncCost
                     ? money(fncCost)+' FNC REQUIRED'
