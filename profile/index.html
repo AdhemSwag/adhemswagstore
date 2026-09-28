@@ -480,8 +480,6 @@ window.addEventListener('adhem:viewer', async function(e){
  (rd.data||[]).forEach(x=>items.push({date:x.created_at,type:'redemption',desc:(x.rewards&&x.rewards.name)||'Reward',amount:-Number(x.fnc_spent||0),status:x.status}));
  items.sort((a,b)=>new Date(b.date)-new Date(a.date));
  const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
- if(!items.length){history.innerHTML='<div class="empty-history">No activity yet. Your FNC earnings, XP activity, redemptions and refunds will appear here.</div>';return}
- history.innerHTML=items.slice(0,30).map(x=>'<div class="history-item"><div class="history-type">'+esc(x.type)+'</div><div class="history-desc">'+esc(x.desc)+(x.status?' · '+esc(x.status.toUpperCase()):'')+'</div><div class="history-amount">'+(x.amount>0?'+':'')+x.amount.toLocaleString()+' FNC</div></div>').join('');
 
 const accessRoot=document.getElementById('myAccessCodes');
 if(accessRoot){
@@ -493,6 +491,8 @@ if(accessRoot){
   accessRoot.querySelectorAll('[data-copy-code]').forEach(btn=>btn.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(btn.dataset.copyCode||'');btn.textContent='COPIED';setTimeout(()=>btn.textContent='COPY',1200)}catch(e){}}));
  }
 }
+ if(!items.length){history.innerHTML='<div class="empty-history">No activity yet. Your FNC earnings, XP activity, redemptions and refunds will appear here.</div>';return}
+ history.innerHTML=items.slice(0,30).map(x=>'<div class="history-item"><div class="history-type">'+esc(x.type)+'</div><div class="history-desc">'+esc(x.desc)+(x.status?' · '+esc(x.status.toUpperCase()):'')+'</div><div class="history-amount">'+(x.amount>0?'+':'')+x.amount.toLocaleString()+' FNC</div></div>').join('');
 });
 </script>
 </body></html>
