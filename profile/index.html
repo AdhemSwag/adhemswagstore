@@ -69,6 +69,7 @@
 .history-desc{color:var(--white)}
 .history-amount{color:var(--muted);font:500 10px 'JetBrains Mono',monospace;text-align:right}
 .empty-history{padding:16px 0;color:var(--muted);font-size:12px;line-height:1.6}
+.access-code-list{margin-top:8px}.access-code-item{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--line)}.access-code-item:last-child{border-bottom:0}.access-code-name{flex:1;color:var(--white);font-size:12px}.access-code-value{font:600 11px 'JetBrains Mono',monospace;color:var(--cyan);background:#05070a;border:1px solid rgba(17,217,247,.2);padding:9px 10px;word-break:break-all}.access-code-copy{padding:9px 10px;border:1px solid rgba(17,217,247,.25);background:rgba(17,217,247,.05);color:var(--cyan);font:700 9px 'JetBrains Mono',monospace;cursor:pointer}.access-code-copy:hover{background:var(--cyan);color:#03181c}
 @media(max-width:800px){.profile-extra{grid-template-columns:1fr}.history-item{grid-template-columns:76px 1fr}.history-amount{text-align:left;grid-column:2}}
 </style><style id="adhem-shared-sidebar">.sidebar{
     position:fixed; top:0; left:0; height:100vh; width:200px; z-index:50;
@@ -325,6 +326,11 @@
 </div>
 <div class="code-status" id="redeemCodeStatus">FNC Rewards are active for eligible viewers.</div>
 </section>
+<section class="card access-codes-card">
+<h2>MY ACCESS CODES</h2>
+<p class="note">Codes from your Store purchases appear here automatically. No email is required.</p>
+<div id="myAccessCodes" class="access-code-list"><div class="empty-history">No access codes yet.</div></div>
+</section>
 <section class="card">
 <h2>HISTORY</h2>
 <div class="history-list" id="profileHistory">
@@ -476,6 +482,17 @@ window.addEventListener('adhem:viewer', async function(e){
  const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
  if(!items.length){history.innerHTML='<div class="empty-history">No activity yet. Your FNC earnings, XP activity, redemptions and refunds will appear here.</div>';return}
  history.innerHTML=items.slice(0,30).map(x=>'<div class="history-item"><div class="history-type">'+esc(x.type)+'</div><div class="history-desc">'+esc(x.desc)+(x.status?' · '+esc(x.status.toUpperCase()):'')+'</div><div class="history-amount">'+(x.amount>0?'+':'')+x.amount.toLocaleString()+' FNC</div></div>').join('');
+
+const accessRoot=document.getElementById('myAccessCodes');
+if(accessRoot){
+ const {data:codes,error:codeError}=await client.from('reward_access_codes').select('id,code,assigned_at,rewards(name)').eq('assigned_user_id',d.authId).order('assigned_at',{ascending:false});
+ if(codeError){accessRoot.innerHTML='<div class="empty-history">Unable to load access codes.</div>';}
+ else if(!codes?.length){accessRoot.innerHTML='<div class="empty-history">No access codes yet. Purchased codes will appear here.</div>';}
+ else{
+  accessRoot.innerHTML=codes.map(x=>'<div class="access-code-item"><div class="access-code-name">'+esc(x.rewards?.name||'Access Code')+'</div><div class="access-code-value">'+esc(x.code)+'</div><button class="access-code-copy" data-copy-code="'+esc(x.code)+'">COPY</button></div>').join('');
+  accessRoot.querySelectorAll('[data-copy-code]').forEach(btn=>btn.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(btn.dataset.copyCode||'');btn.textContent='COPIED';setTimeout(()=>btn.textContent='COPY',1200)}catch(e){}}));
+ }
+}
 });
 </script>
 </body></html>
