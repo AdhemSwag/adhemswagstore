@@ -141,7 +141,7 @@ Do NOT assume these XP amounts are final without user confirmation.
 ## 7. STORE / REDEMPTION RULES
 Viewer needs BOTH:
 1. enough FNC
-2. required Level/XP
+2. required Level
 
 Example:
 Sport Gloves | Red Racer
@@ -213,6 +213,19 @@ These must remain OFF until explicitly activated.
 
 Security banner in current admin UI says privileged auth/write actions are intentionally locked until secure admin identity is connected to Supabase.
 
+## 8A. ACCESS CODE REWARDS
+For digital/promo rewards such as ExitLag:
+- Admin adds access codes one by one to a specific reward.
+- Each code can be assigned only once.
+- A successful Store purchase atomically claims one unused code.
+- The purchase is delivered immediately with status "sent"; it does not wait for admin approval.
+- The viewer's code appears directly in MY PROFILE and can be copied.
+- No email is required.
+- Access codes are stored in public.reward_access_codes.
+- The redemption stores the assigned access_code_id.
+- If a reward has access codes configured and none remain, redemption is rejected with access_code_unavailable.
+- Access-code rewards use FNC as currency and Level as the only reward unlock requirement; XP is not a per-reward requirement.
+
 ## 9. SUPABASE
 Project:
 - Name: FNC POINTS
@@ -281,7 +294,6 @@ rewards:
 - name
 - description
 - fnc_cost
-- xp_required
 - level_required
 - stock
 - active
