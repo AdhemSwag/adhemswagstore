@@ -109,7 +109,7 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
           <div class="field"><label>Reward name</label><input placeholder="Sport Gloves | Red Racer"></div>
           <div class="field"><label>FNC cost</label><input type="number" placeholder="20000"></div>
           <div class="field"><label>Level required</label><input type="number" placeholder="15"></div>
-          <div class="field"><label>Stock</label><input type="number" placeholder="3"></div>
+          <div class="field"><label>Stock</label><input id="rewardStock" type="number" placeholder="AUTO" readonly><small style="color:var(--muted)">For rewards with access codes, stock is automatic: available codes = stock. No quantity needed.</small></div>
           <div class="field full"><label>Description</label><textarea placeholder="Reward description..."></textarea></div>
           <div class="field full"><label>Reward image</label><input id="rewardImage" type="file" accept="image/png,image/jpeg,image/webp,image/gif"><div id="rewardImageStatus" class="upload">Choose an image — JPG, PNG, WEBP or GIF, max 5 MB.</div><img id="rewardImagePreview" alt="Reward preview" style="display:none;max-width:220px;max-height:180px;margin-top:12px;border:1px solid var(--line);object-fit:contain"></div>
         </div>
@@ -118,7 +118,7 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
         <div class="table-wrap"><table><thead><tr><th>Position</th><th>Reward</th><th>FNC</th><th>Level</th><th>Stock</th><th>Status</th><th>Image</th><th>Actions</th></tr></thead><tbody id="rewardList"><tr><td colspan="8">Loading…</td></tr></tbody></table></div>
         <div class="section" style="margin-top:18px">
           <h2>Access Codes</h2>
-          <p>Add promo / digital access codes for any Store product (ExitLag, Steam, game codes, subscriptions, etc.). Select the exact reward, then add codes one by one. A code is assigned automatically to the viewer immediately after a successful Store purchase and then appears in their MY PROFILE.</p>
+          <p>Add promo / digital access codes for any Store product (ExitLag, Steam, game codes, subscriptions, etc.). Select the exact reward, then add codes one by one. <strong style="color:var(--cyan)">Stock is automatic for code-based rewards: available codes = stock.</strong> A code is assigned automatically to the viewer immediately after a successful Store purchase and then appears in their MY PROFILE.</p>
           <div class="form-grid">
             <div class="field"><label>Reward</label><select id="accessCodeReward"></select></div>
             <div class="field"><label>Product access code</label><input id="accessCodeInput" type="text" maxlength="200" placeholder="PROMO-XXXX-XXXX"></div>
@@ -658,7 +658,7 @@ async function loadRewards() {
     document.querySelector('#rewards input[placeholder="Sport Gloves | Red Racer"]').value=row.name||'';
     document.querySelector('#rewards input[placeholder="20000"]').value=Number(row.fnc_cost||0);
     document.querySelector('#rewards input[placeholder="15"]').value=Number(row.level_required||1);
-    document.querySelector('#rewards input[placeholder="3"]').value=row.stock??'';
+    document.getElementById('rewardStock').value=(row.stock ?? '');
     document.querySelector('#rewards textarea').value=row.description||'';
     selectedImage=null;
     document.getElementById('rewardImage').value='';
@@ -950,11 +950,11 @@ document.getElementById('saveReward')?.addEventListener('click', async () => {
     const editId=document.getElementById('rewardEditId')?.value.trim();
     let result;
     if(editId){
-      const payload={name,description,fnc_cost:Math.round(fnc),level_required:level,stock:stockRaw===''||stockRaw==null?null:Number(stockRaw),updated_at:new Date().toISOString()};
+      const payload={name,description,fnc_cost:Math.round(fnc),level_required:level,updated_at:new Date().toISOString()};
       if(imageUrl) payload.image_url=imageUrl;
       result=await supabaseClient.from('rewards').update(payload).eq('id',editId).select().single();
     }else{
-      const {data:lastReward,error:lastRewardError}=await supabaseClient.from('rewards').select('display_order').order('display_order',{ascending:false}).limit(1).maybeSingle(); if(lastRewardError) throw lastRewardError; const nextOrder=Number(lastReward?.display_order||0)+1; result=await supabaseClient.from('rewards').insert({name,description,fnc_cost:Math.round(fnc),level_required:level,stock:stockRaw===''||stockRaw==null?null:Number(stockRaw),active:false,image_url:imageUrl,display_order:nextOrder}).select().single();
+      const {data:lastReward,error:lastRewardError}=await supabaseClient.from('rewards').select('display_order').order('display_order',{ascending:false}).limit(1).maybeSingle(); if(lastRewardError) throw lastRewardError; const nextOrder=Number(lastReward?.display_order||0)+1; result=await supabaseClient.from('rewards').insert({name,description,fnc_cost:Math.round(fnc),level_required:level,stock:null,active:false,image_url:imageUrl,display_order:nextOrder}).select().single();
     }
     if(result.error) throw result.error;
     status.style.display='block';status.textContent=editId?'Reward updated successfully.':'Reward saved. It remains OFF until you activate it.';
@@ -977,6 +977,7 @@ document.getElementById('addAccessCode')?.addEventListener('click',async()=>{
   if(status){status.style.display='block';status.textContent=error?'Add failed: '+error.message:'Access code added.';}
   if(!error&&input)input.value='';
   await loadAccessCodes();
+  await loadRewards();
 });
 document.getElementById('refreshAccessCodes')?.addEventListener('click',loadAccessCodes);
 document.getElementById('accessCodeReward')?.addEventListener('change',loadAccessCodes);
