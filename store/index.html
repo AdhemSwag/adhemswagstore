@@ -314,14 +314,24 @@ footer a{color:var(--cyan);text-decoration:none}
 
   async function init() {
     if (!client) return;
-    const [{data: cfg}, {data: profile}] = await Promise.all([
+    const [{data: cfg}, {data: sessionData}] = await Promise.all([
       client.from('system_config').select('points_enabled,rewards_enabled').maybeSingle(),
-      client.auth.getUser().then(async r => {
-        if (!r.data?.user) return null;
-        const p = await client.from('users').select('id,fnc_points,xp,level,profile_complete,is_blocked,steam_trade_url').eq('id',r.data.user.id).maybeSingle();
-        return p.data || null;
-      })
+      client.auth.getSession()
     ]);
+    let profile = null;
+    const authUser = sessionData?.session?.user;
+    if (authUser) {
+      let p = await client.from('users').select('id,fnc_points,xp,level,profile_complete,is_blocked,steam_trade_url').eq('id',authUser.id).maybeSingle();
+      if (p.data) profile = p.data;
+      else if (window.AdhemSwagAuth?.ensureProfile) {
+        const ensured = await window.AdhemSwagAuth.ensureProfile();
+        profile = ensured ? {
+          id: ensured.id, fnc_points: ensured.fnc_points, xp: ensured.xp, level: ensured.level,
+          profile_complete: ensured.profile_complete, is_blocked: ensured.is_blocked,
+          steam_trade_url: ensured.steam_trade_url
+        } : null;
+      }
+    }
     viewer = profile;
     const active = !!cfg?.points_enabled && !!cfg?.rewards_enabled;
     statusTitle.textContent = active ? 'REWARDS SYSTEM: ACTIVE' : 'REWARDS SYSTEM: STOPPED';
@@ -404,6 +414,9 @@ footer a{color:var(--cyan);text-decoration:none}
     }
     await init();
   }
+  window.addEventListener('adhem:viewer', async () => {
+    await init();
+  });
   init();
 })();
 </script>
