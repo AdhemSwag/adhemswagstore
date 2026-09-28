@@ -814,6 +814,35 @@ footer .footer-copy .row{margin:0;}
     .sidebar-link svg, .sidebar-link img{ width:18px; height:18px; }
   }
 
+
+/* AdhemSwag mobile drawer — full navigation */
+@media(max-width:700px){
+  .sidebar,.admin-nav{
+    width:min(330px,88vw)!important;max-width:88vw!important;
+    padding:18px 16px 28px!important;
+    overflow-y:auto!important;
+    scrollbar-width:thin;
+  }
+  .sidebar-brand{display:flex!important;align-items:center!important;justify-content:center!important;padding:12px 10px 26px!important;min-height:86px!important}
+  .sidebar-brand img,.sidebar-logo-img{display:block!important;width:auto!important;max-width:230px!important;max-height:74px!important;height:auto!important;object-fit:contain!important}
+  .sidebar-section-label{display:block!important;margin:14px 10px 7px!important;font-size:9px!important;letter-spacing:.14em!important}
+  .sidebar-link{display:flex!important;align-items:center!important;justify-content:flex-start!important;gap:13px!important;width:100%!important;min-height:48px!important;padding:12px 13px!important;font-size:13px!important;font-weight:600!important}
+  .sidebar-link span{display:inline!important;visibility:visible!important;opacity:1!important;white-space:nowrap!important;overflow:visible!important}
+  .sidebar-link svg,.sidebar-link img{display:block!important;width:21px!important;height:21px!important;flex:0 0 21px!important;opacity:1!important}
+  .sidebar-divider{display:block!important;margin:10px 8px!important}
+  .admin-nav{padding:18px 14px 28px!important}
+  .admin-nav .brand{display:flex!important;align-items:center!important;gap:10px!important;padding:8px 8px 22px!important;color:#eaf6f8!important;text-decoration:none!important}
+  .admin-nav .brand img{width:58px!important;height:58px!important;object-fit:contain!important;display:block!important}
+  .admin-nav .brand span{font-size:18px!important;font-weight:800!important}
+  .admin-nav .nav-label{display:block!important;margin:8px 8px 10px!important}
+  .admin-nav .nav-btn{
+    width:100%!important;min-height:48px!important;display:flex!important;align-items:center!important;gap:12px!important;
+    padding:12px 13px!important;margin:3px 0!important;text-align:left!important;
+  }
+  .admin-nav .nav-btn .mobile-admin-icon{width:20px;height:20px;flex:0 0 20px;display:block}
+}
+@media(min-width:701px){.mobile-admin-icon{display:none!important}}
+
 </style>
 </head>
 <body>
