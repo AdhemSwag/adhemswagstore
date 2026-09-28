@@ -116,6 +116,17 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
         <div class="actions"><button class="btn primary" id="saveReward">SAVE REWARD</button><button class="btn" id="clearReward">CLEAR</button></div>
         <div id="rewardSaveStatus" class="notice" style="display:none"></div>
         <div class="table-wrap"><table><thead><tr><th>Reward</th><th>FNC</th><th>Level</th><th>Stock</th><th>Status</th><th>Image</th><th>Actions</th></tr></thead><tbody id="rewardList"><tr><td colspan="7">Loading…</td></tr></tbody></table></div>
+        <div class="section" style="margin-top:18px">
+          <h2>Access Codes</h2>
+          <p>Add one ExitLag / promo code at a time. A code is assigned automatically to the viewer immediately after a successful Store purchase and then appears in their MY PROFILE.</p>
+          <div class="form-grid">
+            <div class="field"><label>Reward</label><select id="accessCodeReward"></select></div>
+            <div class="field"><label>Access code</label><input id="accessCodeInput" type="text" maxlength="200" placeholder="EXITLAG-XXXX-XXXX"></div>
+          </div>
+          <div class="actions"><button class="btn primary" id="addAccessCode">ADD ACCESS CODE</button><button class="btn" id="refreshAccessCodes">REFRESH</button></div>
+          <div id="accessCodeStatus" class="notice" style="display:none"></div>
+          <div class="table-wrap"><table><thead><tr><th>Reward</th><th>Code</th><th>Status</th><th>Viewer</th><th>Date</th><th>Action</th></tr></thead><tbody id="accessCodeList"><tr><td colspan="6">Loading…</td></tr></tbody></table></div>
+        </div>
       </div>
     </section>
 
@@ -424,6 +435,7 @@ async function verifyAdmin() {
     setSecurity('Twitch admin verified. Reward image upload and reward management are enabled.', true);
     updateLoader(20,'ADMIN VERIFIED — LOADING REWARDS…');
     await loadRewards();
+    await loadAccessCodeRewards();
     updateLoader(32,'LOADING GIVEAWAYS…');
     await loadGiveaways();
     updateLoader(42,'LOADING ADMIN LOGS…');
@@ -653,6 +665,37 @@ async function loadRewards() {
   tbody.querySelectorAll('[data-reward-delete]').forEach(b=>b.onclick=async()=>{if(!confirm('Delete this reward?'))return;const {error}=await supabaseClient.from('rewards').delete().eq('id',b.dataset.rewardDelete);if(error)alert(error.message);await loadRewards();await refreshDashboard();});
 }
 
+
+async function loadAccessCodeRewards(){
+  const select=document.getElementById('accessCodeReward');
+  if(!select||!adminReady)return;
+  const {data,error}=await supabaseClient.from('rewards').select('id,name').order('name',{ascending:true});
+  if(error){select.innerHTML='<option value="">Unable to load rewards</option>';return;}
+  select.innerHTML=(data||[]).map(r=>'<option value="'+r.id+'">'+escapeHtml(r.name)+'</option>').join('');
+  await loadAccessCodes();
+}
+
+async function loadAccessCodes(){
+  const tbody=document.getElementById('accessCodeList');
+  const select=document.getElementById('accessCodeReward');
+  if(!tbody||!adminReady)return;
+  const rewardId=select?.value||'';
+  let q=supabaseClient.from('reward_access_codes').select('id,code,assigned_user_id,assigned_at,created_at,reward_id,rewards(name),users(twitch_username)').order('created_at',{ascending:false}).limit(200);
+  if(rewardId) q=q.eq('reward_id',rewardId);
+  const {data,error}=await q;
+  if(error){tbody.innerHTML='<tr><td colspan="6">Unable to load access codes.</td></tr>';return;}
+  if(!data?.length){tbody.innerHTML='<tr><td colspan="6">No access codes yet.</td></tr>';return;}
+  tbody.innerHTML=data.map(x=>{
+    const used=!!x.assigned_user_id;
+    return '<tr><td>'+escapeHtml(x.rewards?.name||'—')+'</td><td><code>'+escapeHtml(x.code)+'</code></td><td>'+ (used?'USED':'AVAILABLE') +'</td><td>'+escapeHtml(x.users?.twitch_username||'—')+'</td><td>'+new Date(x.assigned_at||x.created_at).toLocaleString()+'</td><td>'+(!used?'<button class="btn danger" data-access-delete="'+x.id+'">DELETE</button>':'—')+'</td></tr>';
+  }).join('');
+  tbody.querySelectorAll('[data-access-delete]').forEach(btn=>btn.onclick=async()=>{
+    if(!confirm('Delete this unused access code?'))return;
+    const {error}=await supabaseClient.from('reward_access_codes').delete().eq('id',btn.dataset.accessDelete).is('assigned_user_id',null);
+    if(error)alert(error.message);
+    await loadAccessCodes();
+  });
+}
 
 async function refreshDashboard(){
  if(!adminReady)return;
@@ -900,6 +943,21 @@ document.getElementById('saveReward')?.addEventListener('click', async () => {
   }
 });
 
+
+document.getElementById('addAccessCode')?.addEventListener('click',async()=>{
+  if(!adminReady)return;
+  const rewardId=document.getElementById('accessCodeReward')?.value;
+  const input=document.getElementById('accessCodeInput');
+  const status=document.getElementById('accessCodeStatus');
+  const code=input?.value.trim();
+  if(!rewardId||!code){if(status){status.style.display='block';status.textContent='Choose a reward and enter an access code.';}return;}
+  const {error}=await supabaseClient.from('reward_access_codes').insert({reward_id:rewardId,code});
+  if(status){status.style.display='block';status.textContent=error?'Add failed: '+error.message:'Access code added.';}
+  if(!error&&input)input.value='';
+  await loadAccessCodes();
+});
+document.getElementById('refreshAccessCodes')?.addEventListener('click',loadAccessCodes);
+document.getElementById('accessCodeReward')?.addEventListener('change',loadAccessCodes);
 
 async function writeAdminLog(action,targetType,targetId,details={}){
   if(!adminReady)return;
