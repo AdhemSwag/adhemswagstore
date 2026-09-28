@@ -344,9 +344,29 @@ footer a{color:var(--cyan);text-decoration:none}
     if (!data?.length) { grid.innerHTML='<div class="empty-rewards">NO ACTIVE REWARDS YET — CHECK BACK SOON.</div>'; return; }
     grid.innerHTML = data.map(r => {
       const stock = r.stock == null ? 'UNLIMITED' : (Number(r.stock) > 0 ? Number(r.stock)+' LEFT' : 'SOLD OUT');
-      const can = !!viewer && active && activeViewer && !viewer.is_blocked && viewer.profile_complete && Number(viewer.fnc_points||0) >= Number(r.fnc_cost||0) && Number(viewer.level||1) >= Number(r.level_required||1) && (r.stock == null || Number(r.stock)>0);
+      const fncCost = Number(r.fnc_cost||0);
+      const levelRequired = Number(r.level_required||1);
+      const stockAvailable = r.stock == null || Number(r.stock) > 0;
+      const can = !!viewer && active && activeViewer && !viewer.is_blocked && viewer.profile_complete && Number(viewer.fnc_points||0) >= fncCost && Number(viewer.level||1) >= levelRequired && stockAvailable;
+      const buttonLabel = !viewer
+        ? 'SIGN IN TO REDEEM'
+        : !active
+          ? 'STOPPED'
+          : viewer.is_blocked
+            ? 'ACCOUNT BLOCKED'
+            : !viewer.profile_complete
+              ? 'COMPLETE PROFILE'
+              : !activeViewer
+                ? 'WATCH 10 MIN'
+                : !stockAvailable
+                  ? 'SOLD OUT'
+                  : Number(viewer.fnc_points||0) < fncCost
+                    ? money(fncCost)+' FNC REQUIRED'
+                    : Number(viewer.level||1) < levelRequired
+                      ? 'LEVEL '+levelRequired+' REQUIRED'
+                      : 'REDEEM FOR '+money(fncCost)+' FNC';
       const image = r.image_url ? '<img class="reward-image" src="'+esc(r.image_url)+'" alt="'+esc(r.name)+'">' : '<div class="reward-image empty">ADHEMSWAG REWARD</div>';
-      return '<article class="reward-card">'+image+'<div class="reward-body"><h3>'+esc(r.name)+'</h3><div class="reward-desc">'+esc(r.description||'AdhemSwag reward.')+'</div><div class="reward-meta"><span class="reward-chip"><strong>'+money(r.fnc_cost)+' FNC</strong></span><span class="reward-chip">LEVEL <strong>'+Number(r.level_required||1)+'</strong></span><span class="reward-chip">'+esc(stock)+'</span></div><button class="reward-redeem" data-id="'+r.id+'" '+(can?'':'disabled')+'>'+(!viewer?'SIGN IN TO REDEEM':(!active?'STOPPED':(!viewer.profile_complete?'COMPLETE PROFILE':(!activeViewer?'WATCH 10 MIN':(!can?'REQUIREMENTS NOT MET':'REDEEM REWARD')))))+'</button></div></article>';
+      return '<article class="reward-card">'+image+'<div class="reward-body"><h3>'+esc(r.name)+'</h3><div class="reward-desc">'+esc(r.description||'AdhemSwag reward.')+'</div><div class="reward-meta"><span class="reward-chip"><strong>'+money(fncCost)+' FNC</strong></span><span class="reward-chip">LEVEL <strong>'+levelRequired+'</strong></span><span class="reward-chip">'+esc(stock)+'</span></div><button class="reward-redeem" data-id="'+r.id+'" '+(can?'':'disabled')+'>'+buttonLabel+'</button></div></article>';
     }).join('');
     grid.querySelectorAll('.reward-redeem:not(:disabled)').forEach(btn => btn.addEventListener('click',()=>openRedeem(data.find(r=>r.id===btn.dataset.id))));
   }
