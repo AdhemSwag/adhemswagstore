@@ -47,10 +47,39 @@
 }
 @media(min-width:701px){.mobile-bottom-nav,.mobile-nav-scrim,.mobile-drawer-close,.mobile-fallback-drawer{display:none!important}}
 
+
+/* AdhemSwag mobile drawer — full navigation */
+@media(max-width:700px){
+  .sidebar,.admin-nav{
+    width:min(330px,88vw)!important;max-width:88vw!important;
+    padding:18px 16px 28px!important;
+    overflow-y:auto!important;
+    scrollbar-width:thin;
+  }
+  .sidebar-brand{display:flex!important;align-items:center!important;justify-content:center!important;padding:12px 10px 26px!important;min-height:86px!important}
+  .sidebar-brand img,.sidebar-logo-img{display:block!important;width:auto!important;max-width:230px!important;max-height:74px!important;height:auto!important;object-fit:contain!important}
+  .sidebar-section-label{display:block!important;margin:14px 10px 7px!important;font-size:9px!important;letter-spacing:.14em!important}
+  .sidebar-link{display:flex!important;align-items:center!important;justify-content:flex-start!important;gap:13px!important;width:100%!important;min-height:48px!important;padding:12px 13px!important;font-size:13px!important;font-weight:600!important}
+  .sidebar-link span{display:inline!important;visibility:visible!important;opacity:1!important;white-space:nowrap!important;overflow:visible!important}
+  .sidebar-link svg,.sidebar-link img{display:block!important;width:21px!important;height:21px!important;flex:0 0 21px!important;opacity:1!important}
+  .sidebar-divider{display:block!important;margin:10px 8px!important}
+  .admin-nav{padding:18px 14px 28px!important}
+  .admin-nav .brand{display:flex!important;align-items:center!important;gap:10px!important;padding:8px 8px 22px!important;color:#eaf6f8!important;text-decoration:none!important}
+  .admin-nav .brand img{width:58px!important;height:58px!important;object-fit:contain!important;display:block!important}
+  .admin-nav .brand span{font-size:18px!important;font-weight:800!important}
+  .admin-nav .nav-label{display:block!important;margin:8px 8px 10px!important}
+  .admin-nav .nav-btn{
+    width:100%!important;min-height:48px!important;display:flex!important;align-items:center!important;gap:12px!important;
+    padding:12px 13px!important;margin:3px 0!important;text-align:left!important;
+  }
+  .admin-nav .nav-btn .mobile-admin-icon{width:20px;height:20px;flex:0 0 20px;display:block}
+}
+@media(min-width:701px){.mobile-admin-icon{display:none!important}}
+
 </style>
 </head>
 <body>
-<nav class="mobile-fallback-drawer" aria-label="Site menu"><button type="button" class="mobile-drawer-close" aria-label="Close menu">×</button><a href="/dashboard/">Dashboard</a><a href="/store/">FNC Store</a><a href="/profile/">My Profile</a><a href="/bonuses/">Bonuses</a><a href="/config/">Config</a><a href="/donate/">Donate</a><a href="/giveaway/">Giveaway</a><a href="/faceit/">FACEIT</a><a href="/leaderboard/">Leaderboard</a><a href="/faq/">FAQ</a></nav>
+<nav class="mobile-fallback-drawer" aria-label="Site menu"><div class="mobile-home-brand"><img src="/apple-touch-icon.png" alt="AdhemSwag"><strong>ADHEMSWAG</strong></div><a href="/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m3 10 9-7 9 7"/><path d="M5 9v12h14V9M9 21v-7h6v7"/></svg><span>Home</span></a><a href="/dashboard/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m3 10 9-7 9 7"/><path d="M5 9v12h14V9M9 21v-7h6v7"/></svg><span>Dashboard</span></a><a href="/store/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h18l-1 13H4L3 8Z"/><path d="M8 9V6a4 4 0 0 1 8 0v3"/></svg><span>Store</span></a><a href="/profile/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span>My Profile</span></a><a href="/bonuses/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h18l-1 13H4L3 8Z"/><path d="M8 9V6a4 4 0 0 1 8 0v3"/></svg><span>Bonuses</span></a><a href="/giveaway/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m3 10 9-7 9 7"/><path d="M5 9v12h14V9M9 21v-7h6v7"/></svg><span>Giveaway</span></a><a href="/faceit/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m3 10 9-7 9 7"/><path d="M5 9v12h14V9M9 21v-7h6v7"/></svg><span>FACEIT</span></a><a href="/leaderboard/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m3 10 9-7 9 7"/><path d="M5 9v12h14V9M9 21v-7h6v7"/></svg><span>Leaderboard</span></a><a href="/faq/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m3 10 9-7 9 7"/><path d="M5 9v12h14V9M9 21v-7h6v7"/></svg><span>FAQ</span></a><a href="/donate/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h18l-1 13H4L3 8Z"/><path d="M8 9V6a4 4 0 0 1 8 0v3"/></svg><span>Donate</span></a><a href="/settings/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m3 10 9-7 9 7"/><path d="M5 9v12h14V9M9 21v-7h6v7"/></svg><span>Settings</span></a><a href="/config/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m3 10 9-7 9 7"/><path d="M5 9v12h14V9M9 21v-7h6v7"/></svg><span>Config</span></a></nav>
 <div class="mobile-nav-scrim" data-mobile-scrim></div>
 <div class="mobile-bottom-nav" aria-label="Mobile navigation">
   <a href="/dashboard/" data-mbn-path="/dashboard/"><svg class="mbn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m3 10 9-7 9 7"/><path d="M5 9v12h14V9M9 21v-7h6v7"/></svg><span>Home</span></a>
