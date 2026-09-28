@@ -75,6 +75,35 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
 }
 @media(min-width:701px){.mobile-bottom-nav,.mobile-nav-scrim,.mobile-drawer-close,.mobile-fallback-drawer{display:none!important}}
 
+
+/* AdhemSwag mobile drawer — full navigation */
+@media(max-width:700px){
+  .sidebar,.admin-nav{
+    width:min(330px,88vw)!important;max-width:88vw!important;
+    padding:18px 16px 28px!important;
+    overflow-y:auto!important;
+    scrollbar-width:thin;
+  }
+  .sidebar-brand{display:flex!important;align-items:center!important;justify-content:center!important;padding:12px 10px 26px!important;min-height:86px!important}
+  .sidebar-brand img,.sidebar-logo-img{display:block!important;width:auto!important;max-width:230px!important;max-height:74px!important;height:auto!important;object-fit:contain!important}
+  .sidebar-section-label{display:block!important;margin:14px 10px 7px!important;font-size:9px!important;letter-spacing:.14em!important}
+  .sidebar-link{display:flex!important;align-items:center!important;justify-content:flex-start!important;gap:13px!important;width:100%!important;min-height:48px!important;padding:12px 13px!important;font-size:13px!important;font-weight:600!important}
+  .sidebar-link span{display:inline!important;visibility:visible!important;opacity:1!important;white-space:nowrap!important;overflow:visible!important}
+  .sidebar-link svg,.sidebar-link img{display:block!important;width:21px!important;height:21px!important;flex:0 0 21px!important;opacity:1!important}
+  .sidebar-divider{display:block!important;margin:10px 8px!important}
+  .admin-nav{padding:18px 14px 28px!important}
+  .admin-nav .brand{display:flex!important;align-items:center!important;gap:10px!important;padding:8px 8px 22px!important;color:#eaf6f8!important;text-decoration:none!important}
+  .admin-nav .brand img{width:58px!important;height:58px!important;object-fit:contain!important;display:block!important}
+  .admin-nav .brand span{font-size:18px!important;font-weight:800!important}
+  .admin-nav .nav-label{display:block!important;margin:8px 8px 10px!important}
+  .admin-nav .nav-btn{
+    width:100%!important;min-height:48px!important;display:flex!important;align-items:center!important;gap:12px!important;
+    padding:12px 13px!important;margin:3px 0!important;text-align:left!important;
+  }
+  .admin-nav .nav-btn .mobile-admin-icon{width:20px;height:20px;flex:0 0 20px;display:block}
+}
+@media(min-width:701px){.mobile-admin-icon{display:none!important}}
+
 </style>
 </head>
 <body>
@@ -1259,6 +1288,8 @@ setTimeout(startRedemptionNotifications, 1500);
 </div>
 <script>
 (()=>{const scrim=document.querySelector('[data-mobile-scrim]'),menu=document.querySelector('[data-mobile-menu]');if(!scrim||!menu)return;const side=document.querySelector('.sidebar')||document.querySelector('.admin-nav')||document.querySelector('.mobile-fallback-drawer');if(!side)return;let close=side.querySelector('.mobile-drawer-close');if(!close){close=document.createElement('button');close.className='mobile-drawer-close';close.type='button';close.setAttribute('aria-label','Close menu');close.innerHTML='×';side.appendChild(close)}const open=()=>{side.classList.add('mobile-open');scrim.classList.add('open');menu.setAttribute('aria-expanded','true');document.body.style.overflow='hidden'};const shut=()=>{side.classList.remove('mobile-open');scrim.classList.remove('open');menu.setAttribute('aria-expanded','false');document.body.style.overflow=''};menu.addEventListener('click',open);scrim.addEventListener('click',shut);close.addEventListener('click',shut);document.addEventListener('keydown',e=>{if(e.key==='Escape')shut()});const p=location.pathname.replace(/\/?$/,'/');document.querySelectorAll('[data-mbn-path]').forEach(a=>{if((p==='/'&&a.dataset.mbnPath==='/dashboard/')||p===a.dataset.mbnPath)a.classList.add('active')});side.querySelectorAll('a').forEach(a=>a.addEventListener('click',shut));})();
+
+const adminIcons={"dashboard":"<path d='M4 13h6V4H4v9Zm10 7h6V4h-6v16ZM4 20h6v-3H4v3Z'/>","rewards":"<path d='m12 3 8 4-8 4-8-4 8-4Z'/><path d='m4 12 8 4 8-4'/><path d='m4 17 8 4 8-4'/>","giveaways":"<path d='M4 10h16v10H4z'/><path d='M12 10v10'/><path d='M3 7h18v3H3z'/><path d='M12 7H8.5a2.5 2.5 0 1 1 2.5-2.5V7Zm0 0h3.5a2.5 2.5 0 1 0-2.5-2.5V7Z'/>","logs":"<path d='M4 5h16v14H4z'/><path d='M7 9h10M7 13h7M7 16h5'/>","redemptions":"<circle cx='12' cy='12' r='9'/><path d='m8 12 3 3 5-6'/>","viewers":"<circle cx='9' cy='9' r='3'/><path d='M3 20a6 6 0 0 1 12 0'/><path d='M16 7a3 3 0 0 1 0 6M18 20a5 5 0 0 0-2-4'/>","transactions":"<path d='M4 7h13l-3-3M20 17H7l3 3'/><path d='M17 7v5M7 17v-5'/>","system":"<path d='M12 3v3M12 18v3M3 12h3M18 12h3'/><circle cx='12' cy='12' r='5'/>","fnc-settings":"<circle cx='12' cy='12' r='8'/><path d='M12 8v8M9 10h4a2 2 0 1 1 0 4H9'/>","leaderboard":"<path d='M5 20V10M12 20V4M19 20v-7'/>","media":"<rect x='3' y='5' width='18' height='14' rx='2'/><circle cx='8' cy='10' r='1.5'/><path d='m21 15-5-5-6 6-2-2-5 5'/>","admin-access":"<rect x='4' y='8' width='16' height='12' rx='2'/><path d='M8 8V6a4 4 0 0 1 8 0v2M12 13v3'/>"};document.querySelectorAll('.admin-nav .nav-btn').forEach(b=>{if(b.querySelector('.mobile-admin-icon'))return;const k=b.dataset.panel;const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('class','mobile-admin-icon');svg.setAttribute('viewBox','0 0 24 24');svg.setAttribute('fill','none');svg.setAttribute('stroke','currentColor');svg.setAttribute('stroke-width','1.8');svg.setAttribute('stroke-linecap','round');svg.setAttribute('stroke-linejoin','round');svg.innerHTML=adminIcons[k]||adminIcons.dashboard;b.prepend(svg)});
 </script>
 </body>
 </html>
