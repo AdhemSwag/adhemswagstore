@@ -647,8 +647,7 @@ footer .footer-copy .row{margin:0;}
     document.getElementById('nextRewardName').textContent=reward?.name||'More rewards coming soon';
     document.getElementById('nextRewardReq').textContent=reward?[
       Number(reward.fnc_cost)>0?fmt(reward.fnc_cost)+' FNC':'',
-      Number(reward.level_required)>1?'Level '+reward.level_required:'',
-      Number(reward.xp_required)>0?fmt(reward.xp_required)+' XP':''
+      Number(reward.level_required)>1?'Level '+reward.level_required:''
     ].filter(Boolean).join(' • ')||'Check the STORE':'Keep watching to unlock rewards.';
   }
 
