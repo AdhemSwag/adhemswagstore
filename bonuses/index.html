@@ -330,6 +330,33 @@ footer .footer-copy .row{margin:0;}
   main,.main{box-sizing:border-box!important;width:100%!important;max-width:100%!important;margin-left:0!important;margin-right:0!important;left:0!important;}
 }
 </style>
+
+<style id="adhemswag-mobile-final-layout">
+/* MOBILE ONLY — never affects desktop */
+@media (max-width:700px){
+  html,body{width:100%!important;max-width:100%!important;margin:0!important;padding-left:0!important;overflow-x:hidden!important;box-sizing:border-box!important}
+  body{min-width:0!important}
+  main,main.main,.main,.page-content,.content,.dashboard-content,.settings-main,.faq-page{
+    position:relative!important;left:0!important;right:auto!important;transform:none!important;
+    margin-left:0!important;margin-right:0!important;
+    width:100%!important;max-width:100%!important;min-width:0!important;
+    box-sizing:border-box!important;
+  }
+  .sidebar{
+    left:0!important;right:auto!important;
+    box-sizing:border-box!important;
+    transform:translate3d(-110%,0,0)!important;
+    will-change:transform;
+  }
+  .sidebar.mobile-open{transform:translate3d(0,0,0)!important}
+  .sidebar-brand,.sidebar-logo-img,.sidebar-brand img{box-sizing:border-box!important}
+  .sidebar-brand img,.sidebar-logo-img{display:block!important;visibility:visible!important;opacity:1!important;object-fit:contain!important}
+  .sidebar-link{box-sizing:border-box!important;visibility:visible!important}
+  .sidebar-link span{visibility:visible!important;opacity:1!important}
+  .mobile-bottom-nav{box-sizing:border-box!important}
+}
+@media (min-width:701px){#adhemswag-mobile-final-layout{display:none!important}}
+</style>
 </head>
 <body>
 
