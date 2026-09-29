@@ -357,6 +357,41 @@ footer .footer-copy .row{margin:0;}
 }
 @media (min-width:701px){#adhemswag-mobile-final-layout{display:none!important}}
 </style>
+<style id="adhemswag-mobile-final-v2">
+@media (max-width:700px){
+  html,body{width:100%!important;max-width:100%!important;min-width:0!important;margin:0!important;padding:0 0 calc(82px + env(safe-area-inset-bottom,0px))!important;overflow-x:hidden!important;box-sizing:border-box!important}
+  body{position:relative!important;left:0!important;transform:none!important}
+  body>main,main,.main,.page,.page-content,.content,.dashboard-content,.settings-main,.faq-page,.store-page,.admin-main{
+    width:100%!important;max-width:100%!important;min-width:0!important;margin-left:0!important;margin-right:0!important;left:0!important;right:auto!important;transform:none!important;box-sizing:border-box!important;
+  }
+  header,.header,.site-header,.page-header,.topbar,.adhem-topbar{
+    width:100%!important;max-width:100%!important;margin-left:0!important;margin-right:0!important;left:0!important;right:0!important;box-sizing:border-box!important;
+  }
+  .sidebar,.admin-nav,.mobile-fallback-drawer{
+    position:fixed!important;top:0!important;left:0!important;right:auto!important;bottom:0!important;
+    width:min(330px,88vw)!important;max-width:88vw!important;height:100dvh!important;min-height:100dvh!important;
+    z-index:2147483001!important;transform:translate3d(-110%,0,0)!important;visibility:hidden!important;pointer-events:none!important;
+    overflow-y:auto!important;overflow-x:hidden!important;box-sizing:border-box!important;
+  }
+  .sidebar.mobile-open,.admin-nav.mobile-open,.mobile-fallback-drawer.mobile-open{
+    transform:translate3d(0,0,0)!important;visibility:visible!important;pointer-events:auto!important;
+  }
+  .sidebar-link,.admin-nav .nav-btn{visibility:visible!important;opacity:1!important}
+  .sidebar-link span,.admin-nav .nav-btn span{visibility:visible!important;opacity:1!important;display:inline!important}
+  .sidebar-brand,.sidebar-brand img,.sidebar-logo-img{visibility:visible!important;opacity:1!important}
+  .mobile-nav-scrim{
+    position:fixed!important;inset:0!important;z-index:2147483000!important;pointer-events:none!important;
+  }
+  .mobile-nav-scrim.open{pointer-events:auto!important}
+  .mobile-bottom-nav{
+    position:fixed!important;left:8px!important;right:8px!important;bottom:calc(8px + env(safe-area-inset-bottom,0px))!important;
+    z-index:2147483002!important;display:grid!important;pointer-events:auto!important;box-sizing:border-box!important;
+  }
+  .mobile-bottom-nav button[data-mobile-menu]{position:relative!important;z-index:2147483003!important;pointer-events:auto!important;touch-action:manipulation!important}
+  body.mobile-menu-open{overflow:hidden!important}
+}
+@media (min-width:701px){#adhemswag-mobile-final-v2{display:none!important}}
+</style>
 </head>
 <body>
 
@@ -540,7 +575,7 @@ footer .footer-copy .row{margin:0;}
 <script src="/auth.js"></script>
 
 <script>
-(()=>{const side=document.querySelector('.sidebar');const scrim=document.querySelector('[data-mobile-scrim]');const menu=document.querySelector('[data-mobile-menu]');if(!side||!scrim||!menu)return;const close=document.createElement('button');close.className='mobile-drawer-close';close.type='button';close.setAttribute('aria-label','Close menu');close.innerHTML='×';side.appendChild(close);const open=()=>{side.classList.add('mobile-open');scrim.classList.add('open');menu.setAttribute('aria-expanded','true');document.body.style.overflow='hidden'};const shut=()=>{side.classList.remove('mobile-open');scrim.classList.remove('open');menu.setAttribute('aria-expanded','false');document.body.style.overflow=''};menu.addEventListener('click',open);scrim.addEventListener('click',shut);close.addEventListener('click',shut);document.addEventListener('keydown',e=>{if(e.key==='Escape')shut()});const path=location.pathname.replace(/\/?$/,'/');document.querySelectorAll('[data-mbn-path]').forEach(a=>{if(path===a.dataset.mbnPath)a.classList.add('active')});side.querySelectorAll('a').forEach(a=>a.addEventListener('click',shut));})();
+(()=>{document.addEventListener('click',function(e){const menu=e.target.closest('[data-mobile-menu]');const scrim=e.target.closest('[data-mobile-scrim]');const close=e.target.closest('.mobile-drawer-close');const side=document.querySelector('.sidebar')||document.querySelector('.admin-nav')||document.querySelector('.mobile-fallback-drawer');if(!side)return;if(menu){e.preventDefault();side.classList.add('mobile-open');document.body.classList.add('mobile-menu-open');const s=document.querySelector('[data-mobile-scrim]');if(s)s.classList.add('open');menu.setAttribute('aria-expanded','true');return}if(scrim||close){e.preventDefault();side.classList.remove('mobile-open');document.body.classList.remove('mobile-menu-open');const s=document.querySelector('[data-mobile-scrim]');if(s)s.classList.remove('open');const m=document.querySelector('[data-mobile-menu]');if(m)m.setAttribute('aria-expanded','false');}});document.addEventListener('keydown',function(e){if(e.key!=='Escape')return;const side=document.querySelector('.sidebar.mobile-open,.admin-nav.mobile-open,.mobile-fallback-drawer.mobile-open');if(!side)return;side.classList.remove('mobile-open');document.body.classList.remove('mobile-menu-open');const s=document.querySelector('[data-mobile-scrim]');if(s)s.classList.remove('open');const m=document.querySelector('[data-mobile-menu]');if(m)m.setAttribute('aria-expanded','false');});})();
 </script>
 </body>
 </html>
