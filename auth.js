@@ -14,13 +14,14 @@
     if (!mark) return;
     mark.classList.remove('status-green', 'status-orange', 'status-red');
     mark.classList.add(
-      state === 'live' ? 'status-green' :
-      state === 'checking' ? 'status-orange' : 'status-red'
+      state === 'active' ? 'status-green' :
+      state === 'maintenance' ? 'status-orange' : 'status-red'
     );
     mark.title =
-      state === 'live' ? 'Twitch LIVE — FNC Points active' :
-      state === 'checking' ? 'Checking Twitch / FNC status…' :
-      'Twitch offline — FNC Points paused';
+      state === 'active' ? 'FNC Points active' :
+      state === 'maintenance' ? 'FNC Points maintenance' :
+      state === 'checking' ? 'Checking FNC Points status…' :
+      'FNC Points not active';
   }
 
   async function refreshTopbarStatus() {
@@ -28,11 +29,19 @@
     try {
       const { data, error } = await client.functions.invoke('twitch-live-status');
       if (error) throw error;
-      setTopbarStatus(data?.live ? 'live' : 'offline');
+
+      // FNC status indicator:
+      // ACTIVE = green, NOT ACTIVE = red, MAINTENANCE = orange.
+      const maintenance = data?.maintenance === true || data?.status === 'maintenance';
+      if (maintenance) {
+        setTopbarStatus('maintenance');
+      } else {
+        setTopbarStatus(data?.live ? 'active' : 'offline');
+      }
     } catch (error) {
       console.warn('[AdhemSwag] Twitch live status:', error);
-      // Keep the indicator orange when the status check fails; red is reserved for a confirmed offline response.
-      setTopbarStatus('checking');
+      // A failed status check is not maintenance. Keep it red until a confirmed state is received.
+      setTopbarStatus('offline');
     }
   }
 
