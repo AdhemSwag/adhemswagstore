@@ -11,17 +11,30 @@
 
   function setTopbarStatus(state) {
     const mark = document.querySelector('.adhem-topbar-mark');
-    if (!mark) return;
-    mark.classList.remove('status-green', 'status-orange', 'status-red');
-    mark.classList.add(
+    if (mark) mark.style.display = 'none';
+
+    const brand = document.querySelector('.adhem-topbar-brand');
+    if (!brand) return;
+
+    let status = document.querySelector('.adhem-topbar-status');
+    if (!status) {
+      status = document.createElement('span');
+      status.className = 'adhem-topbar-status';
+      brand.insertAdjacentElement('afterend', status);
+    }
+
+    status.classList.remove('status-green', 'status-orange', 'status-red', 'status-muted');
+    status.classList.add(
       state === 'active' ? 'status-green' :
-      state === 'maintenance' ? 'status-orange' : 'status-red'
+      state === 'maintenance' ? 'status-orange' :
+      state === 'checking' ? 'status-muted' : 'status-red'
     );
-    mark.title =
-      state === 'active' ? 'FNC Points active' :
-      state === 'maintenance' ? 'FNC Points maintenance' :
-      state === 'checking' ? 'Checking FNC Points status…' :
-      'FNC Points not active';
+    status.textContent =
+      state === 'active' ? 'TWITCH LIVE • FNC ACTIVE' :
+      state === 'maintenance' ? 'FNC MAINTENANCE' :
+      state === 'checking' ? 'CHECKING FNC STATUS…' :
+      'TWITCH OFFLINE • FNC NOT ACTIVE';
+    status.title = status.textContent;
   }
 
   async function refreshTopbarStatus() {
@@ -266,8 +279,10 @@
         .adhem-account-connect span:first-child{display:none!important}
         .adhem-account-connect:hover{border-color:rgba(17,217,247,.72)!important;background:rgba(17,217,247,.08)!important;color:#fff!important;box-shadow:0 0 18px rgba(17,217,247,.22),inset 0 0 12px rgba(17,217,247,.04)!important}
         .adhem-topbar-left{display:flex!important;align-items:center!important;gap:9px!important;min-width:0!important}
-        .adhem-topbar-mark{width:7px!important;height:7px!important;border-radius:50%!important;background:#ff3b3b!important;box-shadow:0 0 8px rgba(255,59,59,.65)!important;flex:none!important;transition:background .2s ease,box-shadow .2s ease!important}.adhem-topbar-mark.status-green{background:#22c55e!important;box-shadow:0 0 8px rgba(34,197,94,.7)!important}.adhem-topbar-mark.status-orange{background:#f59e0b!important;box-shadow:0 0 8px rgba(245,158,11,.7)!important}.adhem-topbar-mark.status-red{background:#ff3b3b!important;box-shadow:0 0 8px rgba(255,59,59,.65)!important}
+        .adhem-topbar-mark{display:none!important}
         .adhem-topbar-brand{font:600 10px 'JetBrains Mono',monospace!important;letter-spacing:.12em!important;color:#b9c9cd!important;white-space:nowrap!important}
+        .adhem-topbar-status{font:700 10px 'JetBrains Mono',monospace!important;letter-spacing:.1em!important;white-space:nowrap!important;margin-left:10px!important}
+        .adhem-topbar-status.status-green{color:#22c55e!important}.adhem-topbar-status.status-orange{color:#f59e0b!important}.adhem-topbar-status.status-red{color:#ff3b3b!important}.adhem-topbar-status.status-muted{color:#6b7a80!important}
         .adhem-topbar-brand span{color:#11D9F7!important}
         .adhem-topbar .adhem-account{margin-left:auto!important;position:relative!important}
         .adhem-account-menu{min-width:240px!important;padding:5px 0 6px!important;z-index:1100!important;top:calc(100% + 8px)!important}
@@ -288,7 +303,7 @@
         .adhem-avatar-xp .shared-account-xp-progress{display:block;margin-top:2px;font:8px 'JetBrains Mono',monospace;color:#52636a;white-space:nowrap}
         .adhem-account-menu .account-rewards{display:block!important;padding:12px 14px 11px;margin:0 0 6px;border-bottom:1px solid rgba(17,217,247,.12)}
         @media(max-width:1024px){.adhem-topbar{left:0!important;padding:8px 16px!important}}
-        @media(max-width:640px){.adhem-topbar{left:0!important;right:auto!important;height:78px!important;min-height:78px!important;padding:8px!important}.adhem-topbar-brand{display:none!important}.adhem-topbar-left{gap:6px!important}.adhem-account-user{min-width:0!important;padding:4px!important;border-radius:28px!important}.adhem-account-user .adhem-account-avatar{width:48px!important;height:48px!important}.adhem-account-user .adhem-account-name{display:none!important}.adhem-avatar-rewards{min-width:105px!important}.adhem-avatar-reward-row{gap:8px!important;font-size:8px!important}.adhem-avatar-reward-row strong{font-size:8px!important}.adhem-avatar-xp{margin-top:4px!important}.adhem-account-menu{right:4px!important;top:calc(100% + 6px)!important;min-width:220px!important;max-width:calc(100vw - 62px)!important}.sidebar{width:52px!important;padding:14px 5px!important;gap:1px!important}.sidebar-brand{padding:7px 2px 12px!important}.sidebar-brand a{display:none!important}.sidebar-link{justify-content:center!important;gap:0!important;padding:10px 0!important}.sidebar-link span{display:none!important}.sidebar-divider{margin:8px 5px!important}main{width:auto!important;max-width:none!important;padding-left:12px!important;padding-right:12px!important}}
+        @media(max-width:640px){.adhem-topbar{left:0!important;right:auto!important;height:78px!important;min-height:78px!important;padding:8px!important}.adhem-topbar-brand{display:none!important}.adhem-topbar-status{display:none!important}.adhem-topbar-left{gap:6px!important}.adhem-account-user{min-width:0!important;padding:4px!important;border-radius:28px!important}.adhem-account-user .adhem-account-avatar{width:48px!important;height:48px!important}.adhem-account-user .adhem-account-name{display:none!important}.adhem-avatar-rewards{min-width:105px!important}.adhem-avatar-reward-row{gap:8px!important;font-size:8px!important}.adhem-avatar-reward-row strong{font-size:8px!important}.adhem-avatar-xp{margin-top:4px!important}.adhem-account-menu{right:4px!important;top:calc(100% + 6px)!important;min-width:220px!important;max-width:calc(100vw - 62px)!important}.sidebar{width:52px!important;padding:14px 5px!important;gap:1px!important}.sidebar-brand{padding:7px 2px 12px!important}.sidebar-brand a{display:none!important}.sidebar-link{justify-content:center!important;gap:0!important;padding:10px 0!important}.sidebar-link span{display:none!important}.sidebar-divider{margin:8px 5px!important}main{width:auto!important;max-width:none!important;padding-left:12px!important;padding-right:12px!important}}
         .adhem-account-menu .account-rewards-title{font:600 10px 'JetBrains Mono',monospace;letter-spacing:.14em;color:#52636a;text-transform:uppercase;margin-bottom:9px}
         .adhem-account-menu .account-rewards-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
         .adhem-account-menu .account-rewards-grid>div{padding:8px 9px;background:rgba(17,217,247,.035);border:1px solid rgba(17,217,247,.08);text-align:left}
