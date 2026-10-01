@@ -1345,7 +1345,9 @@ function generateLiveCodeValue(){
   return 'ADHEM-WIN-'+raw;
 }
 function liveCodeStatus(row){
-  if(!row.active)return 'USED / OFF';
+  const uses=Number(row.uses_count||0);
+  const maxUses=Math.max(1,Number(row.max_uses||1));
+  if(!row.active || uses>=maxUses)return 'USED / OFF';
   if(row.expires_at&&new Date(row.expires_at)<=new Date())return 'EXPIRED';
   return 'ACTIVE';
 }
@@ -1355,7 +1357,13 @@ async function loadLiveCodes(){
   tbody.innerHTML='<tr><td colspan="6">Loading…</td></tr>';
   const {data,error}=await supabaseClient.from('live_codes').select('id,code,reward_fnc,max_uses,uses_count,active,expires_at,created_at').order('created_at',{ascending:false}).limit(200);
   if(error){tbody.innerHTML='<tr><td colspan="6">Unable to load codes: '+escapeHtml(error.message)+'</td></tr>';return;}
-  tbody.innerHTML=(data||[]).map(row=>'<tr><td><code>'+escapeHtml(row.code)+'</code></td><td>'+Number(row.reward_fnc||0).toLocaleString()+'</td><td>'+Number(row.uses_count||0)+' / '+Number(row.max_uses||1)+'</td><td>'+escapeHtml(liveCodeStatus(row))+'</td><td>'+ (row.expires_at?new Date(row.expires_at).toLocaleString():'—') +'</td><td>'+(row.active?'<button class="btn danger" data-lc-disable="'+row.id+'">DISABLE</button>':'—')+'</td></tr>').join('')||'<tr><td colspan="6">No codes yet.</td></tr>';
+  tbody.innerHTML=(data||[]).map(row=>{
+  const uses=Number(row.uses_count||0);
+  const maxUses=Math.max(1,Number(row.max_uses||1));
+  const exhausted=uses>=maxUses;
+  const active=!!row.active&&!exhausted;
+  return '<tr><td><code>'+escapeHtml(row.code)+'</code></td><td>'+Number(row.reward_fnc||0).toLocaleString()+'</td><td>'+uses+' / '+maxUses+'</td><td>'+escapeHtml(liveCodeStatus({...row,active}))+'</td><td>'+ (row.expires_at?new Date(row.expires_at).toLocaleString():'—') +'</td><td>'+(active?'<button class="btn danger" data-lc-disable="'+row.id+'">DISABLE</button>':'—')+'</td></tr>';
+}).join('')||'<tr><td colspan="6">No codes yet.</td></tr>';
   tbody.querySelectorAll('[data-lc-disable]').forEach(btn=>btn.onclick=()=>disableLiveCode(btn.dataset.lcDisable));
 }
 async function disableLiveCode(id){
