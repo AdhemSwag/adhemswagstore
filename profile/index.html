@@ -464,7 +464,7 @@ body.mobile-menu-open{overflow:hidden!important}
 <div class="profile-extra">
 <section class="card">
 <h2>LIVE CODES</h2>
-<p class="note">Redeem live codes to receive <b>FNC Points or XP.</b> This feature remains locked until the rewards backend is finished.</p>
+<p class="note">Redeem a private winner code to receive <b>FNC Points.</b> Each winner code can be used once.</p>
 <div class="code-box">
 <input id="redeemCodeInput" type="text" maxlength="64" placeholder="ENTER YOUR CODE" autocomplete="off">
 <button id="redeemCodeBtn" type="button">REDEEM</button>
@@ -763,4 +763,32 @@ if(accessRoot){
   }
 }
 </style>
-</body></html>
+<script id="adhem-live-code-redeem-v1">
+(()=>{
+  const input=document.getElementById('redeemCodeInput'),btn=document.getElementById('redeemCodeBtn'),status=document.getElementById('redeemCodeStatus');
+  if(!input||!btn||!status)return;
+  const setStatus=(msg,ok=false)=>{status.textContent=msg;status.style.color=ok?'var(--ok)':'var(--muted)';};
+  const redeem=async()=>{
+    const code=input.value.trim();
+    if(!code){setStatus('ENTER A CODE.');return;}
+    const client=window.AdhemAuth;
+    if(!client){setStatus('CONNECT YOUR TWITCH ACCOUNT FIRST.');return;}
+    btn.disabled=true;setStatus('CHECKING CODE…');
+    try{
+      const {data:{user}}=await client.auth.getUser();
+      if(!user){setStatus('CONNECT YOUR TWITCH ACCOUNT FIRST.');return;}
+      const {data,error}=await client.functions.invoke('redeem-live-code',{body:{code}});
+      if(error)throw error;
+      if(!data?.ok)throw new Error(data?.message||'Unable to redeem code.');
+      input.value='';
+      setStatus('✓ +'+Number(data.reward_fnc||0).toLocaleString()+' FNC POINTS ADDED.',true);
+      await window.AdhemSwagAuth?.refreshAccountUI?.();
+    }catch(err){
+      const msg=err?.context?.message||err?.message||'Unable to redeem code.';
+      setStatus(msg.toUpperCase());
+    }finally{btn.disabled=false;}
+  };
+  btn.addEventListener('click',redeem);
+  input.addEventListener('keydown',e=>{if(e.key==='Enter')redeem()});
+})();
+</script></body></html>
