@@ -368,6 +368,7 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
     <button class="nav-btn active" data-panel="dashboard">Dashboard</button>
     <button class="nav-btn" data-panel="rewards">Rewards / Store</button>
     <button class="nav-btn" data-panel="giveaways">Giveaways</button>
+    <button class="nav-btn" data-panel="live-codes">LIVE Codes</button>
     <button class="nav-btn" data-panel="logs">Admin Logs</button>
     <button class="nav-btn" data-panel="redemptions">Redemptions</button>
     <button class="nav-btn" data-panel="viewers">Viewers</button>
@@ -522,6 +523,28 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
 <div id="gwStatus" class="notice" style="display:none"></div></div>
 <div class="section"><h2>Giveaway History</h2><div class="table-wrap"><table><thead><tr><th>Giveaway</th><th>Reward</th><th>Status</th><th>Entries</th><th>Winners</th><th>Actions</th></tr></thead><tbody id="giveawayList"><tr><td colspan="6">Loading…</td></tr></tbody></table></div></div>
 <div class="section"><h2>Winner Follow-up</h2><p>Track each winner from selected to contacted, delivered or declined. Notes stay in the admin audit trail.</p><div class="actions"><button class="btn primary" id="loadGiveawayWinners">LOAD WINNERS</button></div><div id="winnerStatus" class="notice" style="display:none"></div><div class="table-wrap"><table><thead><tr><th>Giveaway</th><th>Winner</th><th>#</th><th>Status</th><th>Selected</th><th>Contact note</th><th>Action</th></tr></thead><tbody id="giveawayWinnerList"><tr><td colspan="7">Load to view winners.</td></tr></tbody></table></div></div>
+</section>
+<section id="live-codes" class="panel">
+<div class="section">
+<h2>LIVE CODES</h2>
+<p>Create private winner codes at any time. Each code can award FNC once or up to the configured usage limit.</p>
+<div class="form-grid">
+<div class="field"><label>FNC reward</label><input id="lcReward" type="number" min="1" value="3000"></div>
+<div class="field"><label>Maximum uses</label><input id="lcMaxUses" type="number" min="1" value="1"></div>
+<div class="field"><label>Expiration (optional)</label><input id="lcExpires" type="datetime-local"></div>
+<div class="field"><label>Code</label><input id="lcCode" maxlength="64" placeholder="AUTO-GENERATE"></div>
+</div>
+<div class="actions">
+<button class="btn primary" id="createLiveCode">CREATE LIVE CODE</button>
+<button class="btn" id="generateLiveCode">GENERATE CODE</button>
+</div>
+<div id="lcStatus" class="notice" style="display:none"></div>
+</div>
+<div class="section">
+<h2>Code Inventory</h2>
+<div class="actions"><button class="btn primary" id="refreshLiveCodes">REFRESH CODES</button></div>
+<div class="table-wrap"><table><thead><tr><th>Code</th><th>FNC</th><th>Uses</th><th>Status</th><th>Expires</th><th>Action</th></tr></thead><tbody id="liveCodeList"><tr><td colspan="6">Loading…</td></tr></tbody></table></div>
+</div>
 </section>
 <section id="logs" class="panel"><div class="section"><h2>Admin Logs</h2><p>Every important admin action is recorded for traceability.</p><div class="actions"><button class="btn primary" id="refreshAdminLogs">REFRESH LOGS</button></div><div id="adminLogStatus" class="notice" style="display:none"></div><div class="table-wrap"><table><thead><tr><th>Date</th><th>Action</th><th>Target</th><th>Details</th></tr></thead><tbody id="adminLogList"><tr><td colspan="4">Loading…</td></tr></tbody></table></div></div></section>
 <section id="leaderboard" class="panel"><div class="section"><h2>Leaderboard</h2><p>Admin preview of the top 100 accounts for the selected metric. Search filters these results only; ranks stay tied to the original top-100 order. The public leaderboard remains unchanged.</p><div class="form-grid"><div class="field"><label>Search Twitch username</label><input id="leaderboardSearch" placeholder="adhemswag"></div><div class="field"><label>Ranking</label><select id="leaderboardRank"><option value="fnc">FNC Points</option><option value="xp">XP</option><option value="watch">Watch Minutes</option><option value="level">Level</option></select></div></div><div class="actions"><button class="btn primary" id="loadLeaderboard">LOAD LEADERBOARD</button><button class="btn" id="clearLeaderboard">CLEAR</button></div><div class="table-wrap"><table><thead><tr><th>#</th><th>Twitch</th><th>FNC</th><th>XP</th><th>Level</th><th>Watch Minutes</th></tr></thead><tbody id="leaderboardList"><tr><td colspan="6">Not loaded.</td></tr></tbody></table></div></div></section>
@@ -746,6 +769,7 @@ async function verifyAdmin() {
     await loadAccessCodeRewards();
     updateLoader(32,'LOADING GIVEAWAYS…');
     await loadGiveaways();
+    await loadLiveCodes();
     updateLoader(42,'LOADING ADMIN LOGS…');
     await loadAdminLogs();
     updateLoader(52,'LOADING VIEWERS…');
@@ -1314,6 +1338,55 @@ async function giveawayAction(action,id,payload={}){
   if(data?.error) throw new Error(data.error);
   return data;
 }
+function generateLiveCodeValue(){
+  const raw=crypto.randomUUID().replace(/-/g,'').slice(0,12).toUpperCase();
+  return 'ADHEM-WIN-'+raw;
+}
+function liveCodeStatus(row){
+  if(!row.active)return 'USED / OFF';
+  if(row.expires_at&&new Date(row.expires_at)<=new Date())return 'EXPIRED';
+  return 'ACTIVE';
+}
+async function loadLiveCodes(){
+  if(!adminReady)return;
+  const tbody=document.getElementById('liveCodeList'); if(!tbody)return;
+  tbody.innerHTML='<tr><td colspan="6">Loading…</td></tr>';
+  const {data,error}=await supabaseClient.from('live_codes').select('id,code,reward_fnc,max_uses,uses_count,active,expires_at,created_at').order('created_at',{ascending:false}).limit(200);
+  if(error){tbody.innerHTML='<tr><td colspan="6">Unable to load codes: '+escapeHtml(error.message)+'</td></tr>';return;}
+  tbody.innerHTML=(data||[]).map(row=>'<tr><td><code>'+escapeHtml(row.code)+'</code></td><td>'+Number(row.reward_fnc||0).toLocaleString()+'</td><td>'+Number(row.uses_count||0)+' / '+Number(row.max_uses||1)+'</td><td>'+escapeHtml(liveCodeStatus(row))+'</td><td>'+ (row.expires_at?new Date(row.expires_at).toLocaleString():'—') +'</td><td>'+(row.active?'<button class="btn danger" data-lc-disable="'+row.id+'">DISABLE</button>':'—')+'</td></tr>').join('')||'<tr><td colspan="6">No codes yet.</td></tr>';
+  tbody.querySelectorAll('[data-lc-disable]').forEach(btn=>btn.onclick=()=>disableLiveCode(btn.dataset.lcDisable));
+}
+async function disableLiveCode(id){
+  if(!adminReady||!confirm('Disable this live code?'))return;
+  const {error}=await supabaseClient.from('live_codes').update({active:false,updated_at:new Date().toISOString()}).eq('id',id);
+  if(error){alert('Disable failed: '+error.message);return;}
+  await loadLiveCodes(); await loadAdminLogs();
+}
+function generatedLiveCodeIntoForm(){
+  const el=document.getElementById('lcCode');if(el)el.value=generateLiveCodeValue();
+}
+async function createLiveCode(){
+  if(!adminReady)return;
+  const status=document.getElementById('lcStatus');
+  try{
+    const reward=Math.floor(Number(document.getElementById('lcReward').value||0));
+    const maxUses=Math.floor(Number(document.getElementById('lcMaxUses').value||1));
+    let code=(document.getElementById('lcCode').value||'').trim().toUpperCase();
+    if(!code)code=generateLiveCodeValue();
+    if(!/^[A-Z0-9-]{4,64}$/.test(code))throw new Error('Code can contain only letters, numbers and hyphens.');
+    if(!Number.isInteger(reward)||reward<1)throw new Error('Invalid FNC reward.');
+    if(!Number.isInteger(maxUses)||maxUses<1)throw new Error('Invalid maximum uses.');
+    const {data:{user}}=await supabaseClient.auth.getUser();
+    if(!user)throw new Error('Admin session expired.');
+    const expiresInput=document.getElementById('lcExpires').value;
+    const expires_at=expiresInput?new Date(expiresInput).toISOString():null;
+    const {error}=await supabaseClient.from('live_codes').insert({code,reward_fnc:reward,max_uses:maxUses,expires_at,created_by:user.id});
+    if(error)throw error;
+    status.style.display='block';status.textContent='LIVE CODE CREATED: '+code+' • '+reward.toLocaleString()+' FNC • '+maxUses+' USE(S)';
+    document.getElementById('lcCode').value='';document.getElementById('lcExpires').value='';
+    await loadLiveCodes();await loadAdminLogs();
+  }catch(e){status.style.display='block';status.textContent='Create failed: '+(e?.message||'Unknown error');}
+}
 async function startGiveaway(id){
   try{await giveawayAction('start',id);await loadGiveaways();await loadAdminLogs();}catch(e){alert('Start failed: '+(e?.message||'Unknown error'));}
 }
@@ -1403,6 +1476,10 @@ document.getElementById('clearGiveaway')?.addEventListener('click',()=>{
   selectedGiveawayImage=null;
 });
 
+
+document.getElementById('createLiveCode')?.addEventListener('click',createLiveCode);
+document.getElementById('generateLiveCode')?.addEventListener('click',generatedLiveCodeIntoForm);
+document.getElementById('refreshLiveCodes')?.addEventListener('click',loadLiveCodes);
 
 document.getElementById('connectTwitchWatch')?.addEventListener('click', async () => {
   if (!adminReady) return;
