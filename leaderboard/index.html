@@ -509,7 +509,17 @@ body.mobile-menu-open{overflow:hidden!important}
 .mobile-bottom-nav button[data-mobile-menu]{display:flex!important;align-items:center!important;justify-content:center!important;position:relative!important;z-index:2147483003!important;min-height:52px!important;pointer-events:auto!important;touch-action:manipulation!important;cursor:pointer!important}
 .mobile-nav-scrim{z-index:2147483000!important}.sidebar.mobile-open,.admin-nav.mobile-open,.mobile-fallback-drawer.mobile-open{z-index:2147483001!important}
 }</style>
-</head>
+<style id="adhemswag-mobile-menu-display-v1">
+@media (max-width:700px){
+.sidebar,.admin-nav,.mobile-fallback-drawer{width:min(360px,92vw)!important;max-width:92vw!important;padding:20px 16px 28px!important}
+.sidebar-brand,.sidebar-brand a,.sidebar-brand img,.sidebar-logo-img{display:flex!important;visibility:visible!important;opacity:1!important}
+.sidebar-brand,.sidebar-brand a{align-items:center!important;justify-content:center!important;width:100%!important;min-height:76px!important}
+.sidebar-brand img,.sidebar-logo-img{width:auto!important;max-width:210px!important;height:auto!important;max-height:72px!important;object-fit:contain!important}
+.sidebar-link,.admin-nav .nav-btn,.mobile-fallback-drawer a{display:flex!important;align-items:center!important;width:100%!important;min-height:48px!important;box-sizing:border-box!important}
+.sidebar-link span,.admin-nav .nav-btn span,.sidebar-link .label,.admin-nav .nav-btn .label,.mobile-fallback-drawer a span{display:inline-flex!important;visibility:visible!important;opacity:1!important;width:auto!important;max-width:none!important;overflow:visible!important;white-space:normal!important}
+.sidebar-link svg,.admin-nav .nav-btn svg{flex:0 0 auto!important}}
+@media (min-width:701px){#adhemswag-mobile-menu-display-v1{display:none!important}}
+</style></head>
 <body>
 
 <nav class="sidebar">
