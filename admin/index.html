@@ -512,6 +512,8 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
 <div class="field"><label>Winners</label><input id="gwWinners" type="number" min="1" value="1"></div>
 <div class="field"><label>Minimum level</label><input id="gwMinLevel" type="number" min="1" value="1"></div>
 <div class="field"><label>Minimum FNC</label><input id="gwMinFnc" type="number" min="0" value="0"></div>
+<div class="field"><label>Twitch Subscriber Goal</label><input id="gwGoalSubs" type="number" min="0" value="100"></div>
+<div class="field"><label>Subscriber Required</label><select id="gwSubscriber"><option value="true" selected>YES</option><option value="false">NO</option></select></div>
 <div class="field"><label>Entries per viewer</label><input id="gwEntries" type="number" min="1" value="1"></div>
 <div class="field"><label>Start time</label><input id="gwStart" type="datetime-local"></div>
 <div class="field"><label>End time</label><input id="gwEnd" type="datetime-local"></div>
@@ -1396,12 +1398,17 @@ async function cancelGiveaway(id){
 }
 async function drawGiveaway(id){
   if(!adminReady)return;
-  if(!confirm('Draw winners now? The draw is locked server-side and cannot be repeated.'))return;
+  if(!confirm('Finalize giveaway now? Twitch will verify the current subscriber goal before any winner is drawn. If the goal is not reached, the giveaway will be cancelled.'))return;
   try{
-    const result=await giveawayAction('draw',id);
-    alert('Winner draw completed: '+(result?.winner_count||0)+' winner(s).');
+    const {data:result,error}=await supabaseClient.functions.invoke('finalize-giveaway',{body:{giveaway_id:id}});
+    if(error)throw error;
+    if(result?.action==='cancelled'){
+      alert('Giveaway cancelled: Twitch subscriber goal not reached ('+(result?.subscriber_count||0)+'/'+(result?.goal_subscribers||0)+').');
+    }else{
+      alert('Winner draw completed: '+(result?.winner_count||0)+' winner(s). Twitch subscribers: '+(result?.subscriber_count||0)+'/'+(result?.goal_subscribers||0)+'.');
+    }
     await loadGiveaways();await loadGiveawayWinners();await loadAdminLogs();
-  }catch(e){alert('Draw failed: '+(e?.message||'Unknown error'));}
+  }catch(e){alert('Finalization failed: '+(e?.message||'Unknown error'));}
 }
 async function loadGiveawayWinners(){
   const tbody=document.getElementById('giveawayWinnerList'),status=document.getElementById('winnerStatus');if(!tbody||!adminReady)return;
@@ -1449,8 +1456,9 @@ document.getElementById('createGiveaway')?.addEventListener('click',async()=>{
       starts_at:document.getElementById('gwStart').value?new Date(document.getElementById('gwStart').value).toISOString():null,
       ends_at:document.getElementById('gwEnd').value?new Date(document.getElementById('gwEnd').value).toISOString():null,
       require_profile_complete:document.getElementById('gwProfile').value==='true',
-      require_subscriber:false,
-      require_follower:false
+      require_subscriber:document.getElementById('gwSubscriber').value==='true',
+      require_follower:false,
+      goal_subscribers:Math.max(0,Math.min(1000000000,Number(document.getElementById('gwGoalSubs').value||0)))
     };
     const result=await giveawayAction('create',null,payload);
     status.style.display='block';status.textContent='Giveaway created as DRAFT. Admin identity was set server-side.';
