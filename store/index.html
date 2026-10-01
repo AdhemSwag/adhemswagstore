@@ -605,5 +605,73 @@ body.mobile-menu-open{overflow:hidden!important}
  document.addEventListener('keydown',e=>{if(e.key==='Escape')close();});
  window.addEventListener('resize',()=>{if(window.innerWidth>700)close();});
 })();</script>
+<style id="adhemswag-mobile-sidebar-v4">
+@media (max-width:700px){
+  .sidebar,
+  .admin-nav,
+  .mobile-fallback-drawer{
+    width:80vw!important;
+    max-width:320px!important;
+    padding:20px 16px 30px!important;
+    box-sizing:border-box!important;
+  }
+
+  .sidebar-brand,
+  .sidebar-brand a{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    width:100%!important;
+    min-height:92px!important;
+    margin-bottom:14px!important;
+  }
+
+  .sidebar-brand img,
+  .sidebar-logo-img{
+    display:block!important;
+    visibility:visible!important;
+    opacity:1!important;
+    width:auto!important;
+    max-width:180px!important;
+    max-height:78px!important;
+    object-fit:contain!important;
+  }
+
+  .sidebar-link,
+  .admin-nav .nav-btn,
+  .mobile-fallback-drawer a{
+    display:flex!important;
+    align-items:center!important;
+    gap:16px!important;
+    width:100%!important;
+    min-height:56px!important;
+    padding:10px 8px!important;
+    box-sizing:border-box!important;
+  }
+
+  .sidebar-link span,
+  .admin-nav .nav-btn span,
+  .sidebar-link .label,
+  .admin-nav .nav-btn .label,
+  .mobile-fallback-drawer a span{
+    display:block!important;
+    visibility:visible!important;
+    opacity:1!important;
+    flex:1 1 auto!important;
+    width:auto!important;
+    max-width:none!important;
+    overflow:visible!important;
+    white-space:normal!important;
+  }
+
+  .sidebar-link svg,
+  .admin-nav .nav-btn svg{
+    display:block!important;
+    flex:0 0 28px!important;
+    width:28px!important;
+    height:28px!important;
+  }
+}
+</style>
 </body>
 </html>
