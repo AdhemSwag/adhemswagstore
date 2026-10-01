@@ -522,7 +522,58 @@ footer .footer-copy .row{margin:0;}
   }
 }
 </style>
-</head>
+<style id="adhemswag-mobile-menu-display-v1">
+/* MOBILE MENU DISPLAY ONLY — desktop untouched */
+@media (max-width:700px){
+  .sidebar,.admin-nav,.mobile-fallback-drawer{
+    width:min(360px,92vw)!important;
+    max-width:92vw!important;
+    padding:20px 16px 28px!important;
+  }
+  .sidebar-brand,.sidebar-brand a,.sidebar-brand img,.sidebar-logo-img{
+    display:flex!important;
+    visibility:visible!important;
+    opacity:1!important;
+  }
+  .sidebar-brand,.sidebar-brand a{
+    align-items:center!important;
+    justify-content:center!important;
+    width:100%!important;
+    min-height:76px!important;
+  }
+  .sidebar-brand img,.sidebar-logo-img{
+    width:auto!important;
+    max-width:210px!important;
+    height:auto!important;
+    max-height:72px!important;
+    object-fit:contain!important;
+  }
+  .sidebar-link,.admin-nav .nav-btn,.mobile-fallback-drawer a{
+    display:flex!important;
+    align-items:center!important;
+    width:100%!important;
+    min-height:48px!important;
+    box-sizing:border-box!important;
+  }
+  .sidebar-link span,.admin-nav .nav-btn span,
+  .sidebar-link .label,.admin-nav .nav-btn .label,
+  .mobile-fallback-drawer a span{
+    display:inline-flex!important;
+    visibility:visible!important;
+    opacity:1!important;
+    width:auto!important;
+    max-width:none!important;
+    overflow:visible!important;
+    white-space:normal!important;
+  }
+  .sidebar-link svg,.admin-nav .nav-btn svg{
+    flex:0 0 auto!important;
+  }
+}
+@media (min-width:701px){
+  #adhemswag-mobile-menu-display-v1{display:none!important}
+}
+</style></head>
 <body>
 
 <nav class="sidebar">
