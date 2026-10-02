@@ -569,6 +569,17 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
           <button class="btn" id="systemRewards">REWARDS: OFF</button>
         </div>
       </div>
+      <div class="section" id="systemHealthSection">
+        <h2>System <span style="color:var(--cyan)">HEALTH</span></h2>
+        <p>Live diagnostic of the main AdhemSwag services. This checks connectivity and configuration only; it does not change FNC, XP or rewards.</p>
+        <div class="actions">
+          <button class="btn primary" id="refreshSystemHealth" type="button">RUN HEALTH CHECK</button>
+          <span id="systemHealthUpdated" style="font:10px 'JetBrains Mono',monospace;color:var(--muted);align-self:center"></span>
+        </div>
+        <div id="systemHealthGrid" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:18px">
+          <div class="notice">Press <strong style="color:var(--cyan)">RUN HEALTH CHECK</strong> to diagnose the system.</div>
+        </div>
+      </div>
       <div class="section">
         <h2>Twitch <span style="color:var(--cyan)">WATCH TRACKING</span></h2>
         <p>Connect your Twitch account once. The backend then checks Twitch chatters while you are live and matches connected viewer accounts. This is chat presence, not a reliable video-player viewer list.</p>
@@ -1179,6 +1190,40 @@ async function loadLeaderboard(){
    return '<tr><td>'+x.rank+'</td><td>'+escapeHtml(x.twitch_username||'—')+'</td><td>'+Number(x.fnc_points||0).toLocaleString()+'</td><td>'+Number(x.xp||0).toLocaleString()+'</td><td>'+Number(x.level||1)+'</td><td>'+bar+'</td><td>'+Number(x.total_watch_minutes||0).toLocaleString()+'</td></tr>';
  }).join('')||'<tr><td colspan="7">No users.</td></tr>';
 }
+async function runSystemHealth(){
+ if(!adminReady)return;
+ const grid=document.getElementById('systemHealthGrid'),updated=document.getElementById('systemHealthUpdated');
+ grid.innerHTML='<div class="notice">CHECKING SYSTEM…</div>';
+ const checks=[];
+ const add=(name,status,detail)=>checks.push({name,status,detail});
+ try{
+   const {error}=await supabaseClient.from('users').select('id',{count:'exact',head:true});
+   add('SUPABASE DATABASE',!error?'OK':'ERROR',error?error.message:'Database query successful');
+ }catch(e){add('SUPABASE DATABASE','ERROR',e.message||'Database check failed');}
+ try{
+   const {data,error}=await supabaseClient.from('system_config').select('xp_enabled,points_enabled').limit(1).maybeSingle();
+   add('XP / FNC CONFIG',!error?'OK':'ERROR',error?error.message:('XP '+(data?.xp_enabled?'ON':'OFF')+' • FNC '+(data?.points_enabled?'ON':'OFF')));
+ }catch(e){add('XP / FNC CONFIG','ERROR',e.message||'Config check failed');}
+ try{
+   const r=await fetch('https://lpmocfdfpebcaseffugg.supabase.co/functions/v1/twitch-live-status',{method:'GET',cache:'no-store'});
+   const t=await r.text(); add('TWITCH LIVE STATUS',r.ok?'OK':'WARNING',r.ok?(t.slice(0,180)||'Endpoint reachable'):'HTTP '+r.status);
+ }catch(e){add('TWITCH LIVE STATUS','ERROR',e.message||'Endpoint unreachable');}
+ try{
+   const r=await fetch('https://lpmocfdfpebcaseffugg.supabase.co/functions/v1/stream-reward-alert',{method:'GET',cache:'no-store'});
+   add('OBS REWARD ALERT',r.ok?'OK':'WARNING',r.ok?'Alert endpoint reachable':'HTTP '+r.status);
+ }catch(e){add('OBS REWARD ALERT','ERROR',e.message||'Alert endpoint unreachable');}
+ try{
+   const {data,error}=await supabaseClient.from('redemptions').select('id,twitch_chat_alert_sent_at').order('created_at',{ascending:false}).limit(1);
+   add('TWITCH CHAT ALERT',!error?'OK':'WARNING',error?'Database check failed':(data?.length?'Chat alert tracking column available':'No redemptions yet'));
+ }catch(e){add('TWITCH CHAT ALERT','ERROR',e.message||'Chat alert check failed');}
+ try{
+   const {data,error}=await supabaseClient.from('fnc_settings').select('enabled,amount,interval_minutes,xp_per_minute').limit(1).maybeSingle();
+   add('FNC REWARD ENGINE',!error?'OK':'ERROR',error?error.message:(data?.enabled?'Enabled • +'+data.amount+' FNC / '+data.interval_minutes+' min':'Disabled'));
+ }catch(e){add('FNC REWARD ENGINE','ERROR',e.message||'FNC settings check failed');}
+ const icon=s=>s==='OK'?'🟢':s==='WARNING'?'🟡':'🔴';
+ grid.innerHTML=checks.map(x=>'<div style="border:1px solid var(--line);background:#070b0e;padding:14px"><div style="display:flex;justify-content:space-between;gap:12px"><strong style="font:700 11px JetBrains Mono,monospace">'+icon(x.status)+' '+escapeHtml(x.name)+'</strong><span style="font:700 10px JetBrains Mono,monospace;color:'+(x.status==='OK'?'var(--ok)':x.status==='WARNING'?'#ffd166':'var(--danger)')+'">'+x.status+'</span></div><div style="margin-top:7px;color:var(--muted);font-size:11px;line-height:1.5">'+escapeHtml(x.detail||'')+'</div></div>').join('');
+ updated.textContent='LAST CHECK: '+new Date().toLocaleString();
+}
 document.getElementById('uploadMedia')?.addEventListener('click',async()=>{
  if(!adminReady)return;
  const file=document.getElementById('mediaUploadFile')?.files?.[0];
@@ -1627,6 +1672,7 @@ document.getElementById('clearTransactions')?.addEventListener('click',()=>{docu
 document.getElementById('transactionSearch')?.addEventListener('keydown',e=>{if(e.key==='Enter')loadTransactions();});
 document.getElementById('loadGiveawayWinners')?.addEventListener('click',loadGiveawayWinners);
 document.getElementById('loadLeaderboard')?.addEventListener('click',loadLeaderboard);
+document.getElementById('refreshSystemHealth')?.addEventListener('click',runSystemHealth);
 document.getElementById('refreshAdminLogs')?.addEventListener('click',loadAdminLogs);
 document.getElementById('clearLeaderboard')?.addEventListener('click',()=>{document.getElementById('leaderboardSearch').value='';loadLeaderboard();});
 document.getElementById('leaderboardSearch')?.addEventListener('keydown',e=>{if(e.key==='Enter')loadLeaderboard();});
