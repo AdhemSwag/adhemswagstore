@@ -1288,7 +1288,9 @@ document.getElementById('saveReward')?.addEventListener('click', async () => {
   const name=document.querySelector('#rewards input[placeholder="Sport Gloves | Red Racer"]')?.value.trim();
   const fnc=Number(document.querySelector('#rewards input[placeholder="20000"]')?.value||0);
   const level=Number(document.querySelector('#rewards input[placeholder="15"]')?.value||1);
-  const stockRaw=document.querySelector('#rewards input[placeholder="3"]')?.value;
+  const rewardType=document.getElementById('rewardType')?.value||'item';
+  const usesAccessCodes=rewardType==='access_code';
+  const stockRaw=document.getElementById('rewardStock')?.value;
   const description=document.querySelector('#rewards textarea')?.value.trim()||null;
   const status=document.getElementById('rewardSaveStatus');
   if(!name){status.style.display='block';status.textContent='Reward name is required.';return;}
