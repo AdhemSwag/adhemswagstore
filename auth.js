@@ -547,7 +547,7 @@
         options: {
           redirectTo: getWatchOAuthRedirect(),
           skipBrowserRedirect: true,
-          scopes: 'moderator:read:chatters channel:read:subscriptions',
+          scopes: 'moderator:read:chatters channel:read:subscriptions user:write:chat',
           queryParams: { force_verify: 'true' }
         }
       });
