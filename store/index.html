@@ -416,6 +416,7 @@ body.mobile-menu-open{overflow:hidden!important}
     <p id="tradeModalText">Enter your Steam Trade Link for this reward. It is saved with the redemption for delivery.</p>
     <label for="tradeUrl">Steam Trade Link</label>
     <input id="tradeUrl" type="url" maxlength="500" placeholder="https://steamcommunity.com/tradeoffer/new/?partner=...">
+    <div class="store-message error" id="tradeError" style="display:none;margin-top:16px;white-space:pre-wrap;overflow-wrap:anywhere"></div>
     <div class="store-modal-actions">
       <button class="cancel" type="button" id="tradeCancel">CANCEL</button>
       <button type="button" id="tradeConfirm">REDEEM REWARD</button>
@@ -436,11 +437,12 @@ body.mobile-menu-open{overflow:hidden!important}
   const statusText = document.getElementById('storeStatusText');
   const statusDot = document.getElementById('storeStatusDot');
   const viewerStatus = document.getElementById('storeViewerStatus');
+  const tradeError = document.getElementById('tradeError');
   const modal = document.getElementById('tradeModal');
   const tradeUrl = document.getElementById('tradeUrl');
   const tradeCancel = document.getElementById('tradeCancel');
   const tradeConfirm = document.getElementById('tradeConfirm');
-  let viewer = null, selectedReward = null;
+  let viewer = null, selectedReward = null, monthlyCodeRewardIds = new Set();
 
   const esc = (v) => String(v ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
   const say = (text, type='') => { message.textContent=text; message.className='store-message '+type; message.style.display='block'; };
@@ -474,31 +476,35 @@ body.mobile-menu-open{overflow:hidden!important}
     statusDot.style.background = active ? '#36d58a' : '#ff3b3b';
     statusDot.style.boxShadow = active ? '0 0 10px rgba(54,213,138,.7)' : '0 0 10px rgba(255,59,59,.7)';
     balance.textContent = viewer ? money(viewer.fnc_points)+' FNC' : 'SIGN IN';
-    let activeViewer = false;
+    monthlyCodeRewardIds = new Set();
     if (viewer) {
-      const { data: session } = await client.from('watch_sessions').select('active_minutes,last_seen_at,last_activity_at,ended_at').eq('user_id',viewer.id).eq('platform','twitch').is('ended_at',null).gte('last_seen_at',new Date(Date.now()-120000).toISOString()).gte('last_activity_at',new Date(Date.now()-300000).toISOString()).order('last_seen_at',{ascending:false}).limit(1).maybeSingle();
-      activeViewer = !!session && Number(session.active_minutes||0) >= 10;
+      const now = new Date();
+      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0,10);
+      const { data: monthlyRows } = await client.from('reward_monthly_code_purchases').select('reward_id').eq('user_id',viewer.id).eq('month_start',monthStart);
+      (monthlyRows || []).forEach(row => monthlyCodeRewardIds.add(row.reward_id));
     }
-    viewerStatus.textContent = !viewer ? 'SIGN IN' : activeViewer ? '🟢 ACTIVE' : '🔒 WATCH 10 MIN';
-    await loadRewards(active, activeViewer);
+    viewerStatus.textContent = !viewer ? 'SIGN IN' : (viewer.profile_complete ? '🟢 STORE READY' : '⚠ PROFILE INCOMPLETE');
+    await loadRewards(active);
   }
 
-  async function loadRewards(active, activeViewer) {
-    const {data, error} = await client.from('rewards').select('id,name,description,fnc_cost,level_required,stock,active,image_url,display_order').eq('active',true).order('display_order',{ascending:true}).order('created_at',{ascending:false});
+  async function loadRewards(active) {
+    const {data, error} = await client.from('rewards').select('id,name,description,fnc_cost,level_required,stock,active,image_url,display_order,uses_access_codes').eq('active',true).order('display_order',{ascending:true}).order('created_at',{ascending:false});
     if (error) { grid.innerHTML='<div class="empty-rewards">UNABLE TO LOAD REWARDS.</div>'; return; }
     if (!data?.length) { grid.innerHTML='<div class="empty-rewards">NO ACTIVE REWARDS YET — CHECK BACK SOON.</div>'; return; }
     grid.innerHTML = data.map(r => {
       const stock = r.stock == null ? 'UNLIMITED' : (Number(r.stock) > 0 ? Number(r.stock)+' LEFT' : 'SOLD OUT');
       const fncCost = Number(r.fnc_cost||0);
       const levelRequired = Number(r.level_required||1);
-      const stockAvailable = r.stock == null || Number(r.stock) > 0;
+      const stockAvailable = r.uses_access_codes ? true : (r.stock == null || Number(r.stock) > 0);
+      const monthlyLimited = !!r.uses_access_codes;
+      const monthlyUsed = monthlyLimited && monthlyCodeRewardIds.has(r.id);
       const signedIn = !!viewer;
       const profileComplete = !!viewer?.profile_complete;
       const blocked = !!viewer?.is_blocked;
       const enoughFnc = Number(viewer?.fnc_points||0) >= fncCost;
       const currentLevel = Number(viewer?.level||1);
       const enoughLevel = currentLevel >= levelRequired;
-      const can = signedIn && active && !blocked && profileComplete && enoughFnc && enoughLevel && stockAvailable;
+      const can = signedIn && active && !blocked && profileComplete && enoughFnc && enoughLevel && stockAvailable && !monthlyUsed;
       let status = '';
       if (!signedIn) {
         status = 'SIGN IN WITH TWITCH TO REDEEM';
@@ -508,6 +514,8 @@ body.mobile-menu-open{overflow:hidden!important}
         status = 'ACCOUNT BLOCKED';
       } else if (!profileComplete) {
         status = 'PROFILE INCOMPLETE — COMPLETE YOUR PROFILE';
+      } else if (monthlyUsed) {
+        status = 'MONTHLY LIMIT REACHED — AVAILABLE NEXT MONTH';
       } else if (!stockAvailable) {
         status = 'SOLD OUT';
       } else if (!enoughFnc) {
@@ -520,7 +528,7 @@ body.mobile-menu-open{overflow:hidden!important}
         status = 'READY TO REDEEM';
       }
       const image = r.image_url ? '<img class="reward-image" src="'+esc(r.image_url)+'" alt="'+esc(r.name)+'">' : '<div class="reward-image empty">ADHEMSWAG REWARD</div>';
-      return '<article class="reward-card">'+image+'<div class="reward-body"><h3>'+esc(r.name)+'</h3><div class="reward-desc">'+esc(r.description||'AdhemSwag reward.')+'</div><div class="reward-meta"><span class="reward-chip"><strong>'+money(fncCost)+' FNC</strong></span><span class="reward-chip">LEVEL <strong>'+levelRequired+'</strong></span><span class="reward-chip">'+esc(stock)+'</span></div><div class="reward-status '+(can?'ready':'')+'">'+esc(status)+'</div><button class="reward-redeem" data-id="'+r.id+'" data-signin="'+(!signedIn?'1':'0')+'" '+((!signedIn||can)?'':'disabled')+'>'+(!signedIn?'SIGN IN TO REDEEM':'REDEEM')+'</button></div></article>';
+      return '<article class="reward-card">'+image+'<div class="reward-body"><h3>'+esc(r.name)+'</h3><div class="reward-desc">'+esc(r.description||'AdhemSwag reward.')+'</div><div class="reward-meta"><span class="reward-chip"><strong>'+money(fncCost)+' FNC</strong></span><span class="reward-chip">LEVEL <strong>'+levelRequired+'</strong></span><span class="reward-chip">'+esc(stock)+'</span></div><div class="reward-status '+(can?'ready':'')+'">'+esc(status)+'</div><button class="reward-redeem" data-id="'+r.id+'" data-signin="'+(!signedIn?'1':'0')+'" '+((!signedIn||can)?'':'disabled')+'>'+(!signedIn?'SIGN IN TO REDEEM':(monthlyUsed?'MONTHLY LIMIT':'REDEEM'))+'</button></div></article>';
     }).join('');    grid.querySelectorAll('.reward-redeem:not(:disabled)').forEach(btn => btn.addEventListener('click',async()=>{
       if(btn.dataset.signin==='1'){
         const {error}=await client.auth.signInWithOAuth({provider:'twitch',options:{redirectTo:window.location.href}});
@@ -534,22 +542,34 @@ body.mobile-menu-open{overflow:hidden!important}
   function openRedeem(reward) {
     if (!reward) return;
     selectedReward = reward;
+    if (tradeError) { tradeError.textContent=''; tradeError.style.display='none'; }
     const needsTrade = /skin/i.test(reward.name||'');
     if (!needsTrade) return redeem(null);
     tradeUrl.value = viewer?.steam_trade_url || '';
     modal.classList.add('open'); modal.setAttribute('aria-hidden','false'); tradeUrl.focus();
   }
-  function closeModal(){modal.classList.remove('open');modal.setAttribute('aria-hidden','true');selectedReward=null}
+  function closeModal(){modal.classList.remove('open');modal.setAttribute('aria-hidden','true');selectedReward=null;if(tradeError){tradeError.textContent='';tradeError.style.display='none'}}
   tradeCancel.addEventListener('click',closeModal);
   modal.addEventListener('click',e=>{if(e.target===modal)closeModal()});
   tradeConfirm.addEventListener('click',()=>redeem(tradeUrl.value.trim()));
   async function redeem(url) {
     const reward = selectedReward;
     if (!reward) return;
-    closeModal(); hideSay();
+    hideSay();
+    if (tradeError) { tradeError.textContent=''; tradeError.style.display='none'; }
+    tradeConfirm.disabled = true;
     const {data,error} = await client.functions.invoke('redeem-reward',{body:{reward_id:reward.id,steam_trade_url:url||null}});
-    if (error) { say(error.context?.message || error.message || 'Redemption failed.','error'); return; }
+    tradeConfirm.disabled = false;
+    if (error) {
+      let details = null;
+      try { details = error.context ? await error.context.json() : null; } catch (_) {}
+      const msg = details?.message || details?.error || error.message || 'Redemption failed.';
+      if (tradeError && modal.classList.contains('open')) { tradeError.textContent=msg; tradeError.style.display='block'; }
+      else say(msg,'error');
+      return;
+    }
     if (!data?.ok) { say(data?.message || 'Redemption failed.','error'); return; }
+    closeModal();
     if (data.access_code) {
       say('ACCESS CODE DELIVERED — check MY PROFILE to copy your code.','ok');
     } else {
