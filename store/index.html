@@ -423,6 +423,15 @@ body.mobile-menu-open{overflow:hidden!important}
     </div>
   </div>
 </div>
+<div class="store-modal" id="redeemResultModal" aria-hidden="true">
+  <div class="store-modal-card">
+    <h2 id="redeemResultTitle">REDEEM</h2>
+    <p id="redeemResultText"></p>
+    <div class="store-modal-actions">
+      <button class="cancel" type="button" id="redeemResultClose">CLOSE</button>
+    </div>
+  </div>
+</div>
 <footer>© 2026 AdhemSwag.com — All Rights Reserved · <a href="mailto:adhemswag@yahoo.com">adhemswag@yahoo.com</a></footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -442,6 +451,10 @@ body.mobile-menu-open{overflow:hidden!important}
   const tradeUrl = document.getElementById('tradeUrl');
   const tradeCancel = document.getElementById('tradeCancel');
   const tradeConfirm = document.getElementById('tradeConfirm');
+  const resultModal = document.getElementById('redeemResultModal');
+  const resultTitle = document.getElementById('redeemResultTitle');
+  const resultText = document.getElementById('redeemResultText');
+  const resultClose = document.getElementById('redeemResultClose');
   let viewer = null, selectedReward = null, monthlyCodeRewardIds = new Set();
 
   const esc = (v) => String(v ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
@@ -549,8 +562,18 @@ body.mobile-menu-open{overflow:hidden!important}
     modal.classList.add('open'); modal.setAttribute('aria-hidden','false'); tradeUrl.focus();
   }
   function closeModal(){modal.classList.remove('open');modal.setAttribute('aria-hidden','true');selectedReward=null;if(tradeError){tradeError.textContent='';tradeError.style.display='none'}}
+  function closeResult(){resultModal.classList.remove('open');resultModal.setAttribute('aria-hidden','true')}
+  function showResult(title,text,type='error'){
+    resultTitle.textContent=title;
+    resultText.textContent=text;
+    resultTitle.style.color=type==='ok'?'#63d99a':'#ff8585';
+    resultModal.classList.add('open');
+    resultModal.setAttribute('aria-hidden','false');
+  }
   tradeCancel.addEventListener('click',closeModal);
   modal.addEventListener('click',e=>{if(e.target===modal)closeModal()});
+  resultClose.addEventListener('click',closeResult);
+  resultModal.addEventListener('click',e=>{if(e.target===resultModal)closeResult()});
   tradeConfirm.addEventListener('click',()=>redeem(tradeUrl.value.trim()));
   async function redeem(url) {
     const reward = selectedReward;
@@ -558,22 +581,28 @@ body.mobile-menu-open{overflow:hidden!important}
     hideSay();
     if (tradeError) { tradeError.textContent=''; tradeError.style.display='none'; }
     tradeConfirm.disabled = true;
-    const {data,error} = await client.functions.invoke('redeem-reward',{body:{reward_id:reward.id,steam_trade_url:url||null}});
+    const {data,error} = await client.functions.invoke('redeem-reward-v2',{body:{reward_id:reward.id,steam_trade_url:url||null}});
     tradeConfirm.disabled = false;
     if (error) {
       let details = null;
       try { details = error.context ? await error.context.json() : null; } catch (_) {}
       const msg = details?.message || details?.error || error.message || 'Redemption failed.';
-      if (tradeError && modal.classList.contains('open')) { tradeError.textContent=msg; tradeError.style.display='block'; }
-      else say(msg,'error');
+      if (modal.classList.contains('open')) closeModal();
+      showResult('REDEEM FAILED',msg,'error');
       return;
     }
-    if (!data?.ok) { say(data?.message || 'Redemption failed.','error'); return; }
+    if (!data?.ok) {
+      if (modal.classList.contains('open')) closeModal();
+      showResult('REDEEM FAILED',data?.message || 'Redemption failed.','error');
+      return;
+    }
     closeModal();
     if (data.access_code) {
-      say('ACCESS CODE DELIVERED — check MY PROFILE to copy your code.','ok');
+      showResult('ACCESS CODE DELIVERED','Your access code was delivered successfully. Open MY PROFILE → MY ACCESS CODES to copy it.','ok');
     } else {
-      say(data.status==='sent' ? 'Reward delivered successfully. Check MY PROFILE.' : 'Redemption submitted. FNC has been reserved and your request is pending admin delivery.','ok');
+      showResult(data.status==='sent' ? 'REWARD DELIVERED' : 'REDEMPTION SUBMITTED',
+        data.status==='sent' ? 'Your reward was delivered successfully.' : 'Your redemption was accepted. FNC has been reserved and the reward is pending admin delivery.',
+        'ok');
     }
     await init();
   }
