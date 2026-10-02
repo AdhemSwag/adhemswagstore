@@ -374,7 +374,7 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
     <button class="nav-btn" data-panel="viewers">Viewers</button>
     <button class="nav-btn" data-panel="transactions">Transactions</button>
     <button class="nav-btn" data-panel="system">System</button>
-    <button class="nav-btn" data-panel="fnc-settings">FNC Points</button><button class="nav-btn" data-panel="leaderboard">Leaderboard</button><button class="nav-btn" data-panel="media">Media</button><button class="nav-btn" data-panel="admin-access">Admin Access</button>
+    <button class="nav-btn" data-panel="fnc-settings">FNC Points</button><button class="nav-btn" data-panel="leaderboard">Leaderboard</button><button class="nav-btn" data-panel="media">Media</button><button class="nav-btn" data-panel="admin-access">Admin Access</button><button class="nav-btn" data-panel="socials">Socials</button>
   </aside>
 
   <main class="main">
@@ -399,6 +399,42 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
         <h2>Admin workflow</h2>
         <p>Control your FNC store, giveaways, viewers, redemptions, transactions, leaderboard, media and system settings from one secure admin panel.</p>
         <div class="notice">Current database structure already contains rewards, redemptions, users and transactions. FNC/XP remain disabled until the complete system is tested.</div>
+      </div>
+      <div class="section">
+        <h2>Member <span style="color:var(--cyan)">ANALYTICS</span></h2>
+        <p>Live community overview from members and redemption data. Read-only.</p>
+        <div class="cards" style="margin-top:18px">
+          <div class="card"><small>Total Members</small><div class="metric" id="analyticsMembers">—</div></div>
+          <div class="card"><small>New · 7 Days</small><div class="metric" id="analyticsNew7">—</div></div>
+          <div class="card"><small>New · 30 Days</small><div class="metric" id="analyticsNew30">—</div></div>
+          <div class="card"><small>Complete Profiles</small><div class="metric" id="analyticsComplete">—</div></div>
+          <div class="card"><small>Twitch Connected</small><div class="metric" id="analyticsTwitch">—</div></div>
+          <div class="card"><small>Kick Connected</small><div class="metric" id="analyticsKick">—</div></div>
+          <div class="card"><small>Total Watch Time</small><div class="metric" id="analyticsWatch">—</div></div>
+          <div class="card"><small>Total XP</small><div class="metric" id="analyticsXp">—</div></div>
+          <div class="card"><small>FNC Balance</small><div class="metric" id="analyticsFnc">—</div></div>
+          <div class="card"><small>Total FNC Earned</small><div class="metric" id="analyticsEarned">—</div></div>
+          <div class="card"><small>Total Redemptions</small><div class="metric" id="analyticsRedeems">—</div></div>
+          <div class="card"><small>Pending Redemptions</small><div class="metric" id="analyticsPending">—</div></div>
+        </div>
+        <div class="notice" id="analyticsUpdated" style="display:none"></div>
+      </div>
+    </section>
+
+    <section id="socials" class="panel">
+      <div class="section">
+        <h2>Social <span style="color:var(--cyan)">NETWORK</span></h2>
+        <p>Official AdhemSwag community links.</p>
+        <div class="cards" style="margin-top:18px">
+          <a class="card" href="https://twitch.tv/adhemswag" target="_blank" rel="noopener" style="text-decoration:none;color:inherit"><small>TWITCH</small><div class="metric">@adhemswag</div></a>
+          <a class="card" href="https://kick.com/adhemswag918" target="_blank" rel="noopener" style="text-decoration:none;color:inherit"><small>KICK</small><div class="metric">@adhemswag918</div></a>
+          <a class="card" href="https://www.tiktok.com/@adhemswagg" target="_blank" rel="noopener" style="text-decoration:none;color:inherit"><small>TIKTOK</small><div class="metric">@adhemswagg</div></a>
+          <a class="card" href="https://www.instagram.com/adhemswag" target="_blank" rel="noopener" style="text-decoration:none;color:inherit"><small>INSTAGRAM</small><div class="metric">@adhemswag</div></a>
+          <a class="card" href="https://x.com/adhemdwag" target="_blank" rel="noopener" style="text-decoration:none;color:inherit"><small>X</small><div class="metric">@adhemdwag</div></a>
+          <a class="card" href="https://t.me/adhemswag" target="_blank" rel="noopener" style="text-decoration:none;color:inherit"><small>TELEGRAM</small><div class="metric">/adhemswag</div></a>
+          <a class="card" href="https://dcd.gg/adhemswag" target="_blank" rel="noopener" style="text-decoration:none;color:inherit"><small>DISCORD</small><div class="metric">ADHEMSWAG</div></a>
+          <a class="card" href="https://youtube.com/adhemswag" target="_blank" rel="noopener" style="text-decoration:none;color:inherit"><small>YOUTUBE</small><div class="metric">@adhemswag</div></a>
+        </div>
       </div>
     </section>
 
@@ -1079,13 +1115,32 @@ async function loadAccessCodes(){
 
 async function refreshDashboard(){
  if(!adminReady)return;
- const u=await supabaseClient.from('users').select('id,fnc_points');
+ const u=await supabaseClient.from('users').select('id,fnc_points,xp,total_watch_minutes,total_fnc_earned,profile_complete,twitch_user_id,kick_connected,created_at');
  const r=await supabaseClient.from('rewards').select('id',{count:'exact',head:true}).eq('active',true);
  const d=await supabaseClient.from('redemptions').select('id',{count:'exact',head:true}).eq('status','pending');
- document.getElementById('metricUsers').textContent=(u.data||[]).length.toLocaleString();
+ const rows=u.data||[];
+ const totalFnc=rows.reduce((s,x)=>s+Number(x.fnc_points||0),0);
+ document.getElementById('metricUsers').textContent=rows.length.toLocaleString();
  document.getElementById('metricRewards').textContent=(r.count||0).toLocaleString();
  document.getElementById('metricRedemptions').textContent=(d.count||0).toLocaleString();
- document.getElementById('metricFnc').textContent=(u.data||[]).reduce((s,x)=>s+Number(x.fnc_points||0),0).toLocaleString();
+ document.getElementById('metricFnc').textContent=totalFnc.toLocaleString();
+ const now=Date.now(),day7=now-7*86400000,day30=now-30*86400000;
+ const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+ set('analyticsMembers',rows.length.toLocaleString());
+ set('analyticsNew7',rows.filter(x=>new Date(x.created_at).getTime()>=day7).length.toLocaleString());
+ set('analyticsNew30',rows.filter(x=>new Date(x.created_at).getTime()>=day30).length.toLocaleString());
+ set('analyticsComplete',rows.filter(x=>x.profile_complete).length.toLocaleString());
+ set('analyticsTwitch',rows.filter(x=>!!x.twitch_user_id).length.toLocaleString());
+ set('analyticsKick',rows.filter(x=>x.kick_connected).length.toLocaleString());
+ set('analyticsWatch',rows.reduce((s,x)=>s+Number(x.total_watch_minutes||0),0).toLocaleString()+' min');
+ set('analyticsXp',rows.reduce((s,x)=>s+Number(x.xp||0),0).toLocaleString());
+ set('analyticsFnc',totalFnc.toLocaleString());
+ set('analyticsEarned',rows.reduce((s,x)=>s+Number(x.total_fnc_earned||0),0).toLocaleString());
+ const red=await supabaseClient.from('redemptions').select('id,status');
+ const redRows=red.data||[];
+ set('analyticsRedeems',redRows.length.toLocaleString());
+ set('analyticsPending',redRows.filter(x=>x.status==='pending').length.toLocaleString());
+ const au=document.getElementById('analyticsUpdated');if(au){au.style.display='block';au.textContent='Updated '+new Date().toLocaleTimeString();}
 }
 let lastPendingRedemptionIds = new Set();
 let redemptionNoticePrimed = false;
