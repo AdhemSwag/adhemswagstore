@@ -20,7 +20,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:transparent
 <script>
 const endpoint='https://lpmocfdfpebcaseffugg.supabase.co/functions/v1/stream-reward-alert';
 const box=document.getElementById('alert'),reward=document.getElementById('reward'),cost=document.getElementById('cost');
-let since=new Date().toISOString(),seen=new Set(),busy=false;
+let since=new Date(Date.now()-30000).toISOString(),seen=new Set(),busy=false;
 function show(a){
   reward.textContent=a.reward||'FNC Reward';
   cost.textContent=Number(a.fnc||0).toLocaleString('en-US')+' FNC';
@@ -43,7 +43,7 @@ async function poll(){
     if((j.alerts||[]).length && seen.size>200)seen=new Set([...seen].slice(-100));
   }catch(e){} finally{busy=false}
 }
-setInterval(poll,3000);poll();
+setInterval(poll,2000);poll();
 </script>
 </body>
 </html>
