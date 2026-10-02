@@ -544,8 +544,9 @@ body.mobile-menu-open{overflow:hidden!important}
   modal.addEventListener('click',e=>{if(e.target===modal)closeModal()});
   tradeConfirm.addEventListener('click',()=>redeem(tradeUrl.value.trim()));
   async function redeem(url) {
-    if (!selectedReward) return;
-    const reward = selectedReward; closeModal(); hideSay();
+    const reward = selectedReward;
+    if (!reward) return;
+    closeModal(); hideSay();
     const {data,error} = await client.functions.invoke('redeem-reward',{body:{reward_id:reward.id,steam_trade_url:url||null}});
     if (error) { say(error.context?.message || error.message || 'Redemption failed.','error'); return; }
     if (!data?.ok) { say(data?.message || 'Redemption failed.','error'); return; }
