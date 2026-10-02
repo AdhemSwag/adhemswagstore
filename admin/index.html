@@ -632,12 +632,29 @@ async function captureTwitchWatchCallback() {
       return false;
     }
 
+    // Read Twitch token identity once so the backend can persist the app/user IDs
+    // alongside the fresh OAuth credentials. No client secret is exposed in the browser.
+    let twitchClientId = null;
+    let twitchBroadcasterId = null;
+    try {
+      const validateResponse = await fetch('https://id.twitch.tv/oauth2/validate', {
+        headers: { Authorization: 'OAuth ' + accessToken }
+      });
+      if (validateResponse.ok) {
+        const validation = await validateResponse.json();
+        twitchClientId = validation?.client_id || null;
+        twitchBroadcasterId = validation?.user_id || null;
+      }
+    } catch (_) {}
+
     const { data: storeData, error: storeError } = await twitchWatchClient.functions.invoke(
       'admin-store-twitch-watch-credentials',
       {
         body: {
           access_token: accessToken,
-          refresh_token: refreshToken
+          refresh_token: refreshToken,
+          client_id: twitchClientId,
+          broadcaster_id: twitchBroadcasterId
         },
         headers: { Authorization: `Bearer ${session.access_token}` }
       }
