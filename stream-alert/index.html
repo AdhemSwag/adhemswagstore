@@ -21,16 +21,28 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:transparent
 const endpoint='https://lpmocfdfpebcaseffugg.supabase.co/functions/v1/stream-reward-alert';
 const box=document.getElementById('alert'),reward=document.getElementById('reward'),cost=document.getElementById('cost');
 let since=new Date(Date.now()-30000).toISOString(),seen=new Set(),busy=false;
+
+function playSound(){
+  try{
+    const C=window.AudioContext||window.webkitAudioContext;
+    if(C){
+      const c=new C(),o=c.createOscillator(),g=c.createGain();
+      o.type='sine';o.frequency.value=740;g.gain.value=.08;
+      o.connect(g);g.connect(c.destination);o.start();
+      setTimeout(()=>{o.frequency.value=980},90);
+      setTimeout(()=>{o.stop();c.close()},220);
+    }
+  }catch(e){}
+}
+
 function show(a){
   reward.textContent=a.reward||'FNC Reward';
   cost.textContent=Number(a.fnc||0).toLocaleString('en-US')+' FNC';
   box.classList.add('show');
-  try{
-    const C=window.AudioContext||window.webkitAudioContext;
-    if(C){const c=new C(),o=c.createOscillator(),g=c.createGain();o.frequency.value=740;g.gain.value=.08;o.connect(g);g.connect(c.destination);o.start();setTimeout(()=>{o.stop();c.close()},180);}
-  }catch(e){}
+  playSound();
   setTimeout(()=>box.classList.remove('show'),7000);
 }
+
 async function poll(){
   if(busy)return;busy=true;
   try{
@@ -42,6 +54,11 @@ async function poll(){
     }
     if((j.alerts||[]).length && seen.size>200)seen=new Set([...seen].slice(-100));
   }catch(e){} finally{busy=false}
+}
+
+const params=new URLSearchParams(location.search);
+if(params.get('test')==='1'){
+  setTimeout(()=>show({reward:'StatTrak™ Tec-9 | Snek-9 (Minimal Wear)',fnc:3810}),500);
 }
 setInterval(poll,2000);poll();
 </script>
