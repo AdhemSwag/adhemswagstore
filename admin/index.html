@@ -480,6 +480,25 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
       </div>
     </section>
 
+    <section id="watch-monitor" class="panel">
+      <div class="section">
+        <h2>Twitch <span style="color:var(--cyan)">WATCH MONITOR</span></h2>
+        <p>Read-only monitoring of Twitch viewers, active watch sessions and FNC reward activity. No reward rules are changed here.</p>
+        <div class="cards" style="margin-top:18px">
+          <div class="card"><small>ACTIVE VIEWERS</small><div class="metric" id="wmActiveViewers">—</div></div>
+          <div class="card"><small>ACTIVE SESSIONS</small><div class="metric" id="wmActiveSessions">—</div></div>
+          <div class="card"><small>FNC · 24H</small><div class="metric" id="wmFnc24">—</div></div>
+          <div class="card"><small>XP · 24H</small><div class="metric" id="wmXp24">—</div></div>
+        </div>
+        <div class="actions"><button class="btn primary" id="refreshWatchMonitor">REFRESH WATCH MONITOR</button><span id="wmUpdated" style="font:10px 'JetBrains Mono',monospace;color:var(--muted);align-self:center"></span></div>
+        <div id="wmStatus" class="notice">Loading watch monitoring…</div>
+      </div>
+      <div class="section">
+        <h2>Active <span style="color:var(--cyan)">VIEWERS</span></h2>
+        <div class="table-wrap"><table><thead><tr><th>Viewer</th><th>Joined</th><th>Last Seen</th><th>Last Activity</th><th>Minutes</th><th>Tier</th></tr></thead><tbody id="watchMonitorList"><tr><td colspan="6">Loading…</td></tr></tbody></table></div>
+      </div>
+    </section>
+
     <section id="operations" class="panel">
       <div class="section">
         <h2>System <span style="color:var(--cyan)">OPERATIONS</span></h2>
@@ -1253,6 +1272,48 @@ async function loadFncAnalytics(){
  tbody.innerHTML=Object.values(map).sort((a,b)=>Math.abs(b.total)-Math.abs(a.total)).map(x=>'<tr><td>'+escapeHtml(x.type)+'</td><td>'+escapeHtml(x.source)+'</td><td>'+escapeHtml(x.platform)+'</td><td>'+x.count.toLocaleString()+'</td><td>'+x.total.toLocaleString()+'</td></tr>').join('')||'<tr><td colspan="5">No transactions.</td></tr>';
  const u=document.getElementById('faUpdated');if(u)u.textContent='Updated '+new Date().toLocaleTimeString();
 }
+async function loadWatchMonitor(){
+ if(!adminReady)return;
+ const status=document.getElementById('wmStatus'),tbody=document.getElementById('watchMonitorList');
+ if(!status||!tbody)return;
+ status.textContent='Loading Twitch watch monitor…';
+ try{
+   const [sessions,ticks,ops]=await Promise.all([
+     supabaseClient.from('watch_sessions').select('user_id,joined_at,last_seen_at,last_activity_at,active_minutes,subscription_tier').is('ended_at',null).order('last_seen_at',{ascending:false}).limit(100),
+     supabaseClient.from('fnc_reward_ticks').select('fnc_awarded,xp_awarded,created_at').gte('created_at',new Date(Date.now()-86400000).toISOString()),
+     supabaseClient.rpc('admin_operations_snapshot')
+   ]);
+   if(sessions.error)throw sessions.error;
+   if(ticks.error)throw ticks.error;
+   const ids=[...new Set((sessions.data||[]).map(x=>x.user_id))];
+   let users=[];
+   if(ids.length){
+     const u=await supabaseClient.from('users').select('id,twitch_username,email').in('id',ids);
+     if(u.error)throw u.error; users=u.data||[];
+   }
+   const byId=new Map(users.map(u=>[u.id,u]));
+   const rows=sessions.data||[];
+   tbody.innerHTML=rows.map(s=>{
+     const u=byId.get(s.user_id)||{};
+     const name=u.twitch_username||u.email||s.user_id;
+     const age=(ts)=>ts?Math.max(0,Math.floor((Date.now()-new Date(ts).getTime())/60000))+'m ago':'—';
+     return '<tr><td>'+escapeHtml(name)+'</td><td>'+age(s.joined_at)+'</td><td>'+age(s.last_seen_at)+'</td><td>'+age(s.last_activity_at)+'</td><td>'+Number(s.active_minutes||0).toLocaleString()+'</td><td>'+Number(s.subscription_tier||0)+'</td></tr>';
+   }).join('')||'<tr><td colspan="6">No active Twitch viewers.</td></tr>';
+   const fnc=(ticks.data||[]).reduce((n,x)=>n+Number(x.fnc_awarded||0),0);
+   const xp=(ticks.data||[]).reduce((n,x)=>n+Number(x.xp_awarded||0),0);
+   document.getElementById('wmActiveViewers').textContent=new Set(rows.map(x=>x.user_id)).size.toLocaleString();
+   document.getElementById('wmActiveSessions').textContent=rows.length.toLocaleString();
+   document.getElementById('wmFnc24').textContent=fnc.toLocaleString();
+   document.getElementById('wmXp24').textContent=xp.toLocaleString();
+   const watchJob=(ops.data||[]).find(x=>String(x.jobname||x.name||'').toLowerCase().includes('twitch-watch-sync'));
+   status.textContent=watchJob?('Watch sync: '+(watchJob.status||'unknown')+' • last run '+(watchJob.last_run||watchJob.last_run_at||'—')):'Watch sync status unavailable.';
+   document.getElementById('wmUpdated').textContent='Updated '+new Date().toLocaleTimeString();
+ }catch(error){
+   status.textContent='Watch monitor failed: '+(error?.message||'Unknown error');
+   status.style.borderLeftColor='var(--danger)';
+ }
+}
+
 async function loadOperations(){
  if(!adminReady)return; const tbody=document.getElementById('operationsList'); if(!tbody)return;
  tbody.innerHTML='<tr><td colspan="5">Loading operations…</td></tr>';
