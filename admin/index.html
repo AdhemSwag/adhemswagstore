@@ -375,7 +375,7 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
     <button class="nav-btn" data-panel="viewers">Viewers</button>
     <button class="nav-btn" data-panel="transactions">Transactions</button>
     <button class="nav-btn" data-panel="system">System</button>
-    <button class="nav-btn" data-panel="fnc-settings">FNC Points</button><button class="nav-btn" data-panel="leaderboard">Leaderboard</button><button class="nav-btn" data-panel="media">Media</button><button class="nav-btn" data-panel="admin-access">Admin Access</button><button class="nav-btn" data-panel="socials">Socials</button><button class="nav-btn" data-panel="reward-analytics">Reward Analytics</button><button class="nav-btn" data-panel="fnc-analytics">FNC Economy</button>
+    <button class="nav-btn" data-panel="fnc-settings">FNC Points</button><button class="nav-btn" data-panel="leaderboard">Leaderboard</button><button class="nav-btn" data-panel="media">Media</button><button class="nav-btn" data-panel="admin-access">Admin Access</button><button class="nav-btn" data-panel="socials">Socials</button><button class="nav-btn" data-panel="reward-analytics">Reward Analytics</button><button class="nav-btn" data-panel="fnc-analytics">FNC Economy</button><button class="nav-btn" data-panel="security-audit">Security & Audit</button>
   </aside>
 
   <main class="main">
@@ -479,6 +479,8 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
         <div class="table-wrap"><table><thead><tr><th>Type</th><th>Source</th><th>Platform</th><th>Transactions</th><th>Total FNC</th></tr></thead><tbody id="fncAnalyticsList"><tr><td colspan="5">Not loaded.</td></tr></tbody></table></div>
       </div>
     </section>
+
+    <section id="security-audit" class="panel"><div class="section"><h2>Security <span style="color:var(--cyan)">AUDIT</span></h2><p>Read-only operational view of admin activity.</p><div class="cards" style="margin-top:18px"><div class="card"><small>Actions · 24H</small><div class="metric" id="sa24h">—</div></div><div class="card"><small>Actions · 30D</small><div class="metric" id="sa30d">—</div></div><div class="card"><small>Admins Active · 30D</small><div class="metric" id="saAdmins">—</div></div><div class="card"><small>Review Actions · 30D</small><div class="metric" id="saReview">—</div></div></div><div class="actions"><button class="btn primary" id="refreshSecurityAudit">REFRESH AUDIT</button><span id="saUpdated" style="font:10px 'JetBrains Mono',monospace;color:var(--muted);align-self:center"></span></div></div><div class="section"><h2>Recent <span style="color:var(--cyan)">ACTIVITY</span></h2><div class="table-wrap"><table><thead><tr><th>Date</th><th>Action</th><th>Target</th><th>Admin</th></tr></thead><tbody id="securityAuditList"><tr><td colspan="4">Not loaded.</td></tr></tbody></table></div></div></section>
 
     <section id="rewards" class="panel">
       <div class="section">
@@ -1233,7 +1235,7 @@ async function loadFncAnalytics(){
  tbody.innerHTML=Object.values(map).sort((a,b)=>Math.abs(b.total)-Math.abs(a.total)).map(x=>'<tr><td>'+escapeHtml(x.type)+'</td><td>'+escapeHtml(x.source)+'</td><td>'+escapeHtml(x.platform)+'</td><td>'+x.count.toLocaleString()+'</td><td>'+x.total.toLocaleString()+'</td></tr>').join('')||'<tr><td colspan="5">No transactions.</td></tr>';
  const u=document.getElementById('faUpdated');if(u)u.textContent='Updated '+new Date().toLocaleTimeString();
 }
-async function refreshDashboard(){
+async function loadSecurityAudit(){if(!adminReady)return;const tbody=document.getElementById('securityAuditList');if(!tbody)return;tbody.innerHTML='<tr><td colspan="4">Loading…</td></tr>';const {data,error}=await supabaseClient.from('admin_logs').select('admin_user_id,action,target_type,target_id,created_at').order('created_at',{ascending:false}).limit(100);if(error){tbody.innerHTML='<tr><td colspan="4">Unable to load audit data.</td></tr>';return;}const rows=data||[],now=Date.now(),day=86400000;const recent=rows.filter(x=>now-new Date(x.created_at).getTime()<=day).length;const review=rows.filter(x=>['redemption_rejected_refunded','redemption_approved'].includes(x.action)).length;const admins=new Set(rows.filter(x=>now-new Date(x.created_at).getTime()<=30*day).map(x=>x.admin_user_id).filter(Boolean));const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=Number(v).toLocaleString();};set('sa24h',recent);set('sa30d',rows.length);set('saAdmins',admins.size);set('saReview',review);tbody.innerHTML=rows.slice(0,50).map(x=>'<tr><td>'+new Date(x.created_at).toLocaleString()+'</td><td>'+escapeHtml(x.action||'—')+'</td><td>'+escapeHtml((x.target_type||'—')+(x.target_id?' · '+x.target_id.slice(0,8):''))+'</td><td>'+escapeHtml(x.admin_user_id||'—')+'</td></tr>').join('')||'<tr><td colspan="4">No activity.</td></tr>';const u=document.getElementById('saUpdated');if(u)u.textContent='Updated '+new Date().toLocaleTimeString();}async function refreshDashboard(){
  if(!adminReady)return;
  const u=await supabaseClient.from('users').select('id,fnc_points,xp,total_watch_minutes,total_fnc_earned,profile_complete,twitch_user_id,kick_connected,created_at');
  const r=await supabaseClient.from('rewards').select('id',{count:'exact',head:true}).eq('active',true);
@@ -1892,6 +1894,7 @@ document.getElementById('loadGiveawayWinners')?.addEventListener('click',loadGiv
 document.getElementById('loadLeaderboard')?.addEventListener('click',loadLeaderboard);
 document.getElementById('refreshRewardAnalytics')?.addEventListener('click',loadRewardAnalytics);
 document.getElementById('refreshFncAnalytics')?.addEventListener('click',loadFncAnalytics);
+document.getElementById('refreshSecurityAudit')?.addEventListener('click',loadSecurityAudit);
 document.getElementById('refreshSystemHealth')?.addEventListener('click',runSystemHealth);
 document.getElementById('refreshAdminLogs')?.addEventListener('click',loadAdminLogs);
 document.getElementById('clearLeaderboard')?.addEventListener('click',()=>{document.getElementById('leaderboardSearch').value='';loadLeaderboard();});
@@ -1956,6 +1959,7 @@ document.getElementById('systemXp')?.addEventListener('click',async()=>{if(!admi
   await loadBonusSettings();
   await loadRewardAnalytics();
   await loadFncAnalytics();
+  await loadSecurityAudit();
 })();
 setTimeout(startRedemptionNotifications, 1500);
 
