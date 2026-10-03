@@ -366,6 +366,7 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
     <a class="brand" href="/"><img src="/apple-touch-icon.png" alt="AdhemSwag logo"><span>ADHEMSWAG<span>.</span></span></a>
     <div class="nav-label">Admin</div>
     <button class="nav-btn active" data-panel="dashboard">Dashboard</button>
+    <button class="nav-btn" data-panel="google-analytics">Google Analytics</button>
     <button class="nav-btn" data-panel="rewards">Rewards / Store</button>
     <button class="nav-btn" data-panel="giveaways">Giveaways</button>
     <button class="nav-btn" data-panel="live-codes">LIVE Codes</button>
@@ -607,7 +608,47 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
 </div>
 </section>
 <section id="logs" class="panel"><div class="section"><h2>Admin Logs</h2><p>Every important admin action is recorded for traceability.</p><div class="actions"><button class="btn primary" id="refreshAdminLogs">REFRESH LOGS</button></div><div id="adminLogStatus" class="notice" style="display:none"></div><div class="table-wrap"><table><thead><tr><th>Date</th><th>Action</th><th>Target</th><th>Details</th></tr></thead><tbody id="adminLogList"><tr><td colspan="4">Loading…</td></tr></tbody></table></div></div></section>
-<section id="leaderboard" class="panel"><div class="section"><h2>Leaderboard <span style="color:var(--cyan)">+ MEMBER PROGRESS</span></h2><p>Admin view of the top 100 accounts. See each member's XP progression, FNC balance and watch time without changing the public leaderboard.</p><div class="form-grid"><div class="field"><label>Search Twitch username</label><input id="leaderboardSearch" placeholder="adhemswag"></div><div class="field"><label>Ranking</label><select id="leaderboardRank"><option value="fnc">FNC Points</option><option value="xp">XP</option><option value="watch">Watch Minutes</option><option value="level">Level</option></select></div></div><div class="actions"><button class="btn primary" id="loadLeaderboard">LOAD LEADERBOARD</button><button class="btn" id="clearLeaderboard">CLEAR</button></div><div class="table-wrap"><table><thead><tr><th>#</th><th>Twitch</th><th>FNC</th><th>XP</th><th>Level</th><th>Progress</th><th>Watch Minutes</th></tr></thead><tbody id="leaderboardList"><tr><td colspan="7">Not loaded.</td></tr></tbody></table></div></div></section><section id="media" class="panel"><div class="section"><h2>Media Library</h2><p>Images stored in the reward-images bucket. Upload images to the rewards or giveaways folder.</p><div class="form-grid"><div class="field"><label>Folder</label><select id="mediaUploadFolder"><option value="rewards">Rewards</option><option value="giveaways">Giveaways</option></select></div><div class="field"><label>Image file (max 5 MB)</label><input id="mediaUploadFile" type="file" accept="image/png,image/jpeg,image/webp,image/gif"></div></div><div class="actions"><button class="btn primary" id="uploadMedia">UPLOAD IMAGE</button><button class="btn" id="loadMedia">REFRESH MEDIA</button></div><div id="mediaStatus" class="notice" style="display:none"></div><div class="table-wrap"><table><thead><tr><th>File</th><th>Size</th><th>Updated</th><th>Action</th></tr></thead><tbody id="mediaList"><tr><td colspan="4">Not loaded.</td></tr></tbody></table></div></div></section>
+<section id="leaderboard" class="panel"><div class="section"><h2>Leaderboard <span style="color:var(--cyan)">+ MEMBER PROGRESS</span></h2><p>Admin view of the top 100 accounts. See each member's XP progression, FNC balance and watch time without changing the public leaderboard.</p><div class="form-grid"><div class="field"><label>Search Twitch username</label><input id="leaderboardSearch" placeholder="adhemswag"></div><div class="field"><label>Ranking</label><select id="leaderboardRank"><option value="fnc">FNC Points</option><option value="xp">XP</option><option value="watch">Watch Minutes</option><option value="level">Level</option></select></div></div><div class="actions"><button class="btn primary" id="loadLeaderboard">LOAD LEADERBOARD</button><button class="btn" id="clearLeaderboard">CLEAR</button></div><div class="table-wrap"><table><thead><tr><th>#</th><th>Twitch</th><th>FNC</th><th>XP</th><th>Level</th><th>Progress</th><th>Watch Minutes</th></tr></thead><tbody id="leaderboardList"><tr><td colspan="7">Not loaded.</td></tr></tbody></table></div></div></section><section id="google-analytics" class="panel">
+  <div class="section">
+    <h2>Google <span style="color:var(--cyan)">Analytics</span></h2>
+    <p>Private GA4 read-only dashboard for AdhemSwag.com. Data is requested server-side through the secure Supabase Edge Function.</p>
+    <div class="actions">
+      <button class="btn primary" id="refreshGoogleAnalytics">REFRESH GA4</button>
+    </div>
+    <div id="gaStatus" class="notice" style="display:none"></div>
+    <div class="cards" style="margin-top:18px">
+      <div class="card"><small>Active Users — Today</small><div class="metric" id="gaActiveUsers">—</div></div>
+      <div class="card"><small>New Users — Today</small><div class="metric" id="gaNewUsers">—</div></div>
+      <div class="card"><small>Views — Today</small><div class="metric" id="gaViews">—</div></div>
+      <div class="card"><small>Realtime Users</small><div class="metric" id="gaRealtimeUsers">—</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Traffic <span style="color:var(--cyan)">Sources</span></h2>
+    <p>Top session source / medium over the last 30 days.</p>
+    <div class="table-wrap"><table><thead><tr><th>Source / Medium</th><th>Users</th><th>Sessions</th><th>Views</th></tr></thead><tbody id="gaSourcesList"><tr><td colspan="4">Not loaded.</td></tr></tbody></table></div>
+  </div>
+
+  <div class="section">
+    <h2>Top <span style="color:var(--cyan)">Pages</span></h2>
+    <p>Most viewed pages over the last 30 days.</p>
+    <div class="table-wrap"><table><thead><tr><th>Page</th><th>Views</th><th>Users</th></tr></thead><tbody id="gaPagesList"><tr><td colspan="3">Not loaded.</td></tr></tbody></table></div>
+  </div>
+
+  <div class="section">
+    <h2>Daily <span style="color:var(--cyan)">Views</span></h2>
+    <p>Last 14 days. This helps spot unusual traffic spikes like the 30 September event you showed me.</p>
+    <div id="gaDailyChart" style="display:grid;gap:8px;margin-top:18px"></div>
+  </div>
+
+  <div class="section">
+    <h2>Realtime <span style="color:var(--cyan)">Countries</span></h2>
+    <p>Current active users grouped by country.</p>
+    <div class="table-wrap"><table><thead><tr><th>Country</th><th>Active Users</th></tr></thead><tbody id="gaRealtimeList"><tr><td colspan="2">Not loaded.</td></tr></tbody></table></div>
+  </div>
+</section>
+<section id="media" class="panel"><div class="section"><h2>Media Library</h2><p>Images stored in the reward-images bucket. Upload images to the rewards or giveaways folder.</p><div class="form-grid"><div class="field"><label>Folder</label><select id="mediaUploadFolder"><option value="rewards">Rewards</option><option value="giveaways">Giveaways</option></select></div><div class="field"><label>Image file (max 5 MB)</label><input id="mediaUploadFile" type="file" accept="image/png,image/jpeg,image/webp,image/gif"></div></div><div class="actions"><button class="btn primary" id="uploadMedia">UPLOAD IMAGE</button><button class="btn" id="loadMedia">REFRESH MEDIA</button></div><div id="mediaStatus" class="notice" style="display:none"></div><div class="table-wrap"><table><thead><tr><th>File</th><th>Size</th><th>Updated</th><th>Action</th></tr></thead><tbody id="mediaList"><tr><td colspan="4">Not loaded.</td></tr></tbody></table></div></div></section>
 <section id="admin-access" class="panel"><div class="section"><h2>Admin Access</h2><p>Find an existing user and grant Admin Panel access.</p><div class="form-grid"><div class="field full"><label>Twitch username</label><input id="adminUserSearch" placeholder="adhemswag"></div></div><div class="actions"><button class="btn primary" id="findAdminUser">FIND USER</button></div><div id="adminUserResult" class="notice" style="display:none"></div></div><div class="section"><h2>Current Admins</h2><div class="table-wrap"><table><thead><tr><th>User ID</th><th>Created</th><th>Action</th></tr></thead><tbody id="adminAccessList"><tr><td colspan="3">Loading…</td></tr></tbody></table></div></div></section>
 <section id="system" class="panel">
       <div class="section">
@@ -1746,6 +1787,48 @@ document.getElementById('testTwitchWatch')?.addEventListener('click', async () =
   }
 });
 
+async function loadGoogleAnalytics(){
+  if(!adminReady)return;
+  const status=document.getElementById('gaStatus');
+  const setStatus=(msg,error=false)=>{if(status){status.style.display='block';status.style.borderLeftColor=error?'var(--danger)':'var(--cyan)';status.textContent=msg;}};
+  setStatus('Loading Google Analytics…');
+  try{
+    const {data,error}=await supabaseClient.functions.invoke('admin-google-analytics',{body:{}});
+    if(error)throw error;
+    if(!data?.ok){
+      setStatus(data?.error||'Google Analytics is not configured yet.',true);
+      return;
+    }
+    const first=data.overview?.[0]?.metrics||[];
+    document.getElementById('gaActiveUsers').textContent=Number(first[0]||0).toLocaleString();
+    document.getElementById('gaNewUsers').textContent=Number(first[1]||0).toLocaleString();
+    document.getElementById('gaViews').textContent=Number(first[2]||0).toLocaleString();
+    const realtime=(data.realtime||[]).reduce((sum,row)=>sum+Number(row.metrics?.[0]||0),0);
+    document.getElementById('gaRealtimeUsers').textContent=realtime.toLocaleString();
+
+    const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+    const src=document.getElementById('gaSourcesList');
+    src.innerHTML=(data.sources||[]).map(r=>'<tr><td>'+esc(r.dimensions?.[0]||'(direct)')+'</td><td>'+Number(r.metrics?.[0]||0).toLocaleString()+'</td><td>'+Number(r.metrics?.[1]||0).toLocaleString()+'</td><td>'+Number(r.metrics?.[2]||0).toLocaleString()+'</td></tr>').join('')||'<tr><td colspan="4">No data.</td></tr>';
+    const pages=document.getElementById('gaPagesList');
+    pages.innerHTML=(data.pages||[]).map(r=>'<tr><td>'+esc(r.dimensions?.[0]||'/')+'</td><td>'+Number(r.metrics?.[0]||0).toLocaleString()+'</td><td>'+Number(r.metrics?.[1]||0).toLocaleString()+'</td></tr>').join('')||'<tr><td colspan="3">No data.</td></tr>';
+    const rt=document.getElementById('gaRealtimeList');
+    rt.innerHTML=(data.realtime||[]).map(r=>'<tr><td>'+esc(r.dimensions?.[0]||'Unknown')+'</td><td>'+Number(r.metrics?.[0]||0).toLocaleString()+'</td></tr>').join('')||'<tr><td colspan="2">No active users right now.</td></tr>';
+
+    const daily=document.getElementById('gaDailyChart');
+    const rows=data.daily||[];
+    const max=Math.max(1,...rows.map(r=>Number(r.metrics?.[1]||0)));
+    daily.innerHTML=rows.map(r=>{
+      const date=r.dimensions?.[0]||'';
+      const views=Number(r.metrics?.[1]||0);
+      const width=Math.max(2,Math.round((views/max)*100));
+      return '<div style="display:grid;grid-template-columns:82px 1fr 60px;gap:10px;align-items:center;font:10px JetBrains Mono,monospace;color:var(--muted)"><span>'+esc(date)+'</span><div style="height:12px;background:#10161a;border:1px solid var(--line);overflow:hidden"><div style="height:100%;width:'+width+'%;background:var(--cyan);opacity:.75"></div></div><strong style="color:var(--white);text-align:right">'+views.toLocaleString()+'</strong></div>';
+    }).join('')||'<div class="notice">No daily data.</div>';
+    setStatus('GA4 data updated • '+new Date().toLocaleString());
+  }catch(error){
+    setStatus('Google Analytics request failed: '+(error?.message||'Unknown error'),true);
+  }
+}
+
 document.querySelectorAll('.nav-btn').forEach(btn=>{
   btn.addEventListener('click',()=>{
     document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
@@ -1760,6 +1843,7 @@ document.querySelectorAll('.nav-btn').forEach(btn=>{
 
 
 document.getElementById('refreshDashboard')?.addEventListener('click',refreshDashboard);
+document.getElementById('refreshGoogleAnalytics')?.addEventListener('click',loadGoogleAnalytics);
 document.getElementById('loadRedemptions')?.addEventListener('click',loadRedemptions);
 document.getElementById('loadTransactions')?.addEventListener('click',loadTransactions);
 document.getElementById('clearTransactions')?.addEventListener('click',()=>{document.getElementById('transactionSearch').value='';document.getElementById('transactionType').value='';document.getElementById('transactionPlatform').value='';loadTransactions();});
