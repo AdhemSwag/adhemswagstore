@@ -374,7 +374,7 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
     <button class="nav-btn" data-panel="viewers">Viewers</button>
     <button class="nav-btn" data-panel="transactions">Transactions</button>
     <button class="nav-btn" data-panel="system">System</button>
-    <button class="nav-btn" data-panel="fnc-settings">FNC Points</button><button class="nav-btn" data-panel="leaderboard">Leaderboard</button><button class="nav-btn" data-panel="media">Media</button><button class="nav-btn" data-panel="admin-access">Admin Access</button><button class="nav-btn" data-panel="socials">Socials</button>
+    <button class="nav-btn" data-panel="fnc-settings">FNC Points</button><button class="nav-btn" data-panel="leaderboard">Leaderboard</button><button class="nav-btn" data-panel="media">Media</button><button class="nav-btn" data-panel="admin-access">Admin Access</button><button class="nav-btn" data-panel="socials">Socials</button><button class="nav-btn" data-panel="reward-analytics">Reward Analytics</button>
   </aside>
 
   <main class="main">
@@ -435,6 +435,27 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
           <a class="card" href="https://dcd.gg/adhemswag" target="_blank" rel="noopener" style="text-decoration:none;color:inherit"><small>DISCORD</small><div class="metric">ADHEMSWAG</div></a>
           <a class="card" href="https://youtube.com/adhemswag" target="_blank" rel="noopener" style="text-decoration:none;color:inherit"><small>YOUTUBE</small><div class="metric">@adhemswag</div></a>
         </div>
+      </div>
+    </section>
+
+    <section id="reward-analytics" class="panel">
+      <div class="section">
+        <h2>Reward <span style="color:var(--cyan)">ANALYTICS</span></h2>
+        <p>Store performance from real redemption records. Read-only — no reward, stock or FNC changes.</p>
+        <div class="cards" style="margin-top:18px">
+          <div class="card"><small>Total Redeems</small><div class="metric" id="raTotal">—</div></div>
+          <div class="card"><small>FNC Spent</small><div class="metric" id="raSpent">—</div></div>
+          <div class="card"><small>Pending</small><div class="metric" id="raPending">—</div></div>
+          <div class="card"><small>Sent</small><div class="metric" id="raSent">—</div></div>
+          <div class="card"><small>Rejected</small><div class="metric" id="raRejected">—</div></div>
+          <div class="card"><small>Active Rewards</small><div class="metric" id="raActive">—</div></div>
+        </div>
+        <div class="actions"><button class="btn primary" id="refreshRewardAnalytics">REFRESH ANALYTICS</button><span id="raUpdated" style="font:10px 'JetBrains Mono',monospace;color:var(--muted);align-self:center"></span></div>
+      </div>
+      <div class="section">
+        <h2>Reward <span style="color:var(--cyan)">PERFORMANCE</span></h2>
+        <p>Redemption count, FNC spent, current stock and processing status for every reward.</p>
+        <div class="table-wrap"><table><thead><tr><th>Reward</th><th>Cost</th><th>Stock</th><th>Redeems</th><th>FNC Spent</th><th>Pending</th><th>Sent</th><th>Rejected</th></tr></thead><tbody id="rewardAnalyticsList"><tr><td colspan="8">Not loaded.</td></tr></tbody></table></div>
       </div>
     </section>
 
@@ -1113,6 +1134,24 @@ async function loadAccessCodes(){
   });
 }
 
+async function loadRewardAnalytics(){
+ if(!adminReady)return;
+ const tbody=document.getElementById('rewardAnalyticsList'); if(!tbody)return;
+ tbody.innerHTML='<tr><td colspan="8">Loading…</td></tr>';
+ const [rw,rd]=await Promise.all([
+   supabaseClient.from('rewards').select('id,name,fnc_cost,stock,active,display_order').order('display_order',{ascending:true}),
+   supabaseClient.from('redemptions').select('reward_id,fnc_spent,status')
+ ]);
+ if(rw.error||rd.error){tbody.innerHTML='<tr><td colspan="8">Unable to load analytics.</td></tr>';return;}
+ const red=rd.data||[], rewards=rw.data||[];
+ const stat={}; red.forEach(x=>{const k=x.reward_id;if(!stat[k])stat[k]={count:0,spent:0,pending:0,sent:0,rejected:0};stat[k].count++;stat[k].spent+=Number(x.fnc_spent||0);if(x.status==='pending')stat[k].pending++;if(x.status==='sent')stat[k].sent++;if(x.status==='rejected')stat[k].rejected++;});
+ const totalSpent=red.reduce((s,x)=>s+Number(x.fnc_spent||0),0);
+ const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
+ set('raTotal',red.length.toLocaleString());set('raSpent',totalSpent.toLocaleString());set('raPending',red.filter(x=>x.status==='pending').length.toLocaleString());set('raSent',red.filter(x=>x.status==='sent').length.toLocaleString());set('raRejected',red.filter(x=>x.status==='rejected').length.toLocaleString());set('raActive',rewards.filter(x=>x.active).length.toLocaleString());
+ const rows=rewards.map(r=>{const s=stat[r.id]||{count:0,spent:0,pending:0,sent:0,rejected:0};return '<tr><td>'+escapeHtml(r.name||'—')+'</td><td>'+Number(r.fnc_cost||0).toLocaleString()+'</td><td>'+((r.stock??'∞'))+'</td><td>'+s.count.toLocaleString()+'</td><td>'+s.spent.toLocaleString()+'</td><td>'+s.pending+'</td><td>'+s.sent+'</td><td>'+s.rejected+'</td></tr>';});
+ tbody.innerHTML=rows.join('')||'<tr><td colspan="8">No rewards.</td></tr>';
+ const u=document.getElementById('raUpdated');if(u)u.textContent='Updated '+new Date().toLocaleTimeString();
+}
 async function refreshDashboard(){
  if(!adminReady)return;
  const u=await supabaseClient.from('users').select('id,fnc_points,xp,total_watch_minutes,total_fnc_earned,profile_complete,twitch_user_id,kick_connected,created_at');
@@ -1727,6 +1766,7 @@ document.getElementById('clearTransactions')?.addEventListener('click',()=>{docu
 document.getElementById('transactionSearch')?.addEventListener('keydown',e=>{if(e.key==='Enter')loadTransactions();});
 document.getElementById('loadGiveawayWinners')?.addEventListener('click',loadGiveawayWinners);
 document.getElementById('loadLeaderboard')?.addEventListener('click',loadLeaderboard);
+document.getElementById('refreshRewardAnalytics')?.addEventListener('click',loadRewardAnalytics);
 document.getElementById('refreshSystemHealth')?.addEventListener('click',runSystemHealth);
 document.getElementById('refreshAdminLogs')?.addEventListener('click',loadAdminLogs);
 document.getElementById('clearLeaderboard')?.addEventListener('click',()=>{document.getElementById('leaderboardSearch').value='';loadLeaderboard();});
@@ -1789,6 +1829,7 @@ document.getElementById('systemXp')?.addEventListener('click',async()=>{if(!admi
   await captureTwitchWatchCallback();
   await verifyAdmin();
   await loadBonusSettings();
+  await loadRewardAnalytics();
 })();
 setTimeout(startRedemptionNotifications, 1500);
 
