@@ -786,7 +786,7 @@ body.mobile-menu-open{overflow:hidden!important}
   }
 
   async function loadBoard(){
-    const {data,error}=await client.rpc('get_leaderboard_full');
+    const {data,error}=await client.rpc('get_public_leaderboard_full');
     if(error){console.error(error);table.innerHTML='<div class="lb-loading">Leaderboard temporarily unavailable.</div>';return;}
     rows=Array.isArray(data)?data:[];page=1;renderBoard();
     const note=document.getElementById('lbNote');
@@ -827,7 +827,7 @@ body.mobile-menu-open{overflow:hidden!important}
 
   async function loadWatchers(period='today'){
     const grid=document.getElementById('watcherGrid');
-    const {data,error}=await client.rpc('get_watcher_leaderboard',{p_period:period});
+    const {data,error}=await client.rpc('get_public_watcher_leaderboard',{p_period:period});
     if(error){console.error(error);grid.innerHTML='<div class="lb-loading">Watch stats temporarily unavailable.</div>';return;}
     const items=Array.isArray(data)?data:[];
     if(!items.length){grid.innerHTML='<div class="lb-loading">No watch activity recorded for this period yet.</div>';return;}
