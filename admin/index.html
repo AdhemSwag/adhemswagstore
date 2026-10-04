@@ -590,11 +590,11 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
 <section id="fnc-settings" class="panel">
       <div class="section">
         <h2>FNC Points <span style="color:var(--cyan)">SETTINGS</span></h2>
-        <p>All values are configurable. The rewards engine will use the latest saved values automatically.</p>
+        <p>FNC amount and XP rate are configurable. Twitch subscriber multipliers are fixed by the reward engine: Tier 1 ×2, Tier 2 ×3, Tier 3 ×4.</p>
         <div class="form-grid">
           <div class="field"><label>FNC Program</label><select id="fncEnabled"><option value="false">OFF</option><option value="true">ON</option></select></div>
           <div class="field"><label>FNC per 1 minute</label><input id="fncAmount" type="number" min="0" value="1"><small style="color:var(--muted)">FNC awarded to active viewers every minute. Change this number to increase or decrease the reward.</small></div>
-          <div class="field"><label>Subscriber multiplier</label><input id="fncMultiplier" type="number" min="0" step="0.1" value="2"></div>
+          <div class="field"><label>Twitch Sub multipliers</label><div style="border:1px solid var(--line);background:#070b0e;color:var(--white);padding:12px;font:700 12px JetBrains Mono,monospace">TIER 1 ×2 &nbsp; • &nbsp; TIER 2 ×3 &nbsp; • &nbsp; TIER 3 ×4</div><small style="color:var(--muted)">Fixed by the watch reward engine. This setting is not editable here.</small></div>
           <div class="field"><label>Chat FNC</label><input id="fncChat" type="number" min="0" value="0"><small style="color:var(--muted)">FNC per eligible chat message.</small></div>
           <div class="field"><label>Chat cooldown (seconds)</label><input id="fncChatCooldown" type="number" min="0" value="60"></div>
           <div class="field"><label>Daily FNC limit</label><input id="fncDailyLimit" type="number" min="0" value="0"><small style="color:var(--muted)">0 = unlimited.</small></div>
@@ -1554,7 +1554,6 @@ async function loadFncSettings(){
   if(!data)return;
   document.getElementById('fncEnabled').value=String(!!data.enabled);
   document.getElementById('fncAmount').value=Number(data.amount||0);
-  document.getElementById('fncMultiplier').value=Number(data.subscriber_multiplier||0);
   document.getElementById('fncChat').value=Number(data.chat_fnc||0);
   document.getElementById('fncChatCooldown').value=Number(data.chat_cooldown_seconds||0);
   document.getElementById('fncDailyLimit').value=Number(data.daily_fnc_limit||0);
@@ -1569,7 +1568,6 @@ async function saveFncSettings(){
     enabled:document.getElementById('fncEnabled').value==='true',
     interval_minutes:1,
     amount:Math.max(0,Math.round(Number(document.getElementById('fncAmount').value||0))),
-    subscriber_multiplier:Math.max(0,Number(document.getElementById('fncMultiplier').value||0)),
     chat_fnc:Math.max(0,Math.round(Number(document.getElementById('fncChat').value||0))),
     chat_cooldown_seconds:Math.max(0,Math.round(Number(document.getElementById('fncChatCooldown').value||0))),
     daily_fnc_limit:Math.max(0,Math.round(Number(document.getElementById('fncDailyLimit').value||0))),
@@ -1580,7 +1578,7 @@ async function saveFncSettings(){
   if(payload.enabled && !confirm('Enable the FNC Program? This allows the rewards engine to distribute points when it is running.'))return;
   const {error}=await supabaseClient.from('fnc_settings').upsert(payload,{onConflict:'id'});
   if(error){status.style.display='block';status.textContent='Save failed: '+error.message;return;}
-  await writeAdminLog('fnc_settings_updated','fnc_settings',1,{enabled:payload.enabled,interval_minutes:1,amount:payload.amount,subscriber_multiplier:payload.subscriber_multiplier,chat_fnc:payload.chat_fnc,chat_cooldown_seconds:payload.chat_cooldown_seconds,daily_fnc_limit:payload.daily_fnc_limit,xp_per_minute:payload.xp_per_minute,subscriber_xp_bonus:payload.subscriber_xp_bonus});
+  await writeAdminLog('fnc_settings_updated','fnc_settings',1,{enabled:payload.enabled,interval_minutes:1,amount:payload.amount,chat_fnc:payload.chat_fnc,chat_cooldown_seconds:payload.chat_cooldown_seconds,daily_fnc_limit:payload.daily_fnc_limit,xp_per_minute:payload.xp_per_minute,subscriber_xp_bonus:payload.subscriber_xp_bonus});
   status.style.display='block';status.textContent='FNC settings saved.';status.style.borderLeftColor='var(--ok)';
 }
 document.getElementById('saveFncSettings')?.addEventListener('click',saveFncSettings);
