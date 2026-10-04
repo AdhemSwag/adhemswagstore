@@ -1281,7 +1281,7 @@ async function loadWatchMonitor(){
    const [sessions,ticks,ops]=await Promise.all([
      supabaseClient.from('watch_sessions').select('user_id,joined_at,last_seen_at,last_activity_at,active_minutes,subscription_tier').is('ended_at',null).order('last_seen_at',{ascending:false}).limit(100),
      supabaseClient.from('fnc_reward_ticks').select('fnc_awarded,xp_awarded,created_at').gte('created_at',new Date(Date.now()-86400000).toISOString()),
-     supabaseClient.rpc('admin_operations_snapshot')
+     supabaseClient.functions.invoke('admin-operations-snapshot',{body:{}})
    ]);
    if(sessions.error)throw sessions.error;
    if(ticks.error)throw ticks.error;
@@ -1318,7 +1318,7 @@ async function loadOperations(){
  if(!adminReady)return; const tbody=document.getElementById('operationsList'); if(!tbody)return;
  tbody.innerHTML='<tr><td colspan="5">Loading operations…</td></tr>';
  try{
-   const {data,error}=await supabaseClient.rpc('admin_operations_snapshot');
+   const {data,error}=await supabaseClient.functions.invoke('admin-operations-snapshot',{body:{}});
    if(error) throw error;
    const rows=Array.isArray(data)?data:[];
    const success=rows.reduce((s,x)=>s+Number(x.success_24h||0),0), fail=rows.reduce((s,x)=>s+Number(x.failed_24h||0),0);
