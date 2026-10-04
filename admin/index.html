@@ -579,6 +579,7 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
           <button class="btn" id="addUserXp">+ XP</button>
           <button class="btn" id="removeUserXp">− XP</button>
           <button class="btn" id="changeUserLevel">CHANGE LEVEL</button>
+          <button class="btn" id="toggleTestViewer">TEST VIEWER ON/OFF</button>
           <button class="btn primary" id="viewPublicProfile" type="button">VIEW PUBLIC PROFILE</button>
           <button class="btn danger" id="toggleUserBlock">BLOCK ACCOUNT</button>
         </div>
@@ -1045,6 +1046,7 @@ function renderUserDetail(user){
     '<div class="field"><label>Trade link</label><input value="'+escapeAttr(user.steam_trade_url||'Not set')+'" disabled></div>'+
     '<div class="field"><label>Discord</label><input value="'+escapeAttr(user.discord_username||'Not set')+'" disabled></div>'+
     '<div class="field"><label>Created</label><input value="'+new Date(user.created_at).toLocaleString()+'" disabled></div>'+
+    '<div class="field"><label>Test Viewer</label><input value="'+(user.is_test?'ENABLED — excluded from public rankings':'NO — normal viewer')+'" disabled></div>'+
     '</div>';
   const block=document.getElementById('toggleUserBlock');
   if(block)block.textContent=user.is_blocked?'UNBLOCK ACCOUNT':'BLOCK ACCOUNT';
@@ -1055,7 +1057,7 @@ async function loadUsers(search=''){
   if(!tbody||!adminReady)return;
   tbody.innerHTML='<tr><td colspan="8">Loading viewers…</td></tr>';
   const filter=document.getElementById('userStatusFilter')?.value||'all';
-  let query=supabaseClient.from('users').select('id,twitch_username,email,fnc_points,total_fnc_earned,xp,level,total_watch_minutes,profile_complete,is_blocked,steam_id,steam_trade_url,discord_username,created_at').order('created_at',{ascending:false}).limit(100);
+  let query=supabaseClient.from('users').select('id,twitch_username,email,fnc_points,total_fnc_earned,xp,level,total_watch_minutes,profile_complete,is_blocked,is_test,steam_id,steam_trade_url,discord_username,created_at').order('created_at',{ascending:false}).limit(100);
   const term=search.trim();
   if(term) query=query.or('twitch_username.ilike.%'+term+'%,email.ilike.%'+term+'%');
   if(filter==='active') query=query.eq('is_blocked',false);
@@ -1076,7 +1078,7 @@ async function loadUsers(search=''){
     '<td>'+Number(u.level||1)+'</td>'+
     '<td>'+Number(u.total_watch_minutes||0).toLocaleString()+' min</td>'+
     '<td>'+(u.profile_complete?'YES':'NO')+'</td>'+
-    '<td>'+(u.is_blocked?'<span class="lock">BLOCKED</span>':'<span style="color:var(--ok)">ACTIVE</span>')+'</td>'+
+    '<td>'+(u.is_test?'<span style="color:var(--cyan)">TEST VIEWER</span>':(u.is_blocked?'<span class="lock">BLOCKED</span>':'<span style="color:var(--ok)">ACTIVE</span>'))+'</td>'+
     '<td>'+new Date(u.created_at).toLocaleDateString()+'</td></tr>'
   ).join('');
   tbody.querySelectorAll('[data-user-id]').forEach(row=>row.addEventListener('click',()=>{
@@ -1086,13 +1088,14 @@ async function loadUsers(search=''){
 }
 
 
-async function adjustSelectedUser({fncDelta=0,xpDelta=0,level=null,blocked=null}={}){
+async function adjustSelectedUser({fncDelta=0,xpDelta=0,level=null,blocked=null,isTest=null}={}){
   if(!adminReady||!selectedAdminUser)return;
   const parts=[];
   if(fncDelta)parts.push((fncDelta>0?'+':'')+fncDelta+' FNC');
   if(xpDelta)parts.push((xpDelta>0?'+':'')+xpDelta+' XP');
   if(level!==null)parts.push('Level '+level);
   if(blocked!==null)parts.push(blocked?'BLOCK':'UNBLOCK');
+  if(isTest!==null)parts.push(isTest?'ENABLE TEST VIEWER':'DISABLE TEST VIEWER');
   if(!parts.length)return;
   if(!confirm('Confirm: '+parts.join(', ')+' for '+(selectedAdminUser.twitch_username||'this user')+'?'))return;
   const {data,error}=await supabaseClient.functions.invoke('admin-adjust-user',{
@@ -1101,7 +1104,8 @@ async function adjustSelectedUser({fncDelta=0,xpDelta=0,level=null,blocked=null}
       fnc_delta:fncDelta,
       xp_delta:xpDelta,
       level,
-      blocked
+      blocked,
+      is_test:isTest
     }
   });
   if(error){showUserStatus('Action failed: '+error.message);return;}
@@ -1138,6 +1142,10 @@ document.getElementById('addUserXp')?.addEventListener('click',()=>{
 document.getElementById('removeUserXp')?.addEventListener('click',()=>{
   const amount=Number(prompt('XP to remove:','100'));
   if(Number.isFinite(amount)&&amount>0)adjustSelectedUser({xpDelta:-Math.round(amount)});
+});
+document.getElementById('toggleTestViewer')?.addEventListener('click',()=>{
+  if(!selectedAdminUser)return;
+  adjustSelectedUser({isTest:!Boolean(selectedAdminUser.is_test)});
 });
 document.getElementById('changeUserLevel')?.addEventListener('click',()=>{
   const level=Number(prompt('New level:',selectedAdminUser?.level||1));
