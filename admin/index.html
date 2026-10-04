@@ -1278,13 +1278,15 @@ async function loadWatchMonitor(){
  if(!status||!tbody)return;
  status.textContent='Loading Twitch watch monitor…';
  try{
-   const [sessions,ticks,ops]=await Promise.all([
+   const [sessions,ticks,opsResponse]=await Promise.all([
      supabaseClient.from('watch_sessions').select('user_id,joined_at,last_seen_at,last_activity_at,active_minutes,subscription_tier').is('ended_at',null).order('last_seen_at',{ascending:false}).limit(100),
      supabaseClient.from('fnc_reward_ticks').select('fnc_awarded,xp_awarded,created_at').gte('created_at',new Date(Date.now()-86400000).toISOString()),
      supabaseClient.functions.invoke('admin-operations-snapshot',{body:{}})
    ]);
    if(sessions.error)throw sessions.error;
    if(ticks.error)throw ticks.error;
+   if(opsResponse.error)throw opsResponse.error;
+   const ops={data:opsResponse.data?.data||[]};
    const ids=[...new Set((sessions.data||[]).map(x=>x.user_id))];
    let users=[];
    if(ids.length){
@@ -1318,9 +1320,9 @@ async function loadOperations(){
  if(!adminReady)return; const tbody=document.getElementById('operationsList'); if(!tbody)return;
  tbody.innerHTML='<tr><td colspan="5">Loading operations…</td></tr>';
  try{
-   const {data,error}=await supabaseClient.functions.invoke('admin-operations-snapshot',{body:{}});
+   const {data:response,error}=await supabaseClient.functions.invoke('admin-operations-snapshot',{body:{}});
    if(error) throw error;
-   const rows=Array.isArray(data)?data:[];
+   const rows=Array.isArray(response?.data)?response.data:[];
    const success=rows.reduce((s,x)=>s+Number(x.success_24h||0),0), fail=rows.reduce((s,x)=>s+Number(x.failed_24h||0),0);
    const last=rows.map(x=>x.last_run).filter(Boolean).sort().pop();
    const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
