@@ -592,7 +592,7 @@ function statusLabel(s,now,g){
   return 'PLANNED';
 }
 function conditions(g){
-  const a=['Twitch subscription required.','One entry per Twitch account.','The winner is re-verified at draw time.'];
+  const a=['Twitch subscription required.','One entry per Twitch account.','Minimum 10 eligible entries required.','If fewer than 10 eligible entries remain at draw time, the giveaway is cancelled.','The winner is re-verified at draw time.'];
   if(g.require_profile_complete) a.unshift('Complete your AdhemSwag profile.');
   return a;
 }
@@ -694,6 +694,7 @@ async function loadCurrent(rows){
         '<div><span>PRIZE</span><strong>30,000</strong></div>'+
         '<div><span>WINNERS</span><strong>1</strong></div>'+
         '<div><span>ENTRIES</span><strong>'+Number(g.entry_count||0).toLocaleString()+'</strong></div>'+
+        '<div><span>MINIMUM</span><strong>'+Number(g.min_entries||10).toLocaleString()+'</strong></div>'+
       '</div>'+
       '<div class="gw-conditions"><b>ELIGIBILITY</b>'+conditions(g).map(x=>'<div>• '+esc(x)+'</div>').join('')+
       '<div style="margin-top:7px">• Start: '+esc(fmt(g.starts_at))+'</div><div>• End: '+esc(fmt(g.ends_at))+'</div></div>'+
