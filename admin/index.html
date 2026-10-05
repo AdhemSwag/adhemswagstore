@@ -1913,7 +1913,11 @@ document.getElementById('connectTwitchWatch')?.addEventListener('click', async (
       const st=document.getElementById('twitchWatchState'); if(st)st.textContent='Connected · backend active';
       return;
     }
-    const recoverable = ['twitch_tracking_not_configured','twitch_token_expired','twitch_refresh_failed','twitch_token_invalid'].includes(test?.error);
+    // A non-2xx Edge Function response can hide the JSON error body inside
+    // testError. For an authenticated admin, allow the normal Twitch re-auth
+    // flow whenever the backend cannot validate the saved credentials.
+    const recoverable = ['twitch_tracking_not_configured','twitch_token_expired','twitch_refresh_failed','twitch_token_invalid'].includes(test?.error)
+      || !!testError;
     if(!recoverable) {
       if(s)s.textContent='Twitch Watch backend check failed: '+(test?.error||testError?.message||'Unknown error');
       return;
