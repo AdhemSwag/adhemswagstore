@@ -236,7 +236,7 @@
   }
 
   if (window.location.pathname === '/' || window.location.pathname === '/index.html') installPageLoader();
-  function injectAccountRewards() {
+  // Remove stray escaped-newline text nodes before the shared header.\n  function cleanupStrayBodyText() {\n    if (!document.body) return;\n    document.body.childNodes.forEach(node => {\n      if (node.nodeType !== Node.TEXT_NODE) return;\n      const value = node.nodeValue || '';\n      if (value.indexOf('\\\\n') !== -1) node.remove();\n    });\n  }\n\n  if (document.body) cleanupStrayBodyText();\n  else document.addEventListener('DOMContentLoaded', cleanupStrayBodyText, { once: true });\n\n  function injectAccountRewards() {
     /* Shared site chrome: identical sidebar and safe header flow on every page. */
     if (!document.getElementById('adhemSharedChromeStyle')) {
       const sharedStyle = document.createElement('style');
