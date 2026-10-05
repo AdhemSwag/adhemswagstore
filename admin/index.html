@@ -1941,7 +1941,15 @@ document.getElementById('testTwitchWatch')?.addEventListener('click', async () =
   const s=document.getElementById('twitchWatchStatus');
   if(s){s.style.display='block';s.textContent='Testing Twitch watch sync…';}
   try {
-    const { data, error } = await supabaseClient.functions.invoke('twitch-chatters-sync', { body:{} });
+    // Use the current Twitch OAuth provider token when available. This makes
+    // TEST WATCH SYNC recover immediately after a fresh Twitch authorization,
+    // even if the previously stored token has expired.
+    const { data: watchSession } = await twitchWatchClient.auth.getSession();
+    const accessToken = watchSession?.session?.provider_token || localStorage.getItem('adhem_twitch_provider_token') || '';
+    const refreshToken = watchSession?.session?.provider_refresh_token || localStorage.getItem('adhem_twitch_provider_refresh_token') || '';
+    const { data, error } = await supabaseClient.functions.invoke('twitch-chatters-sync', {
+      body: accessToken ? { access_token: accessToken, refresh_token: refreshToken || null } : {}
+    });
     if(error) throw error;
     if(s){s.textContent=data?.ok ? ('OK — live: '+data.live+', matched viewers: '+(data.matched_viewers||0)) : ('Sync: '+JSON.stringify(data));}
   } catch(error) {
