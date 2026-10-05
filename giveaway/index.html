@@ -625,6 +625,7 @@ async function loadSchedule(){
       '<h3>'+esc(g.title.replace(/^WEEKLY FNC GIVEAWAY\s+/,'').replace(/ — /,' / '))+'</h3>'+
       '<div class="schedule-prize">30,000 FNC</div>'+
       '<div class="schedule-date">'+esc(fmt(g.starts_at,{timeStyle:'short'}))+' → '+esc(fmt(g.ends_at,{timeStyle:'short'}))+'</div>'+
+      '<div class="schedule-date">ENTRIES: <strong>'+Number(g.entry_count||0).toLocaleString()+'</strong> • WINNERS: <strong>'+Number(g.winners_count||1).toLocaleString()+'</strong></div>'+
       '<span class="schedule-sub">TWITCH SUB ONLY</span>'+
       '</article>';
   }).join(''):'<div class="empty">NO SCHEDULED GIVEAWAYS.</div>';
@@ -639,11 +640,13 @@ async function loadHistory(){
   }
   if(!rows.length){winnerRoot.innerHTML='<div class="empty">NO WINNERS YET — THE FIRST 30,000 FNC GIVEAWAY IS COMING.</div>';return;}
   const monthName=(v)=>new Date(v).toLocaleDateString('fr-DZ',{month:'long',year:'numeric'});
-  winnerRoot.innerHTML='<div class="history-wrap"><table class="history-table"><thead><tr><th>GIVEAWAY</th><th>WINNER</th><th>TWITCH SUB</th><th>PRIZE</th><th>STATUS</th><th>DATE</th></tr></thead><tbody>'+
+  winnerRoot.innerHTML='<div class="history-wrap"><table class="history-table"><thead><tr><th>GIVEAWAY</th><th>WINNER</th><th>TWITCH SUB</th><th>ENTRIES</th><th>WINNERS</th><th>PRIZE</th><th>STATUS</th><th>DATE</th></tr></thead><tbody>'+
     rows.map(r=>'<tr>'+
       '<td><strong>'+esc(r.title)+'</strong><div style="color:var(--muted);font-size:9px;margin-top:3px">'+esc(monthName(r.ends_at))+'</div></td>'+
       '<td class="winner-name">@'+esc(r.twitch_username)+'</td>'+
       '<td><span class="tier-badge">'+esc(tierLabel(Number(r.twitch_subscription_tier)))+'</span></td>'+
+      '<td>'+Number(r.entry_count||0).toLocaleString()+'</td>'+
+      '<td>'+Number(r.winners_count||1).toLocaleString()+'</td>'+
       '<td class="payout">'+Number(r.prize_fnc_awarded||r.prize_fnc||0).toLocaleString()+' FNC</td>'+
       '<td><span class="status-pill">'+esc(String(r.winner_status||'pending').toUpperCase())+'</span></td>'+
       '<td style="color:var(--muted)">'+esc(fmt(r.selected_at,{timeStyle:'short'}))+'</td>'+
