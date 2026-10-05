@@ -1903,26 +1903,11 @@ document.getElementById('connectTwitchWatch')?.addEventListener('click', async (
   if (!adminReady) return;
   const s=document.getElementById('twitchWatchStatus');
   try {
-    // First trust the server-side stored credentials. Reconnect only when the backend confirms
-    // that tracking is genuinely unconfigured/expired and cannot refresh automatically.
-    if(s){s.style.display='block';s.textContent='Checking saved Twitch Watch credentials…';}
-    const { data: test, error: testError } = await supabaseClient.functions.invoke('twitch-chatters-sync', { body:{} });
-    if(!testError && test?.ok){
-      localStorage.setItem('adhem_twitch_watch_connected','1');
-      if(s)s.textContent='Twitch Watch Tracking is already connected and working.';
-      const st=document.getElementById('twitchWatchState'); if(st)st.textContent='Connected · backend active';
-      return;
-    }
-    // A non-2xx Edge Function response can hide the JSON error body inside
-    // testError. For an authenticated admin, allow the normal Twitch re-auth
-    // flow whenever the backend cannot validate the saved credentials.
-    const recoverable = ['twitch_tracking_not_configured','twitch_token_expired','twitch_refresh_failed','twitch_token_invalid'].includes(test?.error)
-      || !!testError;
-    if(!recoverable) {
-      if(s)s.textContent='Twitch Watch backend check failed: '+(test?.error||testError?.message||'Unknown error');
-      return;
-    }
+    // Always perform a fresh Twitch authorization from this button.
+    // Do not block reconnection on the old backend token: that token may be
+    // exactly what needs to be replaced.
     localStorage.setItem('adhem_twitch_watch_connect','1');
+    if(s){s.style.display='block';s.textContent='Opening Twitch Watch authorization…';}
     const {data,error}=await twitchWatchClient.auth.signInWithOAuth({
       provider:'twitch',
       options:{
@@ -1936,10 +1921,9 @@ document.getElementById('connectTwitchWatch')?.addEventListener('click', async (
     window.location.assign(data.url);
   } catch(error) {
     localStorage.removeItem('adhem_twitch_watch_connect');
-    if(s){s.style.display='block';s.textContent='Twitch Watch check failed: '+(error?.message||'Unknown error');}
+    if(s){s.style.display='block';s.textContent='Twitch Watch connection failed: '+(error?.message||'Unknown error');}
   }
 });
-
 document.getElementById('testTwitchWatch')?.addEventListener('click', async () => {
   if (!adminReady) return;
   const s=document.getElementById('twitchWatchStatus');
