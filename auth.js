@@ -236,7 +236,20 @@
   }
 
   if (window.location.pathname === '/' || window.location.pathname === '/index.html') installPageLoader();
-  // Remove stray escaped-newline text nodes before the shared header.\n  function cleanupStrayBodyText() {\n    if (!document.body) return;\n    document.body.childNodes.forEach(node => {\n      if (node.nodeType !== Node.TEXT_NODE) return;\n      const value = node.nodeValue || '';\n      if (value.indexOf('\\\\n') !== -1) node.remove();\n    });\n  }\n\n  if (document.body) cleanupStrayBodyText();\n  else document.addEventListener('DOMContentLoaded', cleanupStrayBodyText, { once: true });\n\n  function injectAccountRewards() {
+  // Remove stray escaped-newline text nodes before the shared header.
+  function cleanupStrayBodyText() {
+    if (!document.body) return;
+    document.body.childNodes.forEach(node => {
+      if (node.nodeType !== Node.TEXT_NODE) return;
+      const value = node.nodeValue || '';
+      if (value.includes('\\n')) node.remove();
+    });
+  }
+
+  if (document.body) cleanupStrayBodyText();
+  else document.addEventListener('DOMContentLoaded', cleanupStrayBodyText, { once: true });
+
+  function injectAccountRewards() {
     /* Shared site chrome: identical sidebar and safe header flow on every page. */
     if (!document.getElementById('adhemSharedChromeStyle')) {
       const sharedStyle = document.createElement('style');
