@@ -679,9 +679,8 @@ async function loadCurrent(rows){
       '<div class="gw-conditions"><b>ELIGIBILITY</b>'+conditions(g).map(x=>'<div>• '+esc(x)+'</div>').join('')+
       '<div style="margin-top:7px">• Start: '+esc(fmt(g.starts_at))+'</div><div>• End: '+esc(fmt(g.ends_at))+'</div></div>'+
       '<div class="gw-actions">'+
-        (isActive?(joined?safeBtn('joinBtn','ENTRY CONFIRMED',true):safeBtn('joinBtn',user?'JOIN GIVEAWAY':'SIGN IN WITH TWITCH')):'')+
+        (isActive?(joined?safeBtn('joinBtn','ENTRY CONFIRMED',true):(user?safeBtn('joinBtn','JOIN GIVEAWAY'):'<button type="button" class="btn" data-adhem-login>SIGN IN WITH TWITCH</button>')):'')+
         (isUpcoming?'<span class="gw-message">Registration opens automatically when the event starts.</span>':'')+
-        (isActive&&!user?'<button type="button" class="btn" data-adhem-login>SIGN IN WITH TWITCH</button>':'')+
         '<span id="joinMsg" class="gw-message"></span>'+
         (joined?'<span class="gw-proof">✓ TWITCH '+esc(tierLabel(joinedTier))+' VERIFIED AT ENTRY</span>':'')+
         (isActive?'<span id="countdown" class="gw-countdown"></span>':'')+
