@@ -342,6 +342,18 @@ footer .footer-copy{display:flex;flex-direction:column;gap:5px}.footer-copy .row
 .section-note{color:var(--muted);font:9px 'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.08em}
 .live-chip{border:1px solid rgba(60,231,165,.35);color:var(--ok);padding:6px 9px;font:700 9px 'JetBrains Mono',monospace}
 .live-chip.offline{border-color:var(--line);color:var(--muted)}
+.gw-min-rule{
+  margin:18px 0 0;
+  padding:14px 15px;
+  border:1px solid rgba(255,77,95,.28);
+  background:linear-gradient(135deg,rgba(255,77,95,.08),rgba(17,217,247,.03));
+  border-left:3px solid var(--danger);
+}
+.gw-min-rule-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:6px}
+.gw-min-rule-label{font:700 10px 'JetBrains Mono',monospace;letter-spacing:.13em;color:var(--danger);text-transform:uppercase}
+.gw-min-rule-value{font:800 17px Rajdhani,sans-serif;color:var(--white);white-space:nowrap}
+.gw-min-rule-copy{margin:0;color:#9aa9ae;font-size:11px;line-height:1.65}
+.gw-min-rule-copy strong{color:var(--white)}
 .gw-card{display:grid;grid-template-columns:minmax(250px,390px) 1fr;min-height:330px}
 .gw-card-image{width:100%;height:100%;min-height:330px;object-fit:cover;background:#070b0e;border-right:1px solid var(--line)}
 .gw-card-body{padding:26px}
@@ -549,7 +561,7 @@ footer .footer-copy{display:flex;flex-direction:column;gap:5px}.footer-copy .row
       <article><b>02</b><h3>BE SUBSCRIBED</h3><p>Twitch checks the real channel subscription status. Tier 1, Tier 2 and Tier 3 are accepted.</p></article>
       <article><b>03</b><h3>WIN 30,000 FNC</h3><p>The draw is re-checked at draw time and the 30,000 FNC prize is credited automatically to the verified winner.</p></article>
     </div>
-    <p class="gw-footnote">The Twitch subscription system is used as the official eligibility check. A visible chat badge alone is not enough. Tier 1, Tier 2 and Tier 3 subscriptions are accepted.</p>
+    <p class="gw-footnote">The Twitch subscription system is used as the official eligibility check. A visible chat badge alone is not enough. Tier 1, Tier 2 and Tier 3 subscriptions are accepted. A minimum of 10 eligible entries is required for the automatic draw.</p>
   </section>
 </main>
 <footer>
@@ -695,6 +707,10 @@ async function loadCurrent(rows){
         '<div><span>WINNERS</span><strong>1</strong></div>'+
         '<div><span>ENTRIES</span><strong>'+Number(g.entry_count||0).toLocaleString()+'</strong></div>'+
         '<div><span>MINIMUM</span><strong>'+Number(g.min_entries||10).toLocaleString()+'</strong></div>'+
+      '</div>'+
+      '<div class="gw-min-rule">'+
+      '<div class="gw-min-rule-top"><span class="gw-min-rule-label">DRAW REQUIREMENT</span><span class="gw-min-rule-value">MINIMUM '+Number(g.min_entries||10)+' ENTRIES</span></div>'+
+      '<p class="gw-min-rule-copy">At least <strong>'+Number(g.min_entries||10)+' eligible entries</strong> must remain at draw time. If the total is below the minimum, the giveaway is <strong>automatically cancelled</strong> and no FNC prize is awarded.</p>'+
       '</div>'+
       '<div class="gw-conditions"><b>ELIGIBILITY</b>'+conditions(g).map(x=>'<div>• '+esc(x)+'</div>').join('')+
       '<div style="margin-top:7px">• Start: '+esc(fmt(g.starts_at))+'</div><div>• End: '+esc(fmt(g.ends_at))+'</div></div>'+
