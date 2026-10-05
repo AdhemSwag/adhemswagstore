@@ -598,10 +598,24 @@ function conditions(g){
 }
 function safeBtn(id,text,disabled=false){return '<button class="btn" id="'+id+'" type="button" '+(disabled?'disabled':'')+'>'+text+'</button>'; }
 
+let publicGiveawayData=null;
+
+async function loadPublicData(){
+  const {data,error}=await client.functions.invoke('giveaway-public-data',{body:{}});
+  if(error||!data?.ok){
+    publicGiveawayData=null;
+    return false;
+  }
+  publicGiveawayData=data;
+  return true;
+}
+
 async function loadSchedule(){
-  const {data,error}=await client.from('public_giveaway_calendar').select('*').order('starts_at',{ascending:true}).limit(20);
-  if(error){scheduleRoot.innerHTML='<div class="empty">SCHEDULE UNAVAILABLE.</div>';return [];}
-  const rows=data||[];
+  const rows=publicGiveawayData?.calendar||[];
+  if(!rows.length){
+    scheduleRoot.innerHTML='<div class="empty">'+(publicGiveawayData===null?'SCHEDULE UNAVAILABLE.':'NO SCHEDULED GIVEAWAYS.')+'</div>';
+    return [];
+  }
   const now=new Date();
   scheduleRoot.innerHTML=rows.length?rows.map((g,idx)=>{
     const st=statusLabel(g.status,now,g);
@@ -618,9 +632,11 @@ async function loadSchedule(){
 }
 
 async function loadHistory(){
-  const {data,error}=await client.from('public_giveaway_history').select('*').order('ends_at',{ascending:false}).order('position',{ascending:true}).limit(100);
-  if(error){winnerRoot.innerHTML='<div class="empty">WINNER ARCHIVE UNAVAILABLE.</div>';return;}
-  const rows=data||[];
+  const rows=publicGiveawayData?.history||[];
+  if(publicGiveawayData===null){
+    winnerRoot.innerHTML='<div class="empty">WINNER ARCHIVE UNAVAILABLE.</div>';
+    return;
+  }
   if(!rows.length){winnerRoot.innerHTML='<div class="empty">NO WINNERS YET — THE FIRST 30,000 FNC GIVEAWAY IS COMING.</div>';return;}
   const monthName=(v)=>new Date(v).toLocaleDateString('fr-DZ',{month:'long',year:'numeric'});
   winnerRoot.innerHTML='<div class="history-wrap"><table class="history-table"><thead><tr><th>GIVEAWAY</th><th>WINNER</th><th>TWITCH SUB</th><th>PRIZE</th><th>STATUS</th><th>DATE</th></tr></thead><tbody>'+
@@ -717,6 +733,8 @@ async function join(g){
 }
 
 async function refreshAll(){
+  const ok=await loadPublicData();
+  if(!ok){scheduleRoot.innerHTML='<div class="empty">SCHEDULE UNAVAILABLE.</div>';winnerRoot.innerHTML='<div class="empty">WINNER ARCHIVE UNAVAILABLE.</div>';}
   const rows=await loadSchedule();
   await loadCurrent(rows);
   await loadHistory();
