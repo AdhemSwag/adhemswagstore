@@ -435,6 +435,15 @@ footer .footer-copy{display:flex;flex-direction:column;gap:5px}.footer-copy .row
   .giveaway-hero-frame img{aspect-ratio:16/9!important;height:auto!important}
 }
 </style>
+<style id="adhemswag-giveaway-banner-main-v4">
+.giveaway-banner-main{display:block!important;width:100%!important;margin:0!important;padding:22px!important;background:var(--panel)!important;border-bottom:1px solid var(--line)!important}
+.giveaway-banner-inner{display:block!important;width:100%!important;overflow:hidden!important;border:1px solid var(--line)!important;background:#070b0e!important;line-height:0!important}
+.giveaway-banner-inner img{display:block!important;width:100%!important;height:auto!important;min-height:0!important;aspect-ratio:16/6!important;object-fit:cover!important;object-position:center!important;visibility:visible!important;opacity:1!important}
+@media(max-width:700px){
+ .giveaway-banner-main{padding:14px!important}
+ .giveaway-banner-inner img{aspect-ratio:16/9!important}
+}
+</style>
 </head>
 <body>
 <nav class="sidebar">
@@ -566,7 +575,7 @@ footer .footer-copy{display:flex;flex-direction:column;gap:5px}.footer-copy .row
       <div><span class="section-kicker">01 / CURRENT EVENT</span><h2 id="currentGiveawayHeading">CURRENT <span>GIVEAWAY</span></h2></div>
       <div class="live-chip" id="gwLiveChip">CHECKING…</div>
     </div>
-    <div class="giveaway-hero-frame"><img src="/giveaway/giveaway-hero.webp?v=2" alt="AdhemSwag Giveaway — Subscribe Only — 30,000 FNC Points"></div>
+    <div class="giveaway-banner-main"><div class="giveaway-banner-inner"><img src="/giveaway/giveaway-hero.webp?v=3" alt="AdhemSwag Giveaway — Subscribe Only — 30,000 FNC Points"></div></div>
     <div id="giveawayRoot"><div class="empty">LOADING GIVEAWAY…</div></div>
   </section>
 
