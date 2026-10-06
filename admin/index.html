@@ -1551,7 +1551,21 @@ async function updateSystemButtons(){
  const states=[['systemFnc','FNC',!!f.data?.enabled,'systemFncState'],['systemPoints','POINTS',!!s.data?.points_enabled,'systemPointsState'],['systemXp','XP',!!s.data?.xp_enabled,'systemXpState'],['systemRewards','REWARDS',!!s.data?.rewards_enabled,'systemRewardsState']];
  states.forEach(([id,label,on,stateId])=>{set(id,label,on);const state=document.getElementById(stateId);if(state){state.textContent=on?'ON':'OFF';state.style.color=on?'var(--ok)':'var(--muted)';}});
  const watchState=document.getElementById('twitchWatchState');
- if(watchState)watchState.textContent=localStorage.getItem('adhem_twitch_watch_connected')==='1'?'Connected':'Not connected';
+ if(watchState){
+   watchState.textContent='Checking…';
+   try{
+     const {data,error}=await supabaseClient.functions.invoke('admin-twitch-watch-status',{body:{}});
+     if(error) throw error;
+     const connected=data?.connected===true;
+     watchState.textContent=connected?'Connected':'Not connected';
+     watchState.style.color=connected?'var(--ok)':'var(--danger)';
+     if(connected) localStorage.setItem('adhem_twitch_watch_connected','1');
+     else localStorage.removeItem('adhem_twitch_watch_connected');
+   }catch(error){
+     console.warn('[AdhemSwag Admin] Twitch Watch status:',error);
+     watchState.textContent=localStorage.getItem('adhem_twitch_watch_connected')==='1'?'Connected':'Status unavailable';
+   }
+ }
 }
 function escapeHtml(value){return String(value??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
 function escapeAttr(value){return escapeHtml(value);}
