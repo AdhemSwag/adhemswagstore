@@ -426,6 +426,15 @@ footer .footer-copy{display:flex;flex-direction:column;gap:5px}.footer-copy .row
 .giveaway-hero-frame img{display:block;width:100%;height:auto;aspect-ratio:16/6;object-fit:cover;object-position:center}
 @media(max-width:700px){.giveaway-hero-frame{margin-bottom:18px}.giveaway-hero-frame img{aspect-ratio:16/9;object-fit:cover}}
 </style>
+<style id="adhemswag-giveaway-hero-visibility-v3">
+/* Giveaway hero: explicit visibility on desktop + mobile */
+.giveaway-hero-frame{display:block!important;visibility:visible!important;opacity:1!important;width:100%!important;min-height:0!important}
+.giveaway-hero-frame img{display:block!important;visibility:visible!important;opacity:1!important;width:100%!important;height:auto!important;min-height:0!important;aspect-ratio:16/6!important;object-fit:cover!important;object-position:center!important}
+@media(max-width:700px){
+  .giveaway-hero-frame{width:100%!important;overflow:hidden!important}
+  .giveaway-hero-frame img{aspect-ratio:16/9!important;height:auto!important}
+}
+</style>
 </head>
 <body>
 <nav class="sidebar">
