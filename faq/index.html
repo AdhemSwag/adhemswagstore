@@ -1015,6 +1015,17 @@ footer .footer-copy .row{margin:0;}
 
     <div class="fnc-faq-item"><button class="fnc-faq-q" onclick="this.parentElement.classList.toggle('active')">Do I earn points if the stream is offline? <span class="fnc-faq-icon">+</span></button><div class="fnc-faq-a">No. FNC Points only accumulate while you're actively watching a <strong>live Twitch</strong> stream.</div></div>
 
+
+    <div class="fnc-faq-section-label">XP System</div>
+
+    <div class="fnc-faq-item"><button class="fnc-faq-q" onclick="this.parentElement.classList.toggle('active')">How do viewers earn XP? <span class="fnc-faq-icon">+</span></button><div class="fnc-faq-a">XP is earned from eligible <strong>Twitch watch activity</strong>. The base rate is <strong>1 XP</strong> for a normal viewer. XP uses the same Twitch subscriber multiplier system as FNC Points.</div></div>
+
+    <div class="fnc-faq-item"><button class="fnc-faq-q" onclick="this.parentElement.classList.toggle('active')">What are the XP subscriber multipliers? <span class="fnc-faq-icon">+</span></button><div class="fnc-faq-a"><div class="fnc-sub-multipliers"><div class="fnc-sub-row fnc-sub-head"><span>SUB</span><span>XP RATE</span></div><div class="fnc-sub-row"><span>Non-sub</span><strong>1× XP</strong></div><div class="fnc-sub-row"><span>Tier 1</span><strong>2× XP</strong></div><div class="fnc-sub-row"><span>Tier 2</span><strong>3× XP</strong></div><div class="fnc-sub-row"><span>Tier 3</span><strong>4× XP</strong></div></div><small class="fnc-sub-note">Base rate: 1 XP. Tier 1 ×2, Tier 2 ×3 and Tier 3 ×4 are active.</small></div></div>
+
+    <div class="fnc-faq-item"><button class="fnc-faq-q" onclick="this.parentElement.classList.toggle('active')">Does Kick give XP? <span class="fnc-faq-icon">+</span></button><div class="fnc-faq-a"><strong>No.</strong> XP watch progression is Twitch-based. Watching on Kick does not generate XP.</div></div>
+
+    <div class="fnc-faq-item"><button class="fnc-faq-q" onclick="this.parentElement.classList.toggle('active')">How does the XP system work? <span class="fnc-faq-icon">+</span></button><div class="fnc-faq-a">Your XP is calculated from eligible Twitch watch activity and your verified Twitch subscription tier. The system applies the correct multiplier automatically: <strong>1× normal, 2× Tier 1, 3× Tier 2, 4× Tier 3</strong>. XP is used for progression and is separate from your FNC balance.</div></div>
+
     <div class="fnc-faq-section-label">Redemption Rules</div>
 
     <div class="fnc-faq-item"><button class="fnc-faq-q" onclick="this.parentElement.classList.toggle('active')">Can I use multiple accounts? <span class="fnc-faq-icon">+</span></button><div class="fnc-faq-a">No, multi-accounting to farm extra points is <strong>not allowed</strong> and may result in disqualification.</div></div>
@@ -1030,9 +1041,32 @@ footer .footer-copy .row{margin:0;}
     <div class="fnc-faq-item"><button class="fnc-faq-q" onclick="this.parentElement.classList.toggle('active')">Where do I redeem my points? <span class="fnc-faq-icon">+</span></button><div class="fnc-faq-a">Head to the SWAG STORE linked on the site to browse and redeem rewards with your FNC Points balance.</div></div>
   </div>
 
+
+  <div style="margin:28px 0 10px;text-align:center"><button type="button" class="fnc-faq-btn" onclick="document.getElementById('xpFaqOverlay').classList.add('open');document.body.style.overflow='hidden'"><span class="fnc-faq-btn-icon">?</span> XP SYSTEM FAQ</button></div>
+
   <div class="faq-help">
     Still need help? Join the <a href="https://discord.gg/cMRS6E2" target="_blank" rel="noopener">Discord</a>
   </div>
+
+<div class="fnc-faq-overlay" id="xpFaqOverlay" role="dialog" aria-modal="true" aria-labelledby="xpFaqTitle">
+  <div class="fnc-faq-modal" role="document">
+    <button type="button" class="fnc-faq-close" aria-label="Close XP FAQ" onclick="document.getElementById('xpFaqOverlay').classList.remove('open');document.body.style.overflow=''">×</button>
+    <h2 class="fnc-faq-title" id="xpFaqTitle">XP <span>SYSTEM</span></h2>
+    <p class="fnc-faq-sub">How XP is earned, calculated and multiplied on AdhemSwag.</p>
+    <div class="fnc-faq-section-label">XP Earning Rules</div>
+    <div class="fnc-faq-item"><button class="fnc-faq-q" onclick="this.parentElement.classList.toggle('active')">Normal viewer <span class="fnc-faq-icon">+</span></button><div class="fnc-faq-a"><strong>1× XP</strong> — base XP rate for eligible Twitch watch activity.</div></div>
+    <div class="fnc-faq-item"><button class="fnc-faq-q" onclick="this.parentElement.classList.toggle('active')">Twitch Tier 1 <span class="fnc-faq-icon">+</span></button><div class="fnc-faq-a"><strong>2× XP</strong> — Tier 1 subscribers receive double the base XP rate.</div></div>
+    <div class="fnc-faq-item"><button type="button" class="fnc-faq-q" onclick="this.parentElement.classList.toggle('active')">Twitch Tier 2 <span class="fnc-faq-icon">+</span></button><div class="fnc-faq-a"><strong>3× XP</strong> — Tier 2 subscribers receive triple the base XP rate.</div></div>
+    <div class="fnc-faq-item"><button type="button" class="fnc-faq-q" onclick="this.parentElement.classList.toggle('active')">Twitch Tier 3 <span class="fnc-faq-icon">+</span></button><div class="fnc-faq-a"><strong>4× XP</strong> — Tier 3 subscribers receive four times the base XP rate.</div></div>
+    <div class="fnc-faq-section-label">Method</div>
+    <div class="fnc-faq-item"><button type="button" class="fnc-faq-q" onclick="this.parentElement.classList.toggle('active')">How is XP calculated? <span class="fnc-faq-icon">+</span></button><div class="fnc-faq-a">The system starts with the base XP rate, identifies the viewer's verified Twitch subscription tier, and applies the matching multiplier automatically. <strong>1× / 2× / 3× / 4×</strong> correspond to non-sub / Tier 1 / Tier 2 / Tier 3.</div></div>
+    <div class="fnc-faq-item"><button type="button" class="fnc-faq-q" onclick="this.parentElement.classList.toggle('active')">What about Kick? <span class="fnc-faq-icon">+</span></button><div class="fnc-faq-a"><strong>Kick does not generate XP.</strong> The XP watch system is Twitch-only.</div></div>
+    <div class="fnc-faq-footer">XP progression is separate from FNC Points. The FAQ explains the public rules; the existing XP engine remains unchanged.</div>
+  </div>
+</div>
+<script>
+(()=>{const o=document.getElementById('xpFaqOverlay');if(!o)return;o.addEventListener('click',e=>{if(e.target===o){o.classList.remove('open');document.body.style.overflow='';}});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&o.classList.contains('open')){o.classList.remove('open');document.body.style.overflow='';}});})();
+</script>
 </main><footer>
   <div class="footer-inner">
     <div class="footer-copy">
