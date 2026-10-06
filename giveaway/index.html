@@ -355,7 +355,7 @@ footer .footer-copy{display:flex;flex-direction:column;gap:5px}.footer-copy .row
 .gw-min-rule-copy{margin:0;color:#9aa9ae;font-size:11px;line-height:1.65}
 .gw-min-rule-copy strong{color:var(--white)}
 .gw-card{display:grid;grid-template-columns:minmax(250px,390px) 1fr;min-height:330px}
-.gw-card-image{width:100%;height:100%;min-height:330px;object-fit:cover;background:#070b0e;border-right:1px solid var(--line)}
+.gw-card-image{width:100%;height:100%;min-height:330px;object-fit:cover;object-position:center;background:#070b0e;border-right:1px solid var(--line);display:block}
 .gw-card-body{padding:26px}
 .gw-tag-row{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:11px}
 .gw-tag{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);padding:6px 8px;color:var(--muted);font:700 9px 'JetBrains Mono',monospace}
@@ -610,6 +610,7 @@ function conditions(g){
 }
 function safeBtn(id,text,disabled=false){return '<button class="btn" id="'+id+'" type="button" '+(disabled?'disabled':'')+'>'+text+'</button>'; }
 
+const GIVEAWAY_HERO_IMAGE='/giveaway/giveaway-hero.webp';
 let publicGiveawayData=null;
 
 async function loadPublicData(){
@@ -696,7 +697,7 @@ async function loadCurrent(rows){
   }
 
   root.innerHTML='<article class="gw-card">'+
-    (g.reward_image_url?'<img class="gw-card-image" src="'+esc(g.reward_image_url)+'" alt="'+esc(g.reward_name||'Giveaway reward')+'">':'<div class="gw-card-image"></div>')+
+    '<img class="gw-card-image" src="'+GIVEAWAY_HERO_IMAGE+'" alt="AdhemSwag Giveaway — Subscribers Only — 30,000 FNC Points">'+
     '<div class="gw-card-body">'+
       '<div class="gw-tag-row"><span class="gw-tag '+(isActive?'live':'')+'">'+(isActive?'● LIVE':'○ '+(isUpcoming?'UPCOMING':'ENDED'))+'</span><span class="gw-tag sub">TWITCH SUB ONLY</span></div>'+
       '<h2 style="margin:0 0 7px">'+esc(g.title)+'</h2>'+
