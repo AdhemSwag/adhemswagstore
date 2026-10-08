@@ -367,7 +367,7 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
     <div class="nav-label">Admin</div>
     <button class="nav-btn active" data-panel="dashboard">Dashboard</button>
     <button class="nav-btn" data-panel="google-analytics">Google Analytics</button>
-    <button class="nav-btn" data-panel="rewards">Rewards / Store</button>
+    <button class="nav-btn" data-panel="rewards">Rewards / Store</button><button class="nav-btn" data-panel="sponsors">Sponsors</button>
     <button class="nav-btn" data-panel="giveaways">Giveaways</button>
     <button class="nav-btn" data-panel="live-codes">LIVE Codes</button>
     <button class="nav-btn" data-panel="logs">Admin Logs</button>
@@ -710,7 +710,32 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
 </section>
 <section id="media" class="panel"><div class="section"><h2>Media Library</h2><p>Images stored in the reward-images bucket. Upload images to the rewards or giveaways folder.</p><div class="form-grid"><div class="field"><label>Folder</label><select id="mediaUploadFolder"><option value="rewards">Rewards</option><option value="giveaways">Giveaways</option></select></div><div class="field"><label>Image file (max 5 MB)</label><input id="mediaUploadFile" type="file" accept="image/png,image/jpeg,image/webp,image/gif"></div></div><div class="actions"><button class="btn primary" id="uploadMedia">UPLOAD IMAGE</button><button class="btn" id="loadMedia">REFRESH MEDIA</button></div><div id="mediaStatus" class="notice" style="display:none"></div><div class="table-wrap"><table><thead><tr><th>File</th><th>Size</th><th>Updated</th><th>Action</th></tr></thead><tbody id="mediaList"><tr><td colspan="4">Not loaded.</td></tr></tbody></table></div></div></section>
 <section id="admin-access" class="panel"><div class="section"><h2>Admin Access</h2><p>Find an existing user and grant Admin Panel access.</p><div class="form-grid"><div class="field full"><label>Twitch username</label><input id="adminUserSearch" placeholder="adhemswag"></div></div><div class="actions"><button class="btn primary" id="findAdminUser">FIND USER</button></div><div id="adminUserResult" class="notice" style="display:none"></div></div><div class="section"><h2>Current Admins</h2><div class="table-wrap"><table><thead><tr><th>User ID</th><th>Created</th><th>Action</th></tr></thead><tbody id="adminAccessList"><tr><td colspan="3">Loading…</td></tr></tbody></table></div></div></section>
-<section id="system" class="panel">
+<section id="sponsors" class="panel">
+  <div class="section">
+    <h2>Sponsor <span style="color:var(--cyan)">MANAGER</span></h2>
+    <p>Manage site-wide sponsor campaigns without touching FNC, XP, Rewards or Twitch Watch.</p>
+    <input type="hidden" id="sponsorEditId" value="">
+    <div class="form-grid">
+      <div class="field"><label>Sponsor name</label><input id="sponsorName" placeholder="ExitLag"></div>
+      <div class="field"><label>Promo code</label><input id="sponsorCode" placeholder="ADHEMSWAG"></div>
+      <div class="field full"><label>Banner image URL</label><input id="sponsorImageUrl" placeholder="https://.../exitlag-banner.png"></div>
+      <div class="field full"><label>Affiliate / target URL</label><input id="sponsorTargetUrl" placeholder="https://..."></div>
+      <div class="field"><label>Position</label><select id="sponsorPosition"><option value="left">Left</option><option value="right">Right</option></select></div>
+      <div class="field"><label>Status</label><select id="sponsorEnabled"><option value="true">ON — Active</option><option value="false">OFF — Draft</option></select></div>
+      <div class="field"><label>Display</label><select id="sponsorAllPages"><option value="true">ALL PAGES</option><option value="false">OFF</option></select></div>
+      <div class="field"><label>Close button</label><select id="sponsorCloseable"><option value="true">ON</option><option value="false">OFF</option></select></div>
+      <div class="field"><label>Start date/time (optional)</label><input id="sponsorStart" type="datetime-local"></div>
+      <div class="field"><label>End date/time (optional)</label><input id="sponsorEnd" type="datetime-local"></div>
+    </div>
+    <div class="actions"><button class="btn primary" id="saveSponsor">SAVE SPONSOR</button><button class="btn" id="clearSponsor">CLEAR</button></div>
+    <div id="sponsorSaveStatus" class="notice" style="display:none"></div>
+  </div>
+  <div class="section">
+    <h2>Active <span style="color:var(--cyan)">SPONSORS</span></h2>
+    <p>Click EDIT to update a campaign. Delete removes only the sponsor configuration; it does not affect any reward or FNC data.</p>
+    <div class="table-wrap"><table><thead><tr><th>Sponsor</th><th>Code</th><th>Position</th><th>Status</th><th>Impressions</th><th>Clicks</th><th>CTR</th><th>Actions</th></tr></thead><tbody id="sponsorList"><tr><td colspan="8">Loading…</td></tr></tbody></table></div>
+  </div>
+</section><section id="system" class="panel">
       <div class="section">
         <h2>System <span style="color:var(--cyan)">CONTROLS</span></h2>
         <p>All global switches and Twitch Watch Tracking controls are here. Nothing distributes points until you enable it.</p>
@@ -2175,6 +2200,37 @@ const adminIcons={"dashboard":"<path d='M4 13h6V4H4v9Zm10 7h6V4h-6v16ZM4 20h6v-3
   }
 }
 </style>
+<script id="adhem-sponsor-manager-js">
+(function(){
+  const el=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const status=(m,bad)=>{const x=el('sponsorSaveStatus');if(x){x.style.display='block';x.style.borderLeftColor=bad?'var(--danger)':'var(--cyan)';x.textContent=m}};
+  const localIso=v=>v?new Date(v).toISOString():null;
+  const toLocal=v=>{if(!v)return '';const d=new Date(v);if(isNaN(d))return '';const p=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+'T'+p(d.getHours())+':'+p(d.getMinutes())};
+  async function loadSponsors(){
+    const body=el('sponsorList');if(!body)return;body.innerHTML='<tr><td colspan="8">Loading…</td></tr>';
+    const {data,error}=await supabaseClient.from('sponsors').select('*').order('created_at',{ascending:false});
+    if(error){body.innerHTML='<tr><td colspan="8">'+esc(error.message)+'</td></tr>';return}
+    if(!data?.length){body.innerHTML='<tr><td colspan="8">No sponsors configured.</td></tr>';return}
+    body.innerHTML=data.map(x=>{const ctr=Number(x.impressions||0)?((Number(x.clicks||0)/Number(x.impressions||0))*100).toFixed(2)+'%':'0.00%';return '<tr><td>'+esc(x.name)+'</td><td>'+esc(x.promo_code||'—')+'</td><td>'+esc(x.position)+'</td><td>'+(x.enabled?'<span style="color:var(--ok)">ON</span>':'OFF')+'</td><td>'+Number(x.impressions||0).toLocaleString()+'</td><td>'+Number(x.clicks||0).toLocaleString()+'</td><td>'+ctr+'</td><td><button class="btn" data-sponsor-edit="'+x.id+'">EDIT</button> <button class="btn danger" data-sponsor-delete="'+x.id+'">DELETE</button></td></tr>'}).join('');
+  }
+  function clearSponsor(){['sponsorEditId','sponsorName','sponsorCode','sponsorImageUrl','sponsorTargetUrl','sponsorStart','sponsorEnd'].forEach(id=>{const x=el(id);if(x)x.value=''});el('sponsorPosition').value='left';el('sponsorEnabled').value='false';el('sponsorAllPages').value='true';el('sponsorCloseable').value='true';}
+  async function editSponsor(id){const {data,error}=await supabaseClient.from('sponsors').select('*').eq('id',id).maybeSingle();if(error||!data){status(error?.message||'Sponsor not found.',true);return}el('sponsorEditId').value=data.id;el('sponsorName').value=data.name||'';el('sponsorCode').value=data.promo_code||'';el('sponsorImageUrl').value=data.image_url||'';el('sponsorTargetUrl').value=data.target_url||'';el('sponsorPosition').value=data.position||'left';el('sponsorEnabled').value=String(!!data.enabled);el('sponsorAllPages').value=String(!!data.show_all_pages);el('sponsorCloseable').value=String(!!data.closeable);el('sponsorStart').value=toLocal(data.start_at);el('sponsorEnd').value=toLocal(data.end_at);el('sponsors').scrollIntoView({behavior:'smooth'});status('Editing '+data.name+'. Save to apply changes.')}
+  async function saveSponsor(){
+    const id=el('sponsorEditId').value||null,name=el('sponsorName').value.trim(),image=el('sponsorImageUrl').value.trim(),target=el('sponsorTargetUrl').value.trim();
+    if(!name){status('Sponsor name is required.',true);return}
+    if(image){try{new URL(image)}catch(_){status('Image URL is invalid.',true);return}}
+    if(target){try{new URL(target)}catch(_){status('Target URL is invalid.',true);return}}
+    const payload={name,image_url:image||null,target_url:target||null,promo_code:el('sponsorCode').value.trim()||null,position:el('sponsorPosition').value,enabled:el('sponsorEnabled').value==='true',show_all_pages:el('sponsorAllPages').value==='true',closeable:el('sponsorCloseable').value==='true',start_at:localIso(el('sponsorStart').value),end_at:localIso(el('sponsorEnd').value),updated_at:new Date().toISOString()};
+    let r;if(id)r=await supabaseClient.from('sponsors').update(payload).eq('id',id);else r=await supabaseClient.from('sponsors').insert({...payload,slug:(name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'sponsor')+'-'+Date.now().toString(36)});
+    if(r.error){status(r.error.message,true);return}status(id?'Sponsor updated successfully.':'Sponsor created successfully.');clearSponsor();await loadSponsors();
+  }
+  async function deleteSponsor(id){if(!confirm('Delete this sponsor configuration?'))return;const {error}=await supabaseClient.from('sponsors').delete().eq('id',id);if(error){status(error.message,true);return}status('Sponsor deleted.');await loadSponsors()}
+  document.addEventListener('click',e=>{const a=e.target.closest('[data-sponsor-edit]');if(a)editSponsor(a.dataset.sponsorEdit);const d=e.target.closest('[data-sponsor-delete]');if(d)deleteSponsor(d.dataset.sponsorDelete)});
+  el('saveSponsor')?.addEventListener('click',saveSponsor);el('clearSponsor')?.addEventListener('click',clearSponsor);
+  document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',()=>{if(b.dataset.panel==='sponsors')loadSponsors()}));
+  setTimeout(loadSponsors,800);
+})();
+</script>
 </body>
 </html>
 
