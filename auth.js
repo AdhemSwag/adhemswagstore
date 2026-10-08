@@ -414,6 +414,99 @@
     });
   }
 
+
+  function injectSponsorStyles() {
+    if (document.getElementById('adhem-sponsor-styles')) return;
+    const style = document.createElement('style');
+    style.id = 'adhem-sponsor-styles';
+    style.textContent = `
+      .adhem-sponsor-ad{position:fixed;left:14px;top:50%;transform:translateY(-50%);z-index:9000;width:min(180px,18vw);min-width:120px;border:1px solid rgba(17,217,247,.22);background:rgba(5,8,12,.96);box-shadow:0 10px 34px rgba(0,0,0,.5),0 0 24px rgba(17,217,247,.08);overflow:hidden}
+      .adhem-sponsor-ad.right{left:auto;right:14px}
+      .adhem-sponsor-ad a{display:block;color:#eaf6f8;text-decoration:none}
+      .adhem-sponsor-ad img{display:block;width:100%;height:auto;max-height:320px;object-fit:cover}
+      .adhem-sponsor-ad .sponsor-copy{padding:9px 10px;font:10px/1.45 'JetBrains Mono',monospace}
+      .adhem-sponsor-ad .sponsor-name{color:#11d9f7;font-weight:700;text-transform:uppercase}
+      .adhem-sponsor-ad .sponsor-code{color:#9aa9ae;margin-top:3px}
+      .adhem-sponsor-ad .sponsor-close{position:absolute;top:4px;right:4px;width:24px;height:24px;border:1px solid rgba(17,217,247,.25);background:rgba(5,8,12,.86);color:#d8e5e8;cursor:pointer;font:16px/20px Arial}
+      @media(max-width:900px){.adhem-sponsor-ad{width:120px;min-width:0;left:8px}.adhem-sponsor-ad.right{left:auto;right:8px}.adhem-sponsor-ad img{max-height:220px}}
+      @media(max-width:700px){.adhem-sponsor-ad{display:none!important}}
+    `;
+    document.head.appendChild(style);
+  }
+
+  async function loadActiveSponsor() {
+    if (window.location.pathname.startsWith('/admin')) return;
+    if (document.querySelector('.adhem-sponsor-ad')) return;
+    try {
+      injectSponsorStyles();
+      const { data, error } = await client
+        .from('sponsors')
+        .select('id,name,image_url,target_url,promo_code,position,closeable')
+        .eq('enabled', true)
+        .eq('show_all_pages', true)
+        .or('start_at.is.null,start_at.lte.' + new Date().toISOString())
+        .or('end_at.is.null,end_at.gt.' + new Date().toISOString())
+        .order('created_at', { ascending: false })
+        .limit(1);
+      if (error || !data?.length) return;
+      const sponsor = data[0];
+      const closedKey = 'adhem_sponsor_closed_' + sponsor.id;
+      if (sponsor.closeable && sessionStorage.getItem(closedKey) === '1') return;
+
+      const box = document.createElement('aside');
+      box.className = 'adhem-sponsor-ad' + (sponsor.position === 'right' ? ' right' : '');
+      box.setAttribute('aria-label', sponsor.name + ' sponsor');
+      const link = document.createElement('a');
+      link.href = sponsor.target_url || '#';
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer sponsored';
+      if (sponsor.image_url) {
+        const img = document.createElement('img');
+        img.src = sponsor.image_url;
+        img.alt = sponsor.name || 'Sponsor';
+        img.loading = 'lazy';
+        link.appendChild(img);
+      }
+      const copy = document.createElement('div');
+      copy.className = 'sponsor-copy';
+      const name = document.createElement('div');
+      name.className = 'sponsor-name';
+      name.textContent = sponsor.name || 'Sponsor';
+      copy.appendChild(name);
+      if (sponsor.promo_code) {
+        const code = document.createElement('div');
+        code.className = 'sponsor-code';
+        code.textContent = 'CODE: ' + sponsor.promo_code;
+        copy.appendChild(code);
+      }
+      link.appendChild(copy);
+      box.appendChild(link);
+
+      if (sponsor.closeable) {
+        const close = document.createElement('button');
+        close.type = 'button';
+        close.className = 'sponsor-close';
+        close.setAttribute('aria-label', 'Close sponsor ad');
+        close.textContent = '×';
+        close.addEventListener('click', (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          sessionStorage.setItem(closedKey, '1');
+          box.remove();
+        });
+        box.appendChild(close);
+      }
+
+      link.addEventListener('click', () => {
+        client.rpc('record_sponsor_click', { p_sponsor_id: sponsor.id }).catch(() => {});
+      });
+      document.body.appendChild(box);
+      client.rpc('record_sponsor_impression', { p_sponsor_id: sponsor.id }).catch(() => {});
+    } catch (error) {
+      console.warn('[AdhemSwag] Sponsor ad:', error);
+    }
+  }
+
   function dispatchViewer(viewer) {
     window.dispatchEvent(new CustomEvent('adhem:viewer', { detail: viewer }));
   }
@@ -703,6 +796,7 @@
 
   async function init() {
     injectAccountRewards();
+    loadActiveSponsor();
     startTopbarStatus();
     bindAccountMenu();
     bindAuthButtons();
