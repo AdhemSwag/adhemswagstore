@@ -420,7 +420,7 @@
     const style = document.createElement('style');
     style.id = 'adhem-sponsor-styles';
     style.textContent = `
-      .adhem-sponsor-ad{position:fixed;left:14px;top:50%;transform:translateY(-50%);z-index:9000;width:min(300px,22vw);min-width:160px;border:1px solid rgba(17,217,247,.22);background:rgba(5,8,12,.96);box-shadow:0 10px 34px rgba(0,0,0,.5),0 0 24px rgba(17,217,247,.08);overflow:hidden}
+      .adhem-sponsor-ad{position:fixed;left:14px;top:50%;transform:translateY(-50%);z-index:900;width:min(300px,22vw);min-width:160px;border:1px solid rgba(17,217,247,.22);background:rgba(5,8,12,.96);box-shadow:0 10px 34px rgba(0,0,0,.5),0 0 24px rgba(17,217,247,.08);overflow:hidden}
       .adhem-sponsor-ad.right{left:auto;right:14px}
       .adhem-sponsor-ad a{display:block;color:#eaf6f8;text-decoration:none}
       .adhem-sponsor-ad img{display:block;width:100%;height:auto;max-height:420px;object-fit:contain;background:#05080c}
