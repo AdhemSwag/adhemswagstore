@@ -2373,8 +2373,6 @@ const adminIcons={"dashboard":"<path d='M4 13h6V4H4v9Zm10 7h6V4h-6v16ZM4 20h6v-3
     await loadAdminLogs();
   });
   document.getElementById('openStoreTest')?.addEventListener('click',()=>window.open('/store/','_blank','noopener'));
-  const storePreviewControls=['previewStoreSuccess','previewStoreError','clearStorePreview'];
-  storePreviewControls.forEach(id=>document.getElementById(id)?.addEventListener('click',()=>{}));
   document.getElementById('previewStoreSuccess')?.addEventListener('click',()=>{
     storeTestPreview.style.display='block';
     storeTestPreview.style.borderColor='rgba(60,231,165,.45)';
