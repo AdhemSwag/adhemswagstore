@@ -761,6 +761,24 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
         </div>
         <div id="twitchWatchStatus" class="notice" style="display:none;margin-top:10px"></div>
       </div>
+      <div class="section" id="storeChatBotSection">
+        <h2>STORE <span style="color:var(--cyan)">CHAT BOT</span></h2>
+        <p>Separate Twitch bot for store redemption announcements only. This does not replace OBS alerts or change FNC/XP.</p>
+        <div class="form-grid">
+          <div class="field"><label for="storeChatBotClientId">Twitch App Client ID</label><input id="storeChatBotClientId" autocomplete="off" placeholder="Twitch Developer Console Client ID"></div>
+          <div class="field"><label for="storeChatBotClientSecret">Twitch App Client Secret</label><input id="storeChatBotClientSecret" type="password" autocomplete="new-password" placeholder="Stored securely; never displayed again"></div>
+        </div>
+        <div class="actions">
+          <button class="btn" id="saveStoreChatBotApp" type="button">SAVE BOT APP CREDENTIALS</button>
+          <button class="btn primary" id="connectStoreChatBot" type="button">CONNECT STORE BOT</button>
+        </div>
+        <div class="notice" style="margin-top:10px">
+          <strong style="color:var(--cyan)">REQUIRED REDIRECT URL</strong><br>
+          <code style="word-break:break-all">https://lpmocfdfpebcaseffugg.supabase.co/functions/v1/store-chat-bot-oauth-callback</code>
+          <p style="margin:8px 0 0">Add this exact URL under your Twitch Developer Console app's OAuth Redirect URLs before connecting. Then authorize using the dedicated bot Twitch account and make that account a moderator in AdhemSwag's channel.</p>
+        </div>
+        <div id="storeChatBotStatus" class="notice" style="display:none;margin-top:10px" aria-live="polite"></div>
+      </div>
     </section>
   </main>
 </div>
@@ -1923,6 +1941,58 @@ document.getElementById('clearGiveaway')?.addEventListener('click',()=>{
 document.getElementById('createLiveCode')?.addEventListener('click',createLiveCode);
 document.getElementById('generateLiveCode')?.addEventListener('click',generatedLiveCodeIntoForm);
 document.getElementById('refreshLiveCodes')?.addEventListener('click',loadLiveCodes);
+
+async function getStoreChatBotAdminSession() {
+  const { data, error } = await supabaseClient.auth.getSession();
+  if (error || !data?.session?.access_token) throw new Error('Admin session expired. Sign in again.');
+  return data.session;
+}
+function setStoreChatBotStatus(message, isError=false) {
+  const el=document.getElementById('storeChatBotStatus');
+  if(!el)return;
+  el.style.display='block';
+  el.textContent=message;
+  el.style.borderColor=isError?'#e45b68':'';
+}
+document.getElementById('saveStoreChatBotApp')?.addEventListener('click', async () => {
+  if(!adminReady)return;
+  const status=document.getElementById('storeChatBotStatus');
+  const clientId=document.getElementById('storeChatBotClientId')?.value?.trim()||'';
+  const clientSecret=document.getElementById('storeChatBotClientSecret')?.value?.trim()||'';
+  if(!clientId||!clientSecret){setStoreChatBotStatus('Enter both the Twitch App Client ID and Client Secret.',true);return;}
+  try{
+    setStoreChatBotStatus('Saving bot application credentials securely…');
+    const session=await getStoreChatBotAdminSession();
+    const {data,error}=await supabaseClient.functions.invoke('admin-store-chat-bot-app-config',{
+      body:{client_id:clientId,client_secret:clientSecret},
+      headers:{Authorization:'Bearer '+session.access_token}
+    });
+    if(error)throw error;
+    if(!data?.ok)throw new Error(data?.message||data?.error||'Could not save bot application credentials.');
+    const secretInput=document.getElementById('storeChatBotClientSecret');
+    if(secretInput)secretInput.value='';
+    setStoreChatBotStatus('Bot app credentials saved. Add the exact Redirect URL shown above in Twitch Developer Console, then click CONNECT STORE BOT.');
+  }catch(error){
+    setStoreChatBotStatus('Could not save bot app credentials: '+(error?.message||'Unknown error'),true);
+  }
+});
+document.getElementById('connectStoreChatBot')?.addEventListener('click', async () => {
+  if(!adminReady)return;
+  try{
+    setStoreChatBotStatus('Preparing secure Twitch authorization…');
+    const session=await getStoreChatBotAdminSession();
+    const {data,error}=await supabaseClient.functions.invoke('store-chat-bot-oauth-start',{
+      body:{},
+      headers:{Authorization:'Bearer '+session.access_token}
+    });
+    if(error)throw error;
+    if(!data?.ok||!data?.auth_url)throw new Error(data?.message||data?.error||'Save the bot app credentials first.');
+    setStoreChatBotStatus('Opening Twitch. Authorize the dedicated bot account, not your personal streamer account.');
+    window.location.assign(data.auth_url);
+  }catch(error){
+    setStoreChatBotStatus('Could not start bot connection: '+(error?.message||'Unknown error')+'. Verify the Redirect URL is registered in Twitch Developer Console.',true);
+  }
+});
 
 document.getElementById('connectTwitchWatch')?.addEventListener('click', async () => {
   if (!adminReady) return;
