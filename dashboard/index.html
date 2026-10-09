@@ -1638,16 +1638,42 @@ footer .footer-copy .row{margin:0;}
     const platformStatus = document.getElementById('platformStatus');
 
     async function getTwitch(){
+      // Use the site's Twitch Helix-backed status endpoint first so the homepage
+      // player follows the same authoritative LIVE/OFFLINE result as the site.
       try{
-        const uptime = await fetch('https://decapi.me/twitch/uptime/' + TWITCH_CHANNEL, {cache:'no-store'}).then(r=>r.text());
-        const live = !uptime.toLowerCase().includes('offline');
+        const response = await fetch('https://lpmocfdfpebcaseffugg.supabase.co/functions/v1/twitch-live-status', {
+          method:'GET',
+          headers:{ apikey:'sb_publishable_vNkDqYd81b2krZAisUhb2g_c_uwyvRp' },
+          cache:'no-store'
+        });
+        if(response.ok){
+          const data = await response.json();
+          if(typeof data.live === 'boolean'){
+            let viewers = null;
+            if(data.live){
+              try{
+                const raw = await fetch('https://decapi.me/twitch/viewercount/' + TWITCH_CHANNEL, {cache:'no-store'}).then(r=>r.text());
+                const n = parseInt(raw,10);
+                if(!Number.isNaN(n)) viewers=n;
+              }catch(_){}
+            }
+            return {live:data.live, viewers};
+          }
+        }
+      }catch(_){}
+      // Fallback only if the site's official status endpoint is unavailable.
+      try{
+        const response = await fetch('https://decapi.me/twitch/uptime/' + TWITCH_CHANNEL, {cache:'no-store'});
+        if(!response.ok) throw new Error('Twitch uptime unavailable');
+        const uptime = (await response.text()).trim();
+        if(!uptime || /offline|error|not found|invalid|unknown/i.test(uptime)) return {live:false, viewers:null};
         let viewers = null;
-        if(live){
+        try{
           const raw = await fetch('https://decapi.me/twitch/viewercount/' + TWITCH_CHANNEL, {cache:'no-store'}).then(r=>r.text());
           const n = parseInt(raw,10);
           if(!Number.isNaN(n)) viewers=n;
-        }
-        return {live, viewers};
+        }catch(_){}
+        return {live:true, viewers};
       }catch(e){ return {live:false, viewers:null, error:true}; }
     }
 
