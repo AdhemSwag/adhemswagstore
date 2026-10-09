@@ -856,7 +856,7 @@ async function captureTwitchWatchCallback() {
           access_token: accessToken,
           refresh_token: refreshToken,
           client_id: twitchClientId,
-          client_secret: (document.getElementById('twitchWatchClientSecret')?.value || '').trim() || null,
+          client_secret: ((document.getElementById('twitchWatchClientSecret')?.value || '').trim() || sessionStorage.getItem('adhem_twitch_watch_client_secret') || '').trim() || null,
           broadcaster_id: twitchBroadcasterId
         },
         headers: { Authorization: `Bearer ${session.access_token}` }
@@ -868,6 +868,7 @@ async function captureTwitchWatchCallback() {
     localStorage.setItem('adhem_twitch_watch_connected','1');
     const watchSecretInput = document.getElementById('twitchWatchClientSecret');
     if (watchSecretInput) watchSecretInput.value = '';
+    sessionStorage.removeItem('adhem_twitch_watch_client_secret');
     localStorage.removeItem('adhem_twitch_watch_connect');
     localStorage.removeItem('adhem_twitch_provider_token');
     localStorage.removeItem('adhem_twitch_provider_refresh_token');
@@ -2006,6 +2007,10 @@ document.getElementById('connectTwitchWatch')?.addEventListener('click', async (
   if (!adminReady) return;
   const s=document.getElementById('twitchWatchStatus');
   try {
+    // Keep the app secret only for this same-tab OAuth round trip; send it to the authenticated server after Twitch redirects back.
+    const clientSecretInput = document.getElementById('twitchWatchClientSecret');
+    const clientSecret = (clientSecretInput?.value || '').trim();
+    if (clientSecret) sessionStorage.setItem('adhem_twitch_watch_client_secret', clientSecret);
     // Always perform a fresh Twitch authorization from this button.
     // Do not block reconnection on the old backend token: that token may be
     // exactly what needs to be replaced.
