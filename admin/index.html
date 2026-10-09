@@ -755,6 +755,11 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
         <div class="notice">
           <strong style="color:var(--cyan)">STATUS:</strong> <span id="twitchWatchState">Not connected</span>
         </div>
+        <div class="field" style="margin-top:12px">
+          <label for="twitchWatchClientSecret">Twitch Developer App Client Secret (Watch Tracking)</label>
+          <input id="twitchWatchClientSecret" type="password" autocomplete="new-password" placeholder="Enter the secret for the same Twitch App Client ID" />
+          <p style="margin:6px 0 0;color:var(--muted);font-size:12px">Entered only here and saved to the secure server vault. Do not use your Supabase secret or paste it into chat.</p>
+        </div>
         <div class="actions">
           <button class="btn primary" id="connectTwitchWatch" type="button">CONNECT TWITCH WATCH TRACKING</button>
           <button class="btn" id="testTwitchWatch" type="button">TEST WATCH SYNC</button>
@@ -851,6 +856,7 @@ async function captureTwitchWatchCallback() {
           access_token: accessToken,
           refresh_token: refreshToken,
           client_id: twitchClientId,
+          client_secret: (document.getElementById('twitchWatchClientSecret')?.value || '').trim() || null,
           broadcaster_id: twitchBroadcasterId
         },
         headers: { Authorization: `Bearer ${session.access_token}` }
@@ -860,6 +866,8 @@ async function captureTwitchWatchCallback() {
     if (!storeData?.ok) throw new Error('credential_store_failed');
 
     localStorage.setItem('adhem_twitch_watch_connected','1');
+    const watchSecretInput = document.getElementById('twitchWatchClientSecret');
+    if (watchSecretInput) watchSecretInput.value = '';
     localStorage.removeItem('adhem_twitch_watch_connect');
     localStorage.removeItem('adhem_twitch_provider_token');
     localStorage.removeItem('adhem_twitch_provider_refresh_token');
