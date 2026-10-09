@@ -168,7 +168,7 @@
     .cta-row .btn{ flex:1 1 auto; text-align:center; justify-content:center; }
     .fnc-faq-btn{ width:100%; justify-content:center; }
     .partners-row{ flex-direction:column; }
-    .partner-btn{ text-align:center; }
+    .partner-btn{ width:100%; flex:0 0 auto; text-align:center; }
   }
 
   @media (max-width: 420px){
@@ -565,9 +565,11 @@
   /* ---- partners ---- */
   .partners-row{ display:flex; gap:14px; flex-wrap:wrap; }
   .partner-btn{
+    flex:1 1 calc((100% - 28px) / 3); min-width:0; min-height:52px;
+    display:flex; align-items:center; justify-content:center; text-align:center; white-space:nowrap;
     font-family:'JetBrains Mono', monospace; font-size:13px; letter-spacing:0.06em; text-transform:uppercase;
     color:var(--white); text-decoration:none; border:1px solid var(--line); background:var(--bg-panel);
-    padding:15px 26px; transition:all .2s ease; position:relative; overflow:hidden;
+    padding:15px 18px; transition:all .2s ease; position:relative; overflow:hidden;
   }
   .partner-btn:hover{ border-color:var(--cyan); color:var(--cyan); box-shadow:0 0 16px rgba(17,217,247,0.25); background:rgba(17,217,247,0.05); }
 
