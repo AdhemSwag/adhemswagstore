@@ -575,7 +575,13 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
     <section id="store-tests" class="panel">
   <div class="section">
     <h2>Test Viewer Mode</h2>
-    <p>The signed-in adhemswag profile is now marked TEST VIEWER. Site test guards prevent this profile from earning watch FNC/XP, claiming legacy FNC, consuming live codes, creating real giveaway entries, or making real Store redemptions. These controls preview Store success/error UI only.</p>
+    <p>Verify the live test flag on your signed-in admin profile, then test Store success/error messages without spending FNC or changing stock, redemptions, access codes, or Twitch chat.</p>
+    <div id="myTestViewerStatus" class="notice" role="status" aria-live="polite">Status not checked yet.</div>
+    <div class="actions" style="margin-top:16px">
+      <button class="btn primary" id="verifyMyTestViewer" type="button">VERIFY MY TEST STATUS</button>
+      <button class="btn" id="enableMyTestViewer" type="button">ENABLE TEST VIEWER ON MY PROFILE</button>
+      <button class="btn" id="openStoreTest" type="button">OPEN STORE TEST</button>
+    </div>
     <div class="actions" style="margin-top:16px">
       <button class="btn primary" id="previewStoreSuccess" type="button">PREVIEW PURCHASE SUCCESS</button>
       <button class="btn danger" id="previewStoreError" type="button">PREVIEW PURCHASE ERROR</button>
@@ -966,7 +972,7 @@ function finishLoader() {
 function setControls(enabled) {
   adminReady = enabled;
   document.querySelectorAll('#rewards input,#rewards textarea,#giveaways input,#giveaways textarea,#giveaways select').forEach(el=>el.disabled=!enabled);
-  ['rewardImage','saveReward','clearReward','createGiveaway','clearGiveaway','connectTwitchWatch','testTwitchWatch','saveFncSettings','reloadFncSettings','saveBonusSettings','searchUsers','clearUsers','addUserFnc','removeUserFnc','addUserXp','removeUserXp','changeUserLevel','viewPublicProfile','toggleUserBlock','loadRedemptions','loadTransactions','loadLeaderboard','loadMedia','findAdminUser','refreshDashboard','systemFnc','systemPoints','systemXp','systemRewards'].forEach(id=>{
+  ['rewardImage','saveReward','clearReward','createGiveaway','clearGiveaway','connectTwitchWatch','testTwitchWatch','saveFncSettings','reloadFncSettings','saveBonusSettings','searchUsers','clearUsers','addUserFnc','removeUserFnc','addUserXp','removeUserXp','changeUserLevel','viewPublicProfile','toggleUserBlock','toggleTestViewer','verifyMyTestViewer','enableMyTestViewer','openStoreTest','previewStoreSuccess','previewStoreError','clearStorePreview','loadRedemptions','loadTransactions','loadLeaderboard','loadMedia','findAdminUser','refreshDashboard','systemFnc','systemPoints','systemXp','systemRewards'].forEach(id=>{
     const el=document.getElementById(id);
     if(el) el.disabled=!enabled;
   });
@@ -2342,6 +2348,33 @@ const adminIcons={"dashboard":"<path d='M4 13h6V4H4v9Zm10 7h6V4h-6v16ZM4 20h6v-3
   el('saveSponsor')?.addEventListener('click',saveSponsor);el('clearSponsor')?.addEventListener('click',clearSponsor);
   document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',()=>{if(b.dataset.panel==='sponsors')loadSponsors()}));
   const storeTestPreview=document.getElementById('storeTestPreview');
+  const myTestViewerStatus=document.getElementById('myTestViewerStatus');
+  async function verifyMyTestViewer(){
+    if(!adminReady||!myTestViewerStatus)return;
+    myTestViewerStatus.textContent='Checking signed-in profile…';
+    const {data:{user},error:authError}=await supabaseClient.auth.getUser();
+    if(authError||!user){myTestViewerStatus.textContent='Could not verify: sign in to the admin account again.';return;}
+    const {data:profile,error}=await supabaseClient.from('users').select('twitch_username,is_test,is_blocked').eq('id',user.id).maybeSingle();
+    if(error||!profile){myTestViewerStatus.textContent='Could not read your viewer profile: '+(error?.message||'profile not found');return;}
+    myTestViewerStatus.textContent=(profile.is_test?'ACTIVE — TEST VIEWER':'OFF — NORMAL VIEWER')+' · '+(profile.twitch_username||user.email||'signed-in account')+' · '+(profile.is_blocked?'ACCOUNT BLOCKED':'account not blocked')+'. Store test mode should show the yellow Test Viewer banner when you open /store/.';
+    myTestViewerStatus.style.borderLeftColor=profile.is_test?'var(--ok)':'var(--danger)';
+  }
+  document.getElementById('verifyMyTestViewer')?.addEventListener('click',verifyMyTestViewer);
+  document.getElementById('enableMyTestViewer')?.addEventListener('click',async()=>{
+    if(!adminReady||!myTestViewerStatus)return;
+    const {data:{user},error:authError}=await supabaseClient.auth.getUser();
+    if(authError||!user){myTestViewerStatus.textContent='Could not verify your login. Sign in again.';return;}
+    const {data,error}=await supabaseClient.functions.invoke('admin-adjust-user',{body:{user_id:user.id,is_test:true}});
+    if(error){myTestViewerStatus.textContent='Could not enable Test Viewer: '+error.message;return;}
+    myTestViewerStatus.textContent='TEST VIEWER ENABLED for your profile. Admin access is unchanged. No FNC or stock was changed.';
+    myTestViewerStatus.style.borderLeftColor='var(--ok)';
+    await verifyMyTestViewer();
+    await loadUsers(document.getElementById('userSearch')?.value||'');
+    await loadAdminLogs();
+  });
+  document.getElementById('openStoreTest')?.addEventListener('click',()=>window.open('/store/','_blank','noopener'));
+  const storePreviewControls=['previewStoreSuccess','previewStoreError','clearStorePreview'];
+  storePreviewControls.forEach(id=>document.getElementById(id)?.addEventListener('click',()=>{}));
   document.getElementById('previewStoreSuccess')?.addEventListener('click',()=>{
     storeTestPreview.style.display='block';
     storeTestPreview.style.borderColor='rgba(60,231,165,.45)';
