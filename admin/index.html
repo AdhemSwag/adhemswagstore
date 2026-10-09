@@ -761,6 +761,7 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
           <p style="margin:6px 0 0;color:var(--muted);font-size:12px">Entered only here and saved to the secure server vault. Do not use your Supabase secret or paste it into chat.</p>
         </div>
         <div class="actions">
+          <button class="btn" id="saveTwitchWatchSecret" type="button">SAVE CLIENT SECRET SECURELY</button>
           <button class="btn primary" id="connectTwitchWatch" type="button">CONNECT TWITCH WATCH TRACKING</button>
           <button class="btn" id="testTwitchWatch" type="button">TEST WATCH SYNC</button>
         </div>
@@ -2000,6 +2001,31 @@ document.getElementById('connectStoreChatBot')?.addEventListener('click', async 
     window.location.assign(data.auth_url);
   }catch(error){
     setStoreChatBotStatus('Could not start bot connection: '+(error?.message||'Unknown error')+'. Verify the Redirect URL is registered in Twitch Developer Console.',true);
+  }
+});
+
+document.getElementById('saveTwitchWatchSecret')?.addEventListener('click', async () => {
+  if (!adminReady) return;
+  const status = document.getElementById('twitchWatchStatus');
+  const input = document.getElementById('twitchWatchClientSecret');
+  const clientSecret = (input?.value || '').trim();
+  if (!clientSecret) {
+    if (status) { status.style.display='block'; status.textContent='Enter the Twitch Developer App Client Secret first.'; }
+    return;
+  }
+  try {
+    if (status) { status.style.display='block'; status.textContent='Saving Client Secret securely…'; }
+    const { data, error } = await supabaseClient.functions.invoke('admin-store-twitch-watch-credentials', {
+      body: { client_secret: clientSecret }
+    });
+    if (error) throw error;
+    if (!data?.ok) throw new Error(data?.error || 'secret_save_failed');
+    input.value = '';
+    sessionStorage.removeItem('adhem_twitch_watch_client_secret');
+    if (status) status.textContent='Client Secret saved securely. Now click CONNECT TWITCH WATCH TRACKING.';
+    await updateSystemButtons();
+  } catch (error) {
+    if (status) { status.style.display='block'; status.textContent='Could not save Client Secret: '+(error?.message || 'Unknown error'); }
   }
 });
 
