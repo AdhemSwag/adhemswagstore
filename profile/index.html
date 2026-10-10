@@ -580,6 +580,8 @@ async function renderAdminPublicPreview(username){
  const isPublicViewer=!!publicViewerUsername;
  document.body.classList.add('admin-public-preview');
  if(isPublicViewer)document.body.classList.add('public-viewer-profile');
+ const previewBanner=document.getElementById('adminPreviewBanner');
+ if(previewBanner)previewBanner.textContent=isPublicViewer?'PUBLIC VIEWER PROFILE • READ ONLY':'ADMIN PREVIEW • PUBLIC VIEW • VIEWER PROFILE';
  set('profileHeroStatus',isPublicViewer?'PUBLIC PROFILE':'PUBLIC VIEW');
  const eyebrow=document.querySelector('.profile-hero .eyebrow');
  const title=document.querySelector('.profile-hero h1');
