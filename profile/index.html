@@ -11,6 +11,7 @@
 </style>
 
 <style id="profile-organized-css">
+.public-viewer-profile .badge-cta{display:none!important}
 .admin-preview-banner{display:none;margin-top:24px;padding:10px 14px;border:1px solid rgba(17,217,247,.28);background:rgba(17,217,247,.045);color:var(--cyan);font:700 10px 'JetBrains Mono',monospace;letter-spacing:.12em;text-transform:uppercase}
 .admin-public-preview .admin-preview-banner{display:block}
 .admin-public-preview .profile-account-card .section-head a,
@@ -572,39 +573,50 @@ function renderProfileBadges(level){
 }
 
 const adminPreviewUsername = new URLSearchParams(window.location.search).get('admin_preview');
+const publicViewerUsername = new URLSearchParams(window.location.search).get('viewer');
 
 async function renderAdminPublicPreview(username){
  const set=(id,v)=>{const x=document.getElementById(id);if(x)x.textContent=v};
+ const isPublicViewer=!!publicViewerUsername;
  document.body.classList.add('admin-public-preview');
- set('profileHeroStatus','PUBLIC VIEW');
+ if(isPublicViewer)document.body.classList.add('public-viewer-profile');
+ set('profileHeroStatus',isPublicViewer?'PUBLIC PROFILE':'PUBLIC VIEW');
  const eyebrow=document.querySelector('.profile-hero .eyebrow');
  const title=document.querySelector('.profile-hero h1');
  const lede=document.querySelector('.profile-hero .lede');
  const cardTitle=document.querySelector('.profile-account-card h2');
- if(eyebrow)eyebrow.textContent='// ADMIN PREVIEW';
+ if(eyebrow)eyebrow.textContent=isPublicViewer?'// VIEWER PROFILE':'// ADMIN PREVIEW';
  if(title)title.innerHTML='PLAYER <span>PROFILE</span>';
- if(lede)lede.textContent='This is the public-facing profile view for the selected viewer.';
- if(cardTitle)cardTitle.textContent='PUBLIC PROFILE';
+ if(lede)lede.textContent=isPublicViewer?'Public AdhemSwag progression, FNC Points and earned level badge.':'This is the public-facing profile view for the selected viewer.';
+ if(cardTitle)cardTitle.textContent=isPublicViewer?'VIEWER PROFILE':'PUBLIC PROFILE';
  const client=window.AdhemAuth;
  if(!client){set('profileHeroStatus','ERROR');set('profileTwitchStatus','Profile service unavailable');return}
- const {data,error}=await client.rpc('get_admin_profile_preview',{p_twitch_username:username});
+ const {data,error}=isPublicViewer
+   ? await client.rpc('get_public_viewer_profile',{p_twitch_username:username})
+   : await client.rpc('get_admin_profile_preview',{p_twitch_username:username});
  if(error||!data||!data.length){
    set('profileHeroStatus','NOT AVAILABLE');
-   set('profileTwitchStatus','Profile not found or admin access denied');
+   set('profileTwitchStatus','Profile not found or unavailable');
    set('profileCompleteStatus','—');
-   set('fncEligibilityStatus','Admin preview requires verified admin access');
+   set('fncEligibilityStatus',isPublicViewer?'No public profile is available for this viewer.':'Admin preview requires verified admin access');
    set('profileFncPoints','0');set('profileLevel','1');set('profileWatchMinutes','0 min');set('profileXp','0 XP');
    const bar=document.getElementById('profileProgressBar');if(bar)bar.style.width='0%';
    return;
  }
  const p=data[0];
  set('profileTwitchStatus',p.twitch_username||'—');
- set('profileCompleteStatus',p.profile_complete?'Complete':'Incomplete');
- set('fncEligibilityStatus',p.profile_complete?'Profile ready — FNC active':'Profile incomplete');
- const {data: activeSession}=await client.from('watch_sessions').select('active_minutes,last_seen_at,last_activity_at,ended_at').eq('user_id',adminPreviewUsername ? (data[0]?.id||'') : d.authId).eq('platform','twitch').is('ended_at',null).gte('last_seen_at',new Date(Date.now()-120000).toISOString()).gte('last_activity_at',new Date(Date.now()-300000).toISOString()).order('last_seen_at',{ascending:false}).limit(1).maybeSingle();
- const activeViewer=!!activeSession;
- const activeTitle=document.getElementById('profileActiveTitle');if(activeTitle){activeTitle.textContent=activeViewer?'🟢 ACTIVE VIEWER':'🔴 INACTIVE VIEWER';activeTitle.classList.toggle('profile-active-offline',!activeViewer)}
- set('profileViewerStatus',activeViewer?(Number(activeSession.active_minutes||0)>=10?'🟢 ACTIVE VIEWER':'🟠 WATCHING — STORE UNLOCKS AT 10 MIN'):'🔴 INACTIVE');
+ set('profileCompleteStatus',isPublicViewer?'Public profile':(p.profile_complete?'Complete':'Incomplete'));
+ set('fncEligibilityStatus',isPublicViewer?'Public progression stats':(p.profile_complete?'Profile ready — FNC active':'Profile incomplete'));
+ const viewerStatus=document.getElementById('profileViewerStatus');
+ if(viewerStatus&&viewerStatus.closest('.row'))viewerStatus.closest('.row').style.display=isPublicViewer?'none':'';
+ let activeViewer=false, activeSession=null;
+ if(!isPublicViewer){
+   const result=await client.from('watch_sessions').select('active_minutes,last_seen_at,last_activity_at,ended_at').eq('user_id',p.id||'').eq('platform','twitch').is('ended_at',null).gte('last_seen_at',new Date(Date.now()-120000).toISOString()).gte('last_activity_at',new Date(Date.now()-300000).toISOString()).order('last_seen_at',{ascending:false}).limit(1).maybeSingle();
+   activeSession=result.data;activeViewer=!!activeSession;
+ }
+ const activeTitle=document.getElementById('profileActiveTitle');
+ if(activeTitle){activeTitle.textContent=isPublicViewer?'🏅 VIEWER PROGRESSION':(activeViewer?'🟢 ACTIVE VIEWER':'🔴 INACTIVE VIEWER');activeTitle.classList.toggle('profile-active-offline',!isPublicViewer&&!activeViewer)}
+ if(!isPublicViewer)set('profileViewerStatus',activeViewer?(Number(activeSession.active_minutes||0)>=10?'🟢 ACTIVE VIEWER':'🟠 WATCHING — STORE UNLOCKS AT 10 MIN'):'🔴 INACTIVE');
  set('profileFncPoints',Number(p.fnc_points||0).toLocaleString());
  const xp=Number(p.xp||0),level=Number(p.level||1);
  set('profileXp',xp.toLocaleString()+' XP');set('profileLevel',level);set('profileWatchMinutes',formatWatchTime(Number(p.total_watch_minutes||0)));set('profileStreak',Number(p.streak||0)+' DAYS');
@@ -619,7 +631,7 @@ async function renderAdminPublicPreview(username){
 window.addEventListener('adhem:viewer', async function(e){
  const d=e.detail||{},p=d.profile,client=window.AdhemAuth,history=document.getElementById('profileHistory');
  const set=(id,v)=>{const x=document.getElementById(id);if(x)x.textContent=v};
- if(adminPreviewUsername){await renderAdminPublicPreview(adminPreviewUsername);return}
+ if(adminPreviewUsername||publicViewerUsername){await renderAdminPublicPreview(publicViewerUsername||adminPreviewUsername);return}
  if(!d.authId){set('profileTwitchStatus','Not connected');set('profileCompleteStatus','Connect Twitch first');return}
  set('profileTwitchStatus',p&&p.twitch_username?'Connected as '+p.twitch_username:'Not connected');
  if(p&&p.profile_complete&&client){
