@@ -793,7 +793,8 @@ body.mobile-menu-open{overflow:hidden!important}
     items.forEach((u,i)=>{
       const r=start+i+1,cls=r===1?' top1':r===2?' top2':r===3?' top3':'';
       const value=board==='xp'?fmt(u.xp):board==='earned'?fmt(u.total_fnc_earned):fmt(u.fnc_points);
-      html+=`<div class="lb-row${cls}"><div class="lb-rank">#${r}</div><div class="lb-user">${esc(u.twitch_username)} <span style="color:var(--muted);font-size:10px">LVL ${Number(u.level||1)}</span></div><div class="lb-points">${value} <span>${label==='XP'?'XP':'FNC'}</span></div></div>`;
+      const profileUrl='/profile/?viewer='+encodeURIComponent(u.twitch_username);
+      html+=`<div class="lb-row${cls}"><div class="lb-rank">#${r}</div><div class="lb-user"><a href="${profileUrl}" style="color:inherit;text-decoration:none" aria-label="View ${esc(u.twitch_username)} profile">${esc(u.twitch_username)} <span style="color:var(--muted);font-size:10px">LVL ${Number(u.level||1)}</span></a></div><div class="lb-points">${value} <span>${label==='XP'?'XP':'FNC'}</span></div></div>`;
     });
     table.innerHTML=html;
     const pages=Math.ceil(sorted.length/PAGE_SIZE);pagination.hidden=pages<=1;
@@ -846,7 +847,7 @@ body.mobile-menu-open{overflow:hidden!important}
     if(error){console.error(error);grid.innerHTML='<div class="lb-loading">Watch stats temporarily unavailable.</div>';return;}
     const items=Array.isArray(data)?data:[];
     if(!items.length){grid.innerHTML='<div class="lb-loading">No watch activity recorded for this period yet.</div>';return;}
-    grid.innerHTML=items.map(u=>`<div class="watcher-card"><div class="watcher-rank">#${u.rank}</div><div class="watcher-name">${esc(u.twitch_username)}</div><div class="watcher-minutes">${fmt(u.watch_minutes)} <small>MIN</small></div><div class="watcher-level">LEVEL ${fmt(u.level)} • ${fmt(u.xp)} XP</div></div>`).join('');
+    grid.innerHTML=items.map(u=>`<div class="watcher-card"><div class="watcher-rank">#${u.rank}</div><div class="watcher-name"><a href="/profile/?viewer=${encodeURIComponent(u.twitch_username)}" style="color:inherit;text-decoration:none" aria-label="View ${esc(u.twitch_username)} profile">${esc(u.twitch_username)}</a></div><div class="watcher-minutes">${fmt(u.watch_minutes)} <small>MIN</small></div><div class="watcher-level">LEVEL ${fmt(u.level)} • ${fmt(u.xp)} XP</div></div>`).join('');
   }
 
   pagination.addEventListener('click',e=>{const b=e.target.closest('[data-p]');if(!b)return;page=Math.max(1,page+Number(b.dataset.p));renderBoard();window.scrollTo({top:0,behavior:'smooth'});});
