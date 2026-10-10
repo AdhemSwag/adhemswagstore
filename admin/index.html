@@ -565,6 +565,7 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
           <button class="btn" id="addUserXp">+ XP</button>
           <button class="btn" id="removeUserXp">− XP</button>
           <button class="btn" id="changeUserLevel">CHANGE LEVEL</button>
+          <button class="btn" id="toggleUserVip">ASSIGN FNC VIP</button>
           <button class="btn primary" id="viewPublicProfile" type="button">VIEW PUBLIC PROFILE</button>
           <button class="btn danger" id="toggleUserBlock">BLOCK ACCOUNT</button>
         </div>
@@ -1080,6 +1081,9 @@ function renderUserDetail(user){
     '<div class="field"><label>Level</label><input value="'+Number(user.level||1)+'" disabled></div>'+
     '<div class="field"><label>Watch time</label><input value="'+Number(user.total_watch_minutes||0).toLocaleString()+' min" disabled></div>'+
     '<div class="field"><label>Profile</label><input value="'+(user.profile_complete?'COMPLETE':'INCOMPLETE')+'" disabled></div>'+
+    '<div class="field"><label>FNC Supporter</label><input value="'+(user.fnc_supporter?'YES':'NO')+'" disabled></div>'+
+    '<div class="field"><label>FNC VIP</label><input value="'+(user.fnc_vip?'ASSIGNED':'NOT ASSIGNED')+'" disabled></div>'+
+    '<div class="field"><label>Twitch Subscriber Badge</label><input value="'+(user.twitch_subscription_verified?'VERIFIED':'NOT VERIFIED')+'" disabled></div>'+
     '<div class="field"><label>Steam</label><input value="'+escapeAttr(user.steam_id||'Not connected')+'" disabled></div>'+
     '<div class="field"><label>Trade link</label><input value="'+escapeAttr(user.steam_trade_url||'Not set')+'" disabled></div>'+
     '<div class="field"><label>Discord</label><input value="'+escapeAttr(user.discord_username||'Not set')+'" disabled></div>'+
@@ -1087,6 +1091,8 @@ function renderUserDetail(user){
     '</div>';
   const block=document.getElementById('toggleUserBlock');
   if(block)block.textContent=user.is_blocked?'UNBLOCK ACCOUNT':'BLOCK ACCOUNT';
+  const vip=document.getElementById('toggleUserVip');
+  if(vip)vip.textContent=user.fnc_vip?'REMOVE FNC VIP':'ASSIGN FNC VIP';
 }
 
 async function loadUsers(search=''){
@@ -1094,7 +1100,7 @@ async function loadUsers(search=''){
   if(!tbody||!adminReady)return;
   tbody.innerHTML='<tr><td colspan="8">Loading viewers…</td></tr>';
   const filter=document.getElementById('userStatusFilter')?.value||'all';
-  let query=supabaseClient.from('users').select('id,twitch_username,email,fnc_points,total_fnc_earned,xp,level,total_watch_minutes,profile_complete,is_blocked,steam_id,steam_trade_url,discord_username,created_at').order('created_at',{ascending:false}).limit(100);
+  let query=supabaseClient.from('users').select('id,twitch_username,email,fnc_points,total_fnc_earned,xp,level,total_watch_minutes,profile_complete,is_blocked,fnc_supporter,fnc_vip,twitch_subscription_verified,steam_id,steam_trade_url,discord_username,created_at').order('created_at',{ascending:false}).limit(100);
   const term=search.trim();
   if(term) query=query.or('twitch_username.ilike.%'+term+'%,email.ilike.%'+term+'%');
   if(filter==='active') query=query.eq('is_blocked',false);
@@ -1150,6 +1156,19 @@ async function adjustSelectedUser({fncDelta=0,xpDelta=0,level=null,blocked=null}
   await loadAdminLogs();
 }
 
+document.getElementById('toggleUserVip')?.addEventListener('click',async()=>{
+  if(!adminReady||!selectedAdminUser)return;
+  const enabled=!selectedAdminUser.fnc_vip;
+  const label=enabled?'assign FNC VIP to':'remove FNC VIP from';
+  if(!confirm('Confirm: '+label+' '+(selectedAdminUser.twitch_username||'this user')+'?'))return;
+  const {data,error}=await supabaseClient.rpc('admin_set_viewer_vip',{p_user_id:selectedAdminUser.id,p_enabled:enabled});
+  if(error){showUserStatus('VIP update failed: '+error.message);return;}
+  if(data!==true){showUserStatus('VIP update failed: user not found or not authorized');return;}
+  selectedAdminUser.fnc_vip=enabled;
+  renderUserDetail(selectedAdminUser);
+  showUserStatus(enabled?'FNC VIP assigned.':'FNC VIP removed.',true);
+  await loadUsers(document.getElementById('userSearch')?.value||'');
+});
 document.getElementById('searchUsers')?.addEventListener('click',()=>loadUsers(document.getElementById('userSearch')?.value||''));
 document.getElementById('refreshUsers')?.addEventListener('click',()=>loadUsers(document.getElementById('userSearch')?.value||''));
 document.getElementById('userStatusFilter')?.addEventListener('change',()=>loadUsers(document.getElementById('userSearch')?.value||''));
