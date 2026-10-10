@@ -415,13 +415,6 @@ body.mobile-menu-open{overflow:hidden!important}
   <h1>FNC <span>STORE</span></h1>
   <p class="lede">Use your FNC Points to redeem available AdhemSwag rewards. Every redemption is checked securely on the server before FNC or stock is changed.</p>
 
-  <div id="siteTestModeBanner" style="display:none;margin:16px 0;border:1px solid rgba(255,193,7,.45);background:rgba(255,193,7,.06);padding:14px 16px;color:#ffd166;font:12px 'JetBrains Mono',monospace">
-    🧪 TEST VIEWER MODE — Store actions are simulated. No FNC, XP, stock, redemptions, or chat messages will be changed.
-    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">
-      <button type="button" id="testNextStoreError" style="border:1px solid #ff8585;background:transparent;color:#ff8585;padding:9px 12px;cursor:pointer;font:inherit">SIMULATE NEXT PURCHASE ERROR</button>
-      <span id="testStoreModeStatus" aria-live="polite" style="align-self:center"></span>
-    </div>
-  </div>
   <div class="status" id="storeStatus">
     <span class="status-dot" id="storeStatusDot"></span>
     <strong id="storeStatusTitle">REWARDS SYSTEM: STOPPED</strong>
@@ -505,7 +498,7 @@ body.mobile-menu-open{overflow:hidden!important}
   const resultTitle = document.getElementById('redeemResultTitle');
   const resultText = document.getElementById('redeemResultText');
   const resultClose = document.getElementById('redeemResultClose');
-  let viewer = null, selectedReward = null, monthlyCodeRewardIds = new Set(), simulateNextStoreError = false;
+  let viewer = null, selectedReward = null, monthlyCodeRewardIds = new Set();
 
   const esc = (v) => String(v ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
   const say = (text, type='') => { message.textContent=text; message.className='store-message '+type; message.style.display='block'; };
@@ -521,20 +514,18 @@ body.mobile-menu-open{overflow:hidden!important}
     let profile = null;
     const authUser = sessionData?.session?.user;
     if (authUser) {
-      let p = await client.from('users').select('id,fnc_points,xp,level,profile_complete,is_blocked,steam_trade_url,is_test').eq('id',authUser.id).maybeSingle();
+      let p = await client.from('users').select('id,fnc_points,xp,level,profile_complete,is_blocked,steam_trade_url').eq('id',authUser.id).maybeSingle();
       if (p.data) profile = p.data;
       else if (window.AdhemSwagAuth?.ensureProfile) {
         const ensured = await window.AdhemSwagAuth.ensureProfile();
         profile = ensured ? {
           id: ensured.id, fnc_points: ensured.fnc_points, xp: ensured.xp, level: ensured.level,
           profile_complete: ensured.profile_complete, is_blocked: ensured.is_blocked,
-          steam_trade_url: ensured.steam_trade_url, is_test: ensured.is_test
+          steam_trade_url: ensured.steam_trade_url
         } : null;
       }
     }
     viewer = profile;
-    const testBanner = document.getElementById('siteTestModeBanner');
-    if (testBanner) testBanner.style.display = viewer?.is_test ? 'block' : 'none';
     const active = !!cfg?.points_enabled && !!cfg?.rewards_enabled;
     statusTitle.textContent = active ? 'REWARDS SYSTEM: ACTIVE' : 'REWARDS SYSTEM: STOPPED';
     statusText.textContent = active ? 'FNC redemptions are available when you meet each reward requirement.' : 'FNC Points & XP are not being awarded or spent yet.';
@@ -569,11 +560,9 @@ body.mobile-menu-open{overflow:hidden!important}
       const enoughFnc = Number(viewer?.fnc_points||0) >= fncCost;
       const currentLevel = Number(viewer?.level||1);
       const enoughLevel = currentLevel >= levelRequired;
-      const can = signedIn && active && !blocked && profileComplete && (viewer?.is_test || (enoughFnc && enoughLevel && stockAvailable && !monthlyUsed));
+      const can = signedIn && active && !blocked && profileComplete && enoughFnc && enoughLevel && stockAvailable && !monthlyUsed;
       let status = '';
-      if (viewer?.is_test) {
-        status = 'TEST MODE — SIMULATED REDEMPTION';
-      } else if (!signedIn) {
+      if (!signedIn) {
         status = 'SIGN IN WITH TWITCH TO REDEEM';
       } else if (!active) {
         status = 'REWARDS SYSTEM IS CURRENTLY STOPPED';
@@ -629,30 +618,10 @@ body.mobile-menu-open{overflow:hidden!important}
   resultClose.addEventListener('click',closeResult);
   resultModal.addEventListener('click',e=>{if(e.target===resultModal)closeResult()});
   tradeConfirm.addEventListener('click',()=>redeem(tradeUrl.value.trim()));
-  document.getElementById('testNextStoreError')?.addEventListener('click',()=>{
-    if (!viewer?.is_test) return;
-    simulateNextStoreError = true;
-    const testStatus = document.getElementById('testStoreModeStatus');
-    if (testStatus) testStatus.textContent = 'Next REDEEM click will simulate an error only.';
-  });
   async function redeem(url) {
     const reward = selectedReward;
     if (!reward) return;
     hideSay();
-    if (viewer?.is_test) {
-      if (modal.classList.contains('open')) closeModal();
-      if (simulateNextStoreError) {
-        simulateNextStoreError = false;
-        const testStatus = document.getElementById('testStoreModeStatus');
-        if (testStatus) testStatus.textContent = 'Error simulation used. Next test will show success.';
-        showResult('TEST PURCHASE FAILED','TEST MODE: Simulated purchase error. No FNC, XP, stock, redemption, or Twitch chat message was changed.','error');
-      } else {
-        const testStatus = document.getElementById('testStoreModeStatus');
-        if (testStatus) testStatus.textContent = 'Success simulation shown. No real purchase was made.';
-        showResult('TEST PURCHASE SUCCESS','TEST MODE: Simulated success message. No FNC, XP, stock, redemption, access code, or Twitch chat message was changed.','ok');
-      }
-      return;
-    }
     if (tradeError) { tradeError.textContent=''; tradeError.style.display='none'; }
     tradeConfirm.disabled = true;
     const {data,error} = await client.functions.invoke('redeem-reward-v2',{body:{reward_id:reward.id,steam_trade_url:url||null}});
