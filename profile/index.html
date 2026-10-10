@@ -463,7 +463,7 @@ body.mobile-menu-open{overflow:hidden!important}
         <div class="profile-stat"><span><i class="stat-icon">🔥</i>STREAK</span><strong id="profileStreak">0 DAYS</strong></div>
       </div>
     </div>
-    <p class="note">Keep watching and participating to build XP. FNC Points, XP, watch time and streak are protected.</p>
+    <p class="note">Keep watching and participating to build XP. FNC Points and XP remain unchanged. Streak currently reflects the saved profile value; automatic daily streak tracking still needs backend support.</p>
   </section>
 </div>
 <div class="card requirements-card">
@@ -500,7 +500,7 @@ body.mobile-menu-open{overflow:hidden!important}
 </div>
 <section class="card badge-collection">
   <div class="section-head"><h2>BADGE COLLECTION</h2><span class="section-state">PROFILE BADGES</span></div>
-  <p class="badge-collection-intro">Your AdhemSwag badges appear here. Subscriber badges are only shown after secure Twitch subscription verification.</p>
+  <p class="badge-collection-intro">Badges unlock only from verified account events. Twitch Subscriber requires verified Twitch subscription status. FNC Supporter is granted after the first confirmed donation through Streamlabs or Da3amni. FNC VIP is assigned manually by Admin.</p>
   <div class="badge-grid">
     <div class="badge-item unlocked" id="badgeLevelCard">
       <div class="badge-icon" id="badgeLevelIcon">🆕</div>
@@ -508,16 +508,16 @@ body.mobile-menu-open{overflow:hidden!important}
     </div>
     <div class="badge-item locked" id="badgeSubCard">
       <div class="badge-icon">★</div>
-      <div><div class="badge-name" id="badgeSubName">TWITCH SUBSCRIBER</div><div class="badge-state" id="badgeSubState">VERIFICATION REQUIRED</div></div>
+      <div><div class="badge-name" id="badgeSubName">TWITCH SUBSCRIBER</div><div class="badge-state" id="badgeSubState">AWAITING SECURE VERIFICATION</div></div>
       <a class="badge-cta" href="https://twitch.tv/AdhemSwag" target="_blank" rel="noopener">SUBSCRIBE ON TWITCH</a>
     </div>
     <div class="badge-item locked" id="badgeSupporterCard">
       <div class="badge-icon">◆</div>
-      <div><div class="badge-name">FNC SUPPORTER</div><div class="badge-state">NOT ASSIGNED</div></div>
+      <div><div class="badge-name">FNC SUPPORTER</div><div class="badge-state" id="badgeSupporterState">FIRST CONFIRMED DONATION REQUIRED</div></div>
     </div>
     <div class="badge-item locked" id="badgeVipCard">
       <div class="badge-icon">♛</div>
-      <div><div class="badge-name">FNC VIP</div><div class="badge-state">NOT ASSIGNED</div></div>
+      <div><div class="badge-name">FNC VIP</div><div class="badge-state" id="badgeVipState">ADMIN ASSIGNMENT REQUIRED</div></div>
     </div>
   </div>
 </section>
@@ -565,11 +565,24 @@ function getLevelBadge(level){
 }
 
 
-function renderProfileBadges(level){
+function setProfileBadgeState(cardId,stateId,unlocked,label){
+ const card=document.getElementById(cardId),state=document.getElementById(stateId);
+ if(card){card.classList.toggle('unlocked',!!unlocked);card.classList.toggle('locked',!unlocked)}
+ if(state)state.textContent=label;
+}
+function renderProfileBadges(level,profile){
  const b=getLevelBadge(level);
  const icon=document.getElementById('badgeLevelIcon'),name=document.getElementById('badgeLevelName');
  if(icon)icon.textContent=b.icon;
  if(name)name.textContent=b.name;
+ const p=profile||{};
+ // These flags must come from a trusted server response; this page never infers badges from client-side activity.
+ const subscriber=p.twitch_subscription_verified===true;
+ const supporter=p.fnc_supporter===true||p.has_confirmed_donation===true;
+ const vip=p.fnc_vip===true;
+ setProfileBadgeState('badgeSubCard','badgeSubState',subscriber,subscriber?'VERIFIED TWITCH SUBSCRIBER':'AWAITING SECURE VERIFICATION');
+ setProfileBadgeState('badgeSupporterCard','badgeSupporterState',supporter,supporter?'CONFIRMED DONOR':'FIRST CONFIRMED DONATION REQUIRED');
+ setProfileBadgeState('badgeVipCard','badgeVipState',vip,vip?'VIP ASSIGNED BY ADMIN':'ADMIN ASSIGNMENT REQUIRED');
 }
 
 const adminPreviewUsername = new URLSearchParams(window.location.search).get('admin_preview');
@@ -625,7 +638,7 @@ async function renderAdminPublicPreview(username){
  const cur=getLevelThreshold(level),nextLevel=Math.min(100,level+1),next=getLevelThreshold(nextLevel);
  const pct=level>=100?100:Math.max(0,Math.min(100,(xp-cur)/(next-cur)*100));
  const badge=getLevelBadge(level),badgeEl=document.getElementById('profileBadge');
- renderProfileBadges(level);
+ renderProfileBadges(level,p);
  if(badgeEl)badgeEl.innerHTML='<span class="profile-badge-icon">'+badge.icon+'</span><span>'+badge.name+'</span>';
  set('profileLevelPercent',Math.round(pct)+'%');
  const bar=document.getElementById('profileProgressBar');if(bar)bar.style.width=pct+'%';
