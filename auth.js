@@ -184,7 +184,7 @@
 
     let { data: profile, error } = await client
       .from('users')
-      .select('id,twitch_user_id,twitch_username,email,email_verified,steam_id,steam_profile_url,steam_trade_url,discord_username,profile_complete,fnc_points,xp,level,total_watch_minutes,monthly_xp,streak,is_blocked,total_fnc_earned')
+      .select('id,twitch_user_id,twitch_username,email,email_verified,steam_id,steam_profile_url,steam_trade_url,discord_username,profile_complete,fnc_points,xp,level,total_watch_minutes,monthly_xp,streak,is_blocked,total_fnc_earned,fnc_supporter,fnc_vip,twitch_subscription_verified')
       .eq('id', authUser.id)
       .maybeSingle();
 
@@ -197,7 +197,7 @@
       const result = await client
         .from('users')
         .insert({ id: authUser.id, twitch_user_id: externalUserId, twitch_username: externalUsername })
-        .select('id,twitch_user_id,twitch_username,email,email_verified,steam_id,steam_profile_url,steam_trade_url,discord_username,profile_complete,fnc_points,xp,level,total_watch_minutes,monthly_xp,streak,is_blocked,total_fnc_earned')
+        .select('id,twitch_user_id,twitch_username,email,email_verified,steam_id,steam_profile_url,steam_trade_url,discord_username,profile_complete,fnc_points,xp,level,total_watch_minutes,monthly_xp,streak,is_blocked,total_fnc_earned,fnc_supporter,fnc_vip,twitch_subscription_verified')
         .single();
       if (result.error) {
         console.error('[AdhemSwag] Profile creation error:', result.error);
