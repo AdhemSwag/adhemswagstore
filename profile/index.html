@@ -666,7 +666,7 @@ window.addEventListener('adhem:viewer', async function(e){
  set('profileFncPoints',Number(p&&p.fnc_points||0).toLocaleString());
  const xp=Number(p&&p.xp||0),level=Number(p&&p.level||1);
  set('profileXp',xp.toLocaleString()+' XP');set('profileLevel',level);set('profileWatchMinutes',formatWatchTime(Number(p&&p.total_watch_minutes||0)));set('profileStreak',Number(p&&p.streak||0)+' DAYS');
- renderProfileBadges(level);
+ renderProfileBadges(level,p);
  const thresholds={1:0,2:750,3:1750,4:3000,5:4500,6:6250,7:8250,8:10500,9:13000,10:15750};
  const cur=thresholds[level]??0,next=Object.keys(thresholds).map(Number).sort((a,b)=>a-b).find(x=>x>level);
  const pct=next?Math.max(0,Math.min(100,(xp-cur)/(thresholds[next]-cur)*100)):100;
