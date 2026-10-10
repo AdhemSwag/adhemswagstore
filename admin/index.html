@@ -552,7 +552,7 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
           <div class="field"><label>Search Twitch username / email</label><input id="userSearch" placeholder="adhemswag"></div>
           <div class="field"><label>Status</label><select id="userStatusFilter"><option value="all">All viewers</option><option value="active">Active only</option><option value="blocked">Blocked only</option></select></div>
         </div>
-        <div class="actions"><button class="btn primary" id="searchUsers">SEARCH USERS</button><button class="btn" id="clearUsers">CLEAR</button><button class="btn" id="refreshUsers">REFRESH</button></div>
+        <div class="actions"><button class="btn primary" id="searchUsers">SEARCH USERS</button><button class="btn" id="clearUsers">CLEAR</button><button class="btn" id="refreshUsers">REFRESH</button><button class="btn primary" id="syncTwitchSubscriberBadges">SYNC TWITCH SUBSCRIBER BADGES</button></div>
         <div id="userStatus" class="notice" style="display:none"></div>
         <div class="table-wrap"><table><thead><tr><th>Twitch</th><th>FNC</th><th>XP</th><th>Level</th><th>Watch</th><th>Profile</th><th>Status</th><th>Created</th></tr></thead><tbody id="userList"><tr><td colspan="8">Search to load viewers.</td></tr></tbody></table></div>
       </div>
@@ -1171,6 +1171,7 @@ document.getElementById('toggleUserVip')?.addEventListener('click',async()=>{
 });
 document.getElementById('searchUsers')?.addEventListener('click',()=>loadUsers(document.getElementById('userSearch')?.value||''));
 document.getElementById('refreshUsers')?.addEventListener('click',()=>loadUsers(document.getElementById('userSearch')?.value||''));
+document.getElementById('syncTwitchSubscriberBadges')?.addEventListener('click',async()=>{const btn=document.getElementById('syncTwitchSubscriberBadges');if(!btn||!adminReady)return;btn.disabled=true;btn.textContent='SYNCING…';showUserStatus('Checking current Twitch subscriptions. This may take a moment…',true);try{const {data,error}=await supabaseClient.functions.invoke('sync-twitch-subscriber-badges',{body:{}});if(error)throw error;if(!data?.ok)throw new Error(data?.error||'Subscription sync failed');showUserStatus('Twitch subscriber sync complete: '+Number(data.badges_granted||0)+' badges granted, '+Number(data.badges_removed||0)+' removed. '+Number(data.profiles_checked||0)+' profiles checked; '+Number(data.subscribers_found||0)+' Twitch subscribers found.',true);await loadUsers(document.getElementById('userSearch')?.value||'');}catch(err){showUserStatus('Twitch subscriber sync failed: '+(err?.message||'Unknown error')+'. If a scope is missing, reconnect the Twitch account with channel:read:subscriptions.',false);}finally{btn.disabled=false;btn.textContent='SYNC TWITCH SUBSCRIBER BADGES';}});
 document.getElementById('userStatusFilter')?.addEventListener('change',()=>loadUsers(document.getElementById('userSearch')?.value||''));
 document.getElementById('userSearch')?.addEventListener('keydown',e=>{if(e.key==='Enter')loadUsers(e.target.value)});
 document.getElementById('clearUsers')?.addEventListener('click',()=>{
