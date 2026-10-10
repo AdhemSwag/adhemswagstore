@@ -376,7 +376,7 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
     <button class="nav-btn" data-panel="logs">Admin Logs</button>
     <button class="nav-btn" data-panel="redemptions">Redemptions</button>
     <button class="nav-btn" data-panel="viewers">Viewers</button>
-    <button class="nav-btn" data-panel="transactions">Transactions</button><button class="nav-btn" data-panel="store-tests">Test Viewer Mode</button>
+    <button class="nav-btn" data-panel="transactions">Transactions</button>
     <button class="nav-btn" data-panel="system">System</button>
     <button class="nav-btn" data-panel="fnc-settings">FNC Points</button><button class="nav-btn" data-panel="leaderboard">Leaderboard</button><button class="nav-btn" data-panel="media">Media</button><button class="nav-btn" data-panel="admin-access">Admin Access</button><button class="nav-btn" data-panel="reward-analytics">Reward Analytics</button><button class="nav-btn" data-panel="fnc-analytics">FNC Economy</button><button class="nav-btn" data-panel="security-audit">Security & Audit</button><button class="nav-btn" data-panel="operations">Operations</button>
   </aside>
@@ -565,38 +565,13 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
           <button class="btn" id="addUserXp">+ XP</button>
           <button class="btn" id="removeUserXp">− XP</button>
           <button class="btn" id="changeUserLevel">CHANGE LEVEL</button>
-          <button class="btn" id="toggleTestViewer">TEST VIEWER ON/OFF</button>
           <button class="btn primary" id="viewPublicProfile" type="button">VIEW PUBLIC PROFILE</button>
           <button class="btn danger" id="toggleUserBlock">BLOCK ACCOUNT</button>
         </div>
       </div>
     </section>
 
-    <section id="store-tests" class="panel">
-  <div class="section">
-    <h2>Test Viewer Mode</h2>
-    <p>Verify the live test flag on your signed-in admin profile, then test Store success/error messages without spending FNC or changing stock, redemptions, access codes, or Twitch chat.</p>
-    <div id="myTestViewerStatus" class="notice" role="status" aria-live="polite">Status not checked yet.</div>
-    <div class="actions" style="margin-top:16px">
-      <button class="btn primary" id="verifyMyTestViewer" type="button">VERIFY MY TEST STATUS</button>
-      <button class="btn" id="enableMyTestViewer" type="button">ENABLE TEST VIEWER ON MY PROFILE</button>
-      <button class="btn" id="openStoreTest" type="button">OPEN STORE TEST</button>
-    </div>
-    <div class="actions" style="margin-top:16px">
-      <button class="btn primary" id="previewStoreSuccess" type="button">PREVIEW PURCHASE SUCCESS</button>
-      <button class="btn danger" id="previewStoreError" type="button">PREVIEW PURCHASE ERROR</button>
-      <button class="btn" id="clearStorePreview" type="button">CLEAR TEST</button>
-    </div>
-    <div id="storeTestPreview" class="notice" role="status" aria-live="polite" style="display:none;margin-top:16px"></div>
-    <div class="section" style="margin-top:18px">
-      <h2>Twitch Chat Alert</h2>
-      <p>This is the test message prepared for chat. Copying it does not send anything to Twitch. The existing redemption worker is deliberately not triggered, so no real queued purchase alerts can be sent accidentally.</p>
-      <div id="storeChatTestText" style="border:1px solid var(--line);background:#070b0e;padding:14px;margin-top:12px;font:12px 'JetBrains Mono',monospace;overflow-wrap:anywhere">🧪 AdhemSwag Store — Twitch chat alert test. No FNC spent.</div>
-      <div class="actions" style="margin-top:12px"><button class="btn" id="copyStoreChatTest" type="button">COPY CHAT TEST MESSAGE</button><span id="copyStoreChatStatus" class="subtitle" aria-live="polite"></span></div>
-    </div>
-  </div>
-</section>
-<section id="transactions" class="panel"><div class="section"><h2>Transactions</h2><p>Audit every points and activity transaction with quick totals and filters.</p><div class="cards" style="margin-top:18px"><div class="card"><small>RESULTS</small><div class="metric" id="transactionMetricCount">—</div></div><div class="card"><small>TOTAL AMOUNT</small><div class="metric" id="transactionMetricAmount">—</div></div><div class="card"><small>TWITCH</small><div class="metric" id="transactionMetricTwitch">—</div></div><div class="card"><small>KICK</small><div class="metric" id="transactionMetricKick">—</div></div></div><div class="form-grid"><div class="field"><label>Type</label><select id="transactionType"><option value="">All types</option><option>watch</option><option>watch_xp</option><option>watch_fnc</option><option>chat</option><option>subscription</option><option>bits</option><option>kicks</option><option>donation</option><option>raid</option><option>redemption</option><option>admin_adjustment</option><option>import</option></select></div><div class="field"><label>Platform</label><select id="transactionPlatform"><option value="">All</option><option value="twitch">Twitch</option><option value="kick">Kick</option></select></div><div class="field"><label>Search viewer</label><input id="transactionSearch" placeholder="Twitch username"></div></div><div class="actions"><button class="btn primary" id="loadTransactions">LOAD TRANSACTIONS</button><button class="btn" id="clearTransactions">CLEAR</button></div><div class="table-wrap"><table><thead><tr><th>Date</th><th>Viewer</th><th>Type</th><th>Amount</th><th>Platform</th><th>Source</th><th>Event ID</th></tr></thead><tbody id="transactionList"><tr><td colspan="7">Load to view transactions.</td></tr></tbody></table></div></div></section>
+    <section id="transactions" class="panel"><div class="section"><h2>Transactions</h2><p>Audit every points and activity transaction with quick totals and filters.</p><div class="cards" style="margin-top:18px"><div class="card"><small>RESULTS</small><div class="metric" id="transactionMetricCount">—</div></div><div class="card"><small>TOTAL AMOUNT</small><div class="metric" id="transactionMetricAmount">—</div></div><div class="card"><small>TWITCH</small><div class="metric" id="transactionMetricTwitch">—</div></div><div class="card"><small>KICK</small><div class="metric" id="transactionMetricKick">—</div></div></div><div class="form-grid"><div class="field"><label>Type</label><select id="transactionType"><option value="">All types</option><option>watch</option><option>watch_xp</option><option>watch_fnc</option><option>chat</option><option>subscription</option><option>bits</option><option>kicks</option><option>donation</option><option>raid</option><option>redemption</option><option>admin_adjustment</option><option>import</option></select></div><div class="field"><label>Platform</label><select id="transactionPlatform"><option value="">All</option><option value="twitch">Twitch</option><option value="kick">Kick</option></select></div><div class="field"><label>Search viewer</label><input id="transactionSearch" placeholder="Twitch username"></div></div><div class="actions"><button class="btn primary" id="loadTransactions">LOAD TRANSACTIONS</button><button class="btn" id="clearTransactions">CLEAR</button></div><div class="table-wrap"><table><thead><tr><th>Date</th><th>Viewer</th><th>Type</th><th>Amount</th><th>Platform</th><th>Source</th><th>Event ID</th></tr></thead><tbody id="transactionList"><tr><td colspan="7">Load to view transactions.</td></tr></tbody></table></div></div></section>
 
 <section id="fnc-settings" class="panel">
       <div class="section">
@@ -972,7 +947,7 @@ function finishLoader() {
 function setControls(enabled) {
   adminReady = enabled;
   document.querySelectorAll('#rewards input,#rewards textarea,#giveaways input,#giveaways textarea,#giveaways select').forEach(el=>el.disabled=!enabled);
-  ['rewardImage','saveReward','clearReward','createGiveaway','clearGiveaway','connectTwitchWatch','testTwitchWatch','saveFncSettings','reloadFncSettings','saveBonusSettings','searchUsers','clearUsers','addUserFnc','removeUserFnc','addUserXp','removeUserXp','changeUserLevel','viewPublicProfile','toggleUserBlock','toggleTestViewer','verifyMyTestViewer','enableMyTestViewer','openStoreTest','previewStoreSuccess','previewStoreError','clearStorePreview','loadRedemptions','loadTransactions','loadLeaderboard','loadMedia','findAdminUser','refreshDashboard','systemFnc','systemPoints','systemXp','systemRewards'].forEach(id=>{
+  ['rewardImage','saveReward','clearReward','createGiveaway','clearGiveaway','connectTwitchWatch','testTwitchWatch','saveFncSettings','reloadFncSettings','saveBonusSettings','searchUsers','clearUsers','addUserFnc','removeUserFnc','addUserXp','removeUserXp','changeUserLevel','viewPublicProfile','toggleUserBlock','loadRedemptions','loadTransactions','loadLeaderboard','loadMedia','findAdminUser','refreshDashboard','systemFnc','systemPoints','systemXp','systemRewards'].forEach(id=>{
     const el=document.getElementById(id);
     if(el) el.disabled=!enabled;
   });
@@ -1109,7 +1084,6 @@ function renderUserDetail(user){
     '<div class="field"><label>Trade link</label><input value="'+escapeAttr(user.steam_trade_url||'Not set')+'" disabled></div>'+
     '<div class="field"><label>Discord</label><input value="'+escapeAttr(user.discord_username||'Not set')+'" disabled></div>'+
     '<div class="field"><label>Created</label><input value="'+new Date(user.created_at).toLocaleString()+'" disabled></div>'+
-    '<div class="field"><label>Test Viewer</label><input value="'+(user.is_test?'ENABLED — excluded from public rankings':'NO — normal viewer')+'" disabled></div>'+
     '</div>';
   const block=document.getElementById('toggleUserBlock');
   if(block)block.textContent=user.is_blocked?'UNBLOCK ACCOUNT':'BLOCK ACCOUNT';
@@ -1120,7 +1094,7 @@ async function loadUsers(search=''){
   if(!tbody||!adminReady)return;
   tbody.innerHTML='<tr><td colspan="8">Loading viewers…</td></tr>';
   const filter=document.getElementById('userStatusFilter')?.value||'all';
-  let query=supabaseClient.from('users').select('id,twitch_username,email,fnc_points,total_fnc_earned,xp,level,total_watch_minutes,profile_complete,is_blocked,is_test,steam_id,steam_trade_url,discord_username,created_at').order('created_at',{ascending:false}).limit(100);
+  let query=supabaseClient.from('users').select('id,twitch_username,email,fnc_points,total_fnc_earned,xp,level,total_watch_minutes,profile_complete,is_blocked,steam_id,steam_trade_url,discord_username,created_at').order('created_at',{ascending:false}).limit(100);
   const term=search.trim();
   if(term) query=query.or('twitch_username.ilike.%'+term+'%,email.ilike.%'+term+'%');
   if(filter==='active') query=query.eq('is_blocked',false);
@@ -1141,7 +1115,7 @@ async function loadUsers(search=''){
     '<td>'+Number(u.level||1)+'</td>'+
     '<td>'+Number(u.total_watch_minutes||0).toLocaleString()+' min</td>'+
     '<td>'+(u.profile_complete?'YES':'NO')+'</td>'+
-    '<td>'+(u.is_test?'<span style="color:var(--cyan)">TEST VIEWER</span>':(u.is_blocked?'<span class="lock">BLOCKED</span>':'<span style="color:var(--ok)">ACTIVE</span>'))+'</td>'+
+    '<td>'+(u.is_blocked?'<span class="lock">BLOCKED</span>':'<span style="color:var(--ok)">ACTIVE</span>')+'</td>'+
     '<td>'+new Date(u.created_at).toLocaleDateString()+'</td></tr>'
   ).join('');
   tbody.querySelectorAll('[data-user-id]').forEach(row=>row.addEventListener('click',()=>{
@@ -1151,14 +1125,13 @@ async function loadUsers(search=''){
 }
 
 
-async function adjustSelectedUser({fncDelta=0,xpDelta=0,level=null,blocked=null,isTest=null}={}){
+async function adjustSelectedUser({fncDelta=0,xpDelta=0,level=null,blocked=null}={}){
   if(!adminReady||!selectedAdminUser)return;
   const parts=[];
   if(fncDelta)parts.push((fncDelta>0?'+':'')+fncDelta+' FNC');
   if(xpDelta)parts.push((xpDelta>0?'+':'')+xpDelta+' XP');
   if(level!==null)parts.push('Level '+level);
   if(blocked!==null)parts.push(blocked?'BLOCK':'UNBLOCK');
-  if(isTest!==null)parts.push(isTest?'ENABLE TEST VIEWER':'DISABLE TEST VIEWER');
   if(!parts.length)return;
   if(!confirm('Confirm: '+parts.join(', ')+' for '+(selectedAdminUser.twitch_username||'this user')+'?'))return;
   const {data,error}=await supabaseClient.functions.invoke('admin-adjust-user',{
@@ -1167,8 +1140,7 @@ async function adjustSelectedUser({fncDelta=0,xpDelta=0,level=null,blocked=null,
       fnc_delta:fncDelta,
       xp_delta:xpDelta,
       level,
-      blocked,
-      is_test:isTest
+      blocked
     }
   });
   if(error){showUserStatus('Action failed: '+error.message);return;}
@@ -1205,10 +1177,6 @@ document.getElementById('addUserXp')?.addEventListener('click',()=>{
 document.getElementById('removeUserXp')?.addEventListener('click',()=>{
   const amount=Number(prompt('XP to remove:','100'));
   if(Number.isFinite(amount)&&amount>0)adjustSelectedUser({xpDelta:-Math.round(amount)});
-});
-document.getElementById('toggleTestViewer')?.addEventListener('click',()=>{
-  if(!selectedAdminUser)return;
-  adjustSelectedUser({isTest:!Boolean(selectedAdminUser.is_test)});
 });
 document.getElementById('changeUserLevel')?.addEventListener('click',()=>{
   const level=Number(prompt('New level:',selectedAdminUser?.level||1));
@@ -2347,54 +2315,6 @@ const adminIcons={"dashboard":"<path d='M4 13h6V4H4v9Zm10 7h6V4h-6v16ZM4 20h6v-3
   document.addEventListener('click',e=>{const a=e.target.closest('[data-sponsor-edit]');if(a)editSponsor(a.dataset.sponsorEdit);const d=e.target.closest('[data-sponsor-delete]');if(d)deleteSponsor(d.dataset.sponsorDelete)});
   el('saveSponsor')?.addEventListener('click',saveSponsor);el('clearSponsor')?.addEventListener('click',clearSponsor);
   document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',()=>{if(b.dataset.panel==='sponsors')loadSponsors()}));
-  const storeTestPreview=document.getElementById('storeTestPreview');
-  const myTestViewerStatus=document.getElementById('myTestViewerStatus');
-  async function verifyMyTestViewer(){
-    if(!adminReady||!myTestViewerStatus)return;
-    myTestViewerStatus.textContent='Checking signed-in profile…';
-    const {data:{user},error:authError}=await supabaseClient.auth.getUser();
-    if(authError||!user){myTestViewerStatus.textContent='Could not verify: sign in to the admin account again.';return;}
-    const {data:profile,error}=await supabaseClient.from('users').select('twitch_username,is_test,is_blocked').eq('id',user.id).maybeSingle();
-    if(error||!profile){myTestViewerStatus.textContent='Could not read your viewer profile: '+(error?.message||'profile not found');return;}
-    myTestViewerStatus.textContent=(profile.is_test?'ACTIVE — TEST VIEWER':'OFF — NORMAL VIEWER')+' · '+(profile.twitch_username||user.email||'signed-in account')+' · '+(profile.is_blocked?'ACCOUNT BLOCKED':'account not blocked')+'. Store test mode should show the yellow Test Viewer banner when you open /store/.';
-    myTestViewerStatus.style.borderLeftColor=profile.is_test?'var(--ok)':'var(--danger)';
-  }
-  document.getElementById('verifyMyTestViewer')?.addEventListener('click',verifyMyTestViewer);
-  document.getElementById('enableMyTestViewer')?.addEventListener('click',async()=>{
-    if(!adminReady||!myTestViewerStatus)return;
-    const {data:{user},error:authError}=await supabaseClient.auth.getUser();
-    if(authError||!user){myTestViewerStatus.textContent='Could not verify your login. Sign in again.';return;}
-    const {data,error}=await supabaseClient.functions.invoke('admin-adjust-user',{body:{user_id:user.id,is_test:true}});
-    if(error){myTestViewerStatus.textContent='Could not enable Test Viewer: '+error.message;return;}
-    myTestViewerStatus.textContent='TEST VIEWER ENABLED for your profile. Admin access is unchanged. No FNC or stock was changed.';
-    myTestViewerStatus.style.borderLeftColor='var(--ok)';
-    await verifyMyTestViewer();
-    await loadUsers(document.getElementById('userSearch')?.value||'');
-    await loadAdminLogs();
-  });
-  document.getElementById('openStoreTest')?.addEventListener('click',()=>window.open('/store/','_blank','noopener'));
-  document.getElementById('previewStoreSuccess')?.addEventListener('click',()=>{
-    storeTestPreview.style.display='block';
-    storeTestPreview.style.borderColor='rgba(60,231,165,.45)';
-    storeTestPreview.style.color='var(--ok)';
-    storeTestPreview.textContent='TEST PREVIEW — Purchase successful! Your reward is ready. (Simulation only; no purchase or FNC change.)';
-  });
-  document.getElementById('previewStoreError')?.addEventListener('click',()=>{
-    storeTestPreview.style.display='block';
-    storeTestPreview.style.borderColor='rgba(255,77,95,.45)';
-    storeTestPreview.style.color='var(--danger)';
-    storeTestPreview.textContent='TEST PREVIEW — Purchase could not be completed. Please try again. (Simulation only; no purchase or FNC change.)';
-  });
-  document.getElementById('clearStorePreview')?.addEventListener('click',()=>{
-    storeTestPreview.style.display='none';storeTestPreview.textContent='';
-  });
-  document.getElementById('copyStoreChatTest')?.addEventListener('click',async()=>{
-    const msg=document.getElementById('storeChatTestText')?.textContent||'';
-    const status=document.getElementById('copyStoreChatStatus');
-    try{await navigator.clipboard.writeText(msg);if(status)status.textContent='Copied. Not sent to Twitch.'}
-    catch(e){if(status)status.textContent='Copy blocked by browser. Select the message text manually.'}
-  });
-
   setTimeout(loadSponsors,800);
 })();
 </script>
