@@ -478,6 +478,17 @@ body.mobile-menu-open{overflow:hidden!important}
     <p class="note">Keep watching on Twitch for at least 10 active minutes per day to build your streak. A missed day resets the streak. FNC Points and XP rules are unchanged.</p>
   </section>
 </div>
+
+<style id="profile-missions-panel-css">
+.profile-missions-panel{margin-top:16px}.profile-missions-panel .section-head{margin-bottom:8px}.profile-missions-status{color:var(--muted);font-size:12px;line-height:1.6;margin:10px 0 14px}.profile-missions-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.profile-mission-card{padding:16px;background:#070b0e;border:1px solid var(--line);min-width:0}.profile-mission-top{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}.profile-mission-tag{font:700 9px 'JetBrains Mono',monospace;color:var(--cyan);letter-spacing:.08em}.profile-mission-state{font:700 9px 'JetBrains Mono',monospace;color:var(--ok)}.profile-mission-card h3{margin:12px 0 6px;font:700 18px Rajdhani,sans-serif;text-transform:uppercase}.profile-mission-card p{color:var(--muted);font-size:11px;line-height:1.5}.profile-mission-rewards{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.profile-mission-rewards span{padding:6px 8px;border:1px solid var(--line);font:700 9px 'JetBrains Mono',monospace;color:var(--cyan)}.profile-mission-progress{height:7px;background:#11181c;border:1px solid var(--line);overflow:hidden;margin:8px 0}.profile-mission-progress span{display:block;height:100%;background:var(--cyan);box-shadow:0 0 8px rgba(17,217,247,.25)}.profile-mission-progress-label{display:flex;justify-content:space-between;gap:8px;color:var(--muted);font:600 9px 'JetBrains Mono',monospace}.profile-missions-link{display:inline-flex;margin-top:14px;padding:11px 14px;background:var(--cyan);color:#03181c;text-decoration:none;font:700 10px 'JetBrains Mono',monospace;letter-spacing:.06em}.profile-missions-link:hover{filter:brightness(1.08)}@media(max-width:600px){.profile-missions-grid{grid-template-columns:1fr}.profile-mission-card{padding:14px}}
+</style>
+<section class="card profile-missions-panel" id="profileMissionsPanel">
+  <div class="section-head"><h2>MY MISSIONS</h2><a href="/missions/">VIEW ALL MISSIONS</a></div>
+  <p class="profile-missions-status" id="profileMissionsStatus" role="status" aria-live="polite">Loading your daily and weekly mission progress…</p>
+  <div class="profile-missions-grid" id="profileMissionsGrid" hidden></div>
+  <a class="profile-missions-link" href="/missions/">OPEN MISSIONS &amp; REWARDS →</a>
+</section>
+
 <div class="card requirements-card">
 <div class="section-head"><h2>PROFILE REQUIREMENTS</h2><a href="/settings/">EDIT PROFILE</a></div>
 <div class="requirements-grid">
@@ -738,6 +749,51 @@ if(accessRoot){
 <script>
 (()=>{const side=document.querySelector('.sidebar');const scrim=document.querySelector('[data-mobile-scrim]');const menu=document.querySelector('[data-mobile-menu]');if(!side||!scrim||!menu)return;const close=document.createElement('button');close.className='mobile-drawer-close';close.type='button';close.setAttribute('aria-label','Close menu');close.innerHTML='×';side.appendChild(close);const open=()=>{side.classList.add('mobile-open');scrim.classList.add('open');menu.setAttribute('aria-expanded','true');document.body.style.overflow='hidden'};const shut=()=>{side.classList.remove('mobile-open');scrim.classList.remove('open');menu.setAttribute('aria-expanded','false');document.body.style.overflow=''};menu.addEventListener('click',open);scrim.addEventListener('click',shut);close.addEventListener('click',shut);document.addEventListener('keydown',e=>{if(e.key==='Escape')shut()});const path=location.pathname.replace(/\/?$/,'/');document.querySelectorAll('[data-mbn-path]').forEach(a=>{if(path===a.dataset.mbnPath)a.classList.add('active')});side.querySelectorAll('a').forEach(a=>a.addEventListener('click',shut));})();
 </script>
+
+<script id="profile-missions-loader">
+(()=> {
+  const status=document.getElementById('profileMissionsStatus');
+  const grid=document.getElementById('profileMissionsGrid');
+  if(!status||!grid)return;
+  const esc=s=>String(s??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  async function load(){
+    try{
+      const client=window.AdhemAuth;
+      if(!client){status.textContent='Mission service is unavailable. Open Missions to try again.';return;}
+      const {data:{session},error:sessionError}=await client.auth.getSession();
+      if(sessionError)throw sessionError;
+      if(!session?.user){status.textContent='Connect your Twitch profile to see your personal mission progress.';return;}
+      const {data,error}=await client.rpc('get_my_missions');
+      if(error)throw error;
+      if(!data?.ok)throw new Error('mission_service_unavailable');
+      if(!data.enrolled){
+        status.textContent='You have not joined yet. Join the daily and weekly missions to start tracking verified Twitch watch time.';
+        return;
+      }
+      const missions=Array.isArray(data.missions)?data.missions:[];
+      if(!missions.length){status.textContent='You are enrolled. There are no active missions to display right now.';return;}
+      grid.innerHTML=missions.map(m=>{
+        const goal=Math.max(1,Number(m.goal_minutes)||1);
+        const progress=Math.max(0,Number(m.progress_minutes)||0);
+        const shown=Math.min(goal,progress);
+        const pct=Math.min(100,Math.round(progress/goal*100));
+        const done=Boolean(m.completed);
+        const daily=m.period_type==='daily';
+        const xp=done?(Number(m.xp_awarded)||0):(Number(m.xp_reward)||0);
+        const fnc=done?(Number(m.fnc_awarded)||0):(Number(m.fnc_reward)||0);
+        return '<article class="profile-mission-card"><div class="profile-mission-top"><span class="profile-mission-tag">'+(daily?'DAILY MISSION':'WEEKLY MISSION')+'</span><span class="profile-mission-state">'+(done?'✓ COMPLETED':'IN PROGRESS')+'</span></div><h3>'+esc(m.title)+'</h3><p>'+esc(m.description)+'</p><div class="profile-mission-rewards"><span>+'+xp+' XP</span><span>+'+fnc+' FNC</span></div><div class="profile-mission-progress-label"><span>'+shown+' / '+goal+' MIN</span><span>'+pct+'%</span></div><div class="profile-mission-progress" role="progressbar" aria-valuemin="0" aria-valuemax="'+goal+'" aria-valuenow="'+shown+'"><span style="width:'+pct+'%"></span></div></article>';
+      }).join('');
+      grid.hidden=false;
+      status.textContent='Your personal mission progress. Rewards are credited automatically when each objective is completed.';
+    }catch(error){
+      console.error('[AdhemSwag Profile Missions]',error);
+      status.textContent='Mission progress could not be loaded. Open Missions to check your status.';
+    }
+  }
+  load();
+})();
+</script>
+
 <script id="adhemswag-mobile-menu-final">(()=>{
  const $=s=>document.querySelector(s);
  const side=()=>$('.sidebar')||$('.admin-nav')||$('.mobile-fallback-drawer');
