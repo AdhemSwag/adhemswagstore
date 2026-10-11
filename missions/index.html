@@ -67,7 +67,7 @@ footer{border-top:1px solid var(--line);padding:20px;text-align:center;color:#60
     grid.innerHTML=missions.map(m=>{
       const goal=Math.max(1,Number(m.goal_minutes)||1), progress=Math.max(0,Number(m.progress_minutes)||0), pct=Math.min(100,Math.round(progress/goal*100));
       const done=Boolean(m.completed), period=m.period_type==='daily'?'DAILY MISSION':'WEEKLY MISSION';
-      const rewardXp=Number(m.xp_awarded??m.xp_reward)||0, rewardFnc=Number(m.fnc_awarded??m.fnc_reward)||0;
+      const rewardXp=done?(Number(m.xp_awarded)||0):(Number(m.xp_reward)||0), rewardFnc=done?(Number(m.fnc_awarded)||0):(Number(m.fnc_reward)||0);
       return '<article class="mission '+(done?'done':'')+'"><div class="mission-head"><span class="tag">'+period+'</span><span class="status">'+(done?'✓ COMPLETED':'IN PROGRESS')+'</span></div><h2>'+esc(m.title)+'</h2><p class="desc">'+esc(m.description)+'</p><div class="rewards"><span class="reward xp">+'+rewardXp+' XP</span><span class="reward fnc">+'+rewardFnc+' FNC</span></div><div class="progress-label"><span>'+Math.min(progress,goal)+' / '+goal+' MINUTES</span><span>'+pct+'%</span></div><div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="'+goal+'" aria-valuenow="'+Math.min(progress,goal)+'"><span style="width:'+pct+'%"></span></div><p class="note">'+(done?'Rewards delivered automatically.':'Resets '+esc(fmtDate(m.period_end)||'at the end of the period')+'.')+'</p></article>';
     }).join('');
     grid.hidden=false;
