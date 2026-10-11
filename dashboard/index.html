@@ -1167,6 +1167,10 @@ footer .footer-copy .row{margin:0;}
     <span>Dashboard</span>
   </a>
   <a href="/profile/" class="sidebar-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg><span>MY PROFILE</span></a>
+  <a href="/missions/" class="sidebar-link">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l2.2 5.4L20 9l-4.3 3.8-1.2 5.7L12 15.6l-4.9 2.9 1.2-5.7L4 9l5.8-.6L12 3Z"/></svg>
+    <span>MISSIONS</span>
+  </a>
   <a href="/store/" class="sidebar-link">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9h18l-1.5 12h-15L3 9z"/><path d="M5 9l2-6h10l2 6"/><path d="M9 13v4M15 13v4"/></svg>
     <span>STORE</span>
@@ -1236,6 +1240,7 @@ footer .footer-copy .row{margin:0;}
 <div class="mobile-nav-scrim" data-mobile-scrim></div>
 <div class="mobile-bottom-nav" aria-label="Mobile navigation">
   <a href="/dashboard/" data-mbn-path="/dashboard/"><svg class="mbn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m3 10 9-7 9 7"/><path d="M5 9v12h14V9M9 21v-7h6v7"/></svg><span>Home</span></a>
+  <a href="/missions/" data-mbn-path="/missions/"><svg class="mbn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.2 5.4L20 9l-4.3 3.8-1.2 5.7L12 15.6l-4.9 2.9 1.2-5.7L4 9l5.8-.6L12 3Z"/></svg><span>Missions</span></a>
   <a href="/store/" data-mbn-path="/store/"><svg class="mbn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h18l-1 13H4L3 8Z"/><path d="M8 9V6a4 4 0 0 1 8 0v3"/></svg><span>Store</span></a>
   <a href="/profile/" data-mbn-path="/profile/"><svg class="mbn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span>Profile</span></a>
   <button type="button" data-mobile-menu aria-expanded="false"><svg class="mbn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg><span>Menu</span></button>
@@ -1285,6 +1290,14 @@ footer .footer-copy .row{margin:0;}
         <a href="/store/" class="btn btn-outline"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-3px; margin-right:7px;"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>Store</a>
       </div>
 
+      <div class="mission-home-card" style="margin-top:20px;padding:18px 20px;border:1px solid rgba(17,217,247,.32);background:linear-gradient(120deg,rgba(17,217,247,.09),rgba(6,13,18,.9));border-radius:12px;display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap">
+        <div style="min-width:0;flex:1">
+          <div class="eyebrow" style="margin-bottom:6px">// NEW • TWITCH MISSIONS</div>
+          <div style="font:700 25px Rajdhani,sans-serif;color:#eaf6f8;text-transform:uppercase">Join missions. Earn XP + FNC.</div>
+          <div style="font-size:12px;line-height:1.6;color:#91a4aa;margin-top:4px">Complete daily and weekly Twitch watch goals. Click to join before you start watching.</div>
+        </div>
+        <a href="/missions/" class="btn btn-primary" style="white-space:nowrap">JOIN MISSIONS ↗</a>
+      </div>
       <div class="hero-faq">
         <div class="eyebrow" style="margin-bottom:8px;">// need help</div>
         <button class="fnc-faq-btn" type="button" onclick="document.getElementById('fncFaqOverlay').classList.add('open')"><span class="fnc-faq-btn-icon">?</span>FNC POINTS FAQ</button>
