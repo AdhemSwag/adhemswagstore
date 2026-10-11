@@ -80,7 +80,7 @@ footer{border-top:1px solid var(--line);padding:20px;text-align:center;color:#60
       if(!session?.user){
         status.innerHTML='Connect your Twitch account first to join the missions.<br><br><button type="button" data-adhem-login>CONNECT WITH TWITCH</button>';
         status.querySelector('[data-adhem-login]').addEventListener('click',async()=>{
-          const {error}=await client.auth.signInWithOAuth({provider:'twitch',options:{redirectTo:'https://adhemswag.com/missions/',queryParams:{force_verify:'true'}}});
+          const {error}=await client.auth.signInWithOAuth({provider:'twitch',options:{redirectTo:'https://adhemswag.com/dashboard/',queryParams:{force_verify:'true'}}});
           if(error){status.textContent='Twitch connection failed. Please try again.';console.error(error);}
         });
         return;
