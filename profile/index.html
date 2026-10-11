@@ -563,7 +563,9 @@ function getLevelThreshold(level){
 }
 function getLevelBadge(level){
  const l=Math.max(1,Number(level||1));
- if(l>=100)return {icon:'/assets/badges/ez4swag-legend.svg',name:'Ez4Swag Legend'};
+ if(l>=300)return {icon:'/assets/badges/ez4swag-legend.svg',name:'Ez4Swag Legend'};
+ if(l>=200)return {icon:'/assets/badges/ez4swag-platinum.svg',name:'Ez4Swag Platinum'};
+ if(l>=100)return {icon:'/assets/badges/ez4swag-diamond.svg',name:'Ez4Swag Diamond'};
  if(l>=50)return {icon:'/assets/badges/ez4swag-gold.svg',name:'Ez4Swag Gold'};
  if(l>=25)return {icon:'/assets/badges/ez4swag-silver.svg',name:'Ez4Swag Silver'};
  if(l>=10)return {icon:'/assets/badges/ez4swag-bronze.svg',name:'Ez4Swag Bronze'};
