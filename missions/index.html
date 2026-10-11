@@ -58,7 +58,7 @@ footer{border-top:1px solid var(--line);padding:20px;text-align:center;color:#60
   'use strict';
   const URL='https://lpmocfdfpebcaseffugg.supabase.co';
   const KEY='sb_publishable_vNkDqYd81b2krZAisUhb2g_c_uwyvRp';
-  const client=window.AdhemSwagAuth?.client || window.supabase.createClient(URL,KEY,{auth:{flowType:'pkce',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storageKey:'adhemswag-auth'}});
+  const client=window.AdhemAuth || window.supabase.createClient(URL,KEY,{auth:{flowType:'pkce',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storageKey:'adhemswag-auth'}});
   const status=document.getElementById('status');
   const grid=document.getElementById('missionGrid');
   const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -78,13 +78,31 @@ footer{border-top:1px solid var(--line);padding:20px;text-align:center;color:#60
       const {data:{session},error:sessionError}=await client.auth.getSession();
       if(sessionError) throw sessionError;
       if(!session?.user){
-        status.innerHTML='Connect your Twitch account to see mission progress and receive rewards.<br><br><button type="button" data-adhem-login>CONNECT WITH TWITCH</button>';
+        status.innerHTML='Connect your Twitch account first to join the missions.<br><br><button type="button" data-adhem-login>CONNECT WITH TWITCH</button>';
+        status.querySelector('[data-adhem-login]').addEventListener('click',async()=>{
+          const {error}=await client.auth.signInWithOAuth({provider:'twitch',options:{redirectTo:'https://adhemswag.com/missions/',queryParams:{force_verify:'true'}}});
+          if(error){status.textContent='Twitch connection failed. Please try again.';console.error(error);}
+        });
         return;
       }
       const {data,error}=await client.rpc('get_my_missions');
       if(error) throw error;
       if(!data?.ok) throw new Error('mission_service_unavailable');
-      render(Array.isArray(data.missions)?data.missions:[]);
+      if(!data.enrolled){
+        grid.hidden=true;
+        status.innerHTML='<strong style="color:#eaf6f8;display:block;margin-bottom:8px">You have not joined the missions yet.</strong>Click JOIN MISSIONS to start tracking your verified Twitch watch time. Minutes watched before joining do not count.<br><br><button type="button" data-join-missions>JOIN MISSIONS</button>';
+        status.querySelector('[data-join-missions]').addEventListener('click',async event=>{
+          const btn=event.currentTarget;btn.disabled=true;btn.textContent='JOINING…';
+          const {data:joined,error:joinError}=await client.rpc('join_missions');
+          if(joinError||!joined?.ok){console.error('[AdhemSwag Missions] Join failed:',joinError);btn.disabled=false;btn.textContent='JOIN MISSIONS';status.textContent='Unable to join right now. Make sure your Twitch profile is connected and complete.';return;}
+          status.textContent='You joined the missions! Your verified Twitch watch time now counts.';
+          await init();
+        });
+        return;
+      }
+      const {data:refreshed,error:refreshError}=await client.rpc('get_my_missions');
+      if(refreshError) throw refreshError;
+      render(Array.isArray(refreshed?.missions)?refreshed.missions:[]);
     }catch(error){
       console.error('[AdhemSwag Missions]',error);
       status.textContent='Missions could not be loaded right now. Please refresh the page after confirming your Twitch connection.';
