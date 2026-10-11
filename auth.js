@@ -215,21 +215,66 @@
       if (!document.getElementById('adhemPageLoaderStyle')) {
         const style = document.createElement('style');
         style.id = 'adhemPageLoaderStyle';
-        style.textContent = '#adhemPageLoader{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;background:rgba(4,6,8,.985);opacity:0;visibility:hidden;transition:opacity .32s ease,visibility .32s ease}#adhemPageLoader.is-visible{opacity:1;visibility:visible}#adhemPageLoader.is-hidden{opacity:0;visibility:hidden;pointer-events:none}.adhem-loader-card{width:min(380px,76vw);text-align:center}.adhem-loader-logo{display:block;width:150px;height:150px;object-fit:contain;margin:0 auto 15px;filter:drop-shadow(0 0 8px rgba(17,217,247,.3));animation:adhemLoaderPulse 1.25s ease-in-out infinite}.adhem-loader-label{font:700 12px JetBrains Mono,monospace;letter-spacing:.2em;color:#8fa1a7;margin-bottom:9px}.adhem-loader-dots{display:inline-block;width:18px;text-align:left;animation:adhemLoaderDots 1s steps(4,end) infinite}.adhem-loader-track{height:4px;width:100%;overflow:hidden;background:#11191d;border:1px solid rgba(17,217,247,.12);box-sizing:border-box}.adhem-loader-track i{display:block;height:100%;width:38%;background:#11D9F7;box-shadow:0 0 9px rgba(17,217,247,.55);animation:adhemLoaderBar 1.05s ease-in-out infinite}@keyframes adhemLoaderPulse{0%,100%{transform:scale(.96);opacity:.82}50%{transform:scale(1.03);opacity:1}}@keyframes adhemLoaderDots{0%{width:0}100%{width:18px}}@keyframes adhemLoaderBar{0%{transform:translateX(-110%)}100%{transform:translateX(290%)}}@media(prefers-reduced-motion:reduce){#adhemPageLoader{transition:none}.adhem-loader-logo,.adhem-loader-track i,.adhem-loader-dots{animation:none}}';
+        style.textContent = `
+          #adhemPageLoader{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;padding:24px;box-sizing:border-box;background:radial-gradient(ellipse at 50% 42%,rgba(9,40,48,.42) 0%,rgba(4,7,10,.98) 58%,#030405 100%);opacity:0;visibility:hidden;transition:opacity .28s ease,visibility .28s ease}
+          #adhemPageLoader.is-visible{opacity:1;visibility:visible}
+          #adhemPageLoader.is-hidden{opacity:0;visibility:hidden;pointer-events:none}
+          .adhem-loader-card{width:min(390px,82vw);text-align:center}
+          .adhem-loader-logo{display:block;width:clamp(112px,26vw,154px);height:clamp(112px,26vw,154px);object-fit:contain;margin:0 auto 12px;filter:drop-shadow(0 0 16px rgba(17,217,247,.22))}
+          .adhem-loader-brand{font:800 clamp(25px,6vw,34px)/1.1 Inter,Arial,sans-serif;letter-spacing:.015em;color:#f1fbfd;text-shadow:0 0 24px rgba(17,217,247,.14);margin:0 0 30px}
+          .adhem-loader-brand span{color:#11d9f7}
+          .adhem-loader-label-row{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:0 0 10px}
+          .adhem-loader-label{font:700 11px/1.2 'JetBrains Mono',monospace;letter-spacing:.22em;color:#b3c3c8}
+          .adhem-loader-percent{font:600 11px/1.2 'JetBrains Mono',monospace;letter-spacing:.08em;color:#11d9f7;font-variant-numeric:tabular-nums}
+          .adhem-loader-track{height:5px;width:100%;overflow:hidden;background:#11191d;border:1px solid rgba(17,217,247,.18);border-radius:99px;box-sizing:border-box}
+          .adhem-loader-track i{display:block;height:100%;width:0%;border-radius:99px;background:linear-gradient(90deg,#087f98,#11d9f7 70%,#a0f5ff);box-shadow:0 0 12px rgba(17,217,247,.42);transition:width .24s ease}
+          .adhem-loader-caption{margin-top:13px;font:500 9px/1.5 'JetBrains Mono',monospace;letter-spacing:.1em;color:#53666d}
+          @media(prefers-reduced-motion:reduce){#adhemPageLoader{transition:none}.adhem-loader-track i{transition:none}}
+        `;
         document.head.appendChild(style);
       }
       const loader = document.createElement('div');
       loader.id = 'adhemPageLoader';
-      loader.setAttribute('aria-label', 'Loading');
-      loader.innerHTML = '<div class="adhem-loader-card"><img class="adhem-loader-logo" alt="AdhemSwag"><div class="adhem-loader-label">LOADING<span class="adhem-loader-dots">...</span></div><div class="adhem-loader-track"><i></i></div></div>';
-      const logo = document.querySelector('.sidebar-logo-img');
-      if (logo?.src) loader.querySelector('.adhem-loader-logo').src = logo.src;
+      loader.setAttribute('role', 'status');
+      loader.setAttribute('aria-label', 'Loading AdhemSwag');
+      loader.innerHTML = '<div class="adhem-loader-card"><img class="adhem-loader-logo" src="/icon-512.png" alt=""><div class="adhem-loader-brand">Im <span>Adhem</span></div><div class="adhem-loader-label-row"><span class="adhem-loader-label">LOADING</span><span class="adhem-loader-percent">0%</span></div><div class="adhem-loader-track" role="progressbar" aria-label="Page loading progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i></i></div><div class="adhem-loader-caption">PREPARING YOUR EXPERIENCE</div></div>';
       document.body.appendChild(loader);
+      const bar = loader.querySelector('.adhem-loader-track i');
+      const percent = loader.querySelector('.adhem-loader-percent');
+      const track = loader.querySelector('.adhem-loader-track');
+      let progress = 0;
+      let finished = false;
+      const setProgress = value => {
+        progress = Math.max(progress, Math.min(100, Math.round(value)));
+        bar.style.width = progress + '%';
+        percent.textContent = progress + '%';
+        track.setAttribute('aria-valuenow', String(progress));
+      };
       requestAnimationFrame(() => loader.classList.add('is-visible'));
-      const hide = () => { loader.classList.add('is-hidden'); window.setTimeout(() => loader.remove(), 420); };
-      if (document.readyState === 'complete') window.setTimeout(hide, 800);
-      else window.addEventListener('load', () => window.setTimeout(hide, 650), { once: true });
-      window.setTimeout(hide, 3200);
+      // Progress follows real document milestones: DOM readiness, then the window load event.
+      if (document.readyState === 'loading') {
+        setProgress(12);
+        document.addEventListener('DOMContentLoaded', () => setProgress(62), { once: true });
+      } else {
+        setProgress(document.readyState === 'interactive' ? 62 : 82);
+      }
+      const hide = () => {
+        if (finished) return;
+        finished = true;
+        setProgress(100);
+        window.setTimeout(() => {
+          loader.classList.add('is-hidden');
+          window.setTimeout(() => loader.remove(), 320);
+        }, 180);
+      };
+      if (document.readyState === 'complete') {
+        setProgress(100);
+        window.setTimeout(hide, 180);
+      } else {
+        window.addEventListener('load', hide, { once: true });
+      }
+      // Prevent a broken third-party asset from trapping visitors on the loading screen.
+      window.setTimeout(hide, 5000);
     };
     if (document.body) show();
     else document.addEventListener('DOMContentLoaded', show, { once: true });
