@@ -163,6 +163,7 @@ body.mobile-menu-open{overflow:hidden!important}
 </style>
 <style id="adhemswag-mobile-menu-reference-v2">
 @media (max-width:700px){
+.sidebar>.mobile-drawer-close{display:flex!important;visibility:visible!important;opacity:1!important;position:absolute!important;top:14px!important;right:14px!important;z-index:2147483005!important;align-items:center!important;justify-content:center!important;width:36px!important;min-width:36px!important;height:36px!important;min-height:36px!important;padding:0!important;margin:0!important;color:#11d9f7!important;background:#0c1419!important;border:1px solid rgba(17,217,247,.4)!important;border-radius:8px!important;font-size:24px!important;line-height:1!important;cursor:pointer!important}
 .sidebar,.admin-nav,.mobile-fallback-drawer{width:min(82vw,380px)!important;max-width:82vw!important;height:100dvh!important;padding:18px 14px 28px!important;overflow-y:auto!important;overflow-x:hidden!important;box-sizing:border-box!important}
 .sidebar-brand,.sidebar-brand a{display:flex!important;align-items:center!important;justify-content:center!important;width:100%!important;min-height:82px!important;padding:8px 8px 22px!important;box-sizing:border-box!important}
 .sidebar-brand img,.sidebar-logo-img{display:block!important;visibility:visible!important;opacity:1!important;width:auto!important;max-width:210px!important;max-height:76px!important;height:auto!important;object-fit:contain!important}
@@ -603,6 +604,14 @@ body.mobile-menu-open{overflow:hidden!important}
  const side=()=>$('.sidebar')||$('.admin-nav')||$('.mobile-fallback-drawer');
  const scr=()=>$('[data-mobile-scrim]');
  const btn=()=>$('[data-mobile-menu]');
+ function ensureCloseButton(){
+   const s=side();if(!s||s.querySelector('.mobile-drawer-close'))return;
+   const closeBtn=document.createElement('button');
+   closeBtn.type='button';closeBtn.className='mobile-drawer-close';
+   closeBtn.setAttribute('aria-label','Close menu');closeBtn.textContent='×';
+   s.appendChild(closeBtn);
+ }
+ ensureCloseButton();
  function open(){
    if(!window.matchMedia('(max-width:700px)').matches)return;
    const s=side(),x=scr(),b=btn();if(!s)return;
