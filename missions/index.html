@@ -31,6 +31,17 @@ h2{font:700 27px Rajdhani,sans-serif;text-transform:uppercase;margin:13px 0 7px}
 .note{font-size:10px;line-height:1.8;color:#73858b;margin-top:18px}.rules-strip{margin-top:24px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.rule{border:1px solid rgba(17,217,247,.12);padding:14px;background:rgba(9,13,16,.8)}.rule b{display:block;color:#dce9ec;font:10px 'JetBrains Mono',monospace;letter-spacing:.06em;margin-bottom:6px}.rule span{color:var(--muted);font-size:11px;line-height:1.6}
 button,.cta{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:11px 16px;background:var(--cyan);border:0;color:#031216;text-decoration:none;font:700 11px 'JetBrains Mono',monospace;text-transform:uppercase;cursor:pointer}button:disabled{opacity:.55;cursor:wait}
 @media(max-width:700px){.grid{grid-template-columns:1fr}.rules-strip{grid-template-columns:1fr}main{padding-top:34px}.desc{min-height:0}.mission{padding:20px}.section-head{align-items:flex-start;flex-direction:column}}
+
+.chat-commands{margin-top:30px;padding:clamp(18px,3vw,28px);border:1px solid var(--line);background:linear-gradient(145deg,rgba(11,18,22,.96),rgba(5,8,11,.96));border-radius:14px}
+.chat-commands h2{font:700 25px Rajdhani,sans-serif;letter-spacing:.04em;text-transform:uppercase;margin:8px 0}
+.chat-commands .intro{color:#9bafb5;font-size:13px;line-height:1.7;max-width:720px}
+.command-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:18px}
+.command-card{border:1px solid rgba(17,217,247,.14);background:rgba(4,9,12,.8);padding:16px;border-radius:9px;min-width:0}
+.command-card code{display:inline-block;color:var(--cyan);font:600 13px 'JetBrains Mono',monospace;margin-bottom:9px}
+.command-card p{font-size:12px;line-height:1.65;color:#a8b8bd;margin:0 0 14px;overflow-wrap:anywhere}
+.command-card button{border:1px solid rgba(17,217,247,.35);border-radius:5px;background:rgba(17,217,247,.08);color:var(--cyan);padding:8px 10px;font:600 10px 'JetBrains Mono',monospace;cursor:pointer}
+.command-card button:hover{background:rgba(17,217,247,.16)}
+.chat-note{margin-top:14px;color:#81969c;font:10px/1.7 'JetBrains Mono',monospace;letter-spacing:.03em}
 </style>
 </head>
 <body>
@@ -44,6 +55,18 @@ button,.cta{display:inline-flex;align-items:center;justify-content:center;min-he
   <div id="missionGrid" class="grid" hidden></div>
   <div class="rules-strip"><div class="rule"><b>01 / JOIN FIRST</b><span>Your mission tracking begins after you join. Earlier watch time is not counted.</span></div><div class="rule"><b>02 / WATCH ON TWITCH</b><span>Only server-verified Twitch watch time counts. Kick and page visits do not count.</span></div><div class="rule"><b>03 / GET REWARDED</b><span>XP and FNC bonuses are automatic, once per mission period, subject to platform limits.</span></div></div>
   <p class="note">Mission bonuses are separate from standard watch rewards. Existing global XP/FNC settings and the configured daily FNC cap remain in effect.</p>
+
+<section class="chat-commands" aria-labelledby="chat-title">
+  <div class="eyebrow">STREAM CHAT INTEGRATION</div>
+  <h2 id="chat-title">TWITCH CHAT COMMANDS</h2>
+  <p class="intro">Give viewers a quick way to find daily and weekly missions. These are ready-to-copy Nightbot responses; add them in Nightbot before they will work in chat.</p>
+  <div class="command-grid">
+    <article class="command-card"><code>!missions</code><p>Join AdhemSwag missions and earn bonus XP + FNC by watching on Twitch! Join now: https://adhemswag.com/missions/</p><button type="button" data-copy-command="!missions">COPY RESPONSE</button></article>
+    <article class="command-card"><code>!daily</code><p>Daily Twitch missions: watch 15, 30, or 60 verified minutes to earn bonus XP + FNC. Join first: https://adhemswag.com/missions/</p><button type="button" data-copy-command="!daily">COPY RESPONSE</button></article>
+    <article class="command-card"><code>!weekly</code><p>Weekly Twitch missions: reach 120, 180, or 300 verified watch minutes for bonus XP + FNC. Join first: https://adhemswag.com/missions/</p><button type="button" data-copy-command="!weekly">COPY RESPONSE</button></article>
+  </div>
+  <p class="chat-note">NIGHTBOT SETUP REQUIRED · Responses below are not automatically installed in your Nightbot account.</p>
+</section>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="/auth.js"></script>
@@ -103,6 +126,15 @@ button,.cta{display:inline-flex;align-items:center;justify-content:center;min-he
     }
   }
   init();
+
+  document.querySelectorAll('[data-copy-command]').forEach(button=>button.addEventListener('click',async()=>{
+    const command=button.getAttribute('data-copy-command');
+    const card=button.closest('.command-card');
+    const response=card?.querySelector('p')?.textContent?.trim();
+    if(!response)return;
+    try{await navigator.clipboard.writeText(response);button.textContent='COPIED';setTimeout(()=>button.textContent='COPY RESPONSE',1600);}
+    catch{window.prompt('Copy this Nightbot response:',response);}
+  }));
 })();
 </script>
 </body>
