@@ -761,27 +761,34 @@ if(accessRoot){
   async function load(){
     try{
       const params=new URLSearchParams(location.search);
-      if(params.has('viewer')||params.has('admin_preview')){
-        panel.hidden=true;
-        return;
-      }
+      const targetUsername=(params.get('admin_preview')||params.get('viewer')||'').trim();
+      const isTargetProfile=Boolean(targetUsername);
       let client=null;
       for(let i=0;i<40&&!client;i++){
         client=window.AdhemAuth||null;
         if(!client)await wait(150);
       }
       if(!client){status.textContent='Mission service is unavailable. Please try again shortly.';return;}
-      let session=null,sessionError=null;
-      for(let i=0;i<3;i++){
-        const result=await client.auth.getSession();
-        session=result.data?.session||null;
-        sessionError=result.error||null;
-        if(!sessionError)break;
-        await wait(250);
+      let data=null,error=null;
+      if(isTargetProfile){
+        const result=await client.rpc('get_viewer_missions',{p_twitch_username:targetUsername});
+        data=result.data;
+        error=result.error;
+      }else{
+        let session=null,sessionError=null;
+        for(let i=0;i<3;i++){
+          const result=await client.auth.getSession();
+          session=result.data?.session||null;
+          sessionError=result.error||null;
+          if(!sessionError)break;
+          await wait(250);
+        }
+        if(sessionError)throw sessionError;
+        if(!session?.user){status.textContent='Connect your Twitch profile to see your personal mission progress.';return;}
+        const result=await client.rpc('get_my_missions');
+        data=result.data;
+        error=result.error;
       }
-      if(sessionError)throw sessionError;
-      if(!session?.user){status.textContent='Connect your Twitch profile to see your personal mission progress.';return;}
-      const {data,error}=await client.rpc('get_my_missions');
       if(error)throw error;
       if(!data?.ok)throw new Error('mission_service_unavailable');
       if(!data.enrolled){
@@ -802,7 +809,7 @@ if(accessRoot){
         return '<article class="profile-mission-card"><div class="profile-mission-top"><span class="profile-mission-tag">'+(daily?'DAILY MISSION':'WEEKLY MISSION')+'</span><span class="profile-mission-state">'+(done?'✓ COMPLETED':'IN PROGRESS')+'</span></div><h3>'+esc(m.title)+'</h3><p>'+esc(m.description)+'</p><div class="profile-mission-rewards"><span>+'+xp+' XP</span><span>+'+fnc+' FNC</span></div><div class="profile-mission-progress-label"><span>'+shown+' / '+goal+' MIN</span><span>'+pct+'%</span></div><div class="profile-mission-progress" role="progressbar" aria-valuemin="0" aria-valuemax="'+goal+'" aria-valuenow="'+shown+'"><span style="width:'+pct+'%"></span></div></article>';
       }).join('');
       grid.hidden=false;
-      status.textContent='Your personal mission progress. Rewards are credited automatically when each objective is completed.';
+      status.textContent=isTargetProfile?'Verified Twitch mission progress for '+targetUsername+'.':'Your personal mission progress. Rewards are credited automatically when each objective is completed.';
     }catch(error){
       console.error('[AdhemSwag Profile Missions]',error);
       status.textContent='Mission progress could not be loaded. Open Missions to check your status.';
