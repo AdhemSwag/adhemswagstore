@@ -619,47 +619,5 @@ body.mobile-menu-open{overflow:hidden!important}
  window.addEventListener('resize',()=>{if(window.innerWidth>700)close();});
 })();</script>
 
-<!-- Missions-only mobile sidebar size correction: keep the shared drawer compact on phones. -->
-<style id="adhemswag-missions-mobile-sidebar-compact-v1">
-@media (max-width:700px){
-  .sidebar{
-    width:min(285px,84vw)!important;
-    max-width:84vw!important;
-    padding:14px 12px 24px!important;
-    box-sizing:border-box!important;
-  }
-  .sidebar-brand,.sidebar-brand a{
-    min-height:68px!important;
-    margin-bottom:8px!important;
-    padding:6px 8px 12px!important;
-    justify-content:center!important;
-    box-sizing:border-box!important;
-  }
-  .sidebar-brand img,.sidebar-logo-img{
-    width:auto!important;
-    max-width:145px!important;
-    max-height:58px!important;
-    height:auto!important;
-    object-fit:contain!important;
-  }
-  .sidebar-link{
-    min-height:42px!important;
-    padding:8px 10px!important;
-    gap:10px!important;
-    font-size:12px!important;
-    line-height:1.2!important;
-    box-sizing:border-box!important;
-  }
-  .sidebar-link svg,.sidebar-link img{
-    width:18px!important;
-    height:18px!important;
-    flex:0 0 18px!important;
-  }
-}
-@media (min-width:701px){
-  #adhemswag-missions-mobile-sidebar-compact-v1{display:none!important}
-}
-</style>
-
 </body>
 </html>
