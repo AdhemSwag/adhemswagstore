@@ -110,7 +110,7 @@ begin
       and ws.platform='twitch'
       and t.tick_minute >= v_period_start
       and t.tick_minute < least(v_period_end, now() + interval '1 minute')
-      and (coalesce(t.xp_awarded,0)>0 or coalesce(t.fnc_awarded,0)>0);
+      and true;
 
     if coalesce(v_minutes,0) < m.goal_minutes then continue; end if;
 
@@ -247,7 +247,7 @@ begin
               else date_trunc('week', now() at time zone 'Africa/Algiers') at time zone 'Africa/Algiers'
             end)
           and t.tick_minute < now() + interval '1 minute'
-          and (coalesce(t.xp_awarded,0)>0 or coalesce(t.fnc_awarded,0)>0)
+          and true
       ) as progress_minutes
   ) p on true
   left join public.mission_claims c
