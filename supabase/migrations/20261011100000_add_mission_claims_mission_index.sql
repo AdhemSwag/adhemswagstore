@@ -1,0 +1,1 @@
+create index if not exists mission_claims_mission_id_idx on public.mission_claims (mission_id);
