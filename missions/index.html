@@ -519,14 +519,7 @@ body.mobile-menu-open{overflow:hidden!important}
  const side=()=>$('.sidebar')||$('.admin-nav')||$('.mobile-fallback-drawer');
  const scr=()=>$('[data-mobile-scrim]');
  const btn=()=>$('[data-mobile-menu]');
- function ensureCloseButton(){
-   const s=side();if(!s||s.querySelector('.mobile-drawer-close'))return;
-   const closeBtn=document.createElement('button');
-   closeBtn.type='button';closeBtn.className='mobile-drawer-close';
-   closeBtn.setAttribute('aria-label','Close menu');closeBtn.textContent='×';
-   s.appendChild(closeBtn);
- }
- ensureCloseButton();
+
  function open(){
    if(!window.matchMedia('(max-width:700px)').matches)return;
    const s=side(),x=scr(),b=btn();if(!s)return;
@@ -580,5 +573,7 @@ body.mobile-menu-open{overflow:hidden!important}
 
 
 
+
+<style id="adhemswag-mobile-sidebar-no-close-x-v1">@media(max-width:700px){.mobile-drawer-close{display:none!important;visibility:hidden!important;pointer-events:none!important}}</style>
 </body>
 </html>
