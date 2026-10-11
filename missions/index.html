@@ -79,8 +79,6 @@ footer{border-top:1px solid var(--line);padding:20px;text-align:center;color:#60
       if(sessionError) throw sessionError;
       if(!session?.user){
         status.innerHTML='Connect your Twitch account to see mission progress and receive rewards.<br><br><button type="button" data-adhem-login>CONNECT WITH TWITCH</button>';
-        const btn=status.querySelector('[data-adhem-login]');
-        btn.addEventListener('click',()=>window.AdhemSwagAuth?.loginWithTwitch?.());
         return;
       }
       const {data,error}=await client.rpc('get_my_missions');
