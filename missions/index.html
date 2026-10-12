@@ -393,12 +393,12 @@ body.mobile-menu-open{overflow:hidden!important}
 <main>
   <section class="hero"><div class="eyebrow">ADHEMSWAG REWARDS / MISSION CONTROL</div>
   <h1>PLAY YOUR PART.<br><span>CLAIM YOUR PROGRESS.</span></h1>
-  <p class="lede">Turn your Twitch watch time into extra progression. Join once, watch AdhemSwag live, and let verified activity move your daily and weekly missions forward. Rewards are credited automatically when you complete an objective.</p>
+  <p class="lede">Join daily missions again each day, and join weekly missions once per week. Only verified Twitch watch time after joining counts. Rewards are credited automatically when you complete an objective.</p>
   <div class="hero-meta"><span class="hero-chip"><i></i> TWITCH VERIFIED</span><span class="hero-chip">AUTO XP + FNC</span><span class="hero-chip">DAILY &amp; WEEKLY</span></div></section>
   <div id="status" role="status" aria-live="polite">Checking your Twitch-linked profile…</div>
-  <div class="section-head"><h2>YOUR ACTIVE MISSIONS</h2><p>Track progress • Earn automatically</p></div>
+  <div class="section-head"><h2>YOUR ACTIVE MISSIONS</h2><p>Daily: join every day • Weekly: join once each week</p></div>
   <div id="missionGrid" class="grid" hidden></div>
-  <div class="rules-strip"><div class="rule"><b>01 / JOIN FIRST</b><span>Your mission tracking begins after you join. Earlier watch time is not counted.</span></div><div class="rule"><b>02 / WATCH ON TWITCH</b><span>Only server-verified Twitch watch time counts. Kick and page visits do not count.</span></div><div class="rule"><b>03 / GET REWARDED</b><span>XP and FNC bonuses are automatic, once per mission period, subject to platform limits.</span></div></div>
+  <div class="rules-strip"><div class="rule"><b>01 / DAILY JOIN</b><span>Join daily missions every day after the midnight reset. Previous-day minutes do not count.</span></div><div class="rule"><b>02 / WEEKLY JOIN</b><span>Join weekly missions once per week. Your enrollment stays active until the Monday reset.</span></div><div class="rule"><b>03 / TWITCH ONLY</b><span>Only verified Twitch watch time after joining counts. Rewards are credited automatically once per mission period, subject to existing platform limits.</span></div></div>
   <p class="note">Mission bonuses are separate from standard watch rewards. Existing global XP/FNC settings and the configured daily FNC cap remain in effect. Daily missions reset at midnight; weekly missions reset every Monday, using Algeria time. <a href="/faq/" style="color:var(--cyan);text-decoration:none;font-weight:600">Read the Missions FAQ →</a></p>
 
 
@@ -435,18 +435,42 @@ body.mobile-menu-open{overflow:hidden!important}
   function render(missions){
     grid.innerHTML=missions.map(m=>{
       const goal=Math.max(1,Number(m.goal_minutes)||1), progress=Math.max(0,Number(m.progress_minutes)||0), pct=Math.min(100,Math.round(progress/goal*100));
-      const done=Boolean(m.completed), period=m.period_type==='daily'?'DAILY MISSION':'WEEKLY MISSION';
+      const joined=Boolean(m.joined), done=Boolean(m.completed), period=m.period_type==='daily'?'DAILY MISSION':'WEEKLY MISSION';
       const rewardXp=done?(Number(m.xp_awarded)||0):(Number(m.xp_reward)||0), rewardFnc=done?(Number(m.fnc_awarded)||0):(Number(m.fnc_reward)||0);
-      return '<article class="mission '+(done?'done':'')+'"><div class="mission-head"><span class="tag">'+period+'</span><span class="status">'+(done?'✓ COMPLETED':'IN PROGRESS')+'</span></div><h2>'+esc(m.title)+'</h2><p class="desc">'+esc(m.description)+'</p><div class="rewards"><span class="reward xp">+'+rewardXp+' XP</span><span class="reward fnc">+'+rewardFnc+' FNC</span></div><div class="progress-label"><span>'+Math.min(progress,goal)+' / '+goal+' MINUTES</span><span>'+pct+'%</span></div><div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="'+goal+'" aria-valuenow="'+Math.min(progress,goal)+'"><span style="width:'+pct+'%"></span></div><p class="note">'+(done?'Rewards delivered automatically.':'Resets '+esc(fmtDate(m.period_end)||'at the end of the period')+'.')+'</p></article>';
+      const badge=done?'✓ COMPLETED':(!joined?'JOIN REQUIRED':'IN PROGRESS');
+      const note=done?'Rewards delivered automatically.':(!joined?'Join this period to start tracking.':'Resets '+esc(fmtDate(m.period_end)||'at the end of the period')+'.');
+      return '<article class="mission '+(done?'done':'')+'"><div class="mission-head"><span class="tag">'+period+'</span><span class="status">'+badge+'</span></div><h2>'+esc(m.title)+'</h2><p class="desc">'+esc(m.description)+'</p><div class="rewards"><span class="reward xp">+'+rewardXp+' XP</span><span class="reward fnc">+'+rewardFnc+' FNC</span></div><div class="progress-label"><span>'+Math.min(progress,goal)+' / '+goal+' MINUTES</span><span>'+pct+'%</span></div><div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="'+goal+'" aria-valuenow="'+Math.min(progress,goal)+'"><span style="width:'+pct+'%"></span></div><p class="note">'+note+'</p></article>';
     }).join('');
     grid.hidden=false;
-    status.textContent=missions.length?'Your verified mission progress is up to date. Rewards are added automatically when a mission is completed.':'No active missions right now.';
+  }
+  function renderEnrollment(data){
+    const daily=Boolean(data.daily_joined), weekly=Boolean(data.weekly_joined);
+    status.innerHTML='<div style="color:#eaf6f8;font-weight:700;margin-bottom:8px">MISSION ENROLLMENT</div>'+
+      '<div style="margin-bottom:10px">Daily missions: '+(daily?'<strong style="color:#39e58c">JOINED FOR TODAY</strong>':'<strong style="color:#ffca69">JOIN REQUIRED TODAY</strong>')+
+      ' <button type="button" data-join-period="daily" '+(daily?'disabled':'')+'>'+(daily?'DAILY JOINED':'JOIN DAILY MISSIONS')+'</button></div>'+
+      '<div style="margin-bottom:10px">Weekly missions: '+(weekly?'<strong style="color:#39e58c">JOINED THIS WEEK</strong>':'<strong style="color:#ffca69">JOIN REQUIRED THIS WEEK</strong>')+
+      ' <button type="button" data-join-period="weekly" '+(weekly?'disabled':'')+'>'+(weekly?'WEEKLY JOINED':'JOIN WEEKLY MISSIONS')+'</button></div>'+
+      '<div style="font-size:12px;line-height:1.6;color:#91a4aa">Daily enrollment resets at midnight. Weekly enrollment resets every Monday. Both use Algeria time; watch minutes from before joining never count.</div>';
+    status.querySelectorAll('[data-join-period]').forEach(button=>button.addEventListener('click',async event=>{
+      const btn=event.currentTarget, periodType=btn.dataset.joinPeriod;
+      btn.disabled=true;btn.textContent='JOINING…';
+      const {data:joined,error:joinError}=await client.rpc('join_missions',{p_period_type:periodType});
+      if(joinError||!joined?.ok){
+        console.error('[AdhemSwag Missions] Join failed:',joinError);
+        btn.disabled=false;btn.textContent=periodType==='daily'?'JOIN DAILY MISSIONS':'JOIN WEEKLY MISSIONS';
+        const err=document.createElement('div');err.style.color='#ff9d9d';err.style.marginTop='8px';
+        err.textContent='Unable to join right now. Check that your Twitch account and viewer profile are connected and complete.';
+        status.appendChild(err);return;
+      }
+      await init();
+    }));
   }
   async function init(){
     try{
       const {data:{session},error:sessionError}=await client.auth.getSession();
       if(sessionError) throw sessionError;
       if(!session?.user){
+        grid.hidden=true;
         status.innerHTML='Connect your Twitch account first to join the missions.<br><br><button type="button" data-adhem-login>CONNECT WITH TWITCH</button>';
         status.querySelector('[data-adhem-login]').addEventListener('click',async()=>{
           const {error}=await client.auth.signInWithOAuth({provider:'twitch',options:{redirectTo:'https://adhemswag.com/dashboard/',queryParams:{force_verify:'true'}}});
@@ -457,21 +481,8 @@ body.mobile-menu-open{overflow:hidden!important}
       const {data,error}=await client.rpc('get_my_missions');
       if(error) throw error;
       if(!data?.ok) throw new Error('mission_service_unavailable');
-      if(!data.enrolled){
-        grid.hidden=true;
-        status.innerHTML='<strong style="color:#eaf6f8;display:block;margin-bottom:8px">You have not joined the missions yet.</strong>Click JOIN MISSIONS to start tracking your verified Twitch watch time. Minutes watched before joining do not count.<br><br><button type="button" data-join-missions>JOIN MISSIONS</button>';
-        status.querySelector('[data-join-missions]').addEventListener('click',async event=>{
-          const btn=event.currentTarget;btn.disabled=true;btn.textContent='JOINING…';
-          const {data:joined,error:joinError}=await client.rpc('join_missions');
-          if(joinError||!joined?.ok){console.error('[AdhemSwag Missions] Join failed:',joinError);btn.disabled=false;btn.textContent='JOIN MISSIONS';status.textContent='Unable to join right now. Make sure your Twitch profile is connected and complete.';return;}
-          status.textContent='You joined the missions! Your verified Twitch watch time now counts.';
-          await init();
-        });
-        return;
-      }
-      const {data:refreshed,error:refreshError}=await client.rpc('get_my_missions');
-      if(refreshError) throw refreshError;
-      render(Array.isArray(refreshed?.missions)?refreshed.missions:[]);
+      renderEnrollment(data);
+      render(Array.isArray(data.missions)?data.missions:[]);
     }catch(error){
       console.error('[AdhemSwag Missions]',error);
       status.textContent='Missions could not be loaded right now. Please refresh the page after confirming your Twitch connection.';
