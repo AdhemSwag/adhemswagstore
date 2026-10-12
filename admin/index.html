@@ -400,6 +400,16 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
         <div class="card"><small>Pending Redemptions</small><div class="metric" id="metricRedemptions">—</div></div>
         <div class="card"><small>Total FNC</small><div class="metric" id="metricFnc">—</div></div>
       </div>
+      <div class="section" id="missionStatsSection">
+        <h2>Mission <span style="color:var(--cyan)">ENROLLMENT</span></h2>
+        <p>Live count of accounts enrolled in the current daily and weekly missions. Counts reset using Algeria time.</p>
+        <div class="cards" style="margin-top:18px">
+          <div class="card"><small>Joined Daily Missions · Today</small><div class="metric" id="missionDailyJoinedCount">—</div></div>
+          <div class="card"><small>Joined Weekly Missions · This Week</small><div class="metric" id="missionWeeklyJoinedCount">—</div></div>
+        </div>
+        <div class="actions" style="margin-top:14px"><button class="btn primary" id="refreshMissionStats" type="button">REFRESH MISSION STATS</button></div>
+        <div class="notice" id="missionStatsStatus" aria-live="polite">Stats load after secure Admin access is verified.</div>
+      </div>
       <div class="section">
         <h2>Admin workflow</h2>
         <p>Control your FNC store, giveaways, viewers, redemptions, transactions, leaderboard, media and system settings from one secure admin panel.</p>
@@ -1058,6 +1068,7 @@ async function verifyAdmin() {
     await loadFncSettings();
     updateLoader(74,'LOADING DASHBOARD…');
     await refreshDashboard();
+    await loadMissionJoinStats();
     updateLoader(82,'LOADING REDEMPTIONS & TRANSACTIONS…');
     await loadRedemptions();
     await loadTransactions();
@@ -2185,6 +2196,31 @@ async function loadGoogleAnalytics(){
   }
 }
 
+async function loadMissionJoinStats(){
+  if(!adminReady)return;
+  const daily=document.getElementById('missionDailyJoinedCount');
+  const weekly=document.getElementById('missionWeeklyJoinedCount');
+  const status=document.getElementById('missionStatsStatus');
+  const refresh=document.getElementById('refreshMissionStats');
+  if(!daily||!weekly||!status)return;
+  if(refresh)refresh.disabled=true;
+  status.textContent='Loading live mission enrollment counts…';
+  try{
+    const {data,error}=await supabaseClient.rpc('get_admin_mission_join_stats');
+    if(error)throw error;
+    if(!data||data.ok!==true)throw new Error('The mission statistics service did not return valid data.');
+    daily.textContent=Number(data.daily_count||0).toLocaleString('en-US');
+    weekly.textContent=Number(data.weekly_count||0).toLocaleString('en-US');
+    const updatedAt=data.updated_at?new Date(data.updated_at):new Date();
+    status.textContent='Updated '+updatedAt.toLocaleTimeString('en-GB',{timeZone:'Africa/Algiers'})+' Algeria time · Daily resets at midnight; weekly resets on Monday.';
+  }catch(error){
+    status.textContent='Could not load mission stats: '+(error?.message||'Unknown error');
+  }finally{
+    if(refresh)refresh.disabled=false;
+  }
+}
+setInterval(()=>{if(adminReady&&document.visibilityState!=='hidden')loadMissionJoinStats();},60000);
+
 document.querySelectorAll('.nav-btn').forEach(btn=>{
   btn.addEventListener('click',()=>{
     document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
@@ -2199,6 +2235,7 @@ document.querySelectorAll('.nav-btn').forEach(btn=>{
 
 
 document.getElementById('refreshDashboard')?.addEventListener('click',refreshDashboard);
+document.getElementById('refreshMissionStats')?.addEventListener('click',loadMissionJoinStats);
 document.getElementById('refreshGoogleAnalytics')?.addEventListener('click',loadGoogleAnalytics);
 document.getElementById('loadRedemptions')?.addEventListener('click',loadRedemptions);
 document.getElementById('loadTransactions')?.addEventListener('click',loadTransactions);
