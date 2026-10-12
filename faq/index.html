@@ -1084,54 +1084,13 @@ footer .footer-copy .row{margin:0;}
   </div>
 
 
-  <div style="margin:28px 0 10px;text-align:center"><button type="button" class="fnc-faq-btn" onclick="document.getElementById('xpFaqOverlay').classList.add('open');document.body.style.overflow='hidden'"><span class="fnc-faq-btn-icon">?</span> XP SYSTEM FAQ</button></div>
-  <div style="margin:10px 0 10px;text-align:center"><button type="button" class="fnc-faq-btn" onclick="document.getElementById('missionsFaqOverlay').classList.add('open');document.body.style.overflow='hidden'"><span class="fnc-faq-btn-icon">★</span> DAILY &amp; WEEKLY MISSIONS FAQ</button></div>
-
+  
   <div class="faq-help">
     Still need help? Join the <a href="https://discord.gg/cMRS6E2" target="_blank" rel="noopener">Discord</a>
   </div>
 
-<div class="fnc-faq-overlay" id="xpFaqOverlay" role="dialog" aria-modal="true" aria-labelledby="xpFaqTitle">
-  <div class="fnc-faq-modal" role="document">
-    <button type="button" class="fnc-faq-close" aria-label="Close XP FAQ" onclick="document.getElementById('xpFaqOverlay').classList.remove('open');document.body.style.overflow=''">×</button>
-    <h2 class="fnc-faq-title" id="xpFaqTitle">XP <span>SYSTEM</span></h2>
-    <p class="fnc-faq-sub">How XP is earned, calculated and multiplied on AdhemSwag.</p>
-    <div class="fnc-faq-section-label">XP Earning Rules</div>
-    <div class="fnc-faq-item"><button class="fnc-faq-q" onclick="this.parentElement.classList.toggle('active')">Normal viewer <span class="fnc-faq-icon">+</span></button><div class="fnc-faq-a"><strong>1× XP</strong> — base XP rate for eligible Twitch watch activity.</div></div>
-    <div class="fnc-faq-item"><button class="fnc-faq-q" onclick="this.parentElement.classList.toggle('active')">Twitch Tier 1 <span class="fnc-faq-icon">+</span></button><div class="fnc-faq-a"><strong>2× XP</strong> — Tier 1 subscribers receive double the base XP rate.</div></div>
-    <div class="fnc-faq-item"><button type="button" class="fnc-faq-q" onclick="this.parentElement.classList.toggle('active')">Twitch Tier 2 <span class="fnc-faq-icon">+</span></button><div class="fnc-faq-a"><strong>3× XP</strong> — Tier 2 subscribers receive triple the base XP rate.</div></div>
-    <div class="fnc-faq-item"><button type="button" class="fnc-faq-q" onclick="this.parentElement.classList.toggle('active')">Twitch Tier 3 <span class="fnc-faq-icon">+</span></button><div class="fnc-faq-a"><strong>4× XP</strong> — Tier 3 subscribers receive four times the base XP rate.</div></div>
-    <div class="fnc-faq-section-label">Method</div>
-    <div class="fnc-faq-item"><button type="button" class="fnc-faq-q" onclick="this.parentElement.classList.toggle('active')">How is XP calculated? <span class="fnc-faq-icon">+</span></button><div class="fnc-faq-a">The system starts with the base XP rate, identifies the viewer's verified Twitch subscription tier, and applies the matching multiplier automatically. <strong>1× / 2× / 3× / 4×</strong> correspond to non-sub / Tier 1 / Tier 2 / Tier 3.</div></div>
-    <div class="fnc-faq-item"><button type="button" class="fnc-faq-q" onclick="this.parentElement.classList.toggle('active')">What about Kick? <span class="fnc-faq-icon">+</span></button><div class="fnc-faq-a"><strong>Kick does not generate XP.</strong> The XP watch system is Twitch-only.</div></div>
-    <div class="fnc-faq-footer">XP progression is separate from FNC Points. The FAQ explains the public rules; the existing XP engine remains unchanged.</div>
-  </div>
-</div>
-<div class="fnc-faq-overlay" id="missionsFaqOverlay" role="dialog" aria-modal="true" aria-labelledby="missionsFaqTitle">
-  <div class="fnc-faq-modal" role="document">
-    <button type="button" class="fnc-faq-close" aria-label="Close Missions FAQ" onclick="document.getElementById('missionsFaqOverlay').classList.remove('open');document.body.style.overflow=''">×</button>
-    <h2 class="fnc-faq-title" id="missionsFaqTitle">DAILY &amp; WEEKLY <span>MISSIONS</span></h2>
-    <p class="fnc-faq-sub">The same mission rules, goals and rewards explained on the main FAQ page.</p>
 
-    <div class="fnc-faq-section-label">Start Here</div>
-    <div class="fnc-faq-item"><button type="button" class="fnc-faq-q" onclick="this.parentElement.classList.toggle('active')">How do I join? <span class="fnc-faq-icon">+</span></button><div class="fnc-faq-a">Connect Twitch and complete your viewer profile. Open the <a href="/missions/">Missions page</a>, then press <strong>JOIN DAILY MISSIONS</strong> each day and <strong>JOIN WEEKLY MISSIONS</strong> once per week. You must join each period manually. Only verified Twitch watch minutes earned after joining count; earlier minutes are not added retroactively.</div></div>
-    <div class="fnc-faq-item"><button type="button" class="fnc-faq-q" onclick="this.parentElement.classList.toggle('active')">When do missions reset? <span class="fnc-faq-icon">+</span></button><div class="fnc-faq-a"><strong>Daily:</strong> enrollment resets at midnight, so join again every day. <strong>Weekly:</strong> enrollment resets every Monday, so join again once each new week. Both use the Africa/Algiers time zone.</div></div>
-    <div class="fnc-faq-item"><button type="button" class="fnc-faq-q" onclick="this.parentElement.classList.toggle('active')">What activity counts? <span class="fnc-faq-icon">+</span></button><div class="fnc-faq-a">Only server-verified minutes watching AdhemSwag live on <strong>Twitch</strong> count. Kick viewing, website visits, and watch time from before joining do not count.</div></div>
 
-    <div class="fnc-faq-section-label">Active Mission Goals &amp; Rewards</div>
-    <div class="fnc-faq-item"><button type="button" class="fnc-faq-q" onclick="this.parentElement.classList.toggle('active')">Daily missions <span class="fnc-faq-icon">+</span></button><div class="fnc-faq-a"><ul><li><strong>Quick Check-in:</strong> 15 verified minutes — <strong>5 XP + 1 FNC</strong></li><li><strong>Daily Twitch Watch:</strong> 30 verified minutes — <strong>10 XP + 1 FNC</strong></li><li><strong>Daily Watch Streak:</strong> 60 verified minutes — <strong>20 XP + 2 FNC</strong></li></ul></div></div>
-    <div class="fnc-faq-item"><button type="button" class="fnc-faq-q" onclick="this.parentElement.classList.toggle('active')">Weekly missions <span class="fnc-faq-icon">+</span></button><div class="fnc-faq-a"><ul><li><strong>Weekly Warm-up:</strong> 120 verified minutes — <strong>25 XP + 3 FNC</strong></li><li><strong>Weekly Twitch Watch:</strong> 180 verified minutes — <strong>50 XP + 5 FNC</strong></li><li><strong>Weekly Watch Streak:</strong> 300 verified minutes — <strong>75 XP + 8 FNC</strong></li></ul></div></div>
-
-    <div class="fnc-faq-section-label">Progress &amp; Rewards</div>
-    <div class="fnc-faq-item"><button type="button" class="fnc-faq-q" onclick="this.parentElement.classList.toggle('active')">Where can I see my progress? <span class="fnc-faq-icon">+</span></button><div class="fnc-faq-a">Each active mission card shows its goal, verified progress and XP/FNC reward. Visit the <a href="/missions/">Missions page</a> to check your progress.</div></div>
-    <div class="fnc-faq-item"><button type="button" class="fnc-faq-q" onclick="this.parentElement.classList.toggle('active')">Do I need to claim my reward? <span class="fnc-faq-icon">+</span></button><div class="fnc-faq-a">No. Once the verified goal is reached, the reward is credited automatically, at most once for that mission in the current daily or weekly period.</div></div>
-    <div class="fnc-faq-item"><button type="button" class="fnc-faq-q" onclick="this.parentElement.classList.toggle('active')">Do missions change normal FNC and XP rates? <span class="fnc-faq-icon">+</span></button><div class="fnc-faq-a">No. Normal Twitch watch rewards and subscriber multipliers remain separate. Mission bonuses are additional rewards and still respect the site's global XP/FNC enable settings and configured FNC daily cap. Kick does not earn normal watch FNC or XP.</div></div>
-    <div class="fnc-faq-footer">Ready to begin? <a href="/missions/">Open Missions →</a></div>
-  </div>
-</div>
-<script>
-(()=>{const ids=['xpFaqOverlay','missionsFaqOverlay'];const close=o=>{o.classList.remove('open');document.body.style.overflow='';};ids.forEach(id=>{const o=document.getElementById(id);if(!o)return;o.addEventListener('click',e=>{if(e.target===o)close(o);});});document.addEventListener('keydown',e=>{if(e.key==='Escape')ids.forEach(id=>{const o=document.getElementById(id);if(o&&o.classList.contains('open'))close(o);});});})();
-</script>
 </main><footer>
   <div class="footer-inner">
     <div class="footer-copy">
