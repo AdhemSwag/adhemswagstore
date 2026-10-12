@@ -656,6 +656,10 @@ footer .footer-copy .row{margin:0;}
 .faq-header h1{font-family:'Rajdhani',sans-serif;font-weight:700;text-transform:uppercase;font-size:clamp(36px,5vw,58px);line-height:1.05;margin:10px 0 12px;}
 .faq-header h1 span{color:var(--cyan);text-shadow:0 0 22px rgba(17,217,247,.45);}
 .faq-header p{color:var(--muted);font-size:15px;line-height:1.6;max-width:650px;}
+.faq-intro-row{display:flex;align-items:center;justify-content:center;gap:8px 18px;flex-wrap:wrap;margin:0 auto 22px;max-width:980px}
+.faq-intro-row>p{margin:0}
+.faq-intro-row .faq-active-note{display:inline-flex;align-items:center;justify-content:center;text-align:left}
+@media(max-width:700px){.faq-intro-row{flex-direction:column;align-items:center;gap:8px}.faq-intro-row>p{text-align:center}.faq-intro-row .faq-active-note{text-align:center}}
 .faq-active-note{font-size:11px !important;line-height:1.5 !important;margin-top:-22px;color:var(--cyan-dim) !important;letter-spacing:0.01em;}
 .faq-list{background:var(--bg-panel);border:1px solid var(--line);padding:24px;}
 .faq-list .fnc-faq-section-label{margin-top:24px;}
@@ -1005,9 +1009,11 @@ footer .footer-copy .row{margin:0;}
 </div><main class="faq-page">
   <div class="faq-header">
     <div class="eyebrow">// KNOWLEDGE BASE</div>
-    <h1>FNC POINTS <span>FAQ</span></h1>
-    <p>FNC Points are currently available on Twitch only. Everything you need to know about earning and redeeming them.</p>
-    <p class="faq-active-note">⚠ TWITCH ONLY — FNC Points are earned from eligible activity on the live Twitch stream. Kick does not earn FNC Points.</p>
+    <h1>FNC POINTS, XP &amp; MISSIONS <span>FAQ</span></h1>
+    <div class="faq-intro-row">
+      <p>Everything you need to know about FNC Points, XP, missions, earning and redeeming rewards.</p>
+      <p class="faq-active-note">⚠ TWITCH ONLY — FNC Points are earned from eligible activity on the live Twitch stream. Kick does not earn FNC Points.</p>
+    </div>
   </div>
 
   <div class="faq-list">
