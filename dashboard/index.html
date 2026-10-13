@@ -157,16 +157,17 @@
   .hero-grid{ display:grid; grid-template-columns: 1.05fr 0.95fr; gap:48px; align-items:start; }
   @media (max-width: 880px){ .hero-grid{ grid-template-columns:1fr; } }
 
-  /* Mobile-only homepage social links. Desktop presentation is untouched. */
-  .mobile-home-socials{display:none}
+  /* Mobile homepage: relocate existing Twitch/Kick actions and FNC stats, without cloning them. */
   @media(max-width:640px){
-    .mobile-home-socials{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:-24px 0 28px}
-    .mobile-home-social{display:flex;align-items:center;justify-content:center;min-height:42px;padding:10px 6px;border:1px solid var(--line);border-radius:4px;text-decoration:none;font:700 11px 'JetBrains Mono',monospace;letter-spacing:.04em;text-transform:uppercase;box-sizing:border-box}
-    .mobile-home-vod{color:var(--cyan);background:rgba(17,217,247,.06)}
-    .mobile-home-twitch{color:#fff;background:#9146FF;border-color:#9146FF}
-    .mobile-home-kick{color:#05070a;background:#53FC18;border-color:#53FC18}
+    .mobile-home-reordered-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:0 0 14px}
+    .mobile-home-reordered-actions .follow-sub-row{display:contents}
+    .mobile-home-reordered-actions .follow-btn,
+    .mobile-home-reordered-actions .sub-btn{min-width:0;min-height:42px;padding:10px 6px;font-size:10px;text-align:center}
+    .mobile-home-reordered-actions .points-strip{grid-column:1/-1;grid-template-columns:1fr;margin-top:0}
+    .mobile-home-reordered-actions .points-cell{padding:11px 10px}
+    .mobile-home-reordered-actions .points-cell .num{font-size:20px}
+    .mobile-home-reordered-actions .points-cell .lbl{font-size:9px}
   }
-
   @media (max-width: 640px){
     header{ flex-wrap:wrap; justify-content:center; gap:16px; text-align:center; padding:18px 20px; }
     .nav-menu{ flex-wrap:wrap; justify-content:center; }
@@ -1301,13 +1302,6 @@ footer .footer-copy .row{margin:0;}
         <a href="/store/" class="btn btn-outline"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-3px; margin-right:7px;"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>Store</a>
       </div>
 
-      <!-- Mobile-only quick links; desktop layout stays unchanged. -->
-      <div class="mobile-home-socials" aria-label="AdhemSwag video and streaming links">
-        <a class="mobile-home-social mobile-home-vod" href="https://www.twitch.tv/adhemswag/videos" target="_blank" rel="noopener">▶ VOD</a>
-        <a class="mobile-home-social mobile-home-twitch" href="https://www.twitch.tv/adhemswag" target="_blank" rel="noopener">Twitch</a>
-        <a class="mobile-home-social mobile-home-kick" href="https://kick.com/adhemswag918" target="_blank" rel="noopener">Kick</a>
-      </div>
-
       <div class="hero-faq">
         <div class="eyebrow" style="margin-bottom:8px;">// need help</div>
         <a class="fnc-faq-btn" href="/faq/"><span class="fnc-faq-btn-icon">?</span>VIEW FULL FAQ</a>
@@ -1776,6 +1770,49 @@ footer .footer-copy .row{margin:0;}
 }
 </style>
 
+
+<script>
+/* Reuse the homepage's original VOD/social and FNC elements; never create duplicate buttons.
+   Move existing Twitch/Kick action rows and FNC stats below Watch Live + Store on mobile only.
+   Restore their original locations on desktop. */
+(function(){
+  const breakpoint=window.matchMedia('(max-width: 640px)');
+  let wrapper=null, cta=null, items=[];
+  function setup(){
+    if(!cta) cta=document.querySelector('.cta-row');
+    if(!cta) return;
+    if(!wrapper){
+      wrapper=document.createElement('div');
+      wrapper.className='mobile-home-reordered-actions';
+      wrapper.setAttribute('aria-label','Streaming links and FNC rewards');
+      const candidates=[
+        document.querySelector('.follow-sub-row[aria-label="Twitch actions"]'),
+        document.querySelector('.follow-sub-row[aria-label="Kick actions"]'),
+        document.querySelector('.points-strip')
+      ].filter(Boolean);
+      if(candidates.length<3) return;
+      items=candidates.map(el=>{
+        const marker=document.createComment('original homepage position');
+        el.parentNode.insertBefore(marker,el);
+        return {el,marker};
+      });
+    }
+    if(breakpoint.matches){
+      if(!wrapper.isConnected) cta.insertAdjacentElement('afterend',wrapper);
+      items.forEach(item=>wrapper.appendChild(item.el));
+    }else{
+      items.forEach(item=>{
+        if(item.marker.parentNode) item.marker.parentNode.insertBefore(item.el,item.marker.nextSibling);
+      });
+      wrapper.remove();
+    }
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',setup,{once:true});
+  else setup();
+  if(breakpoint.addEventListener) breakpoint.addEventListener('change',setup);
+  else breakpoint.addListener(setup);
+})();
+</script>
 </body>
 </html>
 
