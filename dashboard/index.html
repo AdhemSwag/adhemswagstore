@@ -160,6 +160,7 @@
   /* Mobile homepage: relocate existing Twitch/Kick actions and FNC stats, without cloning them. */
   @media(max-width:640px){
     .mobile-home-reordered-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:0 0 14px}
+    .mobile-home-reordered-actions .stream-card{grid-column:1/-1;width:100%;min-width:0;margin-top:0}
     .mobile-home-reordered-actions .follow-sub-row{display:contents}
     .mobile-home-reordered-actions .follow-btn,
     .mobile-home-reordered-actions .sub-btn{min-width:0;min-height:42px;padding:10px 6px;font-size:10px;text-align:center}
@@ -1772,9 +1773,8 @@ footer .footer-copy .row{margin:0;}
 
 
 <script>
-/* Reuse the homepage's original VOD/social and FNC elements; never create duplicate buttons.
-   Move existing Twitch/Kick action rows and FNC stats below Watch Live + Store on mobile only.
-   Restore their original locations on desktop. */
+/* Reuse the homepage's existing stream video/player, social actions and FNC stats.
+   Move them below Watch Live + Store on mobile only; restore original positions on desktop. */
 (function(){
   const breakpoint=window.matchMedia('(max-width: 640px)');
   let wrapper=null, cta=null, items=[];
@@ -1786,11 +1786,12 @@ footer .footer-copy .row{margin:0;}
       wrapper.className='mobile-home-reordered-actions';
       wrapper.setAttribute('aria-label','Streaming links and FNC rewards');
       const candidates=[
+        document.querySelector('.stream-card'),
         document.querySelector('.follow-sub-row:not([aria-label])'),
         document.querySelector('.follow-sub-row[aria-label="Kick actions"]'),
         document.querySelector('.points-strip')
       ].filter(Boolean);
-      if(candidates.length<3) return;
+      if(candidates.length<4) return;
       items=candidates.map(el=>{
         const marker=document.createComment('original homepage position');
         el.parentNode.insertBefore(marker,el);
