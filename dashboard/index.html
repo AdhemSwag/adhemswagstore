@@ -1786,7 +1786,7 @@ footer .footer-copy .row{margin:0;}
       wrapper.className='mobile-home-reordered-actions';
       wrapper.setAttribute('aria-label','Streaming links and FNC rewards');
       const candidates=[
-        document.querySelector('.follow-sub-row[aria-label="Twitch actions"]'),
+        document.querySelector('.follow-sub-row:not([aria-label])'),
         document.querySelector('.follow-sub-row[aria-label="Kick actions"]'),
         document.querySelector('.points-strip')
       ].filter(Boolean);
