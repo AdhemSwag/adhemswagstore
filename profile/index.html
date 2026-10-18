@@ -667,6 +667,31 @@ async function renderAdminPublicPreview(username){
  if(badgeEl)badgeEl.innerHTML='<span class="profile-badge-icon"><img src="'+badge.icon+'" alt="" width="24" height="24" loading="lazy"></span><span>'+badge.name+'</span>';
  set('profileLevelPercent',Math.round(pct)+'%');
  const bar=document.getElementById('profileProgressBar');if(bar)bar.style.width=pct+'%';
+ const publicHistory=document.getElementById('profileHistory');
+ if(publicHistory){
+   publicHistory.innerHTML='<div class="empty-history">Loading public activity…</div>';
+   try{
+     const {data:historyRows,error:historyError}=await client.rpc('get_public_viewer_history',{p_twitch_username:username});
+     if(historyError)throw historyError;
+     const escPublic=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+     if(!historyRows||!historyRows.length){
+       publicHistory.innerHTML='<div class="empty-history">No public activity yet.</div>';
+     }else{
+       publicHistory.innerHTML=historyRows.map(row=>{
+         const amount=Number(row.amount||0);
+         const isXp=String(row.activity_type||'').includes('XP');
+         const unit=isXp?'XP':'FNC';
+         const amountLabel=(amount>0?'+':'')+amount.toLocaleString()+' '+unit;
+         const date=row.activity_date?new Date(row.activity_date).toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'}):'';
+         const status=row.status?' · '+String(row.status).toUpperCase():'';
+         return '<div class="history-item"><div class="history-type">'+escPublic(row.activity_type||'ACTIVITY')+'</div><div class="history-desc">'+escPublic(row.description||'AdhemSwag activity')+escPublic(status)+'<div class="history-reason">'+escPublic(date)+'</div></div><div class="history-amount">'+escPublic(amountLabel)+'</div></div>';
+       }).join('');
+     }
+   }catch(historyErr){
+     console.warn('Public viewer history unavailable',historyErr);
+     publicHistory.innerHTML='<div class="empty-history">Public history is temporarily unavailable.</div>';
+   }
+ }
 }
 window.addEventListener('adhem:viewer', async function(e){
  const d=e.detail||{},p=d.profile,client=window.AdhemAuth,history=document.getElementById('profileHistory');
