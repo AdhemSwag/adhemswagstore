@@ -1166,40 +1166,7 @@ footer .footer-copy .row{margin:0;}
 
 
 
-<style id="adhem-skin-goal-system-v1">
-#skinGoalSection{margin:58px 0 20px;padding:clamp(18px,3vw,30px);border:1px solid rgba(17,217,247,.24);background:linear-gradient(135deg,rgba(17,217,247,.055),rgba(11,15,18,.96) 55%);position:relative}
-#skinGoalSection .sg-eyebrow{font:10px 'JetBrains Mono',monospace;letter-spacing:.18em;color:#11d9f7;text-transform:uppercase}
-#skinGoalSection .sg-heading{font:700 clamp(28px,4vw,42px) Rajdhani,sans-serif;line-height:1.05;text-transform:uppercase;margin-top:8px}
-#skinGoalSection .sg-lede{font-size:13px;color:#93a3a9;line-height:1.65;margin-top:9px;max-width:650px}
-#skinGoalSection .sg-status{margin-top:16px;font:11px 'JetBrains Mono',monospace;color:#9aaeb4;min-height:16px}
-#skinGoalSection .sg-current{display:grid;grid-template-columns:minmax(150px,240px) minmax(0,1fr);gap:22px;align-items:center;margin-top:24px;padding:16px;border:1px solid rgba(17,217,247,.2);background:rgba(3,7,10,.6)}
-#skinGoalSection .sg-current[hidden]{display:none!important}
-#skinGoalSection .sg-current-img{width:100%;height:150px;object-fit:contain;background:#070b0e;border:1px solid rgba(17,217,247,.1)}
-#skinGoalSection .sg-product-name{font:700 24px Rajdhani,sans-serif;line-height:1.2}
-#skinGoalSection .sg-numbers{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;margin-top:15px;font:11px 'JetBrains Mono',monospace;color:#b5c6cb}
-#skinGoalSection .sg-track{height:10px;background:#182126;border-radius:20px;overflow:hidden;margin-top:9px}
-#skinGoalSection .sg-fill{height:100%;width:0;background:linear-gradient(90deg,#0a8fa3,#11d9f7);transition:width .35s ease}
-#skinGoalSection .sg-action{display:inline-flex;align-items:center;justify-content:center;min-height:39px;margin-top:16px;padding:10px 15px;border:1px solid #11d9f7;background:#11d9f7;color:#041216;text-decoration:none;font:700 10px 'JetBrains Mono',monospace;text-transform:uppercase;cursor:pointer}
-#skinGoalSection .sg-action.secondary{background:transparent;color:#11d9f7}
-#skinGoalSection .sg-action:disabled{opacity:.4;cursor:not-allowed}
-#skinGoalSection .sg-products-title{display:flex;align-items:end;justify-content:space-between;gap:12px;margin-top:32px}
-#skinGoalSection .sg-products-title h3{font:700 23px Rajdhani,sans-serif;text-transform:uppercase}
-#skinGoalSection .sg-products-title p{font-size:11px;color:#819399}
-#skinGoalSection .sg-products{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:14px}
-#skinGoalSection .sg-product{min-width:0;display:flex;flex-direction:column;padding:10px;border:1px solid rgba(17,217,247,.14);background:#080d11;transition:border-color .18s,background .18s}
-#skinGoalSection .sg-product.selected{border-color:#11d9f7;background:rgba(17,217,247,.075);box-shadow:inset 0 0 0 1px rgba(17,217,247,.12)}
-#skinGoalSection .sg-product img{display:block;width:100%;height:112px;object-fit:contain;background:#05080a}
-#skinGoalSection .sg-product h4{font:700 16px Rajdhani,sans-serif;line-height:1.25;margin-top:10px;overflow-wrap:anywhere}
-#skinGoalSection .sg-product .sg-price{font:10px 'JetBrains Mono',monospace;color:#11d9f7;margin-top:7px}
-#skinGoalSection .sg-product .sg-stock{font:9px 'JetBrains Mono',monospace;color:#91a0a5;margin-top:5px}
-#skinGoalSection .sg-product button{margin-top:auto;min-height:34px;padding:8px 5px;background:transparent;border:1px solid rgba(17,217,247,.32);color:#bfeef5;font:700 9px 'JetBrains Mono',monospace;cursor:pointer;margin-top:12px}
-#skinGoalSection .sg-product button:disabled{opacity:.35;cursor:not-allowed}
-#skinGoalSection .sg-product button:not(:disabled):hover{background:rgba(17,217,247,.1);border-color:#11d9f7}
-#skinGoalSection .sg-login{display:inline-flex;align-items:center;gap:8px;margin-top:18px;padding:11px 14px;border:1px solid rgba(17,217,247,.3);color:#11d9f7;text-decoration:none;font:700 10px 'JetBrains Mono',monospace}
-@media(max-width:900px){#skinGoalSection .sg-products{grid-template-columns:repeat(3,minmax(0,1fr))}}
-@media(max-width:640px){#skinGoalSection{margin-top:36px;padding:16px}#skinGoalSection .sg-current{grid-template-columns:1fr;gap:14px}#skinGoalSection .sg-current-img{height:145px}#skinGoalSection .sg-products{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}#skinGoalSection .sg-product{padding:8px}#skinGoalSection .sg-product img{height:88px}#skinGoalSection .sg-product h4{font-size:14px}#skinGoalSection .sg-products-title{align-items:start;flex-direction:column}}
-@media(max-width:360px){#skinGoalSection .sg-products{grid-template-columns:1fr 1fr}}
-</style>
+
 </head>
 <body>
 
@@ -1520,27 +1487,7 @@ footer .footer-copy .row{margin:0;}
 
 
 
-<section id="skinGoalSection" aria-labelledby="skinGoalTitle">
-  <div class="sg-eyebrow">// PERSONAL REWARD TRACKER</div>
-  <h2 class="sg-heading" id="skinGoalTitle">On se fixe un objectif ?</h2>
-  <p class="sg-lede">Choisis un produit disponible dans la boutique et suis ta progression en FNC. Ton objectif est sauvegardé sur ton compte et reste affiché quand tu reviens.</p>
-  <div id="sgStatus" class="sg-status" role="status" aria-live="polite">Chargement des récompenses officielles…</div>
-  <div id="sgCurrent" class="sg-current" hidden>
-    <img id="sgCurrentImg" class="sg-current-img" src="" alt="">
-    <div>
-      <div class="sg-eyebrow">MON OBJECTIF ACTUEL</div>
-      <h3 id="sgCurrentName" class="sg-product-name"></h3>
-      <div class="sg-numbers"><span id="sgHave"></span><span id="sgTarget"></span></div>
-      <div class="sg-track" role="progressbar" id="sgProgressBar" aria-label="Progression vers l’objectif" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="sgProgressFill" class="sg-fill"></div></div>
-      <div class="sg-numbers"><span id="sgPercent"></span><span id="sgRemaining"></span></div>
-      <a class="sg-action" id="sgStoreLink" href="/store/">VOIR LA BOUTIQUE</a>
-      <button class="sg-action secondary" id="sgChangeGoal" type="button">CHANGER D’OBJECTIF</button>
-    </div>
-  </div>
-  <div class="sg-products-title"><div><h3>Choisis ta récompense</h3><p>Photos et prix récupérés depuis la boutique officielle.</p></div></div>
-  <div id="sgProducts" class="sg-products"></div>
-  <a id="sgLoginLink" class="sg-login" href="/profile/" hidden>CONNECTE-TOI AVEC TWITCH POUR SAUVEGARDER TON OBJECTIF</a>
-</section>
+
 </main>
 
 <footer>
@@ -1872,102 +1819,7 @@ footer .footer-copy .row{margin:0;}
 })();
 </script>
 
-<script id="adhem-skin-goal-runtime-v1">
-(()=> {
-  const root=document.getElementById('skinGoalSection');
-  if(!root) return;
-  const $=id=>document.getElementById(id);
-  const status=$('sgStatus'), gallery=$('sgProducts'), current=$('sgCurrent');
-  let client=null, authUser=null, profile=null, rewards=[], goalId=null, selectedId=null;
-  const fmt=n=>Number(n||0).toLocaleString('en-US');
-  const safeText=s=>String(s??'');
-  function setStatus(message){status.textContent=message;}
-  function renderGoal(){
-    const reward=rewards.find(r=>r.id===goalId);
-    if(!reward){current.hidden=true;return;}
-    current.hidden=false;
-    $('sgCurrentImg').src=reward.image_url;
-    $('sgCurrentImg').alt=reward.name;
-    $('sgCurrentName').textContent=reward.name;
-    const have=Math.max(0,Number(profile?.fnc_points||0));
-    const cost=Math.max(0,Number(reward.fnc_cost||0));
-    const percent=cost>0?Math.min(100,Math.floor(have/cost*100)):0;
-    $('sgHave').textContent=fmt(have)+' FNC disponibles';
-    $('sgTarget').textContent='Objectif : '+fmt(cost)+' FNC';
-    $('sgProgressFill').style.width=percent+'%';
-    $('sgProgressBar').setAttribute('aria-valuenow',String(percent));
-    $('sgPercent').textContent=percent+'% atteint';
-    $('sgRemaining').textContent=have>=cost?'Objectif atteint !':'Encore '+fmt(cost-have)+' FNC';
-    $('sgStoreLink').textContent=have>=cost?'ALLER ACHETER':'VOIR LA BOUTIQUE';
-  }
-  async function loadBalance(){
-    if(!authUser)return;
-    const {data,error}=await client.from('users').select('fnc_points').eq('id',authUser.id).maybeSingle();
-    if(!error&&data){profile={...(profile||{}),fnc_points:Number(data.fnc_points||0)};renderGoal();}
-  }
-  function renderProducts(){
-    gallery.replaceChildren();
-    rewards.forEach(r=>{
-      const card=document.createElement('article');card.className='sg-product'+(r.id===goalId?' selected':'');
-      const img=document.createElement('img');img.src=r.image_url;img.alt=r.name;img.loading='lazy';img.decoding='async';
-      const name=document.createElement('h4');name.textContent=r.name;
-      const price=document.createElement('div');price.className='sg-price';price.textContent=fmt(r.fnc_cost)+' FNC';
-      const stock=document.createElement('div');stock.className='sg-stock';const available=r.stock===null||Number(r.stock)>0;
-      stock.textContent=available?'DISPONIBLE':'RUPTURE DE STOCK';
-      const button=document.createElement('button');button.type='button';button.textContent=r.id===goalId?'OBJECTIF ACTUEL':'CHOISIR CET OBJECTIF';button.disabled=!available;
-      button.addEventListener('click',async()=>{
-        if(!authUser){$('sgLoginLink').hidden=false;setStatus('Connecte-toi avec Twitch pour sauvegarder ton objectif.');return;}
-        selectedId=r.id;
-        gallery.querySelectorAll('.sg-product').forEach(el=>el.classList.remove('selected'));card.classList.add('selected');
-        button.disabled=true;setStatus('Sauvegarde de ton objectif…');
-        try{
-          const {error}=await client.from('user_skin_goals').upsert({user_id:authUser.id,reward_id:selectedId,updated_at:new Date().toISOString()},{onConflict:'user_id'});
-          if(error)throw error;
-          goalId=selectedId;renderProducts();renderGoal();setStatus('Objectif sauvegardé sur ton compte Twitch.');
-        }catch(err){console.error('[AdhemSwag] Skin goal save:',err);setStatus('Impossible de sauvegarder. Reconnecte-toi puis réessaie.');button.disabled=false;}
-      });
-      card.append(img,name,price,stock,button);gallery.appendChild(card);
-    });
-  }
-  async function init(){
-    client=window.AdhemAuth;
-    if(!client){setStatus('Le service de compte n’est pas disponible. Recharge la page.');return;}
-    try{
-      const [{data:{session}},{data:items,error:itemsError}]=await Promise.all([
-        client.auth.getSession(),
-        client.from('rewards').select('id,name,fnc_cost,image_url,active,stock,display_order').eq('active',true).order('display_order',{ascending:true})
-      ]);
-      if(itemsError)throw itemsError;
-      rewards=(items||[]).filter(r=>r.image_url&&String(r.image_url).trim()&&Number(r.fnc_cost)>=0);
-      if(!rewards.length){setStatus('Aucune récompense illustrée n’est actuellement disponible.');return;}
-      authUser=session?.user||null;
-      if(!authUser){
-        renderProducts();$('sgLoginLink').hidden=false;
-        setStatus('Choisis une récompense pour la découvrir. Connecte-toi avec Twitch pour sauvegarder et suivre ta progression.');
-        gallery.querySelectorAll('.sg-product button').forEach(b=>{b.disabled=false;});
-        return;
-      }
-      const [{data:profileData,error:profileError},{data:goalData,error:goalError}]=await Promise.all([
-        client.from('users').select('fnc_points').eq('id',authUser.id).maybeSingle(),
-        client.from('user_skin_goals').select('reward_id').eq('user_id',authUser.id).maybeSingle()
-      ]);
-      if(profileError)throw profileError;
-      if(goalError)throw goalError;
-      profile=profileData||{fnc_points:0};goalId=goalData?.reward_id||null;
-      renderProducts();renderGoal();
-      setStatus(goalId?'Ton objectif est sauvegardé. Ta progression se met à jour automatiquement.':'Choisis un produit ci-dessous pour fixer ton premier objectif.');
-      $('sgChangeGoal').addEventListener('click',()=>{gallery.scrollIntoView({behavior:'smooth',block:'start'});});
-      // Keep the displayed progress aligned with the existing FNC balance; never write to the balance.
-      window.setInterval(loadBalance,30000);
-      window.addEventListener('focus',loadBalance);
-      client.auth.onAuthStateChange((event,sessionNow)=>{
-        if(event==='SIGNED_OUT'){authUser=null;profile=null;goalId=null;current.hidden=true;setStatus('Connecte-toi avec Twitch pour retrouver ton objectif sauvegardé.');$('sgLoginLink').hidden=false;}
-      });
-    }catch(err){console.error('[AdhemSwag] Skin goal load:',err);setStatus('Impossible de charger les récompenses. Réessaie dans quelques instants.');}
-  }
-  init();
-})();
-</script>
+
 </body>
 </html>
 
