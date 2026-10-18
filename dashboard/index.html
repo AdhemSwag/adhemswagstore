@@ -1167,6 +1167,32 @@ footer .footer-copy .row{margin:0;}
 
 
 
+
+<style id="adhem-index-skin-goal-v1">
+#adhemSkinGoal{margin-top:28px;padding:20px;border:1px solid rgba(17,217,247,.28);border-radius:14px;background:linear-gradient(135deg,rgba(17,217,247,.08),rgba(6,13,18,.94));color:#eaf6f8}
+#adhemSkinGoal .asg-kicker{font:700 10px 'JetBrains Mono',monospace;letter-spacing:.12em;color:#11d9f7}
+#adhemSkinGoal h2{margin:7px 0;font:700 27px Rajdhani,sans-serif;text-transform:uppercase}
+#adhemSkinGoal p{margin:5px 0 14px;color:#91a4aa;font-size:12px;line-height:1.6}
+#asgStatus{font-size:12px;color:#aab9bd;margin:10px 0}
+#asgCurrent{display:grid;grid-template-columns:72px minmax(0,1fr);gap:13px;align-items:center;padding:12px;margin:12px 0;border:1px solid rgba(17,217,247,.18);border-radius:10px;background:rgba(0,0,0,.22)}
+#asgCurrent[hidden]{display:none}
+#asgCurrent img{width:72px;height:72px;object-fit:contain;border-radius:8px;background:#080d11}
+#asgCurrent h3{margin:4px 0;font:700 18px Rajdhani,sans-serif}
+#asgStats{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;color:#aab9bd;font-size:11px}
+#asgTrack{height:7px;margin:9px 0;border-radius:9px;background:#17242a;overflow:hidden}
+#asgFill{height:100%;width:0;background:#11d9f7;transition:width .25s ease}
+#asgProducts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}
+.asg-product{min-width:0;padding:10px;border:1px solid rgba(160,190,200,.14);border-radius:10px;background:rgba(0,0,0,.2)}
+.asg-product.selected{border-color:#11d9f7}
+.asg-product img{display:block;width:100%;height:95px;object-fit:contain;border-radius:6px;background:#080d11}
+.asg-product h4{min-height:32px;margin:9px 0 4px;font:700 14px Rajdhani,sans-serif;overflow-wrap:anywhere}
+.asg-price{font:700 13px 'JetBrains Mono',monospace;color:#11d9f7}
+.asg-stock{margin:5px 0 9px;color:#91a4aa;font-size:10px}
+.asg-pick{width:100%;min-height:34px;border:1px solid rgba(17,217,247,.4);border-radius:7px;background:rgba(17,217,247,.1);color:#11d9f7;font:700 10px 'JetBrains Mono',monospace;cursor:pointer}
+.asg-pick:disabled{opacity:.55;cursor:not-allowed}
+#asgLogin{display:inline-block;margin-top:10px;color:#11d9f7;font-size:11px;text-decoration:none}
+@media(min-width:701px){#asgProducts{grid-template-columns:repeat(3,minmax(0,1fr))}}
+</style>
 </head>
 <body>
 
@@ -1318,6 +1344,19 @@ footer .footer-copy .row{margin:0;}
         <a href="/missions/" class="btn btn-primary" style="white-space:nowrap">JOIN MISSIONS ↗</a>
       </div>
       </div>
+
+<section id="adhemSkinGoal" aria-labelledby="asgTitle">
+  <div class="asg-kicker">// NEW • SKIN GOAL</div>
+  <h2 id="asgTitle">Choose your dream skin</h2>
+  <p>Choose a reward from the Store and track your FNC progress. Your existing FNC earning rules stay unchanged.</p>
+  <div id="asgStatus" role="status" aria-live="polite">Loading Store rewards…</div>
+  <div id="asgCurrent" hidden>
+    <img id="asgCurrentImg" src="" alt="">
+    <div><div class="asg-kicker">YOUR CURRENT GOAL</div><h3 id="asgCurrentName"></h3><div id="asgStats"><span id="asgHave"></span><span id="asgTarget"></span></div><div id="asgTrack" role="progressbar" aria-label="Progress toward skin goal" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="asgFill"></div></div><div id="asgStats"><span id="asgPercent"></span><span id="asgRemaining"></span></div></div>
+  </div>
+  <div id="asgProducts"></div>
+  <a id="asgLogin" href="/profile/" hidden>CONNECT WITH TWITCH TO SAVE YOUR GOAL</a>
+</section>
     </div>
 
     <!-- RIGHT COLUMN -->
@@ -1820,6 +1859,75 @@ footer .footer-copy .row{margin:0;}
 </script>
 
 
+
+<script id="adhem-index-skin-goal-runtime-v1">
+(()=> {
+ const $=id=>document.getElementById(id), status=$('asgStatus'), list=$('asgProducts');
+ if(!status||!list)return;
+ let client=null,user=null,items=[],goalId=null,balance=0;
+ const fmt=n=>Number(n||0).toLocaleString('en-US');
+ const setStatus=t=>status.textContent=t;
+ function renderGoal(){
+  const r=items.find(x=>x.id===goalId),box=$('asgCurrent');
+  if(!r){box.hidden=true;return;}
+  box.hidden=false;$('asgCurrentImg').src=r.image_url;$('asgCurrentImg').alt=r.name;$('asgCurrentName').textContent=r.name;
+  const cost=Math.max(0,Number(r.fnc_cost||0)),pct=cost?Math.min(100,Math.floor(balance/cost*100)):0;
+  $('asgHave').textContent=fmt(balance)+' FNC available';$('asgTarget').textContent='Goal: '+fmt(cost)+' FNC';
+  $('asgFill').style.width=pct+'%';$('asgTrack').setAttribute('aria-valuenow',String(pct));$('asgPercent').textContent=pct+'% reached';
+  $('asgRemaining').textContent=balance>=cost?'Goal reached!':'Need '+fmt(cost-balance)+' more FNC';
+ }
+ async function refreshBalance(){
+  if(!client||!user)return;
+  const {data,error}=await client.from('users').select('fnc_points').eq('id',user.id).maybeSingle();
+  if(!error&&data){balance=Math.max(0,Number(data.fnc_points||0));renderGoal();}
+ }
+ function renderProducts(){
+  list.replaceChildren();
+  items.forEach(r=>{
+   const card=document.createElement('article');card.className='asg-product'+(r.id===goalId?' selected':'');
+   const img=document.createElement('img');img.src=r.image_url;img.alt=r.name;img.loading='lazy';
+   const title=document.createElement('h4');title.textContent=r.name;
+   const price=document.createElement('div');price.className='asg-price';price.textContent=fmt(r.fnc_cost)+' FNC';
+   const stock=document.createElement('div');stock.className='asg-stock';stock.textContent=(r.stock===null||r.stock===undefined)?'Stock not specified':(Number(r.stock)>0?'Stock: '+fmt(r.stock):'OUT OF STOCK');
+   const button=document.createElement('button');button.type='button';button.className='asg-pick';button.textContent=r.id===goalId?'CURRENT GOAL':'CHOOSE SKIN';
+   button.disabled=r.stock!==null&&r.stock!==undefined&&Number(r.stock)<=0;
+   button.addEventListener('click',async()=>{
+    if(!user){$('asgLogin').hidden=false;setStatus('Connect with Twitch to save your goal.');return;}
+    button.disabled=true;setStatus('Saving your goal…');
+    try{
+     const {error}=await client.from('user_skin_goals').upsert({user_id:user.id,reward_id:r.id,updated_at:new Date().toISOString()},{onConflict:'user_id'});
+     if(error)throw error;goalId=r.id;renderProducts();renderGoal();setStatus('Goal saved to your account.');
+    }catch(err){console.error('[AdhemSwag] skin goal save',err);setStatus('Could not save goal. Please sign in again and retry.');button.disabled=false;}
+   });
+   card.append(img,title,price,stock,button);list.append(card);
+  });
+ }
+ async function init(){
+  client=window.AdhemAuth;
+  if(!client){setStatus('Account service unavailable. Refresh the page.');return;}
+  try{
+   const [{data:{session}},{data:rows,error}]=await Promise.all([
+    client.auth.getSession(),
+    client.from('rewards').select('id,name,fnc_cost,image_url,active,stock,display_order').eq('active',true).order('display_order',{ascending:true})
+   ]);
+   if(error)throw error;
+   items=(rows||[]).filter(r=>r.image_url&&String(r.image_url).trim()&&Number(r.fnc_cost)>=0);
+   user=session?.user||null;
+   if(user){
+    const [{data:p,error:pe},{data:g,error:ge}]=await Promise.all([
+     client.from('users').select('fnc_points').eq('id',user.id).maybeSingle(),
+     client.from('user_skin_goals').select('reward_id').eq('user_id',user.id).maybeSingle()
+    ]);
+    if(pe)throw pe;if(ge)throw ge;balance=Math.max(0,Number(p?.fnc_points||0));goalId=g?.reward_id||null;
+   }
+   renderProducts();renderGoal();$('asgLogin').hidden=!!user;
+   setStatus(!items.length?'No illustrated rewards available.':user?(goalId?'Saved goal. Progress updates automatically.':'Choose a reward to set your goal.'):'Choose a reward. Sign in to save your goal.');
+   if(user){window.setInterval(refreshBalance,30000);window.addEventListener('focus',refreshBalance);}
+  }catch(err){console.error('[AdhemSwag] skin goal load',err);setStatus('Could not load Store rewards. Please try again later.');}
+ }
+ init();
+})();
+</script>
 </body>
 </html>
 
