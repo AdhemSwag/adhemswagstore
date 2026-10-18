@@ -675,7 +675,7 @@ async function renderAdminPublicPreview(username){
      if(historyError)throw historyError;
      const escPublic=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
      if(!historyRows||!historyRows.length){
-       publicHistory.innerHTML='<div class="empty-history">No public activity yet.</div>';
+       publicHistory.innerHTML='<div class="empty-history">No store purchases yet.</div>';
      }else{
        publicHistory.innerHTML=historyRows.map(row=>{
          const amount=Number(row.amount||0);
