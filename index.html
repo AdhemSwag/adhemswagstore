@@ -411,6 +411,146 @@
   <a href="/profile/" data-mbn-path="/profile/"><svg class="mbn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span>Profile</span></a>
   <button type="button" data-mobile-menu aria-expanded="false"><svg class="mbn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg><span>Menu</span></button>
 </div>
+
+<!-- ADHEMSWAG SKIN GOAL — inline on homepage, no floating button or popup -->
+<style id="adhem-home-skin-goal-base">
+
+#adhemGoalModal[hidden]{display:none!important}#adhemGoalModal{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:14px;background:rgba(0,0,0,.78);backdrop-filter:blur(5px)}
+#adhemGoalModal .ag-panel{width:min(760px,100%);max-height:min(82vh,760px);overflow:auto;background:#080d11;border:1px solid rgba(17,217,247,.4);box-shadow:0 20px 70px #000b;color:#e8f5f7;padding:18px}
+#adhemGoalModal .ag-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+#adhemGoalModal .ag-kicker{font:10px 'JetBrains Mono',monospace;letter-spacing:.15em;color:#11d9f7}
+#adhemGoalModal .ag-title{font:700 clamp(24px,4vw,34px) Rajdhani,sans-serif;text-transform:uppercase;margin-top:5px}
+#adhemGoalModal .ag-sub{font-size:12px;line-height:1.6;color:#93a4aa;margin-top:5px}
+#adhemGoalModal .ag-close{width:34px;height:34px;flex:0 0 34px;border:1px solid #30434b;background:#0c1419;color:#dffaff;font-size:20px;cursor:pointer}
+#adhemGoalModal .ag-status{min-height:16px;margin:14px 0 10px;color:#9eafb5;font:10px 'JetBrains Mono',monospace}
+#adhemGoalModal .ag-current{padding:12px;margin:0 0 14px;border:1px solid rgba(17,217,247,.32);background:#0a1419}
+#adhemGoalModal .ag-current[hidden]{display:none!important}
+#adhemGoalModal .ag-current-row{display:grid;grid-template-columns:82px minmax(0,1fr);gap:12px;align-items:center}
+#adhemGoalModal .ag-current img{width:82px;height:68px;object-fit:contain;background:#040709}
+#adhemGoalModal .ag-current h3{font:700 18px Rajdhani,sans-serif;margin:4px 0}
+#adhemGoalModal .ag-stats{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;color:#a7bac0;font:10px 'JetBrains Mono',monospace}
+#adhemGoalModal .ag-track{height:6px;background:#1b282e;border-radius:10px;overflow:hidden;margin:8px 0}
+#adhemGoalModal .ag-fill{height:100%;width:0;background:#11d9f7}
+#adhemGoalModal .ag-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+#adhemGoalModal .ag-product{display:flex;min-width:0;flex-direction:column;border:1px solid #1b2b32;background:#0a1014;padding:8px}
+#adhemGoalModal .ag-product.selected{border-color:#11d9f7;background:#0c1a20}
+#adhemGoalModal .ag-product img{width:100%;height:94px;object-fit:contain;background:#05080a}
+#adhemGoalModal .ag-product h4{font:700 14px Rajdhani,sans-serif;line-height:1.2;overflow-wrap:anywhere;margin:8px 0 4px}
+#adhemGoalModal .ag-price{font:10px 'JetBrains Mono',monospace;color:#11d9f7;margin-bottom:8px}
+#adhemGoalModal .ag-pick{margin-top:auto;min-height:31px;padding:7px 4px;background:transparent;border:1px solid #24515b;color:#d6f8fc;font:9px 'JetBrains Mono',monospace;cursor:pointer}
+#adhemGoalModal .ag-pick:disabled{opacity:.4;cursor:not-allowed}
+#adhemGoalModal .ag-login{display:inline-block;margin-top:12px;color:#11d9f7;font:10px 'JetBrains Mono',monospace}
+@media(max-width:560px){#adhemGoalModal{padding:8px}#adhemGoalModal .ag-panel{padding:13px;max-height:88vh}#adhemGoalModal .ag-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}#adhemGoalModal .ag-product img{height:76px}}
+
+
+/* Dedicated skin goal page layout */
+html,body{margin:0;min-height:100%;background:#040608;color:#e8f5f7}
+body{font-family:Inter,Arial,sans-serif}
+.goal-shell{min-height:100vh;padding:clamp(16px,4vw,48px) 16px 60px;box-sizing:border-box}
+.goal-nav{width:min(1000px,100%);margin:0 auto 20px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.goal-nav a{color:#11d9f7;text-decoration:none;font:700 11px 'JetBrains Mono',monospace;letter-spacing:.06em}
+.goal-heading{width:min(1000px,100%);margin:0 auto 18px}
+.goal-heading .eyebrow{font:10px 'JetBrains Mono',monospace;letter-spacing:.16em;color:#11d9f7}
+.goal-heading h1{font:700 clamp(30px,5vw,46px) Rajdhani,sans-serif;text-transform:uppercase;margin:6px 0}
+.goal-heading p{color:#93a4aa;font-size:13px;line-height:1.65;margin:0;max-width:680px}
+#adhemGoalModal{position:static;inset:auto;z-index:auto;display:block;padding:0;background:transparent;backdrop-filter:none;min-height:0}
+#adhemGoalModal .ag-panel{width:min(1000px,100%);max-height:none;overflow:visible;box-sizing:border-box;margin:0 auto;background:#080d11;border:1px solid rgba(17,217,247,.28);box-shadow:0 20px 70px #0007;color:#e8f5f7;padding:clamp(14px,2.4vw,24px)}
+#adhemGoalModal .ag-top{border-bottom:1px solid #1a2a30;padding-bottom:16px}
+#adhemGoalModal .ag-title{margin:5px 0}
+#adhemGoalModal .ag-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+#adhemGoalModal .ag-stock{color:#8ca1a8;font:10px 'JetBrains Mono',monospace;margin:0 0 10px}
+#adhemGoalModal .ag-product{background:#0b1115}
+#adhemGoalModal .ag-pick{margin-top:auto}
+#adhemGoalModal .ag-current{margin-top:12px}
+@media(max-width:760px){#adhemGoalModal .ag-grid{grid-template-columns:repeat(2,minmax(0,1fr))}#adhemGoalModal .ag-current-row{grid-template-columns:72px minmax(0,1fr)}#adhemGoalModal .ag-current img{width:72px;height:66px}.goal-nav{align-items:flex-start}.goal-nav a{font-size:10px}}
+@media(max-width:380px){#adhemGoalModal .ag-grid{grid-template-columns:1fr}}
+
+#homeSkinGoal{width:min(1120px,calc(100% - 32px));margin:38px auto 54px;position:relative;z-index:1}
+#homeSkinGoal .goal-heading{margin:0 auto 18px}
+#homeSkinGoal #adhemGoalModal{display:block!important}
+#homeSkinGoal #adhemGoalModal .ag-panel{width:100%;max-width:none}
+#homeSkinGoal .goal-nav{display:none}
+@media(max-width:640px){#homeSkinGoal{width:calc(100% - 24px);margin:28px auto 40px}}
+</style>
+<section id="homeSkinGoal" aria-labelledby="homeSkinGoalTitle">
+ <header class="goal-heading"><div class="eyebrow">// FNC REWARD TRACKER</div><h2 id="homeSkinGoalTitle" style="font:700 clamp(30px,5vw,46px) Rajdhani,sans-serif;text-transform:uppercase;margin:6px 0">Mon objectif skin</h2><p>Choisis un skin du Store et suis ta progression en FNC directement sur cette page.</p></header>
+ <div id="adhemGoalModal">
+ <section class="ag-panel" aria-labelledby="agTitle">
+  <div class="ag-top"><div><div class="ag-kicker">// FNC REWARD TRACKER</div><h2 id="agTitle" class="ag-title">On se fixe un objectif ?</h2><p class="ag-sub">Choisis un produit de la boutique et suis ta progression vers son prix en FNC.</p></div></div>
+  <div id="agStatus" class="ag-status" role="status" aria-live="polite">Chargement des produits…</div>
+  <div id="agCurrent" class="ag-current" hidden><div class="ag-current-row"><img id="agCurrentImg" src="" alt=""><div><div class="ag-kicker">TON OBJECTIF ACTUEL</div><h3 id="agCurrentName"></h3><div class="ag-stats"><span id="agHave"></span><span id="agTarget"></span></div><div class="ag-track" role="progressbar" id="agProgress" aria-label="Progression vers l’objectif" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="agFill" class="ag-fill"></div></div><div class="ag-stats"><span id="agPercent"></span><span id="agRemaining"></span></div></div></div></div>
+  <div id="agProducts" class="ag-grid"></div><a id="agLogin" class="ag-login" href="/profile/" hidden>CONNECTE-TOI AVEC TWITCH POUR SAUVEGARDER TON OBJECTIF</a>
+ </section>
+</div>
+</section>
+<script id="adhem-index-skin-goal-runtime-v1">
+(()=> {
+ const $=id=>document.getElementById(id), status=$('agStatus'), list=$('agProducts');
+ let client=null,user=null,items=[],goalId=null,balance=0;
+ const fmt=n=>Number(n||0).toLocaleString('en-US');
+ const setStatus=t=>status.textContent=t;
+ function renderGoal(){
+  const r=items.find(x=>x.id===goalId);const box=$('agCurrent');
+  if(!r){box.hidden=true;return;}
+  box.hidden=false;$('agCurrentImg').src=r.image_url;$('agCurrentImg').alt=r.name;$('agCurrentName').textContent=r.name;
+  const cost=Math.max(0,Number(r.fnc_cost||0)),pct=cost?Math.min(100,Math.floor(balance/cost*100)):0;
+  $('agHave').textContent=fmt(balance)+' FNC disponibles';$('agTarget').textContent='Objectif : '+fmt(cost)+' FNC';
+  $('agFill').style.width=pct+'%';$('agProgress').setAttribute('aria-valuenow',String(pct));$('agPercent').textContent=pct+'% atteint';
+  $('agRemaining').textContent=balance>=cost?'Objectif atteint !':'Encore '+fmt(cost-balance)+' FNC';
+ }
+ async function refreshBalance(){
+  if(!client||!user)return;
+  const {data,error}=await client.from('users').select('fnc_points').eq('id',user.id).maybeSingle();
+  if(!error&&data){balance=Math.max(0,Number(data.fnc_points||0));renderGoal();}
+ }
+ function renderProducts(){
+  list.replaceChildren();
+  items.forEach(r=>{
+   const card=document.createElement('article');card.className='ag-product'+(r.id===goalId?' selected':'');
+   const img=document.createElement('img');img.src=r.image_url;img.alt=r.name;img.loading='lazy';
+   const title=document.createElement('h4');title.textContent=r.name;
+   const price=document.createElement('div');price.className='ag-price';price.textContent=fmt(r.fnc_cost)+' FNC';
+   const stock=document.createElement('div');stock.className='ag-stock';stock.textContent=(r.stock===null||r.stock===undefined)?'Stock limité / non indiqué':(Number(r.stock)>0?'Stock : '+fmt(r.stock):'RUPTURE DE STOCK');
+   const button=document.createElement('button');button.type='button';button.className='ag-pick';button.textContent=r.id===goalId?'OBJECTIF ACTUEL':'CHOISIR';button.disabled=r.stock!==null&&r.stock!==undefined&&Number(r.stock)<=0;
+   button.addEventListener('click',async()=>{
+    if(!user){$('agLogin').hidden=false;setStatus('Connecte-toi avec Twitch pour enregistrer ton objectif.');return;}
+    button.disabled=true;setStatus('Sauvegarde de ton objectif…');
+    try{
+     const {error}=await client.from('user_skin_goals').upsert({user_id:user.id,reward_id:r.id,updated_at:new Date().toISOString()},{onConflict:'user_id'});
+     if(error)throw error;goalId=r.id;renderProducts();renderGoal();setStatus('Objectif sauvegardé sur ton compte.'); 
+    }catch(err){console.error('[AdhemSwag] goal save',err);setStatus('Sauvegarde impossible. Reconnecte-toi puis réessaie.');button.disabled=false;}
+   });
+   card.append(img,title,price,stock,button);list.append(card);
+  });
+ }
+ async function init(){
+  client=window.AdhemAuth;
+  if(!client){setStatus('Service de compte indisponible. Recharge la page.');return;}
+  try{
+   const [{data:{session}},{data:rows,error}]=await Promise.all([
+    client.auth.getSession(),
+    client.from('rewards').select('id,name,fnc_cost,image_url,active,stock,display_order').eq('active',true).order('display_order',{ascending:true})
+   ]);
+   if(error)throw error;
+   items=(rows||[]).filter(r=>r.image_url&&String(r.image_url).trim()&&Number(r.fnc_cost)>=0);
+   user=session?.user||null;
+   if(user){
+    const [{data:p,error:pe},{data:g,error:ge}]=await Promise.all([
+     client.from('users').select('fnc_points').eq('id',user.id).maybeSingle(),
+     client.from('user_skin_goals').select('reward_id').eq('user_id',user.id).maybeSingle()
+    ]);
+    if(pe)throw pe;if(ge)throw ge;balance=Math.max(0,Number(p?.fnc_points||0));goalId=g?.reward_id||null;
+   }
+   renderProducts();renderGoal();
+   $('agLogin').hidden=!!user;
+   setStatus(!items.length?'Aucun produit illustré disponible.':user?(goalId?'Objectif sauvegardé. Progression actualisée automatiquement.':'Choisis un produit pour fixer ton objectif.'):'Choisis un produit. Connecte-toi pour sauvegarder ton objectif.');
+   if(user){window.setInterval(refreshBalance,30000);window.addEventListener('focus',refreshBalance);}
+  }catch(err){console.error('[AdhemSwag] goal load',err);setStatus('Impossible de charger la boutique. Réessaie plus tard.');}
+ }
+ init();
+})();
+</script>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="/auth.js"></script>
 <script>
@@ -443,9 +583,8 @@
       // No OAuth callback is present: this is a stale connection flag.
       localStorage.removeItem('adhem_twitch_watch_connect');
     }
-
-    window.location.replace('/dashboard/' + window.location.search + window.location.hash);
-  })();
+    // Keep the homepage visible so its live code and skin-goal section render here.
+})();
 </script>
 <script>
 (()=>{document.addEventListener('click',function(e){const menu=e.target.closest('[data-mobile-menu]');const scrim=e.target.closest('[data-mobile-scrim]');const close=e.target.closest('.mobile-drawer-close');const side=document.querySelector('.sidebar')||document.querySelector('.admin-nav')||document.querySelector('.mobile-fallback-drawer');if(!side)return;if(menu){e.preventDefault();side.classList.add('mobile-open');document.body.classList.add('mobile-menu-open');const s=document.querySelector('[data-mobile-scrim]');if(s)s.classList.add('open');menu.setAttribute('aria-expanded','true');return}if(scrim||close){e.preventDefault();side.classList.remove('mobile-open');document.body.classList.remove('mobile-menu-open');const s=document.querySelector('[data-mobile-scrim]');if(s)s.classList.remove('open');const m=document.querySelector('[data-mobile-menu]');if(m)m.setAttribute('aria-expanded','false');}});document.addEventListener('keydown',function(e){if(e.key!=='Escape')return;const side=document.querySelector('.sidebar.mobile-open,.admin-nav.mobile-open,.mobile-fallback-drawer.mobile-open');if(!side)return;side.classList.remove('mobile-open');document.body.classList.remove('mobile-menu-open');const s=document.querySelector('[data-mobile-scrim]');if(s)s.classList.remove('open');const m=document.querySelector('[data-mobile-menu]');if(m)m.setAttribute('aria-expanded','false');});})();
