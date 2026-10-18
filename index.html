@@ -531,6 +531,117 @@
   scrollbar-width: thin;
 }
 </style>
+
+<style id="adhem-index-skin-goal-v1">
+#adhemGoalLauncher{position:fixed;right:18px;bottom:22px;z-index:9990;display:flex;align-items:center;gap:9px;padding:12px 15px;background:#0a1116;border:1px solid rgba(17,217,247,.75);box-shadow:0 8px 30px #0008;color:#dffaff;font:700 11px 'JetBrains Mono',monospace;letter-spacing:.04em;cursor:pointer}
+#adhemGoalLauncher .ag-dot{width:7px;height:7px;border-radius:50%;background:#11d9f7;box-shadow:0 0 10px #11d9f7}
+#adhemGoalModal[hidden]{display:none!important}#adhemGoalModal{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:14px;background:rgba(0,0,0,.78);backdrop-filter:blur(5px)}
+#adhemGoalModal .ag-panel{width:min(760px,100%);max-height:min(82vh,760px);overflow:auto;background:#080d11;border:1px solid rgba(17,217,247,.4);box-shadow:0 20px 70px #000b;color:#e8f5f7;padding:18px}
+#adhemGoalModal .ag-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+#adhemGoalModal .ag-kicker{font:10px 'JetBrains Mono',monospace;letter-spacing:.15em;color:#11d9f7}
+#adhemGoalModal .ag-title{font:700 clamp(24px,4vw,34px) Rajdhani,sans-serif;text-transform:uppercase;margin-top:5px}
+#adhemGoalModal .ag-sub{font-size:12px;line-height:1.6;color:#93a4aa;margin-top:5px}
+#adhemGoalModal .ag-close{width:34px;height:34px;flex:0 0 34px;border:1px solid #30434b;background:#0c1419;color:#dffaff;font-size:20px;cursor:pointer}
+#adhemGoalModal .ag-status{min-height:16px;margin:14px 0 10px;color:#9eafb5;font:10px 'JetBrains Mono',monospace}
+#adhemGoalModal .ag-current{padding:12px;margin:0 0 14px;border:1px solid rgba(17,217,247,.32);background:#0a1419}
+#adhemGoalModal .ag-current[hidden]{display:none!important}
+#adhemGoalModal .ag-current-row{display:grid;grid-template-columns:82px minmax(0,1fr);gap:12px;align-items:center}
+#adhemGoalModal .ag-current img{width:82px;height:68px;object-fit:contain;background:#040709}
+#adhemGoalModal .ag-current h3{font:700 18px Rajdhani,sans-serif;margin:4px 0}
+#adhemGoalModal .ag-stats{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;color:#a7bac0;font:10px 'JetBrains Mono',monospace}
+#adhemGoalModal .ag-track{height:6px;background:#1b282e;border-radius:10px;overflow:hidden;margin:8px 0}
+#adhemGoalModal .ag-fill{height:100%;width:0;background:#11d9f7}
+#adhemGoalModal .ag-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+#adhemGoalModal .ag-product{display:flex;min-width:0;flex-direction:column;border:1px solid #1b2b32;background:#0a1014;padding:8px}
+#adhemGoalModal .ag-product.selected{border-color:#11d9f7;background:#0c1a20}
+#adhemGoalModal .ag-product img{width:100%;height:94px;object-fit:contain;background:#05080a}
+#adhemGoalModal .ag-product h4{font:700 14px Rajdhani,sans-serif;line-height:1.2;overflow-wrap:anywhere;margin:8px 0 4px}
+#adhemGoalModal .ag-price{font:10px 'JetBrains Mono',monospace;color:#11d9f7;margin-bottom:8px}
+#adhemGoalModal .ag-pick{margin-top:auto;min-height:31px;padding:7px 4px;background:transparent;border:1px solid #24515b;color:#d6f8fc;font:9px 'JetBrains Mono',monospace;cursor:pointer}
+#adhemGoalModal .ag-pick:disabled{opacity:.4;cursor:not-allowed}
+#adhemGoalModal .ag-login{display:inline-block;margin-top:12px;color:#11d9f7;font:10px 'JetBrains Mono',monospace}
+@media(max-width:560px){#adhemGoalLauncher{right:10px;bottom:12px;padding:10px 11px;font-size:10px}#adhemGoalModal{padding:8px}#adhemGoalModal .ag-panel{padding:13px;max-height:88vh}#adhemGoalModal .ag-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}#adhemGoalModal .ag-product img{height:76px}}
+</style>
+<button id="adhemGoalLauncher" type="button" aria-haspopup="dialog" aria-controls="adhemGoalModal"><span class="ag-dot"></span> MON OBJECTIF SKIN <span aria-hidden="true">↗</span></button>
+<div id="adhemGoalModal" hidden>
+ <section class="ag-panel" role="dialog" aria-modal="true" aria-labelledby="agTitle">
+  <div class="ag-top"><div><div class="ag-kicker">// FNC REWARD TRACKER</div><h2 id="agTitle" class="ag-title">On se fixe un objectif ?</h2><p class="ag-sub">Choisis un produit de la boutique et suis ta progression vers son prix en FNC.</p></div><button id="agClose" class="ag-close" type="button" aria-label="Fermer">×</button></div>
+  <div id="agStatus" class="ag-status" role="status" aria-live="polite">Chargement des produits…</div>
+  <div id="agCurrent" class="ag-current" hidden><div class="ag-current-row"><img id="agCurrentImg" src="" alt=""><div><div class="ag-kicker">TON OBJECTIF ACTUEL</div><h3 id="agCurrentName"></h3><div class="ag-stats"><span id="agHave"></span><span id="agTarget"></span></div><div class="ag-track" role="progressbar" id="agProgress" aria-label="Progression vers l’objectif" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="agFill" class="ag-fill"></div></div><div class="ag-stats"><span id="agPercent"></span><span id="agRemaining"></span></div></div></div></div>
+  <div id="agProducts" class="ag-grid"></div><a id="agLogin" class="ag-login" href="/profile/" hidden>CONNECTE-TOI AVEC TWITCH POUR SAUVEGARDER TON OBJECTIF</a>
+ </section>
+</div>
+<script id="adhem-index-skin-goal-runtime-v1">
+(()=> {
+ const $=id=>document.getElementById(id), modal=$('adhemGoalModal'), launcher=$('adhemGoalLauncher'), status=$('agStatus'), list=$('agProducts');
+ let client=null,user=null,items=[],goalId=null,balance=0;
+ const fmt=n=>Number(n||0).toLocaleString('en-US');
+ const setStatus=t=>status.textContent=t;
+ function close(){modal.hidden=true;document.body.style.overflow='';}
+ launcher.addEventListener('click',()=>{modal.hidden=false;document.body.style.overflow='hidden';if(!items.length)init();});
+ $('agClose').addEventListener('click',close);
+ modal.addEventListener('click',e=>{if(e.target===modal)close();});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!modal.hidden)close();});
+ function renderGoal(){
+  const r=items.find(x=>x.id===goalId);const box=$('agCurrent');
+  if(!r){box.hidden=true;return;}
+  box.hidden=false;$('agCurrentImg').src=r.image_url;$('agCurrentImg').alt=r.name;$('agCurrentName').textContent=r.name;
+  const cost=Math.max(0,Number(r.fnc_cost||0)),pct=cost?Math.min(100,Math.floor(balance/cost*100)):0;
+  $('agHave').textContent=fmt(balance)+' FNC disponibles';$('agTarget').textContent='Objectif : '+fmt(cost)+' FNC';
+  $('agFill').style.width=pct+'%';$('agProgress').setAttribute('aria-valuenow',String(pct));$('agPercent').textContent=pct+'% atteint';
+  $('agRemaining').textContent=balance>=cost?'Objectif atteint !':'Encore '+fmt(cost-balance)+' FNC';
+ }
+ async function refreshBalance(){
+  if(!client||!user)return;
+  const {data,error}=await client.from('users').select('fnc_points').eq('id',user.id).maybeSingle();
+  if(!error&&data){balance=Math.max(0,Number(data.fnc_points||0));renderGoal();}
+ }
+ function renderProducts(){
+  list.replaceChildren();
+  items.forEach(r=>{
+   const card=document.createElement('article');card.className='ag-product'+(r.id===goalId?' selected':'');
+   const img=document.createElement('img');img.src=r.image_url;img.alt=r.name;img.loading='lazy';
+   const title=document.createElement('h4');title.textContent=r.name;
+   const price=document.createElement('div');price.className='ag-price';price.textContent=fmt(r.fnc_cost)+' FNC';
+   const button=document.createElement('button');button.type='button';button.className='ag-pick';button.textContent=r.id===goalId?'OBJECTIF ACTUEL':'CHOISIR';button.disabled=r.stock!==null&&Number(r.stock)<=0;
+   button.addEventListener('click',async()=>{
+    if(!user){$('agLogin').hidden=false;setStatus('Connecte-toi avec Twitch pour enregistrer ton objectif.');return;}
+    button.disabled=true;setStatus('Sauvegarde de ton objectif…');
+    try{
+     const {error}=await client.from('user_skin_goals').upsert({user_id:user.id,reward_id:r.id,updated_at:new Date().toISOString()},{onConflict:'user_id'});
+     if(error)throw error;goalId=r.id;renderProducts();renderGoal();setStatus('Objectif sauvegardé sur ton compte.'); 
+    }catch(err){console.error('[AdhemSwag] goal save',err);setStatus('Sauvegarde impossible. Reconnecte-toi puis réessaie.');button.disabled=false;}
+   });
+   card.append(img,title,price,button);list.append(card);
+  });
+ }
+ async function init(){
+  client=window.AdhemAuth;
+  if(!client){setStatus('Service de compte indisponible. Recharge la page.');return;}
+  try{
+   const [{data:{session}},{data:rows,error}]=await Promise.all([
+    client.auth.getSession(),
+    client.from('rewards').select('id,name,fnc_cost,image_url,active,stock,display_order').eq('active',true).order('display_order',{ascending:true})
+   ]);
+   if(error)throw error;
+   items=(rows||[]).filter(r=>r.image_url&&String(r.image_url).trim()&&Number(r.fnc_cost)>=0);
+   user=session?.user||null;
+   if(user){
+    const [{data:p,error:pe},{data:g,error:ge}]=await Promise.all([
+     client.from('users').select('fnc_points').eq('id',user.id).maybeSingle(),
+     client.from('user_skin_goals').select('reward_id').eq('user_id',user.id).maybeSingle()
+    ]);
+    if(pe)throw pe;if(ge)throw ge;balance=Math.max(0,Number(p?.fnc_points||0));goalId=g?.reward_id||null;
+   }
+   renderProducts();renderGoal();
+   $('agLogin').hidden=!!user;
+   setStatus(!items.length?'Aucun produit illustré disponible.':user?(goalId?'Objectif sauvegardé. Progression actualisée automatiquement.':'Choisis un produit pour fixer ton objectif.'):'Choisis un produit. Connecte-toi pour sauvegarder ton objectif.');
+   if(user){window.setInterval(refreshBalance,30000);window.addEventListener('focus',refreshBalance);}
+  }catch(err){console.error('[AdhemSwag] goal load',err);setStatus('Impossible de charger la boutique. Réessaie plus tard.');}
+ }
+ // Do not fetch until the visitor opens the compact popup.
+})();
+</script>
 </body>
 </html>
 
