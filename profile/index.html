@@ -514,7 +514,7 @@ body.mobile-menu-open{overflow:hidden!important}
 <p class="note">Codes from your Store purchases appear here automatically. No email is required.</p>
 <div id="myAccessCodes" class="access-code-list"><div class="empty-history">No access codes yet.</div></div>
 </section>
-<section class="card">
+<section class="card public-history-card">
 <h2>HISTORY</h2>
 <div class="history-list" id="profileHistory">
 <div class="empty-history">No activity yet. Your FNC earnings, XP activity, redemptions and refunds will appear here.</div>
@@ -1002,6 +1002,14 @@ if(accessRoot){
   scrollbar-color: rgba(17,217,247,.58) #080d11;
   scrollbar-width: thin;
 }
+</style>
+
+
+<style id="public-profile-history-visible">
+/* Public viewer profiles hide private profile extras, but keep the sanitized HISTORY card visible. */
+.public-viewer-profile .profile-extra{display:block!important}
+.public-viewer-profile .profile-extra>.card:not(.public-history-card){display:none!important}
+.public-viewer-profile .profile-extra>.public-history-card{display:block!important}
 </style>
 
 </body></html>
