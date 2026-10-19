@@ -702,7 +702,8 @@ async function renderAdminPublicPreview(username){
  const set=(id,v)=>{const x=document.getElementById(id);if(x)x.textContent=v};
  const isPublicViewer=!!publicViewerUsername;
  document.body.classList.add('admin-public-preview');
- if(isPublicViewer)document.body.classList.add('public-viewer-profile');
+ /* Both public viewer pages and admin previews must render the same privacy-safe public layout. */
+ document.body.classList.add('public-viewer-profile');
  const previewBanner=document.getElementById('adminPreviewBanner');
  if(previewBanner)previewBanner.textContent=isPublicViewer?'PUBLIC VIEWER PROFILE • READ ONLY':'ADMIN PREVIEW • PUBLIC VIEW • VIEWER PROFILE';
  set('profileHeroStatus',isPublicViewer?'PUBLIC PROFILE':'PUBLIC VIEW');
