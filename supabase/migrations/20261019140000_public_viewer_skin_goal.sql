@@ -24,9 +24,6 @@ AS $function$
     AND COALESCE(u.is_blocked, false) = false
     AND NULLIF(BTRIM(u.twitch_username), '') IS NOT NULL
     AND LOWER(u.twitch_username) = LOWER(BTRIM(p_twitch_username))
-    AND NOT EXISTS (
-      SELECT 1 FROM public.admin_users AS a WHERE a.user_id = u.id
-    )
   LIMIT 1;
 $function$;
 
