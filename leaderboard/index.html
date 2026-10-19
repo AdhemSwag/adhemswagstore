@@ -767,7 +767,7 @@ body.mobile-menu-open{overflow:hidden!important}
   const SUPABASE_URL='https://lpmocfdfpebcaseffugg.supabase.co';
   const SUPABASE_KEY='sb_publishable_vNkDqYd81b2krZAisUhb2g_c_uwyvRp';
   const PAGE_SIZE=50;
-  const client=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+  const client=window.AdhemAuth || window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{flowType:'pkce',detectSessionInUrl:true,persistSession:true,autoRefreshToken:true,storageKey:'adhemswag-auth'}});
   const table=document.getElementById('lbTable'), pagination=document.getElementById('lbPagination');
   let rows=[], board='fnc', page=1;
 
