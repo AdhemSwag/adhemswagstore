@@ -562,6 +562,7 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
         <div class="form-grid">
           <div class="field"><label>Search Twitch username / email</label><input id="userSearch" placeholder="adhemswag"></div>
           <div class="field"><label>Status</label><select id="userStatusFilter"><option value="all">All viewers</option><option value="active">Active only</option><option value="blocked">Blocked only</option></select></div>
+          <div class="field"><label>Profile completeness</label><select id="userProfileFilter"><option value="all">All profiles</option><option value="complete">Complete profiles</option><option value="incomplete">Incomplete profiles</option></select></div>
         </div>
         <div class="actions"><button class="btn primary" id="searchUsers">SEARCH USERS</button><button class="btn" id="clearUsers">CLEAR</button><button class="btn" id="refreshUsers">REFRESH</button><button class="btn primary" id="syncTwitchSubscriberBadges">SYNC TWITCH SUBSCRIBER BADGES</button></div>
         <div id="userStatus" class="notice" style="display:none"></div>
@@ -1163,11 +1164,14 @@ async function loadUsers(search=''){
   if(!tbody||!adminReady)return;
   tbody.innerHTML='<tr><td colspan="8">Loading viewers…</td></tr>';
   const filter=document.getElementById('userStatusFilter')?.value||'all';
+  const profileFilter=document.getElementById('userProfileFilter')?.value||'all';
   let query=supabaseClient.from('users').select('id,twitch_username,email,fnc_points,total_fnc_earned,xp,level,total_watch_minutes,profile_complete,is_blocked,fnc_supporter,fnc_vip,twitch_subscription_verified,steam_id,steam_trade_url,discord_username,created_at').order('created_at',{ascending:false}).limit(100);
   const term=search.trim();
   if(term) query=query.or('twitch_username.ilike.%'+term+'%,email.ilike.%'+term+'%');
   if(filter==='active') query=query.eq('is_blocked',false);
   if(filter==='blocked') query=query.eq('is_blocked',true);
+  if(profileFilter==='complete') query=query.eq('profile_complete',true);
+  if(profileFilter==='incomplete') query=query.eq('profile_complete',false);
   const {data,error}=await query;
   if(error){tbody.innerHTML='<tr><td colspan="8">Unable to load viewers: '+escapeHtml(error.message)+'</td></tr>';return;}
   const rows=data||[];
