@@ -814,6 +814,10 @@ body.mobile-menu-open{overflow:hidden!important}
   }
 
   async function loadDashboard(){
+    // Wait for Supabase to restore the saved Twitch session before asking for MY PROGRESS.
+    // This prevents the first dashboard request from running as anon (auth.uid() = null),
+    // which can leave the owner/admin panel showing empty progress on initial page load.
+    const {data:sessionState}=await client.auth.getSession();
     const {data,error}=await client.rpc('get_leaderboard_dashboard');
     if(error){console.warn('[AdhemSwag] leaderboard dashboard:',error);return;}
     const v=data?.viewer;
