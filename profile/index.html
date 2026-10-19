@@ -479,6 +479,33 @@ body.mobile-menu-open{overflow:hidden!important}
   </section>
 </div>
 
+<style id="profile-skin-goal-css">
+.profile-skin-goal{margin:18px 0;padding:20px;border:1px solid rgba(17,217,247,.28);border-radius:12px;background:linear-gradient(135deg,rgba(17,217,247,.07),rgba(6,13,18,.94));color:var(--white)}
+.profile-skin-goal[hidden]{display:none!important}
+.profile-skin-goal .skin-goal-label{font:700 10px 'JetBrains Mono',monospace;letter-spacing:.14em;color:var(--cyan);margin-bottom:12px}
+.profile-skin-goal .skin-goal-content{display:grid;grid-template-columns:90px minmax(0,1fr);gap:16px;align-items:center}
+.profile-skin-goal .skin-goal-image{width:90px;height:90px;object-fit:contain;border-radius:8px;background:#080d11;border:1px solid var(--line)}
+.profile-skin-goal .skin-goal-image[hidden]{display:none}
+.profile-skin-goal h2{font:700 23px Rajdhani,sans-serif;text-transform:uppercase;overflow-wrap:anywhere}
+.profile-skin-goal .skin-goal-caption{margin-top:5px;color:var(--muted);font-size:12px;line-height:1.5}
+.profile-skin-goal .skin-goal-track{height:8px;margin-top:12px;border-radius:8px;overflow:hidden;background:#17242a}
+.profile-skin-goal .skin-goal-track span{display:block;height:100%;width:0;background:var(--cyan)}
+.profile-skin-goal .skin-goal-stats{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-top:7px;color:var(--muted);font:10px 'JetBrains Mono',monospace}
+@media(max-width:520px){.profile-skin-goal{padding:15px}.profile-skin-goal .skin-goal-content{grid-template-columns:64px minmax(0,1fr);gap:12px}.profile-skin-goal .skin-goal-image{width:64px;height:64px}.profile-skin-goal h2{font-size:19px}}
+</style>
+<section class="card profile-skin-goal" id="profileSkinGoal" hidden aria-labelledby="profileSkinGoalTitle">
+  <div class="skin-goal-label">// SKIN GOAL</div>
+  <div class="skin-goal-content">
+    <img class="skin-goal-image" id="profileSkinGoalImage" alt="" hidden>
+    <div>
+      <h2 id="profileSkinGoalTitle">Loading Skin Goal…</h2>
+      <p class="skin-goal-caption" id="profileSkinGoalCaption">The viewer's chosen Store reward.</p>
+      <div class="skin-goal-track" id="profileSkinGoalTrack" role="progressbar" aria-label="Progress toward Skin Goal" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="profileSkinGoalFill"></span></div>
+      <div class="skin-goal-stats"><span id="profileSkinGoalHave"></span><span id="profileSkinGoalTarget"></span></div>
+    </div>
+  </div>
+</section>
+
 <style id="profile-missions-panel-css">
 .profile-missions-panel{margin-top:16px}.profile-missions-panel .section-head{margin-bottom:8px}.profile-missions-status{color:var(--muted);font-size:12px;line-height:1.6;margin:10px 0 14px}.profile-missions-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.profile-mission-card{padding:16px;background:#070b0e;border:1px solid var(--line);min-width:0}.profile-mission-top{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}.profile-mission-tag{font:700 9px 'JetBrains Mono',monospace;color:var(--cyan);letter-spacing:.08em}.profile-mission-state{font:700 9px 'JetBrains Mono',monospace;color:var(--ok)}.profile-mission-card h3{margin:12px 0 6px;font:700 18px Rajdhani,sans-serif;text-transform:uppercase}.profile-mission-card p{color:var(--muted);font-size:11px;line-height:1.5}.profile-mission-rewards{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.profile-mission-rewards span{padding:6px 8px;border:1px solid var(--line);font:700 9px 'JetBrains Mono',monospace;color:var(--cyan)}.profile-mission-progress{height:7px;background:#11181c;border:1px solid var(--line);overflow:hidden;margin:8px 0}.profile-mission-progress span{display:block;height:100%;background:var(--cyan);box-shadow:0 0 8px rgba(17,217,247,.25)}.profile-mission-progress-label{display:flex;justify-content:space-between;gap:8px;color:var(--muted);font:600 9px 'JetBrains Mono',monospace}.profile-missions-link{display:inline-flex;margin-top:14px;padding:11px 14px;background:var(--cyan);color:#03181c;text-decoration:none;font:700 10px 'JetBrains Mono',monospace;letter-spacing:.06em}.profile-missions-link:hover{filter:brightness(1.08)}@media(max-width:600px){.profile-missions-grid{grid-template-columns:1fr}.profile-mission-card{padding:14px}}
 </style>
@@ -1012,6 +1039,54 @@ if(accessRoot){
 .public-viewer-profile .profile-extra>.public-history-card{display:block!important}
 </style>
 
+<script id="profile-public-skin-goal-loader">
+(async()=>{
+ const card=document.getElementById('profileSkinGoal');
+ if(!card)return;
+ const $=id=>document.getElementById(id);
+ const params=new URLSearchParams(location.search);
+ const target=(params.get('viewer')||params.get('admin_preview')||'').trim();
+ const setStatus=msg=>{$('profileSkinGoalTitle').textContent=msg;$('profileSkinGoalCaption').textContent='';$('profileSkinGoalTrack').hidden=true;$('profileSkinGoalHave').textContent='';$('profileSkinGoalTarget').textContent='';};
+ const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+ try{
+   let client=null;
+   for(let i=0;i<40&&!client;i++){client=window.AdhemAuth||null;if(!client)await wait(150);}
+   if(!client)return;
+   let username=target;
+   if(!username){
+     const {data:{session}}=await client.auth.getSession();
+     if(!session?.user)return;
+     const {data,error}=await client.from('users').select('twitch_username').eq('id',session.user.id).maybeSingle();
+     if(error||!data?.twitch_username)return;
+     username=data.twitch_username;
+   }
+   const {data,error}=await client.rpc('get_public_viewer_skin_goal',{p_twitch_username:username});
+   if(error)throw error;
+   const row=Array.isArray(data)?data[0]:data;
+   if(!row){return;}
+   card.hidden=false;
+   if(!row.skin_goal_name){
+     setStatus('NO SKIN GOAL SELECTED YET');
+     return;
+   }
+   $('profileSkinGoalTitle').textContent=row.skin_goal_name;
+   $('profileSkinGoalCaption').textContent='Saving toward this Store reward.';
+   const img=$('profileSkinGoalImage');
+   if(row.skin_goal_image_url){
+     img.src=row.skin_goal_image_url;
+     img.alt=row.skin_goal_name;
+     img.hidden=false;
+   }
+   const have=Math.max(0,Number(row.fnc_points)||0);
+   const targetCost=Math.max(0,Number(row.skin_goal_fnc_cost)||0);
+   const pct=targetCost>0?Math.min(100,Math.floor(have/targetCost*100)):100;
+   $('profileSkinGoalFill').style.width=pct+'%';
+   $('profileSkinGoalTrack').setAttribute('aria-valuenow',String(pct));
+   $('profileSkinGoalHave').textContent=have.toLocaleString()+' FNC';
+   $('profileSkinGoalTarget').textContent=targetCost.toLocaleString()+' FNC GOAL · '+pct+'%';
+ }catch(err){console.error('[AdhemSwag] public Skin Goal load',err);card.hidden=false;setStatus('SKIN GOAL UNAVAILABLE');}
+})();
+</script>
 </body></html>
 
 <link rel="stylesheet" href="/assets/mobile-sidebar.css?v=1" id="adhemswag-shared-mobile-sidebar">
