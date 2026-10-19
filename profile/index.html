@@ -1095,11 +1095,21 @@ if(accessRoot){
 </style>
 
 
-<style id="public-profile-history-visible">
-/* Public viewer profiles hide private profile extras, but keep the sanitized HISTORY card visible. */
-.public-viewer-profile .profile-extra{display:block!important}
-.public-viewer-profile .profile-extra>.card:not(.public-history-card){display:none!important}
-.public-viewer-profile .profile-extra>.public-history-card{display:block!important}
+<style id="public-profile-shared-cards-visible">
+/* Share the same public-facing profile cards for every viewer: requirements, missions, Skin Goal and sanitized history. */
+.public-viewer-profile .profile-extra{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;gap:16px!important;align-items:stretch}
+.public-viewer-profile .profile-extra>.card{display:none!important}
+.public-viewer-profile .profile-extra>.requirements-card{display:block!important;grid-column:1/-1}
+.public-viewer-profile .profile-extra>.profile-missions-panel,
+.public-viewer-profile .profile-extra>.profile-skin-goal,
+.public-viewer-profile .profile-extra>.public-history-card{display:block!important;min-width:0;align-self:stretch}
+.public-viewer-profile .profile-extra>.profile-missions-panel,
+.public-viewer-profile .profile-extra>.profile-skin-goal,
+.public-viewer-profile .profile-extra>.public-history-card{margin-top:0!important}
+@media(max-width:800px){
+ .public-viewer-profile .profile-extra{grid-template-columns:minmax(0,1fr)!important}
+ .public-viewer-profile .profile-extra>.requirements-card{grid-column:1}
+}
 </style>
 
 <script id="profile-public-skin-goal-loader">
