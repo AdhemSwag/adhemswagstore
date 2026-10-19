@@ -732,7 +732,7 @@ async function renderAdminPublicPreview(username){
  set('profileTwitchStatus',p.twitch_username||'—');
  set('profileCompleteStatus',isPublicViewer?'Public profile':(p.profile_complete?'Complete':'Incomplete'));
  const completeness=document.getElementById('publicProfileCompleteness');
- if(completeness){completeness.textContent=isPublicViewer?'PROFILE COMPLETE':'PROFILE STATUS';}
+ if(completeness){completeness.textContent=isPublicViewer?(p.profile_complete?'PROFILE COMPLETE':'PROFILE INCOMPLETE'):'PROFILE STATUS';}
  if(isPublicViewer){
    [['reqTwitch','CONNECTED'],['reqEmail','PRIVATE'],['reqSteamProfileUrl','PRIVATE'],['reqTradeUrl','PRIVATE'],['reqDiscord','PRIVATE']].forEach(([id,value])=>{const el=document.getElementById(id);if(el){el.textContent=value;el.classList.toggle('complete',id==='reqTwitch');}});
  }
@@ -1096,7 +1096,12 @@ if(accessRoot){
 
 
 <style id="public-profile-shared-cards-visible">
-/* Match the owner's organized profile layout on every public viewer profile. Private code/redeem cards stay hidden. */
+/* Public viewer profiles share progression cards only. Never expose redeem forms or personal access codes. */
+.public-viewer-profile .profile-extra > section.card:not(.profile-missions-panel):not(.profile-skin-goal):not(.public-history-card){display:none!important}
+.public-viewer-profile .profile-extra > .access-codes-card,
+.public-viewer-profile #redeemCodeInput,
+.public-viewer-profile #redeemCodeBtn,
+.public-viewer-profile #redeemCodeStatus{display:none!important}
 .public-viewer-profile .profile-extra{
  display:grid!important;
  grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
