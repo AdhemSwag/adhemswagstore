@@ -487,13 +487,28 @@ body.mobile-menu-open{overflow:hidden!important}
 </div><main>
 <div class="admin-preview-banner" id="adminPreviewBanner">ADMIN PREVIEW • PUBLIC VIEW • VIEWER PROFILE</div>
 <div class="profile-hero">
-  <div>
-    <div class="eyebrow">// Viewer Account</div>
-    <h1>MY <span>PROFILE</span></h1>
-    <p class="lede">Your Twitch identity, progression and reward status — all in one place.</p>
+  <div class="profile-hero-identity">
+    <div class="profile-twitch-avatar" id="profileTwitchAvatarWrap">
+      <img id="profileTwitchAvatar" src="" alt="Twitch profile photo" hidden>
+      <span id="profileTwitchAvatarFallback">V</span>
+    </div>
+    <div class="profile-hero-copy">
+      <div class="eyebrow">// Viewer Account</div>
+      <h1>MY <span>PROFILE</span></h1>
+      <p class="lede">Your Twitch identity, progression and reward status — all in one place.</p>
+    </div>
   </div>
   <div class="hero-badge"><span>STATUS</span><strong id="profileHeroStatus">CHECKING</strong></div>
 </div>
+<style id="profile-twitch-avatar-css">
+.profile-hero-identity{display:flex;align-items:center;gap:20px;min-width:0}
+.profile-hero-copy{min-width:0}
+.profile-twitch-avatar{width:86px;height:86px;flex:0 0 86px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;background:linear-gradient(145deg,rgba(17,217,247,.16),rgba(17,217,247,.035));border:2px solid rgba(17,217,247,.55);box-shadow:0 0 0 5px rgba(17,217,247,.045),0 0 24px rgba(17,217,247,.12);font:700 28px Rajdhani,sans-serif;color:var(--cyan)}
+.profile-twitch-avatar img{width:100%;height:100%;object-fit:cover;display:block}
+.profile-twitch-avatar img[hidden]{display:none!important}
+.profile-twitch-avatar #profileTwitchAvatarFallback[hidden]{display:none!important}
+@media(max-width:700px){.profile-hero-identity{gap:12px}.profile-twitch-avatar{width:58px;height:58px;flex-basis:58px;font-size:21px}.profile-hero-copy h1{font-size:clamp(30px,8vw,48px)}}
+</style>
 
 <div class="profile-sections">
   <section class="card status-card profile-account-card">
@@ -1179,6 +1194,50 @@ if(accessRoot){
    $('profileSkinGoalHave').textContent=have.toLocaleString()+' FNC';
    $('profileSkinGoalTarget').textContent=targetCost.toLocaleString()+' FNC GOAL · '+pct+'%';
  }catch(err){console.error('[AdhemSwag] public Skin Goal load',err);card.hidden=false;setStatus('SKIN GOAL UNAVAILABLE');}
+})();
+</script>
+<script id="profile-twitch-avatar-loader">
+(()=> {
+ const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+ const escName=value=>String(value||'Viewer').replace(/^@/,'').trim();
+ const safeUrl=value=>{const raw=String(value||'').trim();return /^https:\/\/[^\s"'<>]+$/i.test(raw)?raw:'';};
+ async function loadAvatar(){
+   const img=document.getElementById('profileTwitchAvatar');
+   const fallback=document.getElementById('profileTwitchAvatarFallback');
+   if(!img||!fallback)return;
+   let client=null;
+   for(let i=0;i<40&&!client;i++){client=window.AdhemAuth||null;if(!client)await wait(150);}
+   if(!client)return;
+   const params=new URLSearchParams(location.search);
+   const target=(params.get('viewer')||params.get('admin_preview')||'').trim();
+   let username=target,avatar='';
+   try{
+     if(target){
+       const {data,error}=await client.rpc('get_public_viewer_avatar',{p_twitch_username:target});
+       if(!error)avatar=safeUrl(data);
+     }else{
+       const {data,error}=await client.auth.getUser();
+       const user=data?.user;
+       if(error||!user)return;
+       const meta=user.user_metadata||{};
+       avatar=safeUrl(meta.avatar_url||meta.picture||meta.profile_image_url);
+       const {data:profile}=await client.from('users').select('twitch_username').eq('id',user.id).maybeSingle();
+       username=profile?.twitch_username||meta.preferred_username||meta.login||user.email?.split('@')[0]||'Viewer';
+       if(!avatar&&username){
+         const result=await client.rpc('get_public_viewer_avatar',{p_twitch_username:username});
+         if(!result.error)avatar=safeUrl(result.data);
+       }
+     }
+   }catch(error){console.warn('[AdhemSwag] Twitch profile photo unavailable',error);}
+   const initials=escName(username).slice(0,2).toUpperCase()||'V';
+   fallback.textContent=initials;
+   if(!avatar)return;
+   img.alt=(username||'Twitch viewer')+' Twitch profile photo';
+   img.onload=()=>{img.hidden=false;fallback.hidden=true;};
+   img.onerror=()=>{img.hidden=true;fallback.hidden=false;};
+   img.src=avatar;
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',loadAvatar,{once:true});else loadAvatar();
 })();
 </script>
 </body></html>
