@@ -14,6 +14,12 @@
 .lb-podium-name-line .lb-podium-name{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .lb-user-link{display:inline-flex;align-items:center;gap:3px;min-width:0}
 .lb-user-link .twitch-profile-icon{width:15px;height:15px;margin-left:2px}
+.lb-podium-avatar img{display:block;width:100%;height:100%;object-fit:cover;border-radius:inherit}
+.lb-podium-avatar .avatar-fallback[hidden],.lb-list-avatar .avatar-fallback[hidden]{display:none!important}
+.lb-list-avatar{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;overflow:hidden;flex:0 0 30px;border:1px solid var(--line);background:rgba(17,217,247,.08);font:700 11px 'Rajdhani',sans-serif;color:var(--white);vertical-align:middle}
+.lb-list-avatar img{width:100%;height:100%;object-fit:cover;display:block}
+.lb-user-link{gap:8px}
+@media(max-width:640px){.lb-list-avatar{width:26px;height:26px;flex-basis:26px}.lb-user-link{gap:6px}}
 </style></style>
 <title>AdhemSwag - The Home of your favorite streamer</title>
 <meta name="description" content="AdhemSwag FNC Points leaderboard — see the top viewers ranked by points.">
@@ -807,12 +813,19 @@ body.mobile-menu-open{overflow:hidden!important}
     const label=board==='xp'?'XP':board==='earned'?'ALL-TIME FNC EARNED':'FNC POINTS';
     const metric=u=>board==='xp'?fmt(u.xp):board==='earned'?fmt(u.total_fnc_earned):fmt(u.fnc_points);
     const medals={1:'♛',2:'2',3:'3'};
+    const avatarMarkup=(u,initials)=>{
+      const raw=String(u.avatar_url||'').trim();
+      const safe=/^https:\/\/[^\s"'<>]+$/i.test(raw)?raw:'';
+      return safe?'<img data-avatar src="'+esc(safe)+'" alt="" loading="lazy" referrerpolicy="no-referrer"><span class="avatar-fallback" hidden>'+initials+'</span>':initials;
+    };
+    const bindAvatarFallback=root=>root.querySelectorAll('img[data-avatar]').forEach(img=>img.addEventListener('error',()=>{img.hidden=true;const fallback=img.nextElementSibling;if(fallback)fallback.hidden=false;},{once:true}));
     const card=(u,rank)=>{
       if(!u)return '<div class="lb-podium-empty">#'+rank+'<br>Awaiting player</div>';
       const username=String(u.twitch_username||'Viewer'), profileUrl='/profile/?viewer='+encodeURIComponent(username);
       const tone=rank===1?'rank1':rank===2?'rank2':'rank3';
       const initials=esc(username.replace(/^@/,'').slice(0,2).toUpperCase()||'V');
-      return '<article class="lb-podium-card '+tone+(rank===1?' champion':'')+'"><div class="lb-podium-label">'+(rank===1?'CHAMPION':rank===2?'RUNNER-UP':'THIRD PLACE')+'</div><div class="lb-podium-badge" aria-label="Rank '+rank+'">'+medals[rank]+'</div><a class="lb-podium-profile" href="'+profileUrl+'" aria-label="View '+esc(username)+' profile"><div class="lb-podium-avatar">'+initials+'</div><div class="lb-podium-name-line"><div class="lb-podium-name">'+esc(username)+'</div></div></a><div class="lb-podium-handle">LEVEL '+fmt(u.level||1)+'</div><div class="lb-podium-points">'+metric(u)+'</div><div class="lb-podium-points-label">'+label+'</div><a class="twitch-profile-icon" href="https://www.twitch.tv/'+encodeURIComponent(username.replace(/^@/,''))+'" target="_blank" rel="noopener noreferrer" aria-label="Open Twitch channel for '+esc(username)+'" title="Open Twitch channel"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 2 1 6v15h5v3h4l3-3h4l6-6V2H4zm17 12-4 4h-4l-3 3v-3H6V4h15v10zM11 7h2v6h-2zm5 0h2v6h-2z"/></svg></a></article>';
+      const avatar=avatarMarkup(u,initials);
+      return '<article class="lb-podium-card '+tone+(rank===1?' champion':'')+'"><div class="lb-podium-label">'+(rank===1?'CHAMPION':rank===2?'RUNNER-UP':'THIRD PLACE')+'</div><div class="lb-podium-badge" aria-label="Rank '+rank+'">'+medals[rank]+'</div><a class="lb-podium-profile" href="'+profileUrl+'" aria-label="View '+esc(username)+' profile"><div class="lb-podium-avatar">'+avatar+'</div><div class="lb-podium-name-line"><div class="lb-podium-name">'+esc(username)+'</div></div></a><div class="lb-podium-handle">LEVEL '+fmt(u.level||1)+'</div><div class="lb-podium-points">'+metric(u)+'</div><div class="lb-podium-points-label">'+label+'</div><a class="twitch-profile-icon" href="https://www.twitch.tv/'+encodeURIComponent(username.replace(/^@/,''))+'" target="_blank" rel="noopener noreferrer" aria-label="Open Twitch channel for '+esc(username)+'" title="Open Twitch channel"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 2 1 6v15h5v3h4l3-3h4l6-6V2H4zm17 12-4 4h-4l-3 3v-3H6V4h15v10zM11 7h2v6h-2zm5 0h2v6h-2z"/></svg></a></article>';
     };
     if(!sorted.length){
       podium.innerHTML='';
@@ -826,9 +839,12 @@ body.mobile-menu-open{overflow:hidden!important}
     items.forEach((u,i)=>{
       const r=start+i+4, value=metric(u);
       const profileUrl='/profile/?viewer='+encodeURIComponent(u.twitch_username);
-      html+='<div class="lb-row"><div class="lb-rank">#'+r+'</div><div class="lb-user"><a class="lb-user-link" href="'+profileUrl+'" style="color:inherit;text-decoration:none" aria-label="View '+esc(u.twitch_username)+' profile">'+esc(u.twitch_username)+' <span style="color:var(--muted);font-size:10px">LVL '+Number(u.level||1)+'</span></a><a class="twitch-profile-icon" href="https://www.twitch.tv/'+encodeURIComponent(String(u.twitch_username||'').replace(/^@/,''))+'" target="_blank" rel="noopener noreferrer" aria-label="Open Twitch channel for '+esc(u.twitch_username)+'" title="Open Twitch channel"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 2 1 6v15h5v3h4l3-3h4l6-6V2H4zm17 12-4 4h-4l-3 3v-3H6V4h15v10zM11 7h2v6h-2zm5 0h2v6h-2z"/></svg></a></div><div class="lb-points">'+value+' <span>'+(label==='XP'?'XP':'FNC')+'</span></div></div>';
+      const initials=esc(String(u.twitch_username||'V').replace(/^@/,'').slice(0,2).toUpperCase()||'V');
+      const avatar=avatarMarkup(u,initials);
+      html+='<div class="lb-row"><div class="lb-rank">#'+r+'</div><div class="lb-user"><a class="lb-user-link" href="'+profileUrl+'" style="color:inherit;text-decoration:none" aria-label="View '+esc(u.twitch_username)+' profile"><span class="lb-list-avatar">'+avatar+'</span><span>'+esc(u.twitch_username)+' <span style="color:var(--muted);font-size:10px">LVL '+Number(u.level||1)+'</span></span></a><a class="twitch-profile-icon" href="https://www.twitch.tv/'+encodeURIComponent(String(u.twitch_username||'').replace(/^@/,''))+'" target="_blank" rel="noopener noreferrer" aria-label="Open Twitch channel for '+esc(u.twitch_username)+'" title="Open Twitch channel"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 2 1 6v15h5v3h4l3-3h4l6-6V2H4zm17 12-4 4h-4l-3 3v-3H6V4h15v10zM11 7h2v6h-2zm5 0h2v6h-2z"/></svg></a></div><div class="lb-points">'+value+' <span>'+(label==='XP'?'XP':'FNC')+'</span></div></div>';
     });
     table.innerHTML=html;
+    bindAvatarFallback(podium);bindAvatarFallback(table);
     const pages=Math.ceil(remaining.length/PAGE_SIZE);pagination.hidden=pages<=1;
     pagination.innerHTML='<button class="lb-page-btn" '+(page<=1?'disabled':'')+' data-p="-1">Previous</button><span class="lb-page-info">Page '+page+' / '+pages+'</span><button class="lb-page-btn" '+(page>=pages?'disabled':'')+' data-p="1">Next</button>';
   }
