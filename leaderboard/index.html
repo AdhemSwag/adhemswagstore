@@ -690,13 +690,6 @@ body.mobile-menu-open{overflow:hidden!important}
       <div class="lb-progress-label"><span>XP PROGRESS</span><span id="viewerProgressText">—</span></div>
       <div class="lb-progress"><span id="viewerProgressBar"></span></div>
     </div>
-    <div class="lb-next-grid">
-      <div class="lb-next-card">
-        <span class="lb-card-label">NEXT REWARD</span>
-        <strong id="nextRewardName">—</strong>
-        <small id="nextRewardReq">Keep watching to unlock rewards.</small>
-      </div>
-    </div>
   </section>
 
   <section class="lb-section">
@@ -831,12 +824,6 @@ body.mobile-menu-open{overflow:hidden!important}
     const prog=xpProgress(Number(v.xp||0),Number(v.level||1));
     document.getElementById('viewerProgressBar').style.width=prog.pct+'%';
     document.getElementById('viewerProgressText').textContent=prog.text;
-    const reward=data?.next_reward;
-    document.getElementById('nextRewardName').textContent=reward?.name||'More rewards coming soon';
-    document.getElementById('nextRewardReq').textContent=reward?[
-      Number(reward.fnc_cost)>0?fmt(reward.fnc_cost)+' FNC':'',
-      Number(reward.level_required)>1?'Level '+reward.level_required:''
-    ].filter(Boolean).join(' • ')||'Check the STORE':'Keep watching to unlock rewards.';
   }
 
   async function loadWatchers(period='today'){
