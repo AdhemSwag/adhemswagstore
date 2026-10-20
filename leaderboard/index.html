@@ -696,11 +696,6 @@ body.mobile-menu-open{overflow:hidden!important}
         <strong id="nextRewardName">—</strong>
         <small id="nextRewardReq">Keep watching to unlock rewards.</small>
       </div>
-      <div class="lb-next-card">
-        <span class="lb-card-label">WATCHING NOW</span>
-        <strong id="activeViewers">0 viewers</strong>
-        <small id="nextTickText">Live watch tracking status</small>
-      </div>
     </div>
   </section>
 
@@ -821,11 +816,6 @@ body.mobile-menu-open{overflow:hidden!important}
     const {data,error}=await client.rpc('get_leaderboard_dashboard');
     if(error){console.warn('[AdhemSwag] leaderboard dashboard:',error);return;}
     const v=data?.viewer;
-    document.getElementById('activeViewers').textContent=fmt(data?.active_viewers)+' viewer'+(Number(data?.active_viewers)===1?'':'s')+' now';
-    const interval=Math.max(1,Number(data?.fnc_interval_minutes||1));
-    const minute=new Date().getMinutes();
-    const until=interval-(minute%interval||interval);
-    document.getElementById('nextTickText').textContent=data?.points_enabled?'Next FNC tick in ~'+until+' min':'FNC earning is currently paused';
     if(!v){
       document.getElementById('viewerName').textContent='Connect Twitch to see your progress';
       return;
