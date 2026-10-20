@@ -140,6 +140,28 @@
   .lb-podium-card.rank2 .lb-podium-points{ color:#C5CBD6; }
   .lb-podium-card.rank3 .lb-podium-points{ color:#CD7F32; }
   .lb-podium-points-label{ font-family:'JetBrains Mono', monospace; font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); margin-top:2px; }
+  /* PRO TOP 3 PODIUM */
+  .lb-podium{grid-template-columns:minmax(0,1fr) minmax(0,1.12fr) minmax(0,1fr);gap:14px;margin:18px 0 24px;align-items:end}
+  .lb-podium-card{min-width:0;overflow:hidden;border-radius:12px;background:radial-gradient(ellipse at 50% 0%,rgba(17,217,247,.10),transparent 68%),linear-gradient(160deg,#10171c,#080b0e);border-color:rgba(150,180,190,.18);box-shadow:0 12px 34px rgba(0,0,0,.25);transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease}
+  .lb-podium-card:hover{transform:translateY(-4px);box-shadow:0 18px 38px rgba(0,0,0,.34)}
+  .lb-podium-card.champion{padding-top:35px;padding-bottom:36px;background:radial-gradient(ellipse at 50% 0%,rgba(255,215,0,.17),transparent 70%),linear-gradient(160deg,#17170f,#090b0c);border:1px solid rgba(255,215,0,.58);box-shadow:0 0 0 1px rgba(255,215,0,.05),0 18px 44px rgba(255,215,0,.07)}
+  .lb-podium-card.rank2{border-color:rgba(197,203,214,.38);background:radial-gradient(ellipse at 50% 0%,rgba(197,203,214,.10),transparent 70%),linear-gradient(160deg,#13171b,#080b0e)}
+  .lb-podium-card.rank3{border-color:rgba(205,127,50,.38);background:radial-gradient(ellipse at 50% 0%,rgba(205,127,50,.11),transparent 70%),linear-gradient(160deg,#19130f,#080b0e)}
+  .lb-podium-label{font-size:10px;letter-spacing:.17em;margin-bottom:13px}
+  .lb-podium-badge{width:48px;height:48px;font-size:20px;box-shadow:0 4px 18px rgba(0,0,0,.25)}
+  .lb-podium-card.rank1 .lb-podium-badge{width:56px;height:56px;font-size:23px;box-shadow:0 0 22px rgba(255,215,0,.22)}
+  .lb-podium-avatar{width:68px;height:68px;font-family:'Rajdhani',sans-serif;font-size:25px;font-weight:700;color:var(--white);background:rgba(17,217,247,.08);box-shadow:0 0 0 5px rgba(255,255,255,.02)}
+  .lb-podium-card.rank1 .lb-podium-avatar{width:88px;height:88px;font-size:32px;box-shadow:0 0 0 6px rgba(255,215,0,.06),0 0 28px rgba(255,215,0,.09)}
+  .lb-podium-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:20px}
+  .lb-podium-card.rank1 .lb-podium-name{font-size:24px}
+  .lb-podium-points{font-size:25px;overflow-wrap:anywhere}
+  .lb-podium-card.rank1 .lb-podium-points{font-size:32px}
+  .lb-podium-points-label{letter-spacing:.15em}
+  .lb-podium-profile{display:block;color:inherit;text-decoration:none}
+  .lb-podium-profile:focus-visible{outline:2px solid var(--cyan);outline-offset:4px}
+  .lb-podium-empty{padding:30px 16px;text-align:center;color:var(--muted);border:1px dashed var(--line);font:11px 'JetBrains Mono',monospace}
+  @media(max-width:640px){.lb-podium{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;align-items:stretch}.lb-podium-card,.lb-podium-card.champion{padding:15px 7px;border-radius:8px}.lb-podium-card.champion{padding-top:19px;padding-bottom:20px;order:0}.lb-podium-badge,.lb-podium-card.rank1 .lb-podium-badge{width:34px;height:34px;font-size:14px;margin-bottom:9px}.lb-podium-avatar,.lb-podium-card.rank1 .lb-podium-avatar{width:46px;height:46px;font-size:16px;margin-bottom:10px}.lb-podium-label{font-size:8px;letter-spacing:.08em;margin-bottom:9px}.lb-podium-name,.lb-podium-card.rank1 .lb-podium-name{font-size:12px}.lb-podium-handle{font-size:8px;margin-bottom:8px;overflow:hidden;text-overflow:ellipsis}.lb-podium-points,.lb-podium-card.rank1 .lb-podium-points{font-size:13px}.lb-podium-points-label{font-size:7px;letter-spacing:.05em}.lb-podium-card.champion{transform:translateY(-5px)}}
+
 
   .lb-pagination{
     display:flex; align-items:center; justify-content:center; gap:18px; margin-top:20px;
@@ -684,6 +706,7 @@ body.mobile-menu-open{overflow:hidden!important}
         <button class="lb-tab" data-board="earned" type="button">ALL-TIME FNC EARNED</button>
       </div>
     </div>
+    <div id="lbPodium" class="lb-podium" aria-label="Top 3 leaderboard"><div class="lb-loading">Loading top players…</div></div>
     <div class="lb-table bracket" id="lbTable"><div class="lb-loading">Loading leaderboard…</div></div>
     <div class="lb-pagination" id="lbPagination" hidden></div>
   </section>
@@ -758,21 +781,35 @@ body.mobile-menu-open{overflow:hidden!important}
       const bv=board==='xp'?Number(b.xp):board==='earned'?Number(b.total_fnc_earned):Number(b.fnc_points);
       return bv-av || String(a.twitch_username).localeCompare(String(b.twitch_username));
     });
-    const start=(page-1)*PAGE_SIZE, items=sorted.slice(start,start+PAGE_SIZE);
-    if(!items.length){table.innerHTML='<div class="lb-loading">No completed viewer profiles yet.</div>';pagination.hidden=true;return;}
+    const podium=document.getElementById('lbPodium');
     const label=board==='xp'?'XP':board==='earned'?'ALL-TIME FNC EARNED':'FNC POINTS';
+    const metric=u=>board==='xp'?fmt(u.xp):board==='earned'?fmt(u.total_fnc_earned):fmt(u.fnc_points);
+    const medals={1:'♛',2:'2',3:'3'};
+    const card=(u,rank)=>{
+      if(!u)return '<div class="lb-podium-empty">#'+rank+'<br>Awaiting player</div>';
+      const username=String(u.twitch_username||'Viewer'), profileUrl='/profile/?viewer='+encodeURIComponent(username);
+      const tone=rank===1?'rank1':rank===2?'rank2':'rank3';
+      const initials=esc(username.replace(/^@/,'').slice(0,2).toUpperCase()||'V');
+      return '<article class="lb-podium-card '+tone+(rank===1?' champion':'')+'"><div class="lb-podium-label">'+(rank===1?'CHAMPION':rank===2?'RUNNER-UP':'THIRD PLACE')+'</div><div class="lb-podium-badge" aria-label="Rank '+rank+'">'+medals[rank]+'</div><a class="lb-podium-profile" href="'+profileUrl+'" aria-label="View '+esc(username)+' profile"><div class="lb-podium-avatar">'+initials+'</div><div class="lb-podium-name">'+esc(username)+'</div></a><div class="lb-podium-handle">LEVEL '+fmt(u.level||1)+'</div><div class="lb-podium-points">'+metric(u)+'</div><div class="lb-podium-points-label">'+label+'</div></article>';
+    };
+    if(!sorted.length){
+      podium.innerHTML='';
+      table.innerHTML='<div class="lb-loading">No completed viewer profiles yet.</div>';
+      pagination.hidden=true;return;
+    }
+    podium.innerHTML=card(sorted[1],2)+card(sorted[0],1)+card(sorted[2],3);
+    const remaining=sorted.slice(3);
+    const start=(page-1)*PAGE_SIZE, items=remaining.slice(start,start+PAGE_SIZE);
     let html='<div class="lb-row lb-head"><div>RANK</div><div>VIEWER</div><div style="text-align:right">'+label+'</div></div>';
     items.forEach((u,i)=>{
-      const r=start+i+1,cls=r===1?' top1':r===2?' top2':r===3?' top3':'';
-      const value=board==='xp'?fmt(u.xp):board==='earned'?fmt(u.total_fnc_earned):fmt(u.fnc_points);
+      const r=start+i+4, value=metric(u);
       const profileUrl='/profile/?viewer='+encodeURIComponent(u.twitch_username);
-      html+=`<div class="lb-row${cls}"><div class="lb-rank">#${r}</div><div class="lb-user"><a href="${profileUrl}" style="color:inherit;text-decoration:none" aria-label="View ${esc(u.twitch_username)} profile">${esc(u.twitch_username)} <span style="color:var(--muted);font-size:10px">LVL ${Number(u.level||1)}</span></a></div><div class="lb-points">${value} <span>${label==='XP'?'XP':'FNC'}</span></div></div>`;
+      html+='<div class="lb-row"><div class="lb-rank">#'+r+'</div><div class="lb-user"><a href="'+profileUrl+'" style="color:inherit;text-decoration:none" aria-label="View '+esc(u.twitch_username)+' profile">'+esc(u.twitch_username)+' <span style="color:var(--muted);font-size:10px">LVL '+Number(u.level||1)+'</span></a></div><div class="lb-points">'+value+' <span>'+(label==='XP'?'XP':'FNC')+'</span></div></div>';
     });
     table.innerHTML=html;
-    const pages=Math.ceil(sorted.length/PAGE_SIZE);pagination.hidden=pages<=1;
-    pagination.innerHTML=`<button class="lb-page-btn" ${page<=1?'disabled':''} data-p="-1">Previous</button><span class="lb-page-info">Page ${page} / ${pages}</span><button class="lb-page-btn" ${page>=pages?'disabled':''} data-p="1">Next</button>`;
+    const pages=Math.ceil(remaining.length/PAGE_SIZE);pagination.hidden=pages<=1;
+    pagination.innerHTML='<button class="lb-page-btn" '+(page<=1?'disabled':'')+' data-p="-1">Previous</button><span class="lb-page-info">Page '+page+' / '+pages+'</span><button class="lb-page-btn" '+(page>=pages?'disabled':'')+' data-p="1">Next</button>';
   }
-
   async function loadBoard(){
     const {data,error}=await client.rpc('get_public_leaderboard_full');
     if(error){console.error(error);table.innerHTML='<div class="lb-loading">Leaderboard temporarily unavailable.</div>';return;}
