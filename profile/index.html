@@ -594,11 +594,14 @@ body.mobile-menu-open{overflow:hidden!important}
 .profile-missions-panel{margin-top:16px}.profile-missions-panel .section-head{margin-bottom:8px}.profile-missions-status{color:var(--muted);font-size:12px;line-height:1.6;margin:10px 0 14px}.profile-missions-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.profile-mission-card{padding:16px;background:#070b0e;border:1px solid var(--line);min-width:0}.profile-mission-top{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}.profile-mission-tag{font:700 9px 'JetBrains Mono',monospace;color:var(--cyan);letter-spacing:.08em}.profile-mission-state{font:700 9px 'JetBrains Mono',monospace;color:var(--ok)}.profile-mission-card h3{margin:12px 0 6px;font:700 18px Rajdhani,sans-serif;text-transform:uppercase}.profile-mission-card p{color:var(--muted);font-size:11px;line-height:1.5}.profile-mission-rewards{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.profile-mission-rewards span{padding:6px 8px;border:1px solid var(--line);font:700 9px 'JetBrains Mono',monospace;color:var(--cyan)}.profile-mission-progress{height:7px;background:#11181c;border:1px solid var(--line);overflow:hidden;margin:8px 0}.profile-mission-progress span{display:block;height:100%;background:var(--cyan);box-shadow:0 0 8px rgba(17,217,247,.25)}.profile-mission-progress-label{display:flex;justify-content:space-between;gap:8px;color:var(--muted);font:600 9px 'JetBrains Mono',monospace}.profile-missions-link{display:inline-flex;margin-top:14px;padding:11px 14px;background:var(--cyan);color:#03181c;text-decoration:none;font:700 10px 'JetBrains Mono',monospace;letter-spacing:.06em}.profile-missions-link:hover{filter:brightness(1.08)}@media(max-width:600px){.profile-missions-grid{grid-template-columns:1fr}.profile-mission-card{padding:14px}}
 </style>
 <section class="card profile-missions-panel" id="profileMissionsPanel">
-  <div class="section-head"><h2>MY MISSIONS</h2><a href="/missions/">VIEW ALL MISSIONS</a></div>
-  <p class="profile-missions-status" id="profileMissionsStatus" role="status" aria-live="polite">Loading your daily and weekly mission progress…</p>
-  <div class="profile-missions-grid" id="profileMissionsGrid" hidden></div>
-  <a class="profile-missions-link" href="/missions/">OPEN MISSIONS &amp; REWARDS →</a>
+  <div class="section-head"><h2>MY MISSIONS</h2></div>
+  <p class="profile-missions-status" id="profileMissionsStatus" role="status" aria-live="polite">CHECKING MISSION STATUS…</p>
+  <a class="profile-missions-link" href="/missions/">OPEN MISSIONS →</a>
 </section>
+<style id="profile-missions-simple-status-v1">
+.profile-extra>.profile-missions-panel .profile-missions-status{display:inline-flex;align-items:center;min-height:30px;padding:7px 10px;border:1px solid var(--line);background:#070b0e;color:var(--cyan);font:700 10px 'JetBrains Mono',monospace;letter-spacing:.08em}
+.profile-extra>.profile-missions-panel .profile-missions-link{display:flex;width:max-content;max-width:100%;margin-top:14px}
+</style>
 
 <section class="card profile-skin-goal" id="profileSkinGoal" hidden aria-labelledby="profileSkinGoalTitle">
   <div class="skin-goal-label">// SKIN GOAL</div>
@@ -914,10 +917,8 @@ if(accessRoot){
 <script id="profile-missions-loader">
 (()=> {
   const status=document.getElementById('profileMissionsStatus');
-  const grid=document.getElementById('profileMissionsGrid');
   const panel=document.getElementById('profileMissionsPanel');
-  if(!status||!grid||!panel)return;
-  const esc=s=>String(s??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  if(!status||!panel)return;
   const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
   async function load(){
     try{
@@ -929,51 +930,32 @@ if(accessRoot){
         client=window.AdhemAuth||null;
         if(!client)await wait(150);
       }
-      if(!client){status.textContent='Mission service is unavailable. Please try again shortly.';return;}
+      if(!client){status.textContent='STATUS UNAVAILABLE';return;}
       let data=null,error=null;
       if(isTargetProfile){
         const result=await client.rpc('get_viewer_missions',{p_twitch_username:targetUsername});
-        data=result.data;
-        error=result.error;
+        data=result.data;error=result.error;
       }else{
         let session=null,sessionError=null;
         for(let i=0;i<3;i++){
           const result=await client.auth.getSession();
-          session=result.data?.session||null;
-          sessionError=result.error||null;
+          session=result.data?.session||null;sessionError=result.error||null;
           if(!sessionError)break;
           await wait(250);
         }
         if(sessionError)throw sessionError;
-        if(!session?.user){status.textContent='Connect your Twitch profile to see your personal mission progress.';return;}
+        if(!session?.user){status.textContent='NOT JOINED';return;}
         const result=await client.rpc('get_my_missions');
-        data=result.data;
-        error=result.error;
+        data=result.data;error=result.error;
       }
       if(error)throw error;
       if(!data?.ok)throw new Error('mission_service_unavailable');
-      if(!data.enrolled){
-        status.textContent='You have not joined yet. Join the daily and weekly missions to start tracking verified Twitch watch time.';
-        return;
-      }
-      const missions=Array.isArray(data.missions)?data.missions:[];
-      if(!missions.length){status.textContent='You are enrolled. There are no active missions to display right now.';return;}
-      grid.innerHTML=missions.map(m=>{
-        const goal=Math.max(1,Number(m.goal_minutes)||1);
-        const progress=Math.max(0,Number(m.progress_minutes)||0);
-        const shown=Math.min(goal,progress);
-        const pct=Math.min(100,Math.round(progress/goal*100));
-        const done=Boolean(m.completed);
-        const daily=m.period_type==='daily';
-        const xp=done?(Number(m.xp_awarded)||0):(Number(m.xp_reward)||0);
-        const fnc=done?(Number(m.fnc_awarded)||0):(Number(m.fnc_reward)||0);
-        return '<article class="profile-mission-card"><div class="profile-mission-top"><span class="profile-mission-tag">'+(daily?'DAILY MISSION':'WEEKLY MISSION')+'</span><span class="profile-mission-state">'+(done?'✓ COMPLETED':'IN PROGRESS')+'</span></div><h3>'+esc(m.title)+'</h3><p>'+esc(m.description)+'</p><div class="profile-mission-rewards"><span>+'+xp+' XP</span><span>+'+fnc+' FNC</span></div><div class="profile-mission-progress-label"><span>'+shown+' / '+goal+' MIN</span><span>'+pct+'%</span></div><div class="profile-mission-progress" role="progressbar" aria-valuemin="0" aria-valuemax="'+goal+'" aria-valuenow="'+shown+'"><span style="width:'+pct+'%"></span></div></article>';
-      }).join('');
-      grid.hidden=false;
-      status.textContent=isTargetProfile?'Verified Twitch mission progress for '+targetUsername+'.':'Your personal mission progress. Rewards are credited automatically when each objective is completed.';
+      status.textContent=data.enrolled?'✓ JOINED':'NOT JOINED';
+      status.dataset.joined=data.enrolled?'true':'false';
+      status.setAttribute('aria-label',data.enrolled?'Joined missions':'Not joined to missions');
     }catch(error){
       console.error('[AdhemSwag Profile Missions]',error);
-      status.textContent='Mission progress could not be loaded. Open Missions to check your status.';
+      status.textContent='STATUS UNAVAILABLE';
     }
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',load,{once:true});else load();
