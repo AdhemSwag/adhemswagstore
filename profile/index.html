@@ -741,7 +741,10 @@ async function renderAdminPublicPreview(username){
    set('profileTwitchStatus','Profile not found or unavailable');
    set('profileCompleteStatus','—');
    set('fncEligibilityStatus',isPublicViewer?'No public profile is available for this viewer.':'Admin preview requires verified admin access');
-   set('profileFncPoints','0');set('profileLevel','1');set('profileWatchMinutes','0 min');set('profileXp','0 XP');
+   // A failed or unauthorized lookup is not evidence that the account has zero rewards.
+   set('profileFncPoints','—');set('profileLevel','—');set('profileWatchMinutes','—');set('profileXp','—');set('profileStreak','—');
+   set('profileLevelPercent','—');
+   const badge=document.getElementById('profileBadge');if(badge)badge.textContent='PROFILE DATA UNAVAILABLE';
    const bar=document.getElementById('profileProgressBar');if(bar)bar.style.width='0%';
    return;
  }
