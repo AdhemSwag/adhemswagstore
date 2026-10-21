@@ -734,7 +734,12 @@ const adminPreviewUsername = new URLSearchParams(window.location.search).get('ad
 const publicViewerUsername = new URLSearchParams(window.location.search).get('viewer');
 const adminOwnerToolbar=document.getElementById('adminOwnerToolbar');
 const adminOwnerToolsToggle=document.getElementById('adminOwnerToolsToggle');
-if(adminPreviewUsername&&adminOwnerToolbar)adminOwnerToolbar.hidden=false;
+if(adminPreviewUsername&&adminOwnerToolbar){
+ adminOwnerToolbar.hidden=false;
+ // Owner preview opens in full inspection mode; public viewer pages remain unchanged.
+ document.body.classList.add('admin-owner-tools-visible');
+ if(adminOwnerToolsToggle){adminOwnerToolsToggle.setAttribute('aria-pressed','true');adminOwnerToolsToggle.textContent='HIDE OWNER DETAILS';}
+}
 if(adminOwnerToolsToggle)adminOwnerToolsToggle.addEventListener('click',()=>{
  const enabled=!document.body.classList.contains('admin-owner-tools-visible');
  document.body.classList.toggle('admin-owner-tools-visible',enabled);
@@ -841,6 +846,12 @@ async function renderAdminPublicPreview(username){
  if(completeness){completeness.textContent='REQUIRED DETAILS';}
  if(isPublicViewer){
    [['reqTwitch','CONNECTED'],['reqEmail','PRIVATE'],['reqSteamProfileUrl','PRIVATE'],['reqTradeUrl','PRIVATE'],['reqDiscord','PRIVATE']].forEach(([id,value])=>{const el=document.getElementById(id);if(el){el.textContent=value;el.classList.toggle('complete',id==='reqTwitch');}});
+ }else{
+   // In owner preview show the actual saved field state, not generic Required/Optional placeholders.
+   [['reqTwitch',!!p.twitch_user_id],['reqEmail',!!p.email],['reqSteamProfileUrl',!!p.steam_profile_url],['reqTradeUrl',!!p.steam_trade_url],['reqDiscord',!!p.discord_username]].forEach(([id,complete])=>{
+     const el=document.getElementById(id);
+     if(el){el.textContent=complete?'COMPLETE':'MISSING';el.classList.toggle('complete',complete);}
+   });
  }
  set('fncEligibilityStatus',profileIsComplete?'Profile active':'Profile incomplete');
  const activeTitle=document.getElementById('profileActiveTitle');
