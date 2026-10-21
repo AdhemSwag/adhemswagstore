@@ -575,6 +575,21 @@ body.mobile-menu-open{overflow:hidden!important}
 </div>
 </div>
 
+<section class="card admin-private-details-card" id="adminPrivateDetailsCard" aria-label="Owner-only private profile details">
+<h2>OWNER VERIFICATION — PRIVATE DETAILS</h2>
+<p class="note">Visible only to the authenticated AdhemSwag owner/admin. Never shown on public viewer profiles.</p>
+<div class="requirements-grid">
+<div class="requirement"><span>Email</span><b id="adminDetailEmail">Loading…</b></div>
+<div class="requirement"><span>Email verified</span><b id="adminDetailEmailVerified">Loading…</b></div>
+<div class="requirement"><span>Steam ID</span><b id="adminDetailSteamId">Loading…</b></div>
+<div class="requirement"><span>Steam Profile URL</span><b id="adminDetailSteamProfile">Loading…</b></div>
+<div class="requirement"><span>Steam Trade URL</span><b id="adminDetailSteamTrade">Loading…</b></div>
+<div class="requirement"><span>Discord</span><b id="adminDetailDiscord">Loading…</b></div>
+<div class="requirement"><span>Blocked</span><b id="adminDetailBlocked">Loading…</b></div>
+</div>
+<div id="adminPrivateDetailsStatus" class="note" role="status">Verifying admin access…</div>
+</section>
+
 <section class="card live-codes-card">
 <h2>LIVE CODES</h2>
 <p class="note">Redeem a private winner code to receive <b>FNC Points.</b> Each winner code can be used once.</p>
@@ -777,6 +792,28 @@ async function renderAdminPublicPreview(username){
          accessRoot.querySelectorAll('[data-copy-code]').forEach(btn=>btn.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(btn.dataset.copyCode||'');btn.textContent='COPIED';setTimeout(()=>btn.textContent='COPY',1200)}catch(e){}}));
        }
      }catch(codesError){console.warn('[AdhemSwag] Admin preview access codes unavailable',codesError);accessRoot.innerHTML='<div class="empty-history">Access codes unavailable. Verify admin permissions.</div>';}
+   }
+ }
+ if(!isPublicViewer){
+   const privateStatus=document.getElementById('adminPrivateDetailsStatus');
+   try{
+     const {data:privateRows,error:privateError}=await client.rpc('get_admin_profile_private_details',{p_twitch_username:username});
+     if(privateError)throw privateError;
+     if(!privateRows||!privateRows.length)throw new Error('Admin permission not verified');
+     const d=privateRows[0];
+     const put=(id,value)=>{const el=document.getElementById(id);if(el)el.textContent=(value===null||value===undefined||String(value).trim()==='')?'Not provided':String(value)};
+     put('adminDetailEmail',d.email);
+     put('adminDetailEmailVerified',d.email_verified===true?'YES':d.email_verified===false?'NO':'Unknown');
+     put('adminDetailSteamId',d.steam_id);
+     put('adminDetailSteamProfile',d.steam_profile_url);
+     put('adminDetailSteamTrade',d.steam_trade_url);
+     put('adminDetailDiscord',d.discord_username);
+     put('adminDetailBlocked',d.is_blocked===true?'YES':d.is_blocked===false?'NO':'Unknown');
+     document.body.classList.add('admin-authorized-private-details');
+     if(privateStatus)privateStatus.textContent='Admin access verified. Private details are visible only in this owner preview.';
+   }catch(privateError){
+     console.warn('[AdhemSwag] Owner-only profile details unavailable',privateError);
+     if(privateStatus)privateStatus.textContent='Private details hidden: admin permission could not be verified.';
    }
  }
  set('profileTwitchStatus',p.twitch_username||'—');
@@ -1171,6 +1208,15 @@ if(accessRoot){
   margin-bottom:24px!important;
  }
 }
+</style>
+<style id="admin-private-details-css">
+/* Fail closed: private viewer details remain hidden unless the server confirms an authenticated admin RPC. */
+.admin-private-details-card{display:none!important}
+body.admin-public-preview.admin-authorized-private-details .admin-private-details-card{display:block!important;visibility:visible!important;opacity:1!important;grid-column:1/-1!important;grid-area:auto!important}
+.admin-private-details-card .requirements-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.admin-private-details-card .requirement{overflow-wrap:anywhere;min-width:0}
+.admin-private-details-card .requirement b{overflow-wrap:anywhere;word-break:break-word}
+@media(max-width:520px){.admin-private-details-card .requirements-grid{grid-template-columns:minmax(0,1fr)}}
 </style>
 <style id="admin-preview-access-codes-css">
 /* Only activated after the server confirms the signed-in user is an admin. */
