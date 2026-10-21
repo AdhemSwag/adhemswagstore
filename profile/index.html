@@ -1449,15 +1449,8 @@ body.admin-owner-toolbar-force .admin-owner-toolbar[hidden]{display:flex!importa
     button.style.setProperty('display','inline-flex','important');
     button.setAttribute('aria-pressed','false');
     button.textContent='SHOW OWNER DETAILS';
-    if(!button.dataset.ownerForceBound){
-      button.dataset.ownerForceBound='1';
-      button.addEventListener('click',function(){
-        var on=!document.body.classList.contains('admin-owner-tools-visible');
-        document.body.classList.toggle('admin-owner-tools-visible',on);
-        button.setAttribute('aria-pressed',String(on));
-        button.textContent=on?'HIDE OWNER DETAILS':'SHOW OWNER DETAILS';
-      });
-    }
+    // The primary profile script already owns the click handler. Do not bind a second
+    // handler here: two toggles on one click cancel each other out.
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initOwnerToolbar,{once:true});
   else initOwnerToolbar();
