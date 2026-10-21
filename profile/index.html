@@ -818,7 +818,7 @@ window.addEventListener('adhem:viewer', async function(e){
  if(!d.authId){set('profileTwitchStatus','Not connected');set('profileCompleteStatus','Connect Twitch first');set('profileViewerStatus','CONNECT TWITCH FIRST');return}
  set('profileTwitchStatus',p&&p.twitch_username?'Connected as '+p.twitch_username:'Not connected');
  // Profile status uses the existing profile_complete flag; Twitch watch tracking remains separate.
- const profileIsComplete=!!(p&&p.profile_complete===true);
+ let profileIsComplete=!!(p&&p.profile_complete===true);
  set('profileCompleteStatus',profileIsComplete?'🟢 PROFILE ACTIVE':'🟠 PROFILE INCOMPLETE');
  set('profileHeroStatus',profileIsComplete?'PROFILE ACTIVE':'PROFILE INCOMPLETE');
  const statusNote=document.getElementById('profileStatusNote');
@@ -838,7 +838,7 @@ window.addEventListener('adhem:viewer', async function(e){
      }
    }catch(err){ console.warn('Legacy FNC import unavailable',err); }
  }
- const profileIsComplete=!!(p&&p.profile_complete===true);
+ profileIsComplete=!!(p&&p.profile_complete===true);
  set('profileCompleteStatus',profileIsComplete?'🟢 PROFILE ACTIVE':'🟠 PROFILE INCOMPLETE');
  set('profileHeroStatus',profileIsComplete?'PROFILE ACTIVE':'PROFILE INCOMPLETE');
  set('fncEligibilityStatus',profileIsComplete?'Profile active':'Profile incomplete');
