@@ -736,16 +736,19 @@ const adminOwnerToolbar=document.getElementById('adminOwnerToolbar');
 const adminOwnerToolsToggle=document.getElementById('adminOwnerToolsToggle');
 if(adminPreviewUsername&&adminOwnerToolbar){
  adminOwnerToolbar.hidden=false;
- // Owner preview opens in full inspection mode; public viewer pages remain unchanged.
- document.body.classList.add('admin-owner-tools-visible');
- if(adminOwnerToolsToggle){adminOwnerToolsToggle.setAttribute('aria-pressed','true');adminOwnerToolsToggle.textContent='HIDE OWNER DETAILS';}
+ // Always start in the same privacy-safe layout that viewers see.
+ document.body.classList.remove('admin-owner-tools-visible');
+ if(adminOwnerToolsToggle){adminOwnerToolsToggle.setAttribute('aria-pressed','false');adminOwnerToolsToggle.textContent='SHOW OWNER DETAILS';}
 }
-if(adminOwnerToolsToggle)adminOwnerToolsToggle.addEventListener('click',()=>{
- const enabled=!document.body.classList.contains('admin-owner-tools-visible');
- document.body.classList.toggle('admin-owner-tools-visible',enabled);
- adminOwnerToolsToggle.setAttribute('aria-pressed',String(enabled));
- adminOwnerToolsToggle.textContent=enabled?'HIDE OWNER DETAILS':'SHOW OWNER DETAILS';
-});
+if(adminOwnerToolsToggle&&!adminOwnerToolsToggle.dataset.ownerMainBound){
+ adminOwnerToolsToggle.dataset.ownerMainBound='1';
+ adminOwnerToolsToggle.addEventListener('click',()=>{
+  const enabled=!document.body.classList.contains('admin-owner-tools-visible');
+  document.body.classList.toggle('admin-owner-tools-visible',enabled);
+  adminOwnerToolsToggle.setAttribute('aria-pressed',String(enabled));
+  adminOwnerToolsToggle.textContent=enabled?'HIDE OWNER DETAILS':'SHOW OWNER DETAILS';
+ });
+}
 
 async function renderAdminPublicPreview(username){
  const set=(id,v)=>{const x=document.getElementById(id);if(x)x.textContent=v};
@@ -1416,7 +1419,7 @@ body.public-viewer-profile .profile-extra>.card{margin-top:0}
 </style>
 
 <style id="admin-owner-toolbar-force-v1">
-body.admin-owner-toolbar-force .admin-owner-toolbar{display:flex!important;visibility:visible!important;opacity:1!important;position:relative!important;z-index:100!important}
+body.admin-owner-toolbar-force .admin-owner-toolbar{display:flex!important;visibility:visible!important;opacity:1!important;position:relative!important;z-index:100!important;min-height:40px!important}
 body.admin-owner-toolbar-force .admin-owner-toolbar[hidden]{display:flex!important}
 </style>
 <script id="admin-owner-toolbar-force-v1-script">
@@ -1427,11 +1430,14 @@ body.admin-owner-toolbar-force .admin-owner-toolbar[hidden]{display:flex!importa
     var toolbar=document.getElementById('adminOwnerToolbar');
     var button=document.getElementById('adminOwnerToolsToggle');
     if(!target||!toolbar||!button)return;
-    document.body.classList.add('admin-owner-toolbar-force','admin-public-preview');
+    document.body.classList.add('admin-owner-toolbar-force','admin-public-preview','public-viewer-profile');
+    document.body.classList.remove('admin-owner-tools-visible');
     toolbar.hidden=false;
     toolbar.removeAttribute('hidden');
     toolbar.style.setProperty('display','flex','important');
     button.style.setProperty('display','inline-flex','important');
+    button.setAttribute('aria-pressed','false');
+    button.textContent='SHOW OWNER DETAILS';
     if(!button.dataset.ownerForceBound){
       button.dataset.ownerForceBound='1';
       button.addEventListener('click',function(){
