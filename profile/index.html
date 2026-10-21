@@ -31,6 +31,7 @@
 @media(max-width:800px){.public-viewer-profile .profile-extra{grid-template-columns:1fr}}
 .admin-public-preview .profile-account-card{grid-column:1/-1}
 .profile-hero{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;padding:34px 0 28px;border-bottom:1px solid var(--line)}
+.profile-hero .hero-badge{display:none!important}
 .hero-badge{min-width:130px;padding:14px 16px;border:1px solid var(--line);background:rgba(11,15,18,.8);text-align:right}
 .hero-badge span,.reward-stat span,.xp-head span{display:block;color:var(--muted);font:600 9px 'JetBrains Mono',monospace;letter-spacing:.12em}
 .hero-badge strong{display:block;margin-top:5px;color:var(--cyan);font:700 12px 'JetBrains Mono',monospace}
@@ -529,7 +530,7 @@ body.mobile-menu-open{overflow:hidden!important}
       <span class="section-state">PROGRESSION</span>
     </div>
     <div class="profile-progress-panel">
-      <div class="profile-active-title" id="profileActiveTitle">🟢 ACTIVE VIEWER</div>
+      <div class="profile-active-title" id="profileActiveTitle">FNC PROGRESSION</div>
       <div class="profile-badge" id="profileBadge"><span class="profile-badge-icon">🆕</span><span>ROOKIE</span></div>
       <div class="profile-level-line"><strong>LEVEL <span id="profileLevel">1</span></strong><span class="profile-level-percent" id="profileLevelPercent">0%</span></div>
       <div class="progress"><span id="profileProgressBar"></span></div>
@@ -768,13 +769,13 @@ async function renderAdminPublicPreview(username){
  const statusCta=document.getElementById('profileStatusCta');
  if(statusCta){statusCta.textContent=profileIsComplete?'EDIT PROFILE':'COMPLETE PROFILE';statusCta.href='/settings/';}
  const completeness=document.getElementById('publicProfileCompleteness');
- if(completeness){completeness.textContent=profileIsComplete?'PROFILE ACTIVE':'PROFILE INCOMPLETE';}
+ if(completeness){completeness.textContent='REQUIRED DETAILS';}
  if(isPublicViewer){
    [['reqTwitch','CONNECTED'],['reqEmail','PRIVATE'],['reqSteamProfileUrl','PRIVATE'],['reqTradeUrl','PRIVATE'],['reqDiscord','PRIVATE']].forEach(([id,value])=>{const el=document.getElementById(id);if(el){el.textContent=value;el.classList.toggle('complete',id==='reqTwitch');}});
  }
  set('fncEligibilityStatus',profileIsComplete?'Profile active':'Profile incomplete');
  const activeTitle=document.getElementById('profileActiveTitle');
- if(activeTitle){activeTitle.textContent=profileIsComplete?'🟢 PROFILE ACTIVE':'🟠 PROFILE INCOMPLETE';activeTitle.classList.toggle('profile-active-offline',!profileIsComplete);}
+ if(activeTitle){activeTitle.textContent='FNC PROGRESSION';activeTitle.classList.remove('profile-active-offline');}
  set('profileFncPoints',Number(p.fnc_points||0).toLocaleString());
  const xp=Number(p.xp||0),level=Number(p.level||1);
  set('profileXp',xp.toLocaleString()+' XP');set('profileLevel',level);set('profileWatchMinutes',formatWatchTime(Number(p.total_watch_minutes||0)));set('profileStreak',Number(p.streak||0)+' DAYS');
