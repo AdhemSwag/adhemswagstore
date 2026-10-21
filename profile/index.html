@@ -487,6 +487,10 @@ body.mobile-menu-open{overflow:hidden!important}
 
 </div><main>
 <div class="admin-preview-banner" id="adminPreviewBanner">ADMIN PREVIEW • PUBLIC VIEW • VIEWER PROFILE</div>
+<div class="admin-owner-toolbar" id="adminOwnerToolbar" hidden>
+  <span>OWNER MODE</span>
+  <button type="button" id="adminOwnerToolsToggle" aria-pressed="false">SHOW OWNER DETAILS</button>
+</div>
 <div class="profile-hero">
   <div class="profile-hero-identity">
     <div class="profile-twitch-avatar" id="profileTwitchAvatarWrap">
@@ -728,6 +732,15 @@ function renderProfileBadges(level,profile){
 
 const adminPreviewUsername = new URLSearchParams(window.location.search).get('admin_preview');
 const publicViewerUsername = new URLSearchParams(window.location.search).get('viewer');
+const adminOwnerToolbar=document.getElementById('adminOwnerToolbar');
+const adminOwnerToolsToggle=document.getElementById('adminOwnerToolsToggle');
+if(adminPreviewUsername&&adminOwnerToolbar)adminOwnerToolbar.hidden=false;
+if(adminOwnerToolsToggle)adminOwnerToolsToggle.addEventListener('click',()=>{
+ const enabled=!document.body.classList.contains('admin-owner-tools-visible');
+ document.body.classList.toggle('admin-owner-tools-visible',enabled);
+ adminOwnerToolsToggle.setAttribute('aria-pressed',String(enabled));
+ adminOwnerToolsToggle.textContent=enabled?'HIDE OWNER DETAILS':'SHOW OWNER DETAILS';
+});
 
 async function renderAdminPublicPreview(username){
  const set=(id,v)=>{const x=document.getElementById(id);if(x)x.textContent=v};
@@ -1225,6 +1238,19 @@ body.public-viewer-profile.admin-public-preview.admin-authorized-preview .profil
 .admin-public-preview.admin-authorized-preview .profile-extra>.requirements-card{display:block!important;grid-column:1/-1}
 .admin-public-preview.admin-authorized-preview .profile-extra>section.card.live-codes-card{display:block!important;visibility:visible!important;opacity:1!important;grid-column:1/-1!important;grid-area:auto!important}
 @media(max-width:800px){.admin-public-preview.admin-authorized-preview .profile-extra{grid-template-columns:minmax(0,1fr)!important}}
+</style>
+<style id="admin-viewer-parity-toggle-css">
+.admin-owner-toolbar{display:none;align-items:center;justify-content:flex-end;gap:10px;flex-wrap:wrap;margin:10px 0 16px;padding:10px 12px;border:1px solid var(--line);background:#070b0e;color:var(--muted);font:700 10px 'JetBrains Mono',monospace}
+body.admin-public-preview .admin-owner-toolbar{display:flex!important}
+.admin-owner-toolbar button{border:1px solid var(--cyan);background:transparent;color:var(--cyan);padding:9px 12px;cursor:pointer;font:700 10px 'JetBrains Mono',monospace}
+body.admin-public-preview:not(.admin-owner-tools-visible) .admin-private-details-card{display:none!important}
+body.admin-public-preview:not(.admin-owner-tools-visible) .profile-extra>.access-codes-card,
+body.admin-public-preview:not(.admin-owner-tools-visible) .profile-extra>.live-codes-card{display:none!important}
+body.admin-public-preview.admin-authorized-preview:not(.admin-owner-tools-visible) .profile-extra{grid-template-areas:"requirements missions" "skin history"!important}
+body.admin-public-preview.admin-owner-tools-visible .admin-private-details-card{display:block!important;grid-column:1/-1!important}
+body.admin-public-preview.admin-owner-tools-visible .profile-extra>.access-codes-card,
+body.admin-public-preview.admin-owner-tools-visible .profile-extra>.live-codes-card{display:block!important;visibility:visible!important;opacity:1!important;grid-column:1/-1!important}
+@media(max-width:800px){body.admin-public-preview.admin-authorized-preview .profile-extra{grid-template-columns:minmax(0,1fr)!important}}
 </style>
 
 <script id="profile-public-skin-goal-loader">
