@@ -798,6 +798,9 @@ async function renderAdminPublicPreview(username){
    return;
  }
  const p=data[0];
+ // The admin preview RPC succeeded, so the server verified this owner.
+ // Overall layout must not depend on an optional access-codes RPC.
+ if(!isPublicViewer)document.body.classList.add('admin-authorized-preview');
  if(!isPublicViewer){
    const accessRoot=document.getElementById('myAccessCodes');
    if(accessRoot){
@@ -1458,6 +1461,26 @@ body.admin-owner-toolbar-force .admin-owner-toolbar[hidden]{display:flex!importa
 </script>
 <link rel="stylesheet" href="/assets/mobile-sidebar.css?v=1" id="adhemswag-shared-mobile-sidebar">
 
+<style id="admin-owner-details-layout-fix-v2">
+/* Show all profile panels only after the admin profile RPC has verified the owner. */
+body.admin-public-preview.admin-authorized-preview.admin-owner-tools-visible .profile-extra{
+ display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;gap:16px!important;
+}
+body.admin-public-preview.admin-authorized-preview.admin-owner-tools-visible .profile-extra>.card,
+body.admin-public-preview.admin-authorized-preview.admin-owner-tools-visible .profile-extra>section.card{
+ display:block!important;visibility:visible!important;opacity:1!important;min-width:0!important;min-height:0!important;grid-column:1/-1!important;grid-area:auto!important;
+}
+body.admin-public-preview.admin-authorized-preview.admin-owner-tools-visible .admin-private-details-card{
+ display:block!important;visibility:visible!important;opacity:1!important;grid-column:1/-1!important;
+}
+body.admin-public-preview.admin-authorized-preview.admin-owner-tools-visible .profile-extra>.access-codes-card,
+body.admin-public-preview.admin-authorized-preview.admin-owner-tools-visible .profile-extra>.live-codes-card{
+ display:block!important;visibility:visible!important;opacity:1!important;grid-column:1/-1!important;
+}
+@media(max-width:800px){
+ body.admin-public-preview.admin-authorized-preview.admin-owner-tools-visible .profile-extra{grid-template-columns:minmax(0,1fr)!important}
+}
+</style>
 <style id="public-viewer-live-codes-visible-v1">
 /* Live codes are public profile content; personal access codes remain private. */
 body.public-viewer-profile .profile-extra>.live-codes-card,
