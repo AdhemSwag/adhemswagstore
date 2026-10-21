@@ -827,7 +827,7 @@ window.addEventListener('adhem:viewer', async function(e){
  const statusCta=document.getElementById('profileStatusCta');
  if(statusCta){statusCta.textContent=profileIsComplete?'EDIT PROFILE':'COMPLETE PROFILE';statusCta.href='/settings/';}
  const activeTitle=document.getElementById('profileActiveTitle');
- if(activeTitle){activeTitle.textContent=profileIsComplete?'🟢 PROFILE ACTIVE':'🟠 PROFILE INCOMPLETE';activeTitle.classList.toggle('profile-active-offline',!profileIsComplete);}
+ if(activeTitle){activeTitle.textContent='FNC PROGRESSION';activeTitle.classList.remove('profile-active-offline');}
  if(p&&p.profile_complete&&client){
    try{
      const claim=await client.functions.invoke('claim-legacy-fnc',{body:{}});
@@ -848,7 +848,7 @@ window.addEventListener('adhem:viewer', async function(e){
  const statusCta=document.getElementById('profileStatusCta');
  if(statusCta){statusCta.textContent=profileIsComplete?'EDIT PROFILE':'COMPLETE PROFILE';statusCta.href='/settings/';}
  const activeTitle=document.getElementById('profileActiveTitle');
- if(activeTitle){activeTitle.textContent=profileIsComplete?'🟢 PROFILE ACTIVE':'🟠 PROFILE INCOMPLETE';activeTitle.classList.toggle('profile-active-offline',!profileIsComplete);}
+ if(activeTitle){activeTitle.textContent='FNC PROGRESSION';activeTitle.classList.remove('profile-active-offline');}
  set('profileFncPoints',Number(p&&p.fnc_points||0).toLocaleString());
  const xp=Number(p&&p.xp||0),level=Number(p&&p.level||1);
  set('profileXp',xp.toLocaleString()+' XP');set('profileLevel',level);set('profileWatchMinutes',formatWatchTime(Number(p&&p.total_watch_minutes||0)));set('profileStreak',Number(p&&p.streak||0)+' DAYS');
