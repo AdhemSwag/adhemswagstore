@@ -1415,6 +1415,37 @@ body.public-viewer-profile .profile-extra>.card{margin-top:0}
 }
 </style>
 
+<style id="admin-owner-toolbar-force-v1">
+body.admin-owner-toolbar-force .admin-owner-toolbar{display:flex!important;visibility:visible!important;opacity:1!important;position:relative!important;z-index:100!important}
+body.admin-owner-toolbar-force .admin-owner-toolbar[hidden]{display:flex!important}
+</style>
+<script id="admin-owner-toolbar-force-v1-script">
+(function(){
+  function initOwnerToolbar(){
+    var params=new URLSearchParams(window.location.search);
+    var target=(params.get('admin_preview')||'').trim();
+    var toolbar=document.getElementById('adminOwnerToolbar');
+    var button=document.getElementById('adminOwnerToolsToggle');
+    if(!target||!toolbar||!button)return;
+    document.body.classList.add('admin-owner-toolbar-force','admin-public-preview');
+    toolbar.hidden=false;
+    toolbar.removeAttribute('hidden');
+    toolbar.style.setProperty('display','flex','important');
+    button.style.setProperty('display','inline-flex','important');
+    if(!button.dataset.ownerForceBound){
+      button.dataset.ownerForceBound='1';
+      button.addEventListener('click',function(){
+        var on=!document.body.classList.contains('admin-owner-tools-visible');
+        document.body.classList.toggle('admin-owner-tools-visible',on);
+        button.setAttribute('aria-pressed',String(on));
+        button.textContent=on?'HIDE OWNER DETAILS':'SHOW OWNER DETAILS';
+      });
+    }
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initOwnerToolbar,{once:true});
+  else initOwnerToolbar();
+})();
+</script>
 </body></html>
 
 <link rel="stylesheet" href="/assets/mobile-sidebar.css?v=1" id="adhemswag-shared-mobile-sidebar">
