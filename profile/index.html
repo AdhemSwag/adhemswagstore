@@ -848,7 +848,18 @@ async function renderAdminPublicPreview(username){
  const completeness=document.getElementById('publicProfileCompleteness');
  if(completeness){completeness.textContent='REQUIRED DETAILS';}
  if(isPublicViewer){
-   [['reqTwitch','CONNECTED'],['reqEmail','PRIVATE'],['reqSteamProfileUrl','PRIVATE'],['reqTradeUrl','PRIVATE'],['reqDiscord','PRIVATE']].forEach(([id,value])=>{const el=document.getElementById(id);if(el){el.textContent=value;el.classList.toggle('complete',id==='reqTwitch');}});
+   // Public profiles expose only whether a required field exists, never the private field value.
+   [['reqTwitch','MISSING'],['reqEmail','MISSING'],['reqSteamProfileUrl','MISSING'],['reqTradeUrl','MISSING'],['reqDiscord','MISSING']].forEach(([id,value])=>{const el=document.getElementById(id);if(el){el.textContent=value;el.classList.remove('complete');}});
+   try{
+     const {data:requirementRows,error:requirementError}=await client.rpc('get_public_viewer_requirement_status',{p_twitch_username:username});
+     const req=Array.isArray(requirementRows)?requirementRows[0]:requirementRows;
+     if(!requirementError&&req){
+       [['reqTwitch',req.twitch_connected],['reqEmail',req.email_present],['reqSteamProfileUrl',req.steam_profile_present],['reqTradeUrl',req.steam_trade_present],['reqDiscord',req.discord_present]].forEach(([id,complete])=>{
+         const el=document.getElementById(id);
+         if(el){el.textContent=complete===true?'COMPLETE':'MISSING';el.classList.toggle('complete',complete===true);}
+       });
+     }
+   }catch(requirementError){console.warn('[AdhemSwag] Public requirement status unavailable',requirementError);}
  }else{
    // In owner preview show the actual saved field state, not generic Required/Optional placeholders.
    [['reqTwitch',!!p.twitch_user_id],['reqEmail',!!p.email],['reqSteamProfileUrl',!!p.steam_profile_url],['reqTradeUrl',!!p.steam_trade_url],['reqDiscord',!!p.discord_username]].forEach(([id,complete])=>{
@@ -1453,4 +1464,16 @@ body.admin-owner-toolbar-force .admin-owner-toolbar[hidden]{display:flex!importa
 })();
 </script>
 <link rel="stylesheet" href="/assets/mobile-sidebar.css?v=1" id="adhemswag-shared-mobile-sidebar">
+
+<style id="public-viewer-live-codes-visible-v1">
+/* Live codes are public profile content; personal access codes remain private. */
+body.public-viewer-profile .profile-extra>.live-codes-card,
+body.admin-public-preview.public-viewer-profile:not(.admin-owner-tools-visible) .profile-extra>.live-codes-card{
+ display:block!important;visibility:visible!important;opacity:1!important;grid-column:1/-1!important;grid-area:auto!important;
+}
+body.public-viewer-profile .profile-extra>.access-codes-card,
+body.admin-public-preview.public-viewer-profile:not(.admin-owner-tools-visible) .profile-extra>.access-codes-card{
+ display:none!important;
+}
+</style>
 </body></html>
