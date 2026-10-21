@@ -1298,6 +1298,64 @@ body.public-viewer-profile.admin-public-preview.admin-authorized-preview .profil
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',loadAvatar,{once:true});else loadAvatar();
 })();
 </script>
+
+<style id="profile-viewer-layout-v2">
+/* Consistent viewer profile layout: same card spacing and predictable order. */
+body.public-viewer-profile .profile-extra{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:16px!important;
+  align-items:stretch!important;
+}
+body.public-viewer-profile .profile-extra>.requirements-card{display:block!important;grid-column:1/-1!important;grid-row:1!important}
+body.public-viewer-profile .profile-extra>.live-codes-card{display:block!important;grid-column:1/-1!important;grid-row:2!important}
+body.public-viewer-profile .profile-extra>.profile-missions-panel{display:block!important;grid-column:1/-1!important;grid-row:3!important;min-width:0!important;margin-top:0!important}
+body.public-viewer-profile .profile-extra>.profile-skin-goal{display:block!important;grid-column:1/-1!important;grid-row:4!important;min-width:0!important;margin:0!important}
+body.public-viewer-profile .profile-extra>.public-history-card{display:block!important;grid-column:1/-1!important;grid-row:5!important;min-width:0!important}
+body.public-viewer-profile .profile-extra>.access-codes-card{display:none!important}
+/* Only after the authenticated admin RPC succeeds, reveal every profile section for inspection. */
+body.public-viewer-profile.admin-public-preview.admin-authorized-preview .profile-extra{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:16px!important;
+  align-items:stretch!important;
+}
+body.public-viewer-profile.admin-public-preview.admin-authorized-preview .profile-extra>.card,
+body.public-viewer-profile.admin-public-preview.admin-authorized-preview .profile-extra>section.card{
+  display:block!important;visibility:visible!important;opacity:1!important;
+  min-width:0!important;min-height:0!important;grid-column:auto!important;grid-area:auto!important;
+}
+body.public-viewer-profile.admin-public-preview.admin-authorized-preview .profile-extra>.requirements-card,
+body.public-viewer-profile.admin-public-preview.admin-authorized-preview .profile-extra>.live-codes-card,
+body.public-viewer-profile.admin-public-preview.admin-authorized-preview .profile-extra>.profile-missions-panel,
+body.public-viewer-profile.admin-public-preview.admin-authorized-preview .profile-extra>.profile-skin-goal,
+body.public-viewer-profile.admin-public-preview.admin-authorized-preview .profile-extra>.public-history-card,
+body.public-viewer-profile.admin-public-preview.admin-authorized-preview .profile-extra>.access-codes-card{
+  grid-column:1/-1!important;
+}
+body.public-viewer-profile.admin-public-preview.admin-authorized-preview .profile-extra>.access-codes-card{
+  display:block!important;visibility:visible!important;opacity:1!important;
+}
+body.public-viewer-profile.admin-public-preview.admin-authorized-preview .profile-extra>.access-codes-card #myAccessCodes{
+  overflow-wrap:anywhere;
+}
+body.public-viewer-profile .profile-extra>.card{margin-top:0}
+@media(max-width:800px){
+  body.public-viewer-profile .profile-extra,
+  body.public-viewer-profile.admin-public-preview.admin-authorized-preview .profile-extra{
+    grid-template-columns:minmax(0,1fr)!important;
+  }
+  body.public-viewer-profile .profile-extra>.requirements-card,
+  body.public-viewer-profile .profile-extra>.live-codes-card,
+  body.public-viewer-profile .profile-extra>.profile-missions-panel,
+  body.public-viewer-profile .profile-extra>.profile-skin-goal,
+  body.public-viewer-profile .profile-extra>.public-history-card,
+  body.public-viewer-profile.admin-public-preview.admin-authorized-preview .profile-extra>.access-codes-card{
+    grid-column:1!important;
+  }
+}
+</style>
+
 </body></html>
 
 <link rel="stylesheet" href="/assets/mobile-sidebar.css?v=1" id="adhemswag-shared-mobile-sidebar">
