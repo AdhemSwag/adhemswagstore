@@ -513,17 +513,14 @@ body.mobile-menu-open{overflow:hidden!important}
 <div class="profile-sections">
   <section class="card status-card profile-account-card">
     <div class="section-head">
-      <h2>MY PROFILE</h2>
+      <h2>PROFILE STATUS</h2>
       <a href="/settings/">EDIT PROFILE</a>
     </div>
     <div class="profile-status-grid">
-      <div class="row"><span class="label">Twitch</span><span class="status" id="profileTwitchStatus">Checking…</span></div>
-      <div class="row"><span class="label">Profile</span><span class="status" id="profileCompleteStatus">Checking…</span></div>
-      <div class="row"><span class="label">FNC eligibility</span><span class="status" id="fncEligibilityStatus">FNC REWARDS — ACTIVE</span></div>
-      <div class="row"><span class="label">Viewer status</span><span class="status" id="profileViewerStatus">Checking…</span></div>
+      <div class="row"><span class="label">Status</span><span class="status" id="profileCompleteStatus">Checking…</span></div>
     </div>
-    <p class="note">FNC Points and rewards are active. A viewer must be connected with Twitch and have a complete profile before earning or redeeming rewards.</p>
-    <a class="cta" href="/settings/">COMPLETE PROFILE</a>
+    <p class="note" id="profileStatusNote">Your profile status updates automatically.</p>
+    <a class="cta" id="profileStatusCta" href="/settings/">COMPLETE PROFILE</a>
   </section>
 
   <section class="card progression-card profile-rewards-card">
@@ -763,23 +760,21 @@ async function renderAdminPublicPreview(username){
    }
  }
  set('profileTwitchStatus',p.twitch_username||'—');
- set('profileCompleteStatus',isPublicViewer?'Public profile':(p.profile_complete?'Complete':'Incomplete'));
+ const profileIsComplete=p.profile_complete===true;
+ set('profileCompleteStatus',profileIsComplete?'🟢 PROFILE ACTIVE':'🟠 PROFILE INCOMPLETE');
+ set('profileHeroStatus',profileIsComplete?'PROFILE ACTIVE':'PROFILE INCOMPLETE');
+ const statusNote=document.getElementById('profileStatusNote');
+ if(statusNote)statusNote.textContent=profileIsComplete?'Your profile is active.':'Complete the required profile details to activate your profile.';
+ const statusCta=document.getElementById('profileStatusCta');
+ if(statusCta){statusCta.textContent=profileIsComplete?'EDIT PROFILE':'COMPLETE PROFILE';statusCta.href='/settings/';}
  const completeness=document.getElementById('publicProfileCompleteness');
- if(completeness){completeness.textContent=isPublicViewer?(p.profile_complete?'PROFILE COMPLETE':'PROFILE INCOMPLETE'):'PROFILE STATUS';}
+ if(completeness){completeness.textContent=profileIsComplete?'PROFILE ACTIVE':'PROFILE INCOMPLETE';}
  if(isPublicViewer){
    [['reqTwitch','CONNECTED'],['reqEmail','PRIVATE'],['reqSteamProfileUrl','PRIVATE'],['reqTradeUrl','PRIVATE'],['reqDiscord','PRIVATE']].forEach(([id,value])=>{const el=document.getElementById(id);if(el){el.textContent=value;el.classList.toggle('complete',id==='reqTwitch');}});
  }
- set('fncEligibilityStatus',isPublicViewer?'Public progression stats':(p.profile_complete?'Profile ready — FNC active':'Profile incomplete'));
- const viewerStatus=document.getElementById('profileViewerStatus');
- if(viewerStatus&&viewerStatus.closest('.row'))viewerStatus.closest('.row').style.display=isPublicViewer?'none':'';
- let activeViewer=false, activeSession=null;
- if(!isPublicViewer){
-   const result=await client.from('watch_sessions').select('active_minutes,last_seen_at,last_activity_at,ended_at').eq('user_id',p.id||'').eq('platform','twitch').is('ended_at',null).gte('last_seen_at',new Date(Date.now()-120000).toISOString()).gte('last_activity_at',new Date(Date.now()-300000).toISOString()).order('last_seen_at',{ascending:false}).limit(1).maybeSingle();
-   activeSession=result.data;activeViewer=!!activeSession;
- }
+ set('fncEligibilityStatus',profileIsComplete?'Profile active':'Profile incomplete');
  const activeTitle=document.getElementById('profileActiveTitle');
- if(activeTitle){activeTitle.textContent=isPublicViewer?'🏅 VIEWER PROGRESSION':(activeViewer?'🟢 ACTIVE VIEWER':'🔴 INACTIVE VIEWER');activeTitle.classList.toggle('profile-active-offline',!isPublicViewer&&!activeViewer)}
- if(!isPublicViewer)set('profileViewerStatus',activeViewer?(Number(activeSession.active_minutes||0)>=10?'🟢 ACTIVE VIEWER':'🟠 WATCHING — STORE UNLOCKS AT 10 MIN'):'🔴 INACTIVE');
+ if(activeTitle){activeTitle.textContent=profileIsComplete?'🟢 PROFILE ACTIVE':'🟠 PROFILE INCOMPLETE';activeTitle.classList.toggle('profile-active-offline',!profileIsComplete);}
  set('profileFncPoints',Number(p.fnc_points||0).toLocaleString());
  const xp=Number(p.xp||0),level=Number(p.level||1);
  set('profileXp',xp.toLocaleString()+' XP');set('profileLevel',level);set('profileWatchMinutes',formatWatchTime(Number(p.total_watch_minutes||0)));set('profileStreak',Number(p.streak||0)+' DAYS');
@@ -822,39 +817,16 @@ window.addEventListener('adhem:viewer', async function(e){
  if(adminPreviewUsername||publicViewerUsername){await renderAdminPublicPreview(publicViewerUsername||adminPreviewUsername);return}
  if(!d.authId){set('profileTwitchStatus','Not connected');set('profileCompleteStatus','Connect Twitch first');set('profileViewerStatus','CONNECT TWITCH FIRST');return}
  set('profileTwitchStatus',p&&p.twitch_username?'Connected as '+p.twitch_username:'Not connected');
- // Resolve the signed-in viewer's watch status on the normal profile path too.
- set('profileViewerStatus','Checking…');
- try{
-   if(!client)throw new Error('Profile client unavailable');
-   const cutoffSeen=new Date(Date.now()-120000).toISOString();
-   const cutoffActivity=new Date(Date.now()-300000).toISOString();
-   const result=await client.from('watch_sessions')
-     .select('active_minutes,last_seen_at,last_activity_at,ended_at')
-     .eq('user_id',d.authId)
-     .eq('platform','twitch')
-     .is('ended_at',null)
-     .gte('last_seen_at',cutoffSeen)
-     .gte('last_activity_at',cutoffActivity)
-     .order('last_seen_at',{ascending:false})
-     .limit(1)
-     .maybeSingle();
-   if(result.error)throw result.error;
-   const activeSession=result.data;
-   set('profileViewerStatus',activeSession
-     ?(Number(activeSession.active_minutes||0)>=10?'🟢 ACTIVE VIEWER':'🟠 WATCHING — STORE UNLOCKS AT 10 MIN')
-     :'🔴 INACTIVE');
-   const activeTitle=document.getElementById('profileActiveTitle');
-   if(activeTitle){
-     const isActive=!!activeSession;
-     activeTitle.textContent=isActive?'🟢 ACTIVE VIEWER':'🔴 INACTIVE VIEWER';
-     activeTitle.classList.toggle('profile-active-offline',!isActive);
-   }
- }catch(statusError){
-   console.warn('[AdhemSwag Profile] Viewer status unavailable',statusError);
-   set('profileViewerStatus','STATUS UNAVAILABLE');
-   const activeTitle=document.getElementById('profileActiveTitle');
-   if(activeTitle){activeTitle.textContent='⚪ STATUS UNAVAILABLE';activeTitle.classList.remove('profile-active-offline');}
- }
+ // Profile status uses the existing profile_complete flag; Twitch watch tracking remains separate.
+ const profileIsComplete=!!(p&&p.profile_complete===true);
+ set('profileCompleteStatus',profileIsComplete?'🟢 PROFILE ACTIVE':'🟠 PROFILE INCOMPLETE');
+ set('profileHeroStatus',profileIsComplete?'PROFILE ACTIVE':'PROFILE INCOMPLETE');
+ const statusNote=document.getElementById('profileStatusNote');
+ if(statusNote)statusNote.textContent=profileIsComplete?'Your profile is active.':'Complete the required profile details to activate your profile.';
+ const statusCta=document.getElementById('profileStatusCta');
+ if(statusCta){statusCta.textContent=profileIsComplete?'EDIT PROFILE':'COMPLETE PROFILE';statusCta.href='/settings/';}
+ const activeTitle=document.getElementById('profileActiveTitle');
+ if(activeTitle){activeTitle.textContent=profileIsComplete?'🟢 PROFILE ACTIVE':'🟠 PROFILE INCOMPLETE';activeTitle.classList.toggle('profile-active-offline',!profileIsComplete);}
  if(p&&p.profile_complete&&client){
    try{
      const claim=await client.functions.invoke('claim-legacy-fnc',{body:{}});
@@ -866,9 +838,16 @@ window.addEventListener('adhem:viewer', async function(e){
      }
    }catch(err){ console.warn('Legacy FNC import unavailable',err); }
  }
- set('profileCompleteStatus',p&&p.profile_complete?'Complete':'Incomplete');
- set('profileHeroStatus',p&&p.profile_complete?'PROFILE COMPLETE':'INCOMPLETE');
- set('fncEligibilityStatus',p&&p.profile_complete?'Profile ready — FNC active':'Complete your profile first');
+ const profileIsComplete=!!(p&&p.profile_complete===true);
+ set('profileCompleteStatus',profileIsComplete?'🟢 PROFILE ACTIVE':'🟠 PROFILE INCOMPLETE');
+ set('profileHeroStatus',profileIsComplete?'PROFILE ACTIVE':'PROFILE INCOMPLETE');
+ set('fncEligibilityStatus',profileIsComplete?'Profile active':'Profile incomplete');
+ const statusNote=document.getElementById('profileStatusNote');
+ if(statusNote)statusNote.textContent=profileIsComplete?'Your profile is active.':'Complete the required profile details to activate your profile.';
+ const statusCta=document.getElementById('profileStatusCta');
+ if(statusCta){statusCta.textContent=profileIsComplete?'EDIT PROFILE':'COMPLETE PROFILE';statusCta.href='/settings/';}
+ const activeTitle=document.getElementById('profileActiveTitle');
+ if(activeTitle){activeTitle.textContent=profileIsComplete?'🟢 PROFILE ACTIVE':'🟠 PROFILE INCOMPLETE';activeTitle.classList.toggle('profile-active-offline',!profileIsComplete);}
  set('profileFncPoints',Number(p&&p.fnc_points||0).toLocaleString());
  const xp=Number(p&&p.xp||0),level=Number(p&&p.level||1);
  set('profileXp',xp.toLocaleString()+' XP');set('profileLevel',level);set('profileWatchMinutes',formatWatchTime(Number(p&&p.total_watch_minutes||0)));set('profileStreak',Number(p&&p.streak||0)+' DAYS');
