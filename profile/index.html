@@ -745,6 +745,23 @@ async function renderAdminPublicPreview(username){
    return;
  }
  const p=data[0];
+ if(!isPublicViewer){
+   const accessRoot=document.getElementById('myAccessCodes');
+   if(accessRoot){
+     accessRoot.innerHTML='<div class="empty-history">Loading viewer access codes…</div>';
+     try{
+       const {data:codes,error:codesError}=await client.rpc('get_admin_profile_access_codes',{p_twitch_username:username});
+       if(codesError)throw codesError;
+       document.body.classList.add('admin-authorized-preview');
+       if(!codes||!codes.length){accessRoot.innerHTML='<div class="empty-history">No access codes assigned to this viewer.</div>';}
+       else{
+         const escCode=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+         accessRoot.innerHTML=codes.map(x=>'<div class="access-code-item"><div class="access-code-name">'+escCode(x.reward_name||'Access Code')+'</div><div class="access-code-value">'+escCode(x.code)+'</div><button class="access-code-copy" data-copy-code="'+escCode(x.code)+'">COPY</button></div>').join('');
+         accessRoot.querySelectorAll('[data-copy-code]').forEach(btn=>btn.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(btn.dataset.copyCode||'');btn.textContent='COPIED';setTimeout(()=>btn.textContent='COPY',1200)}catch(e){}}));
+       }
+     }catch(codesError){console.warn('[AdhemSwag] Admin preview access codes unavailable',codesError);accessRoot.innerHTML='<div class="empty-history">Access codes unavailable. Verify admin permissions.</div>';}
+   }
+ }
  set('profileTwitchStatus',p.twitch_username||'—');
  set('profileCompleteStatus',isPublicViewer?'Public profile':(p.profile_complete?'Complete':'Incomplete'));
  const completeness=document.getElementById('publicProfileCompleteness');
@@ -1179,6 +1196,13 @@ if(accessRoot){
   margin-bottom:24px!important;
  }
 }
+</style>
+<style id="admin-preview-access-codes-css">
+/* Only activated after the server confirms the signed-in user is an admin. */
+.admin-public-preview.admin-authorized-preview .profile-extra{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;gap:16px!important}
+.admin-public-preview.admin-authorized-preview .profile-extra>.access-codes-card{display:block!important;grid-column:1/-1}
+.admin-public-preview.admin-authorized-preview .profile-extra>.requirements-card{display:block!important;grid-column:1/-1}
+@media(max-width:800px){.admin-public-preview.admin-authorized-preview .profile-extra{grid-template-columns:minmax(0,1fr)!important}}
 </style>
 
 <script id="profile-public-skin-goal-loader">
