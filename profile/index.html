@@ -849,7 +849,9 @@ async function renderAdminPublicPreview(username){
  const statusCta=document.getElementById('profileStatusCta');
  if(statusCta){statusCta.textContent=profileIsComplete?'EDIT PROFILE':'COMPLETE PROFILE';statusCta.href='/settings/';}
  const completeness=document.getElementById('publicProfileCompleteness');
- if(completeness){completeness.textContent='REQUIRED DETAILS';}
+ if(completeness){completeness.textContent=profileIsComplete?'PROFILE ACTIVE':'REQUIRED DETAILS';}
+ const requirementsCard=document.querySelector('.requirements-card');
+ if(requirementsCard)requirementsCard.classList.toggle('profile-requirements-active',profileIsComplete);
  if(isPublicViewer){
    // Public profiles expose only whether a required field exists, never the private field value.
    [['reqTwitch','MISSING'],['reqEmail','MISSING'],['reqSteamProfileUrl','MISSING'],['reqTradeUrl','MISSING'],['reqDiscord','MISSING']].forEach(([id,value])=>{const el=document.getElementById(id);if(el){el.textContent=value;el.classList.remove('complete');}});
@@ -1491,5 +1493,27 @@ body.public-viewer-profile .profile-extra>.access-codes-card,
 body.admin-public-preview.public-viewer-profile:not(.admin-owner-tools-visible) .profile-extra>.access-codes-card{
  display:none!important;
 }
+</style>
+<style id="viewer-profile-live-codes-and-active-requirements-fix">
+/* Public viewer profiles can use the LIVE CODES redemption form. Personal store access codes stay private. */
+body.public-viewer-profile .profile-extra>.live-codes-card,
+body.public-viewer-profile .profile-extra>.live-codes-card #redeemCodeInput,
+body.public-viewer-profile .profile-extra>.live-codes-card #redeemCodeBtn,
+body.public-viewer-profile .profile-extra>.live-codes-card #redeemCodeStatus{
+ display:block!important;visibility:visible!important;opacity:1!important;
+}
+body.public-viewer-profile .profile-extra>.live-codes-card .code-box{display:flex!important}
+body.public-viewer-profile .profile-extra>.live-codes-card #redeemCodeBtn{display:inline-flex!important}
+body.public-viewer-profile .profile-extra>.live-codes-card{grid-column:1/-1!important;grid-area:auto!important}
+body.public-viewer-profile .profile-extra>.requirements-card.profile-requirements-active{
+ border-color:rgba(57,229,140,.72)!important;
+ background:linear-gradient(145deg,rgba(57,229,140,.08),var(--panel) 72%)!important;
+ box-shadow:0 0 18px rgba(57,229,140,.07)!important;
+}
+body.public-viewer-profile .requirements-card.profile-requirements-active .section-head h2,
+body.public-viewer-profile .requirements-card.profile-requirements-active #publicProfileCompleteness{
+ color:var(--ok)!important;
+}
+body.public-viewer-profile .requirements-card .requirement b.complete{color:var(--ok)!important}
 </style>
 </body></html>
