@@ -862,11 +862,8 @@ window.addEventListener('adhem:viewer', async function(e){
  set('profileCompleteStatus',profileIsComplete?'🟢 PROFILE ACTIVE':'🟠 PROFILE INCOMPLETE');
  set('profileHeroStatus',profileIsComplete?'PROFILE ACTIVE':'PROFILE INCOMPLETE');
  set('fncEligibilityStatus',profileIsComplete?'Profile active':'Profile incomplete');
- const statusNote=document.getElementById('profileStatusNote');
  if(statusNote)statusNote.textContent=profileIsComplete?'Your profile is active.':'Complete the required profile details to activate your profile.';
- const statusCta=document.getElementById('profileStatusCta');
  if(statusCta){statusCta.textContent=profileIsComplete?'EDIT PROFILE':'COMPLETE PROFILE';statusCta.href='/settings/';}
- const activeTitle=document.getElementById('profileActiveTitle');
  if(activeTitle){activeTitle.textContent='FNC PROGRESSION';activeTitle.classList.remove('profile-active-offline');}
  set('profileFncPoints',Number(p&&p.fnc_points||0).toLocaleString());
  const xp=Number(p&&p.xp||0),level=Number(p&&p.level||1);
