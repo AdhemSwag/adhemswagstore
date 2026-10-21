@@ -1200,7 +1200,7 @@ if(accessRoot){
 <style id="admin-preview-access-codes-css">
 /* Only activated after the server confirms the signed-in user is an admin. */
 .admin-public-preview.admin-authorized-preview .profile-extra{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;gap:16px!important}
-.admin-public-preview.admin-authorized-preview .profile-extra>.access-codes-card{display:block!important;grid-column:1/-1}
+body.public-viewer-profile.admin-public-preview.admin-authorized-preview .profile-extra>section.card.access-codes-card:not(.profile-missions-panel):not(.profile-skin-goal):not(.public-history-card){display:block!important;visibility:visible!important;opacity:1!important;grid-column:1/-1!important;grid-area:auto!important;min-height:80px!important}
 .admin-public-preview.admin-authorized-preview .profile-extra>.requirements-card{display:block!important;grid-column:1/-1}
 @media(max-width:800px){.admin-public-preview.admin-authorized-preview .profile-extra{grid-template-columns:minmax(0,1fr)!important}}
 </style>
