@@ -1242,12 +1242,13 @@ body.public-viewer-profile.admin-public-preview.admin-authorized-preview .profil
 <style id="admin-viewer-parity-toggle-css">
 .admin-owner-toolbar{display:none;align-items:center;justify-content:flex-end;gap:10px;flex-wrap:wrap;margin:10px 0 16px;padding:10px 12px;border:1px solid var(--line);background:#070b0e;color:var(--muted);font:700 10px 'JetBrains Mono',monospace}
 body.admin-public-preview .admin-owner-toolbar{display:flex!important}
+body.admin-public-preview .admin-owner-toolbar[hidden]{display:none!important}
 .admin-owner-toolbar button{border:1px solid var(--cyan);background:transparent;color:var(--cyan);padding:9px 12px;cursor:pointer;font:700 10px 'JetBrains Mono',monospace}
 body.admin-public-preview:not(.admin-owner-tools-visible) .admin-private-details-card{display:none!important}
 body.admin-public-preview:not(.admin-owner-tools-visible) .profile-extra>.access-codes-card,
 body.admin-public-preview:not(.admin-owner-tools-visible) .profile-extra>.live-codes-card{display:none!important}
 body.admin-public-preview.admin-authorized-preview:not(.admin-owner-tools-visible) .profile-extra{grid-template-areas:"requirements missions" "skin history"!important}
-body.admin-public-preview.admin-owner-tools-visible .admin-private-details-card{display:block!important;grid-column:1/-1!important}
+body.admin-public-preview.admin-authorized-private-details.admin-owner-tools-visible .admin-private-details-card{display:block!important;grid-column:1/-1!important}
 body.admin-public-preview.admin-owner-tools-visible .profile-extra>.access-codes-card,
 body.admin-public-preview.admin-owner-tools-visible .profile-extra>.live-codes-card{display:block!important;visibility:visible!important;opacity:1!important;grid-column:1/-1!important}
 @media(max-width:800px){body.admin-public-preview.admin-authorized-preview .profile-extra{grid-template-columns:minmax(0,1fr)!important}}
