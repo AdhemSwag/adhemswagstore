@@ -1072,6 +1072,7 @@ async function verifyAdmin() {
     await loadMissionJoinStats();
     updateLoader(82,'LOADING REDEMPTIONS & TRANSACTIONS…');
     await loadRedemptions();
+    startRedemptionNotifications();
     await loadTransactions();
     updateLoader(90,'LOADING LEADERBOARD & MEDIA…');
     await loadLeaderboard();
