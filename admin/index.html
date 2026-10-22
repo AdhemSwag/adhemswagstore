@@ -547,7 +547,7 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
       </div>
     </section>
 
-    <section id="redemptions" class="panel"><div class="section"><h2>Redemption Queue</h2><p>Approve reward claims or reject them and automatically refund FNC.</p><div class="cards" style="margin-bottom:16px"><div class="card"><small>PENDING</small><div class="metric" id="redMetricPending">—</div></div><div class="card"><small>OLDEST PENDING</small><div class="metric" id="redMetricOldest">—</div></div><div class="card"><small>FNC AT RISK</small><div class="metric" id="redMetricFnc">—</div></div><div class="card"><small>OVER 24H</small><div class="metric" id="redMetric24h">—</div></div></div><div class="form-grid"><div class="field"><label>Status</label><select id="redemptionStatusFilter"><option value="pending">Pending</option><option value="all">All</option><option value="approved">Approved</option><option value="rejected">Rejected</option><option value="sent">Sent</option></select></div><div class="field"><label>Search</label><input id="redemptionSearch" placeholder="Twitch username or reward"></div></div><div class="actions"><button class="btn primary" id="loadRedemptions">LOAD REDEMPTIONS</button></div><div id="redemptionStatus" class="notice" style="display:none"></div><div class="table-wrap"><table><thead><tr><th>Viewer</th><th>Reward</th><th>FNC</th><th>Steam Trade</th><th>Status</th><th>Age</th><th>Date</th><th>Actions</th></tr></thead><tbody id="redemptionList"><tr><td colspan="8">Load to view redemptions.</td></tr></tbody></table></div></div></section>
+    <section id="redemptions" class="panel"><div class="section"><h2>Redemption Queue</h2><p>Approve reward claims or reject them and automatically refund FNC.</p><div class="cards" style="margin-bottom:16px"><div class="card"><small>PENDING</small><div class="metric" id="redMetricPending">—</div></div><div class="card"><small>OLDEST PENDING</small><div class="metric" id="redMetricOldest">—</div></div><div class="card"><small>FNC AT RISK</small><div class="metric" id="redMetricFnc">—</div></div><div class="card"><small>OVER 24H</small><div class="metric" id="redMetric24h">—</div></div></div><div class="form-grid"><div class="field"><label>Status</label><select id="redemptionStatusFilter"><option value="pending">Pending</option><option value="all">All</option><option value="approved">Approved</option><option value="rejected">Rejected</option><option value="sent">Sent</option></select></div><div class="field"><label>Search</label><input id="redemptionSearch" placeholder="Twitch username or reward"></div></div><div class="actions"><button class="btn primary" id="loadRedemptions">LOAD REDEMPTIONS</button></div><div id="redemptionStatus" class="notice" style="display:none"></div><div class="card redemption-notifications-card" style="margin:16px 0"><div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap"><h3 style="margin:0">REDEMPTION NOTIFICATIONS <span id="redemptionNotificationCount" class="badge" style="display:none">0</span></h3><button class="btn" type="button" id="enableRedemptionBrowserNotifications">ENABLE BROWSER ALERTS</button></div><p class="muted">Checks every 10 seconds for new requests and status changes: approved, rejected or completed.</p><div id="redemptionNotificationFeed" class="redemption-notification-feed"><p class="muted">Waiting for admin access…</p></div><p class="muted" style="margin-top:12px">Email alerts: not enabled yet — an email destination and mail-sending provider must be configured securely.</p></div><div class="table-wrap"><table><thead><tr><th>Viewer</th><th>Reward</th><th>FNC</th><th>Steam Trade</th><th>Status</th><th>Age</th><th>Date</th><th>Actions</th></tr></thead><tbody id="redemptionList"><tr><td colspan="8">Load to view redemptions.</td></tr></tbody></table></div></div></section>
 
     <section id="viewers" class="panel">
       <div class="section">
@@ -1488,47 +1488,67 @@ async function loadSecurityAudit(){if(!adminReady)return;const tbody=document.ge
  set('analyticsPending',redRows.filter(x=>x.status==='pending').length.toLocaleString());
  const au=document.getElementById('analyticsUpdated');if(au){au.style.display='block';au.textContent='Updated '+new Date().toLocaleTimeString();}
 }
-let lastPendingRedemptionIds = new Set();
+let redemptionStatusSnapshot = new Map();
 let redemptionNoticePrimed = false;
 let redemptionPollTimer = null;
+let redemptionNoticeItems = [];
 
-function notifyNewRedemptions(rows){
-  const pending = (rows||[]).filter(x=>x.status==='pending');
-  const ids = new Set(pending.map(x=>x.id));
-  if (!redemptionNoticePrimed) {
-    lastPendingRedemptionIds = ids;
-    redemptionNoticePrimed = true;
-    return;
-  }
-  const fresh = pending.filter(x=>!lastPendingRedemptionIds.has(x.id));
-  lastPendingRedemptionIds = ids;
-  if (!fresh.length) return;
-  const title = fresh.length === 1 ? 'AdhemSwag FNC Store' : 'AdhemSwag FNC Store — New redemptions';
-  const body = fresh.length === 1 ? 'A viewer has redeemed a reward.' : fresh.length+' new viewer redemptions are waiting.';
-  try { if ('Notification' in window && Notification.permission === 'granted') new Notification(title,{body}); } catch(e){}
-  try {
-    const ctx = new (window.AudioContext||window.webkitAudioContext)();
-    const osc = ctx.createOscillator(), gain = ctx.createGain();
-    osc.frequency.value = 880; gain.gain.value = 0.06;
-    osc.connect(gain); gain.connect(ctx.destination); osc.start();
-    setTimeout(()=>{osc.stop();ctx.close();},180);
-  } catch(e){}
+function escapeRedemptionNotice(value){
+ return String(value??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+function renderRedemptionNoticeFeed(){
+ const root=document.getElementById('redemptionNotificationFeed');
+ if(!root)return;
+ root.innerHTML=redemptionNoticeItems.length?redemptionNoticeItems.slice(0,12).map(n=>'<div class="redemption-notification-item"><b>'+escapeRedemptionNotice(n.title)+'</b><span>'+escapeRedemptionNotice(n.body)+'</span><small>'+escapeRedemptionNotice(new Date(n.at).toLocaleString())+'</small></div>').join(''):'<p class="muted">No new redemption notifications in this session.</p>';
+}
+function pushRedemptionNotice(title,body){
+ const item={title,body,at:Date.now()};
+ redemptionNoticeItems.unshift(item);
+ redemptionNoticeItems=redemptionNoticeItems.slice(0,12);
+ renderRedemptionNoticeFeed();
+ const count=document.getElementById('redemptionNotificationCount');
+ if(count){count.textContent=String(Number(count.textContent||0)+1);count.style.display='inline-flex';}
+ try{if('Notification' in window&&Notification.permission==='granted')new Notification(title,{body,tag:'adhemswag-redemption-'+item.at});}catch(e){}
+ try{
+  const ctx=new(window.AudioContext||window.webkitAudioContext)(),osc=ctx.createOscillator(),gain=ctx.createGain();
+  osc.frequency.value=880;gain.gain.value=.06;osc.connect(gain);gain.connect(ctx.destination);osc.start();
+  setTimeout(()=>{osc.stop();ctx.close();},180);
+ }catch(e){}
 }
 async function requestRedemptionNotifications(){
-  try {
-    if ('Notification' in window && Notification.permission === 'default') await Notification.requestPermission();
-  } catch(e){}
+ try{
+  if(!('Notification' in window)){alert('Browser notifications are not supported in this browser.');return;}
+  if(Notification.permission==='default')await Notification.requestPermission();
+  alert(Notification.permission==='granted'?'Browser notifications enabled.':'Browser notifications were not enabled. Allow them in your browser settings.');
+ }catch(e){}
 }
 async function pollRedemptionNotifications(){
-  if (!adminReady) return;
-  const {data,error}=await supabaseClient.from('redemptions').select('id,status').eq('status','pending').order('created_at',{ascending:false}).limit(100);
-  if(!error) notifyNewRedemptions(data||[]);
+ if(!adminReady)return;
+ const {data,error}=await supabaseClient.from('redemptions').select('id,status,created_at').order('created_at',{ascending:false}).limit(100);
+ if(error)return;
+ const rows=data||[];
+ if(!redemptionNoticePrimed){
+  redemptionStatusSnapshot=new Map(rows.map(x=>[x.id,x.status]));
+  redemptionNoticePrimed=true;
+  return;
+ }
+ const next=new Map(rows.map(x=>[x.id,x.status]));
+ const events=[];
+ for(const row of rows){
+  const previous=redemptionStatusSnapshot.get(row.id);
+  if(previous===undefined&&row.status==='pending')events.push({title:'New redemption request',body:'A viewer submitted a new reward redemption.'});
+  else if(previous!==undefined&&previous!==row.status&&['approved','rejected','sent','completed'].includes(row.status)){
+   const label=row.status==='sent'||row.status==='completed'?'completed':row.status;
+   events.push({title:'Redemption '+label,body:'A redemption status changed to '+label+'.'});
+  }
+ }
+ redemptionStatusSnapshot=next;
+ events.reverse().forEach(e=>pushRedemptionNotice(e.title,e.body));
 }
 function startRedemptionNotifications(){
-  requestRedemptionNotifications();
-  pollRedemptionNotifications();
-  clearInterval(redemptionPollTimer);
-  redemptionPollTimer=setInterval(pollRedemptionNotifications,10000);
+ pollRedemptionNotifications();
+ clearInterval(redemptionPollTimer);
+ redemptionPollTimer=setInterval(pollRedemptionNotifications,10000);
 }
 
 async function loadRedemptions(){
@@ -2416,6 +2436,16 @@ const adminIcons={"dashboard":"<path d='M4 13h6V4H4v9Zm10 7h6V4h-6v16ZM4 20h6v-3
   scrollbar-width: thin;
 }
 </style>
+<style id="redemption-notifications-ui-v1">
+.redemption-notification-feed{display:grid;gap:8px;margin-top:12px}
+.redemption-notification-item{display:grid;gap:4px;padding:11px 13px;border:1px solid rgba(17,217,247,.2);border-left:3px solid var(--cyan);border-radius:8px;background:rgba(17,217,247,.035)}
+.redemption-notification-item b{font-size:12px;color:var(--cyan)}
+.redemption-notification-item span{font-size:12px}
+.redemption-notification-item small{font-size:10px;color:var(--muted)}
+</style>
+<script id="redemption-notifications-ui-bindings-v1">
+document.getElementById('enableRedemptionBrowserNotifications')?.addEventListener('click',requestRedemptionNotifications);
+</script>
 </body>
 </html>
 
