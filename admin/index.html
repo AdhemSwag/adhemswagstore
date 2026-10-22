@@ -1517,16 +1517,43 @@ function pushRedemptionNotice(title,body){
  }catch(e){}
 }
 async function requestRedemptionNotifications(){
+ const feed=document.getElementById('redemptionNotificationFeed');
+ const button=document.getElementById('enableRedemptionBrowserNotifications');
  try{
-  if(!('Notification' in window)){alert('Browser notifications are not supported in this browser.');return;}
-  if(Notification.permission==='default')await Notification.requestPermission();
-  alert(Notification.permission==='granted'?'Browser notifications enabled.':'Browser notifications were not enabled. Allow them in your browser settings.');
- }catch(e){}
+  if(!('Notification' in window)){
+   if(feed)feed.innerHTML='<p class="muted">Browser notifications are not supported by this browser.</p>';
+   alert('Browser notifications are not supported in this browser.');
+   return;
+  }
+  let permission=Notification.permission;
+  if(permission==='default')permission=await Notification.requestPermission();
+  if(permission!=='granted'){
+   if(feed)feed.innerHTML='<p class="muted">Browser alerts are blocked. Allow notifications for adhemswag.com in your browser site settings, then click ENABLE BROWSER ALERTS again.</p>';
+   alert('Notifications are blocked. Allow them for adhemswag.com in your browser site settings, then try again.');
+   return;
+  }
+  // Display a real test notification immediately; permission alone is not enough feedback.
+  const test=new Notification('AdhemSwag — Test notification',{body:'Browser alerts are working on this device.'});
+  test.onclick=()=>{window.focus();test.close();};
+  if(button){button.textContent='BROWSER ALERTS ON · TEST SENT';button.disabled=false;}
+  redemptionNoticeItems.unshift({title:'Browser alerts enabled',body:'Test notification sent. Keep the Admin page open to receive redemption alerts.',at:Date.now()});
+  redemptionNoticeItems=redemptionNoticeItems.slice(0,12);
+  renderRedemptionNoticeFeed();
+  if(feed)feed.setAttribute('aria-live','polite');
+ }catch(e){
+  const message=e&&e.message?e.message:'Browser notification could not be displayed.';
+  if(feed)feed.innerHTML='<p class="muted">'+escapeRedemptionNotice(message)+'</p>';
+  alert('Could not display a browser notification. Check browser and operating-system notification settings.');
+ }
 }
 async function pollRedemptionNotifications(){
  if(!adminReady)return;
  const {data,error}=await supabaseClient.from('redemptions').select('id,status,created_at').order('created_at',{ascending:false}).limit(100);
- if(error)return;
+ if(error){
+  const feed=document.getElementById('redemptionNotificationFeed');
+  if(feed)feed.innerHTML='<p class="muted">Redemption alert check failed: '+escapeRedemptionNotice(error.message)+'. Verify admin access to redemptions.</p>';
+  return;
+ }
  const rows=data||[];
  if(!redemptionNoticePrimed){
   redemptionStatusSnapshot=new Map(rows.map(x=>[x.id,x.status]));
