@@ -599,6 +599,21 @@ body.mobile-menu-open{overflow:hidden!important}
   .lb-podium-points-label{font-size:7px!important;letter-spacing:.05em!important}
 }
 </style>
+
+<style id="leaderboard-profile-search">
+.lb-search{position:relative;margin:0 0 28px;max-width:620px}
+.lb-search label{display:block;margin-bottom:8px;color:var(--cyan);font:600 11px 'JetBrains Mono',monospace;letter-spacing:.12em;text-transform:uppercase}
+.lb-search input{display:block;width:100%;min-height:46px;padding:12px 15px;background:#0b0f12;border:1px solid var(--line);border-radius:4px;color:var(--white);font:14px 'Inter',sans-serif;outline:none}
+.lb-search input:focus{border-color:var(--cyan);box-shadow:0 0 0 2px rgba(17,217,247,.08)}
+.lb-search-results{display:none;position:relative;margin-top:6px;background:#0b0f12;border:1px solid var(--line);border-radius:4px;overflow:hidden}
+.lb-search-results.is-open{display:block}
+.lb-search-result{display:flex;align-items:center;gap:10px;width:100%;padding:11px 14px;color:var(--white);text-decoration:none;border-bottom:1px solid var(--line);font-size:13px}
+.lb-search-result:last-child{border-bottom:0}
+.lb-search-result:hover,.lb-search-result:focus{background:rgba(17,217,247,.08);color:var(--cyan);outline:none}
+.lb-search-result small{margin-left:auto;color:var(--muted);font:10px 'JetBrains Mono',monospace}
+.lb-search-empty{padding:13px 14px;color:var(--muted);font-size:12px}
+</style>
+
 </head>
 <body>
 
@@ -716,6 +731,13 @@ body.mobile-menu-open{overflow:hidden!important}
   <div class="eyebrow" style="margin-bottom:10px;">// FNC • XP • WATCH</div>
   <h1>Leader<span>board</span></h1>
   <p class="page-sub">Track your XP, Level, FNC Points and watch time. Keep watching, level up and climb the ranks.</p>
+
+  <div class="lb-search" id="lbProfileSearch">
+    <label for="lbSearchInput">// FIND A VIEWER PROFILE</label>
+    <input id="lbSearchInput" type="search" autocomplete="off" placeholder="Search Twitch username..." aria-controls="lbSearchResults" aria-expanded="false">
+    <div class="lb-search-results" id="lbSearchResults" role="listbox" aria-label="Matching viewer profiles"></div>
+  </div>
+
 
   <section class="lb-section">
     <div class="lb-section-head">
@@ -843,10 +865,32 @@ body.mobile-menu-open{overflow:hidden!important}
     const pages=Math.ceil(remaining.length/PAGE_SIZE);pagination.hidden=pages<=1;
     pagination.innerHTML='<button class="lb-page-btn" '+(page<=1?'disabled':'')+' data-p="-1">Previous</button><span class="lb-page-info">Page '+page+' / '+pages+'</span><button class="lb-page-btn" '+(page>=pages?'disabled':'')+' data-p="1">Next</button>';
   }
+
+  const searchInput=document.getElementById('lbSearchInput');
+  const searchResults=document.getElementById('lbSearchResults');
+  function renderProfileSearch(){
+    if(!searchInput||!searchResults)return;
+    const query=searchInput.value.trim().replace(/^@/,'').toLocaleLowerCase();
+    if(!query){searchResults.innerHTML='';searchResults.classList.remove('is-open');searchInput.setAttribute('aria-expanded','false');return;}
+    const matches=rows.filter(u=>String(u.twitch_username||'').toLocaleLowerCase().includes(query)).slice(0,8);
+    searchResults.innerHTML=matches.length?matches.map(u=>{
+      const name=String(u.twitch_username||'Viewer');
+      return '<a class="lb-search-result" role="option" href="/profile/?viewer='+encodeURIComponent(name)+'"><span>'+esc(name)+'</span><small>VIEW PROFILE →</small></a>';
+    }).join(''):'<div class="lb-search-empty">No matching viewer found.</div>';
+    searchResults.classList.add('is-open');searchInput.setAttribute('aria-expanded','true');
+  }
+  if(searchInput){
+    searchInput.addEventListener('input',renderProfileSearch);
+    searchInput.addEventListener('keydown',e=>{
+      if(e.key==='Escape'){searchInput.value='';renderProfileSearch();searchInput.blur();}
+      if(e.key==='Enter'){const first=searchResults.querySelector('a');if(first)window.location.href=first.href;}
+    });
+  }
+
   async function loadBoard(){
     const {data,error}=await client.rpc('get_public_leaderboard_full');
     if(error){console.error(error);table.innerHTML='<div class="lb-loading">Leaderboard temporarily unavailable.</div>';return;}
-    rows=Array.isArray(data)?data:[];page=1;renderBoard();
+    rows=Array.isArray(data)?data:[];page=1;renderBoard();renderProfileSearch();
     const note=document.getElementById('lbNote');
     if(note)note.textContent=rows.length?rows.length+' completed viewer profiles • live site data':'No completed viewer profiles yet.';
   }
