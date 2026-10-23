@@ -619,8 +619,21 @@ body.mobile-menu-open{overflow:hidden!important}
 .lb-search-hint span{color:var(--cyan-dim)}
 .lb-search-results{display:none;position:relative;margin-top:9px;background:#080d11;border:1px solid rgba(17,217,247,.2);border-radius:8px;overflow:hidden;box-shadow:0 14px 30px rgba(0,0,0,.35)}
 .lb-search-results.is-open{display:block;animation:lbSearchIn .14s ease-out}
-.lb-search-result{display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;color:var(--white);text-decoration:none;border-bottom:1px solid rgba(135,166,175,.1);font-size:12px;transition:background .15s ease}
+.lb-search-result{display:grid;grid-template-columns:70px minmax(0,1fr) 140px;gap:10px;width:100%;padding:12px 20px;color:var(--white);text-decoration:none;border-bottom:1px solid rgba(135,166,175,.1);font-size:12px;transition:background .15s ease}
+.lb-search-result.lb-row{border-left:3px solid transparent}
+.lb-search-result .lb-user{min-width:0}
+.lb-search-name-level{display:flex;align-items:center;gap:8px;min-width:0}
+.lb-search-result-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
+.lb-search-level{flex-shrink:0;color:var(--muted);font:10px 'JetBrains Mono',monospace}
+.lb-search-head{grid-template-columns:70px minmax(0,1fr) 140px;padding-top:10px;padding-bottom:10px}
+.lb-search-result .lb-points{white-space:nowrap}
+.lb-search-result:hover .lb-search-result-name,.lb-search-result:focus .lb-search-result-name{color:var(--cyan)}
+@media(max-width:640px){.lb-search-result{grid-template-columns:44px minmax(0,1fr) 100px;padding:11px 14px;gap:6px}.lb-search-head{grid-template-columns:44px minmax(0,1fr) 100px;padding:10px 14px}.lb-search-name-level{gap:5px}.lb-search-level{font-size:9px}.lb-search-result .lb-points{font-size:11px}}
 .lb-search-result:last-child{border-bottom:0}
+.lb-search-result .lb-user-link{width:100%}
+.lb-search-result .lb-search-result-name{display:block}
+.lb-search-result .lb-list-avatar{flex-shrink:0}
+.lb-search-result .lb-points span{font-size:10px}
 .lb-search-result:hover,.lb-search-result:focus{background:rgba(17,217,247,.075);outline:none}
 .lb-search-result:hover .lb-search-result-name,.lb-search-result:focus .lb-search-result-name{color:var(--cyan)}
 .lb-search-result-avatar{display:flex;align-items:center;justify-content:center;flex:0 0 34px;width:34px;height:34px;border:1px solid rgba(17,217,247,.22);border-radius:50%;background:rgba(17,217,247,.07);color:var(--cyan);font:700 11px 'Rajdhani',sans-serif}
@@ -896,11 +909,18 @@ body.mobile-menu-open{overflow:hidden!important}
     if(!searchInput||!searchResults)return;
     const query=searchInput.value.trim().replace(/^@/,'').toLocaleLowerCase();
     if(!query){searchResults.innerHTML='';searchResults.classList.remove('is-open');searchInput.setAttribute('aria-expanded','false');return;}
-    const matches=rows.filter(u=>String(u.twitch_username||'').toLocaleLowerCase().includes(query)).slice(0,8);
-    searchResults.innerHTML=matches.length?matches.map(u=>{
+    const sorted=[...rows].sort((a,b)=>{
+      const av=board==='xp'?Number(a.xp):board==='earned'?Number(a.total_fnc_earned):Number(a.fnc_points);
+      const bv=board==='xp'?Number(b.xp):board==='earned'?Number(b.total_fnc_earned):Number(b.fnc_points);
+      return bv-av || String(a.twitch_username).localeCompare(String(b.twitch_username));
+    });
+    const label=board==='xp'?'XP':board==='earned'?'ALL-TIME FNC EARNED':'FNC POINTS';
+    const metric=u=>board==='xp'?fmt(u.xp):board==='earned'?fmt(u.total_fnc_earned):fmt(u.fnc_points);
+    const matches=sorted.map((u,index)=>({...u,searchRank:index+1})).filter(u=>String(u.twitch_username||'').toLocaleLowerCase().includes(query)).slice(0,8);
+    searchResults.innerHTML=matches.length?'<div class="lb-row lb-head lb-search-head"><div>RANK</div><div>VIEWER / LEVEL</div><div style="text-align:right">'+label+'</div></div>'+matches.map(u=>{
       const name=String(u.twitch_username||'Viewer');
       const initials=esc(name.replace(/^@/,'').slice(0,2).toUpperCase()||'V');
-      return '<a class="lb-search-result" role="option" href="/profile/?viewer='+encodeURIComponent(name)+'"><span class="lb-search-result-avatar" aria-hidden="true">'+initials+'</span><span class="lb-search-result-copy"><span class="lb-search-result-name">'+esc(name)+'</span><span class="lb-search-result-label">PUBLIC PLAYER PROFILE</span></span><span class="lb-search-result-action">OPEN PROFILE <span aria-hidden="true">↗</span></span></a>';
+      return '<a class="lb-row lb-search-result" role="option" href="/profile/?viewer='+encodeURIComponent(name)+'"><div class="lb-rank">#'+u.searchRank+'</div><div class="lb-user"><span class="lb-user-link"><span class="lb-list-avatar">'+initials+'</span><span class="lb-search-name-level"><span class="lb-search-result-name">'+esc(name)+'</span><span class="lb-search-level">LVL '+Number(u.level||1)+'</span></span></span></div><div class="lb-points">'+metric(u)+' <span>'+(board==='xp'?'XP':'FNC')+'</span></div></a>';
     }).join(''):'<div class="lb-search-empty"><span aria-hidden="true">⌕</span><span>No matching viewer found. Try another username.</span></div>';
     searchResults.classList.add('is-open');searchInput.setAttribute('aria-expanded','true');
   }
