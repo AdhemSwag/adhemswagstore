@@ -431,7 +431,7 @@ body.mobile-menu-open{overflow:hidden!important}
   <h1>FNC <span>STORE</span></h1>
   <p class="lede">Use your FNC Points to redeem available AdhemSwag rewards. Every redemption is checked securely on the server before FNC or stock is changed.</p>
   <section class="exitlag-promo-banner" aria-label="ExitLag promotion">
-    <div class="exitlag-promo-top"><span class="exitlag-promo-fire">🔥</span><span>ADHEMSWAG PROMOTIONS</span><span class="exitlag-promo-pill">SPECIAL OFFER</span></div>
+    <div class="exitlag-promo-top"><span class="exitlag-promo-fire">🔥</span><span>ADHEMSWAG PROMOTIONS</span><span class="exitlag-promo-pill">−30% • ENDS 23 NOV 2026</span></div>
     <div class="exitlag-promo-content">
       <div class="exitlag-promo-copy"><div class="exitlag-promo-kicker">LIMITED DEAL • GAMING PERFORMANCE</div><h2>EXITLAG CODE — 7 DAYS</h2><p>Get your 7-day access code with automatic delivery after a successful redemption.</p><div class="exitlag-promo-price-row"><span class="exitlag-promo-was">1,500 FNC</span><strong>1,050 FNC</strong><span class="exitlag-promo-off">−30%</span></div><a class="exitlag-promo-cta" href="#rewardGrid">CLAIM PROMOTION <span>↗</span></a></div>
       <div class="exitlag-promo-stamp"><span>EXCLUSIVE</span><strong>−30%</strong><span>EXITLAG DEAL</span></div>
@@ -777,6 +777,20 @@ body.mobile-menu-open{overflow:hidden!important}
   scrollbar-width: thin;
 }
 </style>
+
+
+<script id="adhemswag-exitlag-promo-expiry">
+(function(){
+  var banner=document.querySelector('.exitlag-promo-banner');
+  if(!banner)return;
+  var expiry=Date.parse('2026-11-23T23:59:59+01:00');
+  function updatePromoVisibility(){
+    if(Date.now()>expiry){banner.hidden=true;banner.setAttribute('aria-hidden','true');}
+  }
+  updatePromoVisibility();
+  document.addEventListener('visibilitychange',updatePromoVisibility);
+})();
+</script>
 
 </body>
 </html>
