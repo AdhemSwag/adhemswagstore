@@ -601,17 +601,36 @@ body.mobile-menu-open{overflow:hidden!important}
 </style>
 
 <style id="leaderboard-profile-search">
-.lb-search{position:relative;margin:0 0 28px;max-width:620px}
-.lb-search label{display:block;margin-bottom:8px;color:var(--cyan);font:600 11px 'JetBrains Mono',monospace;letter-spacing:.12em;text-transform:uppercase}
-.lb-search input{display:block;width:100%;min-height:46px;padding:12px 15px;background:#0b0f12;border:1px solid var(--line);border-radius:4px;color:var(--white);font:14px 'Inter',sans-serif;outline:none}
-.lb-search input:focus{border-color:var(--cyan);box-shadow:0 0 0 2px rgba(17,217,247,.08)}
-.lb-search-results{display:none;position:relative;margin-top:6px;background:#0b0f12;border:1px solid var(--line);border-radius:4px;overflow:hidden}
-.lb-search-results.is-open{display:block}
-.lb-search-result{display:flex;align-items:center;gap:10px;width:100%;padding:11px 14px;color:var(--white);text-decoration:none;border-bottom:1px solid var(--line);font-size:13px}
+.lb-search{position:relative;margin:0 0 34px;max-width:100%;padding:22px 24px 20px;border:1px solid rgba(17,217,247,.18);border-radius:10px;background:linear-gradient(135deg,rgba(17,217,247,.055),rgba(11,15,18,.96) 42%);box-shadow:0 12px 34px rgba(0,0,0,.22);overflow:visible}
+.lb-search:before{content:"";position:absolute;left:0;top:18px;bottom:18px;width:3px;border-radius:0 4px 4px 0;background:var(--cyan);box-shadow:0 0 14px rgba(17,217,247,.35)}
+.lb-search-heading{display:flex;align-items:center;gap:12px;margin-bottom:15px}
+.lb-search-icon{display:flex;align-items:center;justify-content:center;flex:0 0 40px;width:40px;height:40px;border:1px solid rgba(17,217,247,.22);border-radius:9px;background:rgba(17,217,247,.07);color:var(--cyan)}
+.lb-search-title{font:700 17px 'Rajdhani',sans-serif;letter-spacing:.055em;text-transform:uppercase;color:var(--white)}
+.lb-search-description{margin-top:2px;color:var(--muted);font-size:11px;line-height:1.5}
+.lb-search label{display:block;margin-bottom:8px;color:#9bb1b8;font:600 10px 'JetBrains Mono',monospace;letter-spacing:.13em;text-transform:uppercase}
+.lb-search-field{position:relative}
+.lb-search-field:before{content:"";position:absolute;left:15px;top:50%;width:12px;height:12px;border:2px solid #71868d;border-radius:50%;transform:translateY(-60%);pointer-events:none}
+.lb-search-field:after{content:"";position:absolute;left:28px;top:calc(50% + 5px);width:6px;height:2px;background:#71868d;transform:rotate(45deg);transform-origin:left center;pointer-events:none}
+.lb-search input{display:block;width:100%;min-height:48px;padding:13px 44px 13px 42px;background:rgba(3,7,10,.82);border:1px solid rgba(135,166,175,.22);border-radius:7px;color:var(--white);font:13px 'Inter',sans-serif;outline:none;transition:border-color .18s ease,box-shadow .18s ease,background .18s ease}
+.lb-search input::placeholder{color:#5e7178}
+.lb-search input:focus{border-color:var(--cyan);background:#070c10;box-shadow:0 0 0 3px rgba(17,217,247,.09),0 0 24px rgba(17,217,247,.06)}
+.lb-search input::-webkit-search-cancel-button{cursor:pointer}
+.lb-search-hint{display:flex;align-items:center;gap:7px;margin-top:9px;color:var(--muted);font-size:10px;line-height:1.5}
+.lb-search-hint span{color:var(--cyan-dim)}
+.lb-search-results{display:none;position:relative;margin-top:9px;background:#080d11;border:1px solid rgba(17,217,247,.2);border-radius:8px;overflow:hidden;box-shadow:0 14px 30px rgba(0,0,0,.35)}
+.lb-search-results.is-open{display:block;animation:lbSearchIn .14s ease-out}
+.lb-search-result{display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;color:var(--white);text-decoration:none;border-bottom:1px solid rgba(135,166,175,.1);font-size:12px;transition:background .15s ease}
 .lb-search-result:last-child{border-bottom:0}
-.lb-search-result:hover,.lb-search-result:focus{background:rgba(17,217,247,.08);color:var(--cyan);outline:none}
-.lb-search-result small{margin-left:auto;color:var(--muted);font:10px 'JetBrains Mono',monospace}
-.lb-search-empty{padding:13px 14px;color:var(--muted);font-size:12px}
+.lb-search-result:hover,.lb-search-result:focus{background:rgba(17,217,247,.075);outline:none}
+.lb-search-result:hover .lb-search-result-name,.lb-search-result:focus .lb-search-result-name{color:var(--cyan)}
+.lb-search-result-avatar{display:flex;align-items:center;justify-content:center;flex:0 0 34px;width:34px;height:34px;border:1px solid rgba(17,217,247,.22);border-radius:50%;background:rgba(17,217,247,.07);color:var(--cyan);font:700 11px 'Rajdhani',sans-serif}
+.lb-search-result-copy{display:flex;flex:1;min-width:0;flex-direction:column;gap:3px}
+.lb-search-result-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600;transition:color .15s ease}
+.lb-search-result-label{color:var(--muted);font:9px 'JetBrains Mono',monospace;letter-spacing:.06em}
+.lb-search-result-action{display:flex;align-items:center;gap:6px;color:var(--cyan);font:9px 'JetBrains Mono',monospace;white-space:nowrap}
+.lb-search-empty{display:flex;align-items:center;gap:10px;padding:15px;color:var(--muted);font-size:11px}
+@keyframes lbSearchIn{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:600px){.lb-search{padding:17px 14px 15px;margin-bottom:26px;border-radius:8px}.lb-search:before{top:14px;bottom:14px}.lb-search-heading{gap:10px;margin-bottom:13px}.lb-search-icon{flex-basis:36px;width:36px;height:36px}.lb-search-title{font-size:15px}.lb-search-description{font-size:10px}.lb-search input{min-height:46px;font-size:12px}.lb-search-result{padding:11px 10px;gap:9px}.lb-search-result-avatar{flex-basis:30px;width:30px;height:30px}.lb-search-result-action{font-size:8px;gap:3px}}
 </style>
 
 </head>
@@ -733,8 +752,13 @@ body.mobile-menu-open{overflow:hidden!important}
   <p class="page-sub">Track your XP, Level, FNC Points and watch time. Keep watching, level up and climb the ranks.</p>
 
   <div class="lb-search" id="lbProfileSearch">
-    <label for="lbSearchInput">// FIND A VIEWER PROFILE</label>
-    <input id="lbSearchInput" type="search" autocomplete="off" placeholder="Search Twitch username..." aria-controls="lbSearchResults" aria-expanded="false">
+    <div class="lb-search-heading">
+      <div class="lb-search-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="10.8" cy="10.8" r="6.8" stroke="currentColor" stroke-width="1.8"/><path d="m16 16 4.3 4.3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+      <div><div class="lb-search-title">Find a player</div><div class="lb-search-description">Jump straight to any public viewer profile.</div></div>
+    </div>
+    <label for="lbSearchInput">SEARCH BY TWITCH USERNAME</label>
+    <div class="lb-search-field"><input id="lbSearchInput" type="search" autocomplete="off" placeholder="Type a username..." aria-controls="lbSearchResults" aria-expanded="false"></div>
+    <div class="lb-search-hint"><span>↳</span> Start typing to see matching profiles.</div>
     <div class="lb-search-results" id="lbSearchResults" role="listbox" aria-label="Matching viewer profiles"></div>
   </div>
 
@@ -875,8 +899,9 @@ body.mobile-menu-open{overflow:hidden!important}
     const matches=rows.filter(u=>String(u.twitch_username||'').toLocaleLowerCase().includes(query)).slice(0,8);
     searchResults.innerHTML=matches.length?matches.map(u=>{
       const name=String(u.twitch_username||'Viewer');
-      return '<a class="lb-search-result" role="option" href="/profile/?viewer='+encodeURIComponent(name)+'"><span>'+esc(name)+'</span><small>VIEW PROFILE →</small></a>';
-    }).join(''):'<div class="lb-search-empty">No matching viewer found.</div>';
+      const initials=esc(name.replace(/^@/,'').slice(0,2).toUpperCase()||'V');
+      return '<a class="lb-search-result" role="option" href="/profile/?viewer='+encodeURIComponent(name)+'"><span class="lb-search-result-avatar" aria-hidden="true">'+initials+'</span><span class="lb-search-result-copy"><span class="lb-search-result-name">'+esc(name)+'</span><span class="lb-search-result-label">PUBLIC PLAYER PROFILE</span></span><span class="lb-search-result-action">OPEN PROFILE <span aria-hidden="true">↗</span></span></a>';
+    }).join(''):'<div class="lb-search-empty"><span aria-hidden="true">⌕</span><span>No matching viewer found. Try another username.</span></div>';
     searchResults.classList.add('is-open');searchInput.setAttribute('aria-expanded','true');
   }
   if(searchInput){
