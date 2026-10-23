@@ -654,6 +654,16 @@ body.mobile-menu-open{overflow:hidden!important}
 .lb-search-compact .lb-search-results{margin-top:6px}
 @media(max-width:600px){.lb-search.lb-search-compact{max-width:100%;margin-bottom:20px}.lb-search-compact input{min-height:38px}}
 
+/* Ranking toolbar: metric tabs left, compact player search right. */
+.lb-section-head.lb-ranking-toolbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:22px}
+.lb-ranking-toolbar .lb-tabs{order:0;flex:0 1 auto;min-width:0}
+.lb-ranking-toolbar .lb-search-compact{order:1;flex:0 1 340px;width:340px;max-width:340px;margin:0 0 0 auto;position:relative}
+.lb-ranking-toolbar .lb-search-results{position:absolute;top:100%;left:0;right:0;z-index:100}
+@media(max-width:760px){
+  .lb-section-head.lb-ranking-toolbar{align-items:stretch;flex-direction:column;gap:12px}
+  .lb-ranking-toolbar .lb-tabs{width:100%;justify-content:flex-start;flex-wrap:wrap}
+  .lb-ranking-toolbar .lb-search-compact{width:100%;max-width:100%;flex:1 1 auto;margin:0}
+}
 </style>
 
 </head>
@@ -774,22 +784,16 @@ body.mobile-menu-open{overflow:hidden!important}
   <h1>Leader<span>board</span></h1>
   <p class="page-sub">Track your XP, Level, FNC Points and watch time. Keep watching, level up and climb the ranks.</p>
 
-  <div class="lb-search lb-search-compact" id="lbProfileSearch">
-    <div class="lb-search-field"><input id="lbSearchInput" type="search" autocomplete="off" placeholder="Search player..." aria-label="Search player by Twitch username" aria-controls="lbSearchResults" aria-expanded="false"></div>
-    <div class="lb-search-results" id="lbSearchResults" role="listbox" aria-label="Matching viewer profiles"></div>
-  </div>
-
-
   <section class="lb-section">
-    <div class="lb-section-head">
-      <div>
-        <div class="lb-kicker">// GLOBAL RANKING</div>
-        <h2>Climb the <span>ranks</span></h2>
-      </div>
-      <div class="lb-tabs" role="tablist">
+    <div class="lb-section-head lb-ranking-toolbar">
+      <div class="lb-tabs" role="tablist" aria-label="Leaderboard metric">
         <button class="lb-tab active" data-board="fnc" type="button">FNC POINTS</button>
         <button class="lb-tab" data-board="xp" type="button">XP</button>
         <button class="lb-tab" data-board="earned" type="button">ALL-TIME FNC EARNED</button>
+      </div>
+      <div class="lb-search lb-search-compact" id="lbProfileSearch">
+        <div class="lb-search-field"><input id="lbSearchInput" type="search" autocomplete="off" placeholder="Search player..." aria-label="Search player by Twitch username" aria-controls="lbSearchResults" aria-expanded="false"></div>
+        <div class="lb-search-results" id="lbSearchResults" role="listbox" aria-label="Matching viewer profiles"></div>
       </div>
     </div>
     <div id="lbPodium" class="lb-podium" aria-label="Top 3 leaderboard"><div class="lb-loading">Loading top players…</div></div>
