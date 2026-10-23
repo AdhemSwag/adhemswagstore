@@ -577,7 +577,8 @@ body.mobile-menu-open{overflow:hidden!important}
     if (!banner || !content || !pill || !dots) return;
     if (promoRotationTimer) { clearInterval(promoRotationTimer); promoRotationTimer = null; }
     const promos = [];
-    const exitlag = (rewards || []).find(r => /exitlag/i.test(r.name || '') && Number(r.fnc_cost) === 1050);
+    const exitlagPromoExpiry = Date.parse('2026-11-23T23:59:59+01:00');
+    const exitlag = Date.now() <= exitlagPromoExpiry ? (rewards || []).find(r => /exitlag/i.test(r.name || '') && Number(r.fnc_cost) === 1050) : null;
     if (exitlag) promos.push({
       id: exitlag.id, name: 'EXITLAG CODE — 7 DAYS',
       desc: 'Get your 7-day access code with automatic delivery after a successful redemption.',
