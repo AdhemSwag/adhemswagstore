@@ -311,12 +311,6 @@ body.mobile-menu-open{overflow:hidden!important}
 .exitlag-promo-top{display:flex;align-items:center;gap:9px;flex-wrap:wrap;color:#ff626a;font:800 11px 'JetBrains Mono',monospace;letter-spacing:.13em}
 .exitlag-promo-fire{font-size:18px}.exitlag-promo-pill{margin-left:auto;padding:5px 9px;border:1px solid rgba(255,64,75,.55);border-radius:5px;background:rgba(255,38,50,.12);color:#ff8a90;font-size:9px}
 .exitlag-promo-content{display:flex;justify-content:space-between;align-items:center;gap:18px;margin-top:16px}.exitlag-promo-copy{max-width:610px}.exitlag-promo-kicker{color:#9c8c90;font:10px 'JetBrains Mono',monospace;letter-spacing:.12em}.exitlag-promo-copy h2{margin:8px 0;color:#fff;font-size:clamp(21px,3vw,30px);font-weight:900;letter-spacing:-.04em}.exitlag-promo-copy p{margin:0;color:#c0b6b9;font-size:13px;line-height:1.6}.exitlag-promo-price-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:15px}.exitlag-promo-was{color:#84787b;font-size:13px;text-decoration:line-through}.exitlag-promo-price-row strong{color:#fff;font-size:25px;font-weight:900}.exitlag-promo-off{padding:5px 8px;border-radius:5px;background:#f42f3d;color:#fff;font:900 12px 'JetBrains Mono',monospace}.exitlag-promo-cta{display:inline-flex;align-items:center;gap:13px;margin-top:17px;padding:11px 15px;border-radius:6px;background:#f32f3d;color:#fff;text-decoration:none;font:900 11px 'JetBrains Mono',monospace;letter-spacing:.04em;box-shadow:0 5px 18px rgba(243,47,61,.2);transition:transform .18s,background .18s}.exitlag-promo-cta:hover{transform:translateY(-2px);background:#ff4552}.exitlag-promo-stamp{display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;width:132px;height:132px;border:1px solid rgba(255,58,69,.55);border-radius:50%;background:rgba(255,39,53,.08);box-shadow:inset 0 0 25px rgba(255,35,50,.12),0 0 25px rgba(255,35,50,.08);transform:rotate(7deg)}.exitlag-promo-stamp span{color:#ff8a90;font:800 8px 'JetBrains Mono',monospace;letter-spacing:.1em}.exitlag-promo-stamp strong{margin:4px 0;color:#fff;font-size:31px;font-weight:950}.exitlag-promo-price{border-color:rgba(255,48,58,.45)!important;background:rgba(255,35,48,.08)!important}.exitlag-old-price{margin-right:6px;color:#ff737b;font-size:10px;text-decoration:line-through}.exitlag-discount{margin-left:5px;color:#ff6972;font-size:10px}
-.adhem-promo-rotator{position:relative}.adhem-promo-slide{animation:adhemPromoIn .55s ease both}.adhem-promo-slide[hidden]{display:none!important}
-@keyframes adhemPromoIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-.adhem-promo-controls{display:flex;justify-content:center;gap:8px;margin:-7px 0 18px}.adhem-promo-dot{width:24px;height:5px;padding:0;border:0;border-radius:5px;background:#465158;cursor:pointer;transition:background .2s,width .2s}.adhem-promo-dot.is-active{width:38px;background:#ff303b}
-.adhem-skins-slide{border-color:rgba(17,217,247,.55);background:radial-gradient(ellipse at 90% 5%,rgba(17,217,247,.18),transparent 43%),linear-gradient(125deg,#07161b 0%,#101014 54%,#08181d 100%);box-shadow:0 10px 32px rgba(0,0,0,.24),inset 0 0 28px rgba(17,217,247,.04)}
-.adhem-skins-slide:after{background:#11d9f7;box-shadow:0 0 20px #11d9f7}.skins-promo-top{color:#6ceaff}.skins-promo-icon{font-size:18px}.skins-promo-pill{border-color:rgba(17,217,247,.45);background:rgba(17,217,247,.08);color:#83eaff}.skins-promo-cta{background:#11b9d5;box-shadow:0 5px 18px rgba(17,217,247,.16)}.skins-promo-cta:hover{background:#11d9f7}.skins-promo-stamp{display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;width:132px;height:132px;border:1px solid rgba(17,217,247,.5);border-radius:50%;background:rgba(17,217,247,.07);box-shadow:inset 0 0 25px rgba(17,217,247,.1),0 0 25px rgba(17,217,247,.07);transform:rotate(-6deg)}.skins-promo-stamp span{color:#83eaff;font:800 8px 'JetBrains Mono',monospace;letter-spacing:.1em}.skins-promo-stamp strong{margin:4px 0;color:#fff;font-size:23px;font-weight:950}
-@media(max-width:600px){.skins-promo-stamp{width:78px;height:78px}.skins-promo-stamp strong{font-size:14px}.skins-promo-stamp span{font-size:6px}}
 @media(max-width:600px){.exitlag-promo-banner{padding:16px 15px}.exitlag-promo-content{align-items:flex-start}.exitlag-promo-stamp{width:78px;height:78px}.exitlag-promo-stamp strong{font-size:21px}.exitlag-promo-stamp span{font-size:6px}.exitlag-promo-copy h2{font-size:21px}.exitlag-promo-price-row strong{font-size:22px}.exitlag-promo-top{font-size:9px}}
 </style>
 
@@ -436,24 +430,11 @@ body.mobile-menu-open{overflow:hidden!important}
   <div class="eyebrow">// ADHEMSWAG REWARDS</div>
   <h1>FNC <span>STORE</span></h1>
   <p class="lede">Use your FNC Points to redeem available AdhemSwag rewards. Every redemption is checked securely on the server before FNC or stock is changed.</p>
-  <section class="adhem-promo-rotator" id="adhemPromoRotator" aria-label="AdhemSwag store promotions">
-    <div class="exitlag-promo-banner adhem-promo-slide is-active" data-promo-slide="exitlag" aria-label="ExitLag promotion">
-      <div class="exitlag-promo-top"><span class="exitlag-promo-fire">🔥</span><span>ADHEMSWAG PROMOTIONS</span><span class="exitlag-promo-pill">−30% • ENDS 23 NOV 2026</span></div>
-      <div class="exitlag-promo-content">
-        <div class="exitlag-promo-copy"><div class="exitlag-promo-kicker">LIMITED DEAL • GAMING PERFORMANCE</div><h2>EXITLAG CODE — 7 DAYS</h2><p>Get your 7-day access code with automatic delivery after a successful redemption.</p><div class="exitlag-promo-price-row"><span class="exitlag-promo-was">1,500 FNC</span><strong>1,050 FNC</strong><span class="exitlag-promo-off">−30%</span></div><a class="exitlag-promo-cta" href="#rewardGrid">CLAIM PROMOTION <span>↗</span></a></div>
-        <div class="exitlag-promo-stamp"><span>EXCLUSIVE</span><strong>−30%</strong><span>EXITLAG DEAL</span></div>
-      </div>
-    </div>
-    <div class="exitlag-promo-banner adhem-promo-slide adhem-skins-slide" data-promo-slide="skins" aria-label="CS2 skins in the store" hidden>
-      <div class="exitlag-promo-top skins-promo-top"><span class="skins-promo-icon">✦</span><span>ADHEMSWAG SKIN STORE</span><span class="exitlag-promo-pill skins-promo-pill">AVAILABLE REWARDS</span></div>
-      <div class="exitlag-promo-content">
-        <div class="exitlag-promo-copy"><div class="exitlag-promo-kicker">COUNTER-STRIKE 2 • COMMUNITY REWARDS</div><h2>FIND YOUR NEXT CS2 SKIN</h2><p>Explore the skins available in the AdhemSwag Store and redeem with your FNC Points. No skin discount is advertised.</p><a class="exitlag-promo-cta skins-promo-cta" href="#rewardGrid">BROWSE AVAILABLE SKINS <span>↗</span></a></div>
-        <div class="skins-promo-stamp"><span>CS2</span><strong>SKINS</strong><span>FNC REWARDS</span></div>
-      </div>
-    </div>
-    <div class="adhem-promo-controls" aria-label="Promotion slides">
-      <button type="button" class="adhem-promo-dot is-active" data-promo-go="0" aria-label="Show ExitLag promotion"></button>
-      <button type="button" class="adhem-promo-dot" data-promo-go="1" aria-label="Show CS2 skins"></button>
+  <section class="exitlag-promo-banner" aria-label="ExitLag promotion">
+    <div class="exitlag-promo-top"><span class="exitlag-promo-fire">🔥</span><span>ADHEMSWAG PROMOTIONS</span><span class="exitlag-promo-pill">−30% • ENDS 23 NOV 2026</span></div>
+    <div class="exitlag-promo-content">
+      <div class="exitlag-promo-copy"><div class="exitlag-promo-kicker">LIMITED DEAL • GAMING PERFORMANCE</div><h2>EXITLAG CODE — 7 DAYS</h2><p>Get your 7-day access code with automatic delivery after a successful redemption.</p><div class="exitlag-promo-price-row"><span class="exitlag-promo-was">1,500 FNC</span><strong>1,050 FNC</strong><span class="exitlag-promo-off">−30%</span></div><a class="exitlag-promo-cta" href="#rewardGrid">CLAIM PROMOTION <span>↗</span></a></div>
+      <div class="exitlag-promo-stamp"><span>EXCLUSIVE</span><strong>−30%</strong><span>EXITLAG DEAL</span></div>
     </div>
   </section>
 
@@ -800,32 +781,14 @@ body.mobile-menu-open{overflow:hidden!important}
 
 <script id="adhemswag-exitlag-promo-expiry">
 (function(){
-  var rotator=document.getElementById('adhemPromoRotator');
-  if(!rotator)return;
-  var exitlag=rotator.querySelector('[data-promo-slide="exitlag"]');
-  var skins=rotator.querySelector('[data-promo-slide="skins"]');
-  var slides=[exitlag,skins];
-  var dots=Array.prototype.slice.call(rotator.querySelectorAll('[data-promo-go]'));
-  var current=0,timer=null;
+  var banner=document.querySelector('.exitlag-promo-banner');
+  if(!banner)return;
   var expiry=Date.parse('2026-11-23T23:59:59+01:00');
   function updatePromoVisibility(){
-    if(Date.now()>expiry){exitlag.hidden=true;exitlag.setAttribute('aria-hidden','true');}
+    if(Date.now()>expiry){banner.hidden=true;banner.setAttribute('aria-hidden','true');}
   }
-  function show(index){
-    updatePromoVisibility();
-    var available=slides.filter(function(slide){return !slide.hidden;});
-    if(!available.length)return;
-    var slide=slides[index];
-    if(!slide||slide.hidden)slide=available[0];
-    current=slides.indexOf(slide);
-    slides.forEach(function(item,i){var active=item===slide;item.hidden=!active;item.classList.toggle('is-active',active);item.setAttribute('aria-hidden',active?'false':'true');});
-    dots.forEach(function(dot,i){var active=i===current;dot.classList.toggle('is-active',active);dot.setAttribute('aria-pressed',active?'true':'false');});
-  }
-  function next(){show((current+1)%slides.length);}
-  dots.forEach(function(dot){dot.addEventListener('click',function(){show(Number(dot.getAttribute('data-promo-go')));restart();});});
-  function restart(){if(timer)clearInterval(timer);timer=setInterval(next,6000);}
-  updatePromoVisibility();show(0);restart();
-  document.addEventListener('visibilitychange',function(){if(document.hidden){if(timer)clearInterval(timer);timer=null;}else{show(current);restart();}});
+  updatePromoVisibility();
+  document.addEventListener('visibilitychange',updatePromoVisibility);
 })();
 </script>
 
