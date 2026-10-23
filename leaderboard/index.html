@@ -644,6 +644,16 @@ body.mobile-menu-open{overflow:hidden!important}
 .lb-search-empty{display:flex;align-items:center;gap:10px;padding:15px;color:var(--muted);font-size:11px}
 @keyframes lbSearchIn{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:translateY(0)}}
 @media(max-width:600px){.lb-search{padding:17px 14px 15px;margin-bottom:26px;border-radius:8px}.lb-search:before{top:14px;bottom:14px}.lb-search-heading{gap:10px;margin-bottom:13px}.lb-search-icon{flex-basis:36px;width:36px;height:36px}.lb-search-title{font-size:15px}.lb-search-description{font-size:10px}.lb-search input{min-height:46px;font-size:12px}.lb-search-result{padding:11px 10px;gap:9px}.lb-search-result-avatar{flex-basis:30px;width:30px;height:30px}.lb-search-result-action{font-size:8px;gap:3px}}
+
+/* Compact player search: input only, no oversized heading or subtitle. */
+.lb-search.lb-search-compact{max-width:440px;margin:0 0 24px;padding:0;border:0;border-radius:7px;background:transparent;box-shadow:none}
+.lb-search.lb-search-compact:before{display:none}
+.lb-search-compact .lb-search-field:before{left:13px;width:10px;height:10px;border-width:1.5px}
+.lb-search-compact .lb-search-field:after{left:24px;top:calc(50% + 4px);width:5px;height:1.5px}
+.lb-search-compact input{min-height:39px;padding:9px 36px 9px 34px;border-radius:6px;font-size:12px;background:rgba(8,13,17,.88)}
+.lb-search-compact .lb-search-results{margin-top:6px}
+@media(max-width:600px){.lb-search.lb-search-compact{max-width:100%;margin-bottom:20px}.lb-search-compact input{min-height:38px}}
+
 </style>
 
 </head>
@@ -764,14 +774,8 @@ body.mobile-menu-open{overflow:hidden!important}
   <h1>Leader<span>board</span></h1>
   <p class="page-sub">Track your XP, Level, FNC Points and watch time. Keep watching, level up and climb the ranks.</p>
 
-  <div class="lb-search" id="lbProfileSearch">
-    <div class="lb-search-heading">
-      <div class="lb-search-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="10.8" cy="10.8" r="6.8" stroke="currentColor" stroke-width="1.8"/><path d="m16 16 4.3 4.3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></div>
-      <div><div class="lb-search-title">Find a player</div><div class="lb-search-description">Jump straight to any public viewer profile.</div></div>
-    </div>
-    <label for="lbSearchInput">SEARCH BY TWITCH USERNAME</label>
-    <div class="lb-search-field"><input id="lbSearchInput" type="search" autocomplete="off" placeholder="Type a username..." aria-controls="lbSearchResults" aria-expanded="false"></div>
-    <div class="lb-search-hint"><span>↳</span> Start typing to see matching profiles.</div>
+  <div class="lb-search lb-search-compact" id="lbProfileSearch">
+    <div class="lb-search-field"><input id="lbSearchInput" type="search" autocomplete="off" placeholder="Search player..." aria-label="Search player by Twitch username" aria-controls="lbSearchResults" aria-expanded="false"></div>
     <div class="lb-search-results" id="lbSearchResults" role="listbox" aria-label="Matching viewer profiles"></div>
   </div>
 
