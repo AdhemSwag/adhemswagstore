@@ -643,8 +643,9 @@ body.mobile-menu-open{overflow:hidden!important}
     if(sortMode==='price-high') visibleRewards.sort((x,y)=>Number(y.fnc_cost||0)-Number(x.fnc_cost||0));
     if(!visibleRewards.length){grid.innerHTML='<div class="empty-rewards">NO PRODUCTS MATCH THIS FILTER.</div>';return;}
     grid.innerHTML = visibleRewards.map(r => {
-      const stockAvailable = r.stock == null || Number(r.stock) > 0;
-      const stock = stockAvailable ? 'IN STOCK' : 'SOLD OUT';
+      const stockCount = r.stock == null ? null : Math.max(0, Number(r.stock) || 0);
+      const stockAvailable = stockCount == null || stockCount > 0;
+      const stock = !stockAvailable ? 'SOLD OUT' : (stockCount == null ? 'IN STOCK' : 'IN STOCK · ' + stockCount + ' AVAILABLE');
       const fncCost = Number(r.fnc_cost||0);
       const levelRequired = Number(r.level_required||1);
       const monthlyLimited = !!r.uses_access_codes;
