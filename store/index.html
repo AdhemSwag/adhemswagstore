@@ -647,7 +647,6 @@ body.mobile-menu-open{overflow:hidden!important}
       const stock = stockAvailable ? 'IN STOCK' : 'SOLD OUT';
       const fncCost = Number(r.fnc_cost||0);
       const levelRequired = Number(r.level_required||1);
-      const stockAvailable = r.stock == null || Number(r.stock) > 0;
       const monthlyLimited = !!r.uses_access_codes;
       const monthlyUsed = monthlyLimited && monthlyCodeRewardIds.has(r.id);
       const signedIn = !!viewer;
