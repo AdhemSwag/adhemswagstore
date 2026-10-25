@@ -17,7 +17,7 @@
 @media(max-width:640px){.lb-list-avatar{width:26px;height:26px;flex-basis:26px}.lb-user-link{gap:6px}}
 </style>
 <title>AdhemSwag - The Home of your favorite streamer</title>
-<meta name="description" content="AdhemSwag FNC Points leaderboard — see the top viewers ranked by points.">
+<meta name="description" content="AdhemSwag competitive leaderboard: XP, current FNC balance and lifetime FNC earned.">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://adhemswag.com/leaderboard/">
 <meta property="og:title" content="AdhemSwag — Leaderboard">
@@ -407,6 +407,11 @@ footer .footer-copy .row{margin:0;}
 .lb-tab{appearance:none;background:var(--bg-panel);border:1px solid var(--line);color:var(--muted);font:600 9px 'JetBrains Mono',monospace;letter-spacing:.06em;padding:9px 10px;cursor:pointer}
 .lb-tab:hover{border-color:var(--cyan);color:var(--cyan)}
 .lb-tab.active{background:rgba(17,217,247,.1);border-color:var(--cyan);color:var(--cyan)}
+  .lb-metric-note{display:flex;align-items:flex-start;gap:10px;margin:0 0 18px;padding:12px 14px;border:1px solid var(--line);border-radius:8px;background:linear-gradient(110deg,rgba(17,217,247,.07),rgba(17,217,247,.015));color:var(--muted);font-size:12px;line-height:1.6}
+  .lb-metric-note strong{display:block;color:var(--white);font:600 11px "JetBrains Mono",monospace;letter-spacing:.07em;margin-bottom:2px}
+  .lb-metric-note p{margin:0}
+  .lb-metric-note .lb-metric-icon{color:var(--cyan);font-size:16px;line-height:1.3;flex:0 0 auto}
+  @media(max-width:560px){.lb-metric-note{font-size:11px;padding:10px 11px}}
 .watcher-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:9px}
 .watcher-card{background:var(--bg-panel);border:1px solid var(--line);padding:15px;min-width:0}
 .watcher-rank{font:700 10px 'JetBrains Mono',monospace;color:var(--cyan-dim)}
@@ -782,7 +787,7 @@ body.mobile-menu-open{overflow:hidden!important}
 </div><main>
   <div class="eyebrow" style="margin-bottom:10px;">// FNC • XP • WATCH</div>
   <h1>Leader<span>board</span></h1>
-  <p class="page-sub">Track your XP, Level, FNC Points and watch time. Keep watching, level up and climb the ranks.</p>
+  <p class="page-sub">The competitive ranking for AdhemSwag viewers. Compare XP, available FNC and total FNC earned over time.</p>
 
   <section class="lb-section">
     <div class="lb-section-head lb-ranking-toolbar">
@@ -796,6 +801,7 @@ body.mobile-menu-open{overflow:hidden!important}
         <div class="lb-search-results" id="lbSearchResults" role="listbox" aria-label="Matching viewer profiles"></div>
       </div>
     </div>
+    <div class="lb-metric-note" id="lbMetricNote" role="status" aria-live="polite"><span class="lb-metric-icon" aria-hidden="true">↗</span><div><strong>FNC POINTS · CURRENT BALANCE</strong><p>FNC available to spend in the store right now. Spending FNC lowers this balance.</p></div></div>
     <div id="lbPodium" class="lb-podium" aria-label="Top 3 leaderboard"><div class="lb-loading">Loading top players…</div></div>
     <div class="lb-table bracket" id="lbTable"><div class="lb-loading">Loading leaderboard…</div></div>
     <div class="lb-pagination" id="lbPagination" hidden></div>
@@ -874,6 +880,15 @@ body.mobile-menu-open{overflow:hidden!important}
     const podium=document.getElementById('lbPodium');
     const label=board==='xp'?'XP':board==='earned'?'ALL-TIME FNC EARNED':'FNC POINTS';
     const metric=u=>board==='xp'?fmt(u.xp):board==='earned'?fmt(u.total_fnc_earned):fmt(u.fnc_points);
+    const metricNote=document.getElementById('lbMetricNote');
+    if(metricNote){
+      const copy=board==='earned'
+        ? ['ALL-TIME FNC EARNED · LIFETIME TOTAL','Total FNC earned over time, including points later spent in the store. Spending does not reduce this number.']
+        : board==='xp'
+        ? ['XP · TOTAL EXPERIENCE','Experience points earned through progression. XP is separate from FNC and does not represent a spendable balance.']
+        : ['FNC POINTS · CURRENT BALANCE','FNC available to spend in the store right now. Spending FNC lowers this balance, but not your lifetime FNC earned.'];
+      metricNote.innerHTML='<span class="lb-metric-icon" aria-hidden="true">↗</span><div><strong>'+copy[0]+'</strong><p>'+copy[1]+'</p></div>';
+    }
     const medals={1:'♛',2:'2',3:'3'};
     const avatarMarkup=(u,initials)=>{
       const raw=String(u.avatar_url||'').trim();
