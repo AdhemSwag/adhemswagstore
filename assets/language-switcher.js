@@ -278,6 +278,7 @@
     document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
     document.documentElement.classList.toggle('adhem-lang-ar', lang === 'ar');
     document.body?.classList.toggle('adhem-lang-ar', lang === 'ar');
+    applySidebarDirection(lang);
     const walker = document.createTreeWalker(document.body || document.documentElement, NodeFilter.SHOW_TEXT);
     let node;
     while ((node = walker.nextNode())) translateTextNode(node, lang);
@@ -285,6 +286,26 @@
     const select = document.querySelector('#adhemswag-language-switcher select');
     if (select) select.value = lang;
     try { localStorage.setItem(KEY, lang); } catch (_) {}
+  }
+  function applySidebarDirection(lang) {
+    const rtl = lang === 'ar';
+    const mobile = window.matchMedia && window.matchMedia('(max-width:700px)').matches;
+    document.querySelectorAll('.sidebar, .admin-nav, .mobile-fallback-drawer').forEach(el => {
+      el.style.setProperty('left', rtl ? 'auto' : '0', 'important');
+      el.style.setProperty('right', rtl ? '0' : 'auto', 'important');
+      el.style.setProperty('border-right', rtl ? '0' : '1px solid rgba(17,217,247,.32)', 'important');
+      el.style.setProperty('border-left', rtl ? '1px solid rgba(17,217,247,.32)' : '0', 'important');
+      if (mobile) {
+        const open = el.classList.contains('mobile-open');
+        el.style.setProperty('transform', open ? 'translate3d(0,0,0)' : (rtl ? 'translate3d(110%,0,0)' : 'translate3d(-110%,0,0)'), 'important');
+      } else {
+        el.style.removeProperty('transform');
+      }
+    });
+    document.querySelectorAll('.mobile-drawer-close').forEach(el => {
+      if (rtl) { el.style.setProperty('right', 'auto', 'important'); el.style.setProperty('left', '13px', 'important'); }
+      else { el.style.removeProperty('left'); el.style.removeProperty('right'); }
+    });
   }
   function addSelector() {
     if (document.getElementById('adhemswag-language-switcher')) return;
@@ -330,6 +351,11 @@
       });
     });
     observer.observe(document.body, {subtree:true, childList:true, characterData:true});
+    const sidebarObserver = new MutationObserver(records => {
+      if (records.some(r => r.attributeName === 'class')) applySidebarDirection(getLang());
+    });
+    document.querySelectorAll('.sidebar, .admin-nav, .mobile-fallback-drawer').forEach(el => sidebarObserver.observe(el, {attributes:true, attributeFilter:['class']}));
+    window.addEventListener('resize', () => applySidebarDirection(getLang()));
     document.addEventListener('change', e => {
       if (e.target?.id === 'adhem-language-select') return;
       if (getLang() !== 'en') translateAttributes(e.target, getLang());
