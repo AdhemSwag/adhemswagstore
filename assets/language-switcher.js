@@ -407,7 +407,7 @@
       '01 / DAILY JOIN':'01 / انضمام يومي','02 / WEEKLY JOIN':'02 / انضمام أسبوعي','03 / TWITCH ONLY':'03 / Twitch فقط',
       'CONNECT WITH TWITCH':'ربط Twitch','JOIN DAILY MISSIONS':'انضم إلى المهام اليومية','JOIN WEEKLY MISSIONS':'انضم إلى المهام الأسبوعية',
       'JOINED FOR TODAY':'تم الانضمام اليوم','JOIN REQUIRED TODAY':'يلزم الانضمام اليوم','JOINED THIS WEEK':'تم الانضمام هذا الأسبوع',
-      'JOIN REQUIRED THIS WEEK':'يلزم الانضمام هذا الأسبوع'
+      'JOIN REQUIRED THIS WEEK':'يلزم الانضمام هذا الأسبوع',
 
       "// KNOWLEDGE BASE": "// قاعدة المعرفة",
       "FNC POINTS, XP & MISSIONS": "نقاط FNC وXP والمهام",
