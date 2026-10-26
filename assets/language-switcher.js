@@ -279,6 +279,7 @@
     document.documentElement.classList.toggle('adhem-lang-ar', lang === 'ar');
     document.body?.classList.toggle('adhem-lang-ar', lang === 'ar');
     applySidebarDirection(lang);
+    applyAdDirection(lang);
     const walker = document.createTreeWalker(document.body || document.documentElement, NodeFilter.SHOW_TEXT);
     let node;
     while ((node = walker.nextNode())) translateTextNode(node, lang);
@@ -307,6 +308,20 @@
       else { el.style.removeProperty('left'); el.style.removeProperty('right'); }
     });
   }
+  function applyAdDirection(lang) {
+    const rtl = lang === 'ar';
+    const selectors = '.ad-container, .ad-slot, .advertisement, .advertisement-container, .adsbygoogle, [data-ad-slot], [data-ad-client], [id^="google_ads"], [id*="ad-container"], [class*="ad-container"], [id*="advertisement"], [class*="advertisement"]';
+    document.querySelectorAll(selectors).forEach(el => {
+      if (rtl) {
+        el.style.setProperty('direction', 'ltr', 'important');
+        el.style.setProperty('margin-left', '0', 'important');
+        el.style.setProperty('margin-right', 'auto', 'important');
+        el.style.setProperty('justify-self', 'start', 'important');
+      } else {
+        ['direction', 'margin-left', 'margin-right', 'justify-self'].forEach(p => el.style.removeProperty(p));
+      }
+    });
+  }
   function addSelector() {
     if (document.getElementById('adhemswag-language-switcher')) return;
     const wrap = document.createElement('div');
@@ -314,7 +329,7 @@
     wrap.setAttribute('data-no-translate','');
     wrap.innerHTML = '<label for="adhem-language-select" class="adhem-language-label">LANG</label><select id="adhem-language-select" aria-label="Choose language"><option value="en">EN</option><option value="fr">FR</option><option value="ar">AR</option></select>';
     const style = document.createElement('style');
-    style.textContent = '#adhemswag-language-switcher{position:fixed;top:12px;right:14px;z-index:2147483005;display:flex;align-items:center;gap:5px;padding:5px 7px;background:rgba(5,10,14,.94);border:1px solid rgba(17,217,247,.42);border-radius:9px;box-shadow:0 4px 18px rgba(0,0,0,.35);font:700 10px/1.2 Inter,Arial,sans-serif;color:#11d9f7;backdrop-filter:blur(12px)}#adhemswag-language-switcher .adhem-language-label{font:700 9px/1 JetBrains Mono,monospace;letter-spacing:.08em;color:#8ca4ac}#adhemswag-language-switcher select{appearance:auto;min-width:47px;padding:5px 4px;background:#0b151b;color:#e9fbff;border:1px solid rgba(17,217,247,.25);border-radius:5px;font:700 11px Inter,Arial,sans-serif;cursor:pointer;outline:none}#adhemswag-language-switcher select:focus{border-color:#11d9f7;box-shadow:0 0 0 2px rgba(17,217,247,.15)}html.adhem-lang-ar body{direction:rtl}html.adhem-lang-ar #adhemswag-language-switcher{right:auto;left:14px;direction:ltr}html.adhem-lang-ar #adhemswag-language-switcher .adhem-language-label{direction:ltr}#adhemswag-language-switcher.adhem-language-in-topbar{position:relative!important;top:auto!important;right:auto!important;left:auto!important;margin-left:auto!important;margin-right:8px!important;flex:none!important;box-shadow:none!important;backdrop-filter:none!important}#adhemswag-language-switcher.adhem-language-in-topbar .adhem-language-label{display:inline!important}#adhemswag-language-switcher.adhem-language-in-topbar + .adhem-account{margin-left:8px!important}@media(max-width:700px){#adhemswag-language-switcher{top:10px;right:10px;padding:4px 5px;gap:3px}#adhemswag-language-switcher select{min-width:42px;padding:4px 3px}#adhemswag-language-switcher.adhem-language-in-topbar{margin-right:6px!important;padding:4px!important}#adhemswag-language-switcher.adhem-language-in-topbar .adhem-language-label{display:none!important}html.adhem-lang-ar #adhemswag-language-switcher{left:10px;right:auto}}';
+    style.textContent = '#adhemswag-language-switcher{position:fixed;top:12px;right:14px;z-index:2147483005;display:flex;align-items:center;gap:5px;padding:5px 7px;background:rgba(5,10,14,.94);border:1px solid rgba(17,217,247,.42);border-radius:9px;box-shadow:0 4px 18px rgba(0,0,0,.35);font:700 10px/1.2 Inter,Arial,sans-serif;color:#11d9f7;backdrop-filter:blur(12px)}#adhemswag-language-switcher .adhem-language-label{font:700 9px/1 JetBrains Mono,monospace;letter-spacing:.08em;color:#8ca4ac}#adhemswag-language-switcher select{appearance:auto;min-width:47px;padding:5px 4px;background:#0b151b;color:#e9fbff;border:1px solid rgba(17,217,247,.25);border-radius:5px;font:700 11px Inter,Arial,sans-serif;cursor:pointer;outline:none}#adhemswag-language-switcher select:focus{border-color:#11d9f7;box-shadow:0 0 0 2px rgba(17,217,247,.15)}html.adhem-lang-ar body{direction:rtl}html.adhem-lang-ar .ad-container,html.adhem-lang-ar .ad-slot,html.adhem-lang-ar .advertisement,html.adhem-lang-ar .advertisement-container,html.adhem-lang-ar .adsbygoogle,html.adhem-lang-ar [data-ad-slot],html.adhem-lang-ar [data-ad-client],html.adhem-lang-ar [id^="google_ads"],html.adhem-lang-ar [id*="ad-container"],html.adhem-lang-ar [class*="ad-container"],html.adhem-lang-ar [id*="advertisement"],html.adhem-lang-ar [class*="advertisement"]{direction:ltr!important;margin-left:0!important;margin-right:auto!important;justify-self:start!important}html.adhem-lang-ar #adhemswag-language-switcher{right:auto;left:14px;direction:ltr}html.adhem-lang-ar #adhemswag-language-switcher .adhem-language-label{direction:ltr}#adhemswag-language-switcher.adhem-language-in-topbar{position:relative!important;top:auto!important;right:auto!important;left:auto!important;margin-left:auto!important;margin-right:8px!important;flex:none!important;box-shadow:none!important;backdrop-filter:none!important}#adhemswag-language-switcher.adhem-language-in-topbar .adhem-language-label{display:inline!important}#adhemswag-language-switcher.adhem-language-in-topbar + .adhem-account{margin-left:8px!important}@media(max-width:700px){#adhemswag-language-switcher{top:10px;right:10px;padding:4px 5px;gap:3px}#adhemswag-language-switcher select{min-width:42px;padding:4px 3px}#adhemswag-language-switcher.adhem-language-in-topbar{margin-right:6px!important;padding:4px!important}#adhemswag-language-switcher.adhem-language-in-topbar .adhem-language-label{display:none!important}html.adhem-lang-ar #adhemswag-language-switcher{left:10px;right:auto}}';
     document.head.appendChild(style);
     document.body.appendChild(wrap);
     const topbar = document.querySelector('.adhem-topbar');
