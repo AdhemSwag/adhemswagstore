@@ -500,7 +500,7 @@ body.mobile-menu-open{overflow:hidden!important}
     </div>
     <div class="profile-hero-copy">
       <div class="eyebrow">// Viewer Account</div>
-      <h1># PLAYER <span>PROFILE</span> <span id="profileHeadingUsername" class="profile-heading-username"></span></h1>
+      <h1 id="profileHeadingUsername" class="profile-heading-username"></h1>
       <p class="lede">Your Twitch identity, progression and reward status — all in one place.</p>
     </div>
   </div>
@@ -508,7 +508,7 @@ body.mobile-menu-open{overflow:hidden!important}
 </div>
 <style id="profile-twitch-avatar-css">
 .profile-hero-identity{display:flex;align-items:center;gap:20px;min-width:0}
-.profile-hero-copy{min-width:0}.profile-heading-username{display:inline-block!important;color:var(--cyan)!important;font-size:.58em!important;letter-spacing:.02em;vertical-align:middle;overflow-wrap:anywhere}
+.profile-hero-copy{min-width:0}.profile-heading-username{display:block!important;color:var(--cyan)!important;font-size:1em!important;letter-spacing:.02em;vertical-align:middle;overflow-wrap:anywhere}
 .profile-twitch-avatar{width:86px;height:86px;flex:0 0 86px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;background:linear-gradient(145deg,rgba(17,217,247,.16),rgba(17,217,247,.035));border:2px solid rgba(17,217,247,.55);box-shadow:0 0 0 5px rgba(17,217,247,.045),0 0 24px rgba(17,217,247,.12);font:700 28px Rajdhani,sans-serif;color:var(--cyan)}
 .profile-twitch-avatar img{width:100%;height:100%;object-fit:cover;display:block}
 .profile-twitch-avatar img[hidden]{display:none!important}
@@ -765,7 +765,7 @@ async function renderAdminPublicPreview(username){
  const lede=document.querySelector('.profile-hero .lede');
  const cardTitle=document.querySelector('.profile-account-card h2');
  if(eyebrow)eyebrow.textContent=isPublicViewer?'// VIEWER PROFILE':'// ADMIN PREVIEW';
- if(title)title.innerHTML='PLAYER <span>PROFILE</span>';
+ if(title)title.textContent=String(username||'').replace(/^@/,'').trim();
  if(lede)lede.textContent=isPublicViewer?'Public AdhemSwag progression, FNC Points and earned level badge.':'This is the public-facing profile view for the selected viewer.';
  if(cardTitle)cardTitle.textContent=isPublicViewer?'VIEWER PROFILE':'PUBLIC PROFILE';
  let client=window.AdhemAuth;
@@ -919,7 +919,7 @@ window.addEventListener('adhem:viewer', async function(e){
  if(!d.authId){set('profileTwitchStatus','Not connected');set('profileCompleteStatus','Connect Twitch first');set('profileViewerStatus','CONNECT TWITCH FIRST');return}
  set('profileTwitchStatus',p&&p.twitch_username?'Connected as '+p.twitch_username:'Not connected');
   const ownHeadingUsername=document.getElementById('profileHeadingUsername');
-  if(ownHeadingUsername)ownHeadingUsername.textContent=p&&p.twitch_username?'— '+String(p.twitch_username).replace(/^@/,'').trim():'';
+  if(ownHeadingUsername)ownHeadingUsername.textContent=p&&p.twitch_username?String(p.twitch_username).replace(/^@/,'').trim():'';
  // Profile status uses the existing profile_complete flag; Twitch watch tracking remains separate.
  let profileIsComplete=!!(p&&p.profile_complete===true);
  set('profileCompleteStatus',profileIsComplete?'🟢 PROFILE ACTIVE':'🟠 PROFILE INCOMPLETE');
