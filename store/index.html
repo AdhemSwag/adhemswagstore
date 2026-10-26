@@ -433,9 +433,9 @@ body.mobile-menu-open{overflow:hidden!important}
   <h1>FNC <span>STORE</span></h1>
   <p class="lede">Use your FNC Points to redeem available AdhemSwag rewards. Every redemption is checked securely on the server before FNC or stock is changed.</p>
   <section class="exitlag-promo-banner" id="storePromoBanner" aria-label="Store promotions">
-    <div class="exitlag-promo-top"><span class="exitlag-promo-fire">🔥</span><span>ADHEMSWAG PROMOTIONS</span><span class="exitlag-promo-pill" id="storePromoPill">−30% • ENDS 23 NOV 2026</span></div>
+    <div class="exitlag-promo-top"><span class="exitlag-promo-fire">🔥</span><span>THE EXITLAG BLACK FRIDAY WARM-UP 2026</span><span class="exitlag-promo-pill" id="storePromoPill">−30% • ENDS 23 NOV 2026</span></div>
     <div class="exitlag-promo-content" id="storePromoContent">
-      <div class="exitlag-promo-copy"><div class="exitlag-promo-kicker">LIMITED DEAL • GAMING PERFORMANCE</div><h2>EXITLAG CODE — 7 DAYS</h2><p>Get your 7-day access code with automatic delivery after a successful redemption.</p><div class="exitlag-promo-price-row"><span class="exitlag-promo-was">1,500 FNC</span><strong>1,050 FNC</strong><span class="exitlag-promo-off">−30%</span></div><a class="exitlag-promo-cta" href="#rewardGrid">CLAIM PROMOTION <span>↗</span></a></div>
+      <div class="exitlag-promo-copy"><div class="exitlag-promo-kicker">BLACK FRIDAY WARM-UP 2026</div><h2>The ExitLag Black Friday Warm-Up 2026</h2><p>Get your 7-day access code with automatic delivery after a successful redemption.</p><div class="exitlag-promo-price-row"><span class="exitlag-promo-was">1,500 FNC</span><strong>1,050 FNC</strong><span class="exitlag-promo-off">−30%</span></div><a class="exitlag-promo-cta" href="#rewardGrid">CLAIM PROMOTION <span>↗</span></a></div>
       <div class="exitlag-promo-stamp"><span>EXCLUSIVE</span><strong>−30%</strong><span>EXITLAG DEAL</span></div>
     </div>
     <div class="store-promo-dots" id="storePromoDots" aria-label="Promotion slides" hidden></div>
@@ -582,10 +582,10 @@ body.mobile-menu-open{overflow:hidden!important}
     const exitlagPromoExpiry = Date.parse('2026-11-23T23:59:59+01:00');
     const exitlag = Date.now() <= exitlagPromoExpiry ? (rewards || []).find(r => /exitlag/i.test(r.name || '') && Number(r.fnc_cost) === 1050) : null;
     if (exitlag) promos.push({
-      id: exitlag.id, name: 'EXITLAG CODE — 7 DAYS',
+      id: exitlag.id, name: 'The ExitLag Black Friday Warm-Up 2026',
       desc: 'Get your 7-day access code with automatic delivery after a successful redemption.',
       price: 1050, was: 1500, discount: 30, end: 'ENDS 23 NOV 2026',
-      kicker: 'LIMITED DEAL • GAMING PERFORMANCE', stamp: 'EXITLAG DEAL'
+      kicker: 'BLACK FRIDAY WARM-UP 2026', stamp: 'BLACK FRIDAY'
     });
     (rewards || []).forEach(r => {
       if (!r || (exitlag && r.id === exitlag.id)) return;
