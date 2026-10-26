@@ -79,8 +79,9 @@
       if (el.id === 'adhemswag-language-switcher' || el.closest?.('#adhemswag-language-switcher')) continue;
       for (const attr of attrs) {
         if (!el.hasAttribute?.(attr)) continue;
-        if (!el.dataset['adhemOrig' + attr]) el.dataset['adhemOrig' + attr] = el.getAttribute(attr);
-        const orig = el.dataset['adhemOrig' + attr];
+        const key = 'adhemOrig' + attr.replace(/[^a-z0-9]/gi, '');
+        if (!el.dataset[key]) el.dataset[key] = el.getAttribute(attr);
+        const orig = el.dataset[key];
         const translated = lang === 'en' ? orig : ((translations[lang] || {})[orig] || orig);
         if (el.getAttribute(attr) !== translated) el.setAttribute(attr, translated);
       }
