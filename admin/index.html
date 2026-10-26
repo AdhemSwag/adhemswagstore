@@ -769,9 +769,13 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
           <strong style="color:var(--cyan)">STATUS:</strong> <span id="twitchWatchState">Not connected</span>
         </div>
         <div class="field" style="margin-top:12px">
+          <label for="twitchWatchClientId">Twitch Developer App Client ID (Watch Tracking)</label>
+          <input id="twitchWatchClientId" type="text" autocomplete="off" placeholder="Client ID from the same Twitch Developer app" />
+        </div>
+        <div class="field" style="margin-top:12px">
           <label for="twitchWatchClientSecret">Twitch Developer App Client Secret (Watch Tracking)</label>
-          <input id="twitchWatchClientSecret" type="password" autocomplete="new-password" placeholder="Enter the secret for the same Twitch App Client ID" />
-          <p style="margin:6px 0 0;color:var(--muted);font-size:12px">Entered only here and saved to the secure server vault. Do not use your Supabase secret or paste it into chat.</p>
+          <input id="twitchWatchClientSecret" type="password" autocomplete="new-password" placeholder="Secret from that same Twitch app" />
+          <p style="margin:6px 0 0;color:var(--muted);font-size:12px">Client ID and secret must belong to the same Twitch app. The secret is saved only in the secure server vault; never paste it into chat.</p>
         </div>
         <div class="actions">
           <button class="btn" id="saveTwitchWatchSecret" type="button">SAVE CLIENT SECRET SECURELY</button>
@@ -901,7 +905,7 @@ async function captureTwitchWatchCallback() {
 
     // Read Twitch token identity once so the backend can persist the app/user IDs
     // alongside the fresh OAuth credentials. No client secret is exposed in the browser.
-    let twitchClientId = null;
+    let twitchClientId = (document.getElementById('twitchWatchClientId')?.value || '').trim() || null;
     let twitchBroadcasterId = null;
     try {
       const validateResponse = await fetch('https://id.twitch.tv/oauth2/validate', {
@@ -909,7 +913,11 @@ async function captureTwitchWatchCallback() {
       });
       if (validateResponse.ok) {
         const validation = await validateResponse.json();
-        twitchClientId = validation?.client_id || null;
+        const oauthClientId = validation?.client_id || null;
+        if (twitchClientId && oauthClientId && twitchClientId !== oauthClientId) {
+          throw new Error('The Watch Tracking Client ID does not match the Twitch app used for this login. Use the same app Client ID and secret.');
+        }
+        twitchClientId = twitchClientId || oauthClientId;
         twitchBroadcasterId = validation?.user_id || null;
       }
     } catch (_) {}
@@ -2149,14 +2157,15 @@ document.getElementById('saveTwitchWatchSecret')?.addEventListener('click', asyn
   const status = document.getElementById('twitchWatchStatus');
   const input = document.getElementById('twitchWatchClientSecret');
   const clientSecret = (input?.value || '').trim();
-  if (!clientSecret) {
-    if (status) { status.style.display='block'; status.textContent='Enter the Twitch Developer App Client Secret first.'; }
+  const clientId = (document.getElementById('twitchWatchClientId')?.value || '').trim();
+  if (!clientId || !clientSecret) {
+    if (status) { status.style.display='block'; status.textContent='Enter both the Twitch Watch Tracking Client ID and Client Secret from the same Twitch app.'; }
     return;
   }
   try {
-    if (status) { status.style.display='block'; status.textContent='Saving Client Secret securely…'; }
+    if (status) { status.style.display='block'; status.textContent='Validating and saving Twitch app credentials securely…'; }
     const { data, error } = await supabaseClient.functions.invoke('admin-store-twitch-watch-credentials', {
-      body: { client_secret: clientSecret }
+      body: { client_id: clientId, client_secret: clientSecret }
     });
     if (error) throw error;
     if (!data?.ok) throw new Error(data?.error || 'secret_save_failed');
