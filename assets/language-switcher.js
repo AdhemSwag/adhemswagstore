@@ -662,6 +662,20 @@
       if (rtl) { el.style.setProperty('right', 'auto', 'important'); el.style.setProperty('left', '13px', 'important'); }
       else { el.style.removeProperty('left'); el.style.removeProperty('right'); }
     });
+
+    // Arabic layout: keep the fixed sidebar on the right without covering the page.
+    const pageSelectors = 'body > main, body > .main, body > .page-content, body > .content, body > .dashboard-content, body > .settings-main, body > .faq-page, body > .store-page, body > .admin-main';
+    document.querySelectorAll(pageSelectors).forEach(el => {
+      if (rtl && !mobile) {
+        el.style.setProperty('margin-left', '0', 'important');
+        el.style.setProperty('margin-right', '285px', 'important');
+        el.style.setProperty('width', 'calc(100% - 285px)', 'important');
+        el.style.setProperty('max-width', 'calc(100% - 285px)', 'important');
+        el.style.setProperty('box-sizing', 'border-box', 'important');
+      } else {
+        ['margin-left', 'margin-right', 'width', 'max-width', 'box-sizing'].forEach(p => el.style.removeProperty(p));
+      }
+    });
   }
   function applyAdDirection(lang) {
     const rtl = lang === 'ar';
@@ -672,8 +686,12 @@
         el.style.setProperty('margin-left', '0', 'important');
         el.style.setProperty('margin-right', 'auto', 'important');
         el.style.setProperty('justify-self', 'start', 'important');
+        el.style.setProperty('align-self', 'flex-start', 'important');
+        el.style.setProperty('float', 'left', 'important');
+        el.style.setProperty('max-width', '100%', 'important');
+        el.style.setProperty('box-sizing', 'border-box', 'important');
       } else {
-        ['direction', 'margin-left', 'margin-right', 'justify-self'].forEach(p => el.style.removeProperty(p));
+        ['direction', 'margin-left', 'margin-right', 'justify-self', 'align-self', 'float', 'max-width', 'box-sizing'].forEach(p => el.style.removeProperty(p));
       }
     });
   }
