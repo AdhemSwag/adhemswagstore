@@ -679,20 +679,31 @@
   }
   function applyAdDirection(lang) {
     const rtl = lang === 'ar';
-    const selectors = '.ad-container, .ad-slot, .advertisement, .advertisement-container, .adsbygoogle, [data-ad-slot], [data-ad-client], [id^="google_ads"], [id*="ad-container"], [class*="ad-container"], [id*="advertisement"], [class*="advertisement"]';
+    const selectors = '.ad-container, .ad-slot, .advertisement, .advertisement-container, .adsbygoogle, [data-ad-slot], [data-ad-client], [id^="google_ads"], [id*="ad-container"], [class*="ad-container"], [id*="advertisement"], [class*="advertisement"], iframe[id*="google_ads"], iframe[src*="doubleclick"], iframe[src*="googlesyndication"]';
     document.querySelectorAll(selectors).forEach(el => {
-      if (rtl) {
-        el.style.setProperty('direction', 'ltr', 'important');
-        el.style.setProperty('margin-left', '0', 'important');
-        el.style.setProperty('margin-right', 'auto', 'important');
-        el.style.setProperty('justify-self', 'start', 'important');
-        el.style.setProperty('align-self', 'flex-start', 'important');
-        el.style.setProperty('float', 'left', 'important');
-        el.style.setProperty('max-width', '100%', 'important');
-        el.style.setProperty('box-sizing', 'border-box', 'important');
-      } else {
-        ['direction', 'margin-left', 'margin-right', 'justify-self', 'align-self', 'float', 'max-width', 'box-sizing'].forEach(p => el.style.removeProperty(p));
-      }
+      const targets = [el, el.parentElement, el.parentElement?.parentElement].filter(Boolean);
+      targets.forEach((target, index) => {
+        if (rtl) {
+          target.style.setProperty('direction', 'ltr', 'important');
+          target.style.setProperty('margin-left', '0', 'important');
+          target.style.setProperty('margin-right', 'auto', 'important');
+          target.style.setProperty('justify-self', 'start', 'important');
+          target.style.setProperty('align-self', 'flex-start', 'important');
+          target.style.setProperty('float', 'left', 'important');
+          target.style.setProperty('box-sizing', 'border-box', 'important');
+          if (index > 0) {
+            target.style.setProperty('text-align', 'left', 'important');
+            target.style.setProperty('place-self', 'start', 'important');
+            target.style.setProperty('inset-inline-start', '0', 'important');
+            target.style.setProperty('inset-inline-end', 'auto', 'important');
+            if (getComputedStyle(target).display.includes('flex')) target.style.setProperty('align-items', 'flex-start', 'important');
+          } else {
+            target.style.setProperty('max-width', '100%', 'important');
+          }
+        } else {
+          ['direction', 'margin-left', 'margin-right', 'justify-self', 'align-self', 'float', 'max-width', 'box-sizing', 'text-align', 'place-self', 'inset-inline-start', 'inset-inline-end', 'align-items'].forEach(p => target.style.removeProperty(p));
+        }
+      });
     });
   }
   function addSelector() {
