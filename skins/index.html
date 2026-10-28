@@ -37,7 +37,7 @@ body{padding-left:200px;background:#05070a;background-image:linear-gradient(rgba
 .site-footer-socials{position:relative;z-index:1;border-top:1px solid rgba(17,217,247,.14);padding:25px clamp(20px,4vw,48px);background:rgba(5,7,10,.9);font:11px 'JetBrains Mono',monospace;color:#6b7a80}
 .footer-inner{max-width:1500px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}
 .footer-copy .row{margin:5px 0}.footer-copy a,.footer-socials a{color:#11d9f7;text-decoration:none}
-.footer-socials{display:flex;flex-wrap:wrap;gap:12px}.footer-socials a{font-size:10px}
+.footer-socials{display:flex;flex-wrap:wrap;gap:12px}.footer-socials a{display:inline-flex;align-items:center;justify-content:center;font-size:10px}.footer-socials svg{width:18px;height:18px;fill:currentColor}
 .mobile-menu{border:1px solid rgba(17,217,247,.2);border-radius:4px;background:transparent;color:#11d9f7;padding:8px 10px;font:10px 'JetBrains Mono',monospace}
 @media(max-width:1024px){body{padding-left:200px}.skins-main{padding:34px 22px 50px!important}.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:700px){
@@ -170,7 +170,7 @@ body{padding-left:200px;background:#05070a;background-image:linear-gradient(rgba
   function render() {
     const items = currentItems();
     const shown = items.slice(0, visibleCount);
-    count.innerHTML = '<strong>' + items.length.toLocaleString('fr-FR') + '</strong> skins found · ' + shown.length.toLocaleString('fr-FR') + ' shown';
+    count.innerHTML = '<strong>' + items.length.toLocaleString('en-US') + '</strong> skins found · ' + shown.length.toLocaleString('en-US') + ' shown';
     grid.replaceChildren();
     if (!shown.length) {
       const empty = document.createElement('div');
