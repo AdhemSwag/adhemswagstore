@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#080d11">
+<meta name="description" content="Explore le catalogue CS2 d'AdhemSwag : recherche de skins, filtres par catégorie et arme, et inspection 3D.">
+<title>CS2 Skins — AdhemSwag</title>
+<link rel="icon" href="/favicon.ico">
+<style>
+:root{color-scheme:dark;--cyan:#11D9F7;--bg:#080d11;--panel:#0d151b;--panel2:#101c24;--line:rgba(17,217,247,.18);--muted:#8ea4b1;--white:#edf8fc}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--white);font-family:Inter,Segoe UI,Arial,sans-serif}body{overflow-x:hidden}a{color:inherit;text-decoration:none}button,input,select{font:inherit}.skins-shell{min-height:100vh}.skins-sidebar{position:fixed;inset:0 auto 0 0;width:230px;background:#090f14;border-right:1px solid var(--line);padding:22px 14px;z-index:30;overflow-y:auto}.brand{display:flex;align-items:center;gap:10px;padding:4px 9px 26px;font-weight:900;letter-spacing:.1em}.brand-mark{display:grid;place-items:center;width:34px;height:34px;border:1px solid var(--cyan);border-radius:9px;color:var(--cyan);font-weight:900}.nav-label{font-size:10px;letter-spacing:.2em;color:#607785;padding:10px 10px}.nav-link{display:flex;align-items:center;gap:12px;padding:12px 11px;margin:4px 0;border:1px solid transparent;border-radius:10px;color:#b8cbd4;font-size:13px;font-weight:700}.nav-link:hover,.nav-link.active{background:rgba(17,217,247,.08);border-color:var(--line);color:var(--cyan)}.skins-main{margin-left:230px;padding:28px clamp(16px,3vw,42px) 60px;max-width:1700px}.topline{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:34px}.eyebrow{font-size:11px;letter-spacing:.22em;color:var(--cyan);font-weight:800}.toplinks{display:flex;gap:14px;font-size:12px;color:var(--muted)}.hero{padding:24px 0 26px;border-bottom:1px solid var(--line)}h1{font-size:clamp(32px,5vw,58px);line-height:.98;letter-spacing:-.045em;margin:12px 0 15px;font-weight:950}h1 span{color:var(--cyan)}.hero p{max-width:680px;color:#9eb2bd;line-height:1.7;margin:0;font-size:14px}.hero-meta{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}.pill{border:1px solid var(--line);background:rgba(17,217,247,.05);border-radius:99px;padding:8px 12px;color:#c5d7df;font-size:11px;font-weight:800}.toolbar{display:grid;grid-template-columns:minmax(200px,1.8fr) repeat(2,minmax(145px,1fr)) minmax(125px,.8fr);gap:10px;margin:24px 0 13px}.control{min-width:0;width:100%;border:1px solid rgba(153,186,202,.19);border-radius:10px;background:#0c141a;color:var(--white);padding:12px 13px;outline:none}.control:focus{border-color:var(--cyan);box-shadow:0 0 0 2px rgba(17,217,247,.1)}.resultline{display:flex;justify-content:space-between;align-items:center;gap:12px;color:var(--muted);font-size:12px;margin:15px 0}.resultline strong{color:var(--cyan)}.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px}.skin-card{min-width:0;border:1px solid rgba(139,178,194,.15);border-radius:13px;background:linear-gradient(145deg,#101a21,#0a1116);overflow:hidden;transition:transform .18s,border-color .18s,box-shadow .18s}.skin-card:hover{transform:translateY(-3px);border-color:rgba(17,217,247,.48);box-shadow:0 10px 30px rgba(0,0,0,.18)}.skin-image{height:150px;display:grid;place-items:center;padding:12px;background:radial-gradient(ellipse at center,rgba(17,217,247,.08),transparent 67%);border-bottom:1px solid rgba(139,178,194,.1)}.skin-image img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 9px 8px rgba(0,0,0,.28));transition:transform .2s}.skin-card:hover .skin-image img{transform:scale(1.04)}.skin-placeholder{font-size:11px;color:#6b8490}.skin-info{padding:12px}.skin-type{font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--cyan);font-weight:900;margin-bottom:7px}.skin-name{font-size:14px;line-height:1.35;font-weight:850;min-height:38px;overflow-wrap:anywhere}.skin-weapon{font-size:11px;color:var(--muted);margin-top:5px}.skin-actions{display:flex;gap:7px;margin-top:13px}.inspect-btn{display:flex;align-items:center;justify-content:center;gap:7px;flex:1;border:1px solid rgba(17,217,247,.38);background:rgba(17,217,247,.08);color:var(--cyan);border-radius:8px;padding:10px 8px;font-size:10px;font-weight:900;letter-spacing:.04em;cursor:pointer}.inspect-btn:hover{background:rgba(17,217,247,.16)}.inspect-btn svg{width:15px;height:15px;flex-shrink:0}.empty,.status{border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:24px;text-align:center;color:var(--muted);grid-column:1/-1}.load-more{display:flex;justify-content:center;margin:24px 0}.load-more button{padding:12px 24px;border:1px solid var(--line);border-radius:10px;background:#0d1b22;color:var(--cyan);font-weight:900;cursor:pointer}.footnote{margin-top:38px;padding-top:16px;border-top:1px solid var(--line);color:#6f8793;font-size:11px;line-height:1.7}.mobile-menu{display:none;border:1px solid var(--line);border-radius:9px;background:#0d1b22;color:var(--cyan);padding:9px 12px}.mobile-shade{display:none}
+@media(max-width:1150px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}.toolbar{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:760px){.skins-sidebar{transform:translateX(-110%);transition:transform .2s;width:min(285px,84vw);box-shadow:15px 0 50px #0008}.skins-sidebar.mobile-open{transform:translateX(0)}.mobile-shade.open{display:block;position:fixed;inset:0;background:#0009;z-index:25}.skins-main{margin-left:0;padding:18px 14px 42px}.mobile-menu{display:inline-flex}.topline{margin-bottom:22px}.toplinks{gap:8px}.hero{padding-top:14px}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.skin-image{height:125px;padding:8px}.skin-info{padding:10px}.skin-name{font-size:12px;min-height:34px}.skin-actions{margin-top:10px}.inspect-btn{font-size:9px;padding:9px 4px}.toolbar{grid-template-columns:1fr 1fr}.toolbar .search-control{grid-column:1/-1}.hero-meta{gap:7px}.pill{font-size:10px;padding:7px 9px}}
+@media(max-width:360px){.grid{grid-template-columns:1fr 1fr}.skin-image{height:105px}.skin-actions{gap:4px}}
+html[dir="rtl"] .skins-sidebar{left:auto;right:0;border-right:0;border-left:1px solid var(--line)}html[dir="rtl"] .skins-main{margin-left:0;margin-right:230px}html[dir="rtl"] .skin-info{text-align:right}@media(max-width:760px){html[dir="rtl"] .skins-sidebar{transform:translateX(110%)}html[dir="rtl"] .skins-sidebar.mobile-open{transform:translateX(0)}html[dir="rtl"] .skins-main{margin-right:0}}
+</style>
+</head>
+<body>
+<div class="skins-shell">
+  <nav class="skins-sidebar" id="skinsSidebar" aria-label="Navigation principale">
+    <a class="brand" href="/dashboard/"><span class="brand-mark">AS</span><span>ADHEM<span style="color:var(--cyan)">SWAG</span></span></a>
+    <div class="nav-label">NAVIGATION</div>
+    <a class="nav-link" href="/dashboard/">⌂ <span>Dashboard</span></a>
+    <a class="nav-link" href="/leaderboard/">♜ <span>Leaderboard</span></a>
+    <a class="nav-link" href="/store/">▣ <span>Store</span></a>
+    <a class="nav-link active" href="/skins/">◈ <span>CS2 Skins</span></a>
+    <a class="nav-link" href="/bonuses/">✦ <span>Bonus</span></a>
+    <a class="nav-link" href="/profile/">♙ <span>My Profile</span></a>
+    <a class="nav-link" href="/config/">⚙ <span>Config</span></a>
+    <a class="nav-link" href="/donate/">♡ <span>Donate</span></a>
+    <a class="nav-link" href="/faceit/">◉ <span>FACEIT</span></a>
+  </nav>
+  <div class="mobile-shade" id="mobileShade"></div>
+  <main class="skins-main">
+    <div class="topline">
+      <button class="mobile-menu" id="menuToggle" aria-expanded="false">☰ MENU</button>
+      <div class="eyebrow">ADHEMSWAG / CS2 DATABASE</div>
+      <div class="toplinks"><a href="/dashboard/">SITE</a><a href="/store/">STORE</a></div>
+    </div>
+    <section class="hero">
+      <div class="eyebrow">COUNTER-STRIKE 2 · SKIN EXPLORER</div>
+      <h1>FIND YOUR NEXT<br><span>CS2 SKIN.</span></h1>
+      <p>Explore les skins de Counter-Strike 2, cherche une arme ou un finish et filtre le catalogue. Ouvre ensuite le modèle dans une visionneuse 3D pour examiner son apparence.</p>
+      <div class="hero-meta"><span class="pill">CATALOGUE CS2</span><span class="pill">RECHERCHE INSTANTANÉE</span><span class="pill">INSPECTION 3D</span></div>
+    </section>
+    <section aria-label="Filtres du catalogue">
+      <div class="toolbar">
+        <input class="control search-control" id="skinSearch" type="search" placeholder="Rechercher un skin ou une arme…" autocomplete="off" aria-label="Rechercher un skin">
+        <select class="control" id="categoryFilter" aria-label="Catégorie"><option value="all">Toutes les catégories</option><option value="weapon">Armes</option><option value="knife">Couteaux</option><option value="glove">Gants</option></select>
+        <select class="control" id="weaponFilter" aria-label="Arme"><option value="all">Toutes les armes</option></select>
+        <select class="control" id="sortFilter" aria-label="Tri"><option value="name">Nom A → Z</option><option value="name-desc">Nom Z → A</option></select>
+      </div>
+      <div class="resultline"><span id="resultCount">Chargement du catalogue…</span><span id="sourceStatus">SOURCE : CS2 ITEM DATABASE</span></div>
+      <div class="grid" id="skinGrid"><div class="status">Chargement des skins CS2…</div></div>
+      <div class="load-more" id="loadMoreWrap" hidden><button id="loadMore">AFFICHER PLUS DE SKINS</button></div>
+    </section>
+    <footer class="footnote">Catalogue communautaire alimenté par les données publiques du projet <a href="https://github.com/steamdashboard/cs2-items-api" target="_blank" rel="noopener noreferrer" style="color:var(--cyan)">CS2 Items API</a>. Les boutons d’inspection ouvrent une visionneuse 3D externe. AdhemSwag n’est pas affilié à Valve Corporation.</footer>
+  </main>
+</div>
+<script>
+(() => {
+  const API = 'https://raw.githubusercontent.com/steamdashboard/cs2-items-api/main/data/api';
+  const grid = document.getElementById('skinGrid');
+  const search = document.getElementById('skinSearch');
+  const category = document.getElementById('categoryFilter');
+  const weapon = document.getElementById('weaponFilter');
+  const sort = document.getElementById('sortFilter');
+  const count = document.getElementById('resultCount');
+  const loadWrap = document.getElementById('loadMoreWrap');
+  const loadButton = document.getElementById('loadMore');
+  const sidebar = document.getElementById('skinsSidebar');
+  const shade = document.getElementById('mobileShade');
+  const menuToggle = document.getElementById('menuToggle');
+  const PAGE_SIZE = 48;
+  let allSkins = [];
+  let visibleCount = PAGE_SIZE;
+  const slug = value => String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/™/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+  const categoryFor = name => {
+    const weaponName = String(name).split('|')[0].trim().toLowerCase();
+    if (/gloves|wraps/.test(weaponName)) return 'glove';
+    if (/knife|karambit|bayonet|daggers|dagger|kukri|stiletto|talon|ursus|navaja|paracord|survival|skeleton|nomad|classic|falchion|bowie|huntsman|shadow/.test(weaponName)) return 'knife';
+    return 'weapon';
+  };
+  const labelFor = key => key === 'knife' ? 'COUTEAU' : key === 'glove' ? 'GANTS' : 'ARME';
+  const imageUrl = id => API + '/media/rendered/files/skins/' + encodeURIComponent(id) + '/light.png';
+  const inspectUrl = name => {
+    const parts = String(name).split('|');
+    const weaponSlug = slug(parts[0] || '');
+    const finishSlug = slug(parts.slice(1).join('|') || '');
+    return 'https://cs2inspect.skin/' + encodeURIComponent(weaponSlug) + '/' + encodeURIComponent(finishSlug);
+  };
+  function populateWeapons(items) {
+    const names = [...new Set(items.map(item => String(item.name).split('|')[0].trim()))].sort((a,b)=>a.localeCompare(b));
+    for (const name of names) {
+      const option = document.createElement('option');
+      option.value = name;
+      option.textContent = name;
+      weapon.appendChild(option);
+    }
+  }
+  function currentItems() {
+    const q = search.value.trim().toLocaleLowerCase();
+    let items = allSkins.filter(item => {
+      const cat = categoryFor(item.name);
+      return (!q || item.name.toLocaleLowerCase().includes(q) || String(item.search_slug || '').includes(slug(q))) &&
+        (category.value === 'all' || category.value === cat) &&
+        (weapon.value === 'all' || String(item.name).split('|')[0].trim() === weapon.value);
+    });
+    items.sort((a,b) => sort.value === 'name-desc' ? b.name.localeCompare(a.name) : a.name.localeCompare(b.name));
+    return items;
+  }
+  function render() {
+    const items = currentItems();
+    const shown = items.slice(0, visibleCount);
+    count.innerHTML = '<strong>' + items.length.toLocaleString('fr-FR') + '</strong> skins trouvés · ' + shown.length.toLocaleString('fr-FR') + ' affichés';
+    grid.replaceChildren();
+    if (!shown.length) {
+      const empty = document.createElement('div');
+      empty.className = 'empty';
+      empty.textContent = 'Aucun skin ne correspond à cette recherche. Essaie un autre nom ou filtre.';
+      grid.appendChild(empty);
+    } else {
+      const fragment = document.createDocumentFragment();
+      shown.forEach(item => {
+        const cat = categoryFor(item.name);
+        const weaponName = String(item.name).split('|')[0].trim();
+        const card = document.createElement('article');
+        card.className = 'skin-card';
+        const imageBox = document.createElement('div');
+        imageBox.className = 'skin-image';
+        const img = document.createElement('img');
+        img.loading = 'lazy';
+        img.decoding = 'async';
+        img.alt = item.name;
+        img.src = imageUrl(item.id);
+        img.onerror = () => {
+          img.remove();
+          const fallback = document.createElement('span');
+          fallback.className = 'skin-placeholder';
+          fallback.textContent = 'APERÇU NON DISPONIBLE';
+          imageBox.appendChild(fallback);
+        };
+        imageBox.appendChild(img);
+        const info = document.createElement('div');
+        info.className = 'skin-info';
+        const type = document.createElement('div');
+        type.className = 'skin-type';
+        type.textContent = labelFor(cat);
+        const title = document.createElement('div');
+        title.className = 'skin-name';
+        title.textContent = item.name;
+        const subtitle = document.createElement('div');
+        subtitle.className = 'skin-weapon';
+        subtitle.textContent = weaponName;
+        const actions = document.createElement('div');
+        actions.className = 'skin-actions';
+        const inspect = document.createElement('a');
+        inspect.className = 'inspect-btn';
+        inspect.href = inspectUrl(item.name);
+        inspect.target = '_blank';
+        inspect.rel = 'noopener noreferrer';
+        inspect.setAttribute('aria-label','Inspecter ' + item.name + ' en 3D');
+        inspect.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg><span>INSPECTER EN 3D</span>';
+        actions.appendChild(inspect);
+        info.append(type,title,subtitle,actions);
+        card.append(imageBox,info);
+        fragment.appendChild(card);
+      });
+      grid.appendChild(fragment);
+    }
+    loadWrap.hidden = shown.length >= items.length;
+  }
+  async function init() {
+    try {
+      const response = await fetch(API + '/consumer/browse/skins.json', {cache:'force-cache'});
+      if (!response.ok) throw new Error('catalogue HTTP ' + response.status);
+      const data = await response.json();
+      allSkins = (data.items || []).filter(item => item && item.name && item.id);
+      if (!allSkins.length) throw new Error('catalogue vide');
+      populateWeapons(allSkins);
+      document.getElementById('sourceStatus').textContent = 'SOURCE : CS2 ITEM DATABASE';
+      render();
+    } catch (error) {
+      console.error('CS2 skin catalogue failed to load:', error);
+      grid.innerHTML = '<div class="status">Le catalogue ne peut pas être chargé pour le moment. Vérifie ta connexion puis actualise la page.</div>';
+      count.textContent = 'Catalogue indisponible';
+    }
+  }
+  [search,category,weapon,sort].forEach(control => control.addEventListener(control === search ? 'input' : 'change', () => {visibleCount=PAGE_SIZE;render();}));
+  loadButton.addEventListener('click', () => {visibleCount += PAGE_SIZE;render();});
+  function closeMenu(){sidebar.classList.remove('mobile-open');shade.classList.remove('open');menuToggle.setAttribute('aria-expanded','false');}
+  menuToggle.addEventListener('click',()=>{const open=sidebar.classList.toggle('mobile-open');shade.classList.toggle('open',open);menuToggle.setAttribute('aria-expanded',String(open));});
+  shade.addEventListener('click',closeMenu);
+  sidebar.querySelectorAll('a').forEach(a=>a.addEventListener('click',closeMenu));
+  init();
+})();
+</script>
+<script src="/assets/language-switcher.js?v=1" defer></script>
+<script src="/assets/skins-nav.js?v=1" defer></script>
+</body>
+</html>
