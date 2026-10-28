@@ -4,12 +4,20 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#080d11">
-<meta name="description" content="Explore le catalogue CS2 d'AdhemSwag : recherche de skins, filtres par catégorie et arme, et inspection 3D.">
+<meta name="description" content="Explore the AdhemSwag CS2 skins catalogue with search, weapon and category filters, and 3D inspection.">
 <title>CS2 Skins — AdhemSwag</title>
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://adhemswag.com/skins/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://adhemswag.com/skins/">
+<meta property="og:title" content="CS2 Skins — AdhemSwag">
+<meta property="og:description" content="Explore the AdhemSwag CS2 skins catalogue with search, weapon and category filters, and 3D inspection.">
+<meta property="og:image" content="https://adhemswag.com/og-image.jpg">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/mobile-sidebar.css?v=1">
+
 <link rel="icon" href="/favicon.ico">
 <style>
 :root{color-scheme:dark;--cyan:#11D9F7;--bg:#080d11;--panel:#0d151b;--panel2:#101c24;--line:rgba(17,217,247,.18);--muted:#8ea4b1;--white:#edf8fc}
@@ -579,7 +587,7 @@ body.mobile-menu-open{overflow:hidden!important}
     } catch (error) {
       console.error('CS2 skin catalogue failed to load:', error);
       grid.innerHTML = '<div class="status">The catalogue could not be loaded. Check your connection and refresh the page.</div>';
-      count.textContent = 'Catalogue indisponible';
+      count.textContent = 'Catalogue unavailable';
     }
   }
   [search,category,weapon,sort].forEach(control => control.addEventListener(control === search ? 'input' : 'change', () => {visibleCount=PAGE_SIZE;render();}));
