@@ -27,7 +27,7 @@
       link.style.setProperty('text-decoration','none');
       link.style.setProperty('font-size','13px');
     }
-    if (location.pathname.replace(/\\/$/, '') === '/skins') {
+    if (location.pathname.replace(/\/$/, '') === '/skins') {
       link.classList.add('active');
       link.setAttribute('aria-current', 'page');
     }
