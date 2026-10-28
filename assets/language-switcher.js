@@ -781,3 +781,17 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, {once:true});
   else init();
 })();
+
+/* Shared CS2 Skins navigation entry — intentionally isolated from language logic. */
+(function(){
+  function loadAdhemSkinsNav(){
+    if(document.querySelector('script[data-adhem-skins-nav-loader]')) return;
+    var script=document.createElement('script');
+    script.src='/assets/skins-nav.js?v=1';
+    script.defer=true;
+    script.setAttribute('data-adhem-skins-nav-loader','1');
+    document.head.appendChild(script);
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',loadAdhemSkinsNav,{once:true});
+  else loadAdhemSkinsNav();
+})();
