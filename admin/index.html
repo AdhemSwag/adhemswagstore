@@ -801,6 +801,19 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
           <p style="margin:8px 0 0">Add this exact URL under your Twitch Developer Console app's OAuth Redirect URLs before connecting. Then authorize using the dedicated bot Twitch account and make that account a moderator in AdhemSwag's channel.</p>
         </div>
         <div id="storeChatBotStatus" class="notice" style="display:none;margin-top:10px" aria-live="polite"></div>
+        <div class="notice" style="margin-top:14px;border-color:rgba(17,217,247,.45)">
+          <strong style="color:var(--cyan)">MIX IT UP · STORE PURCHASE CHAT ALERTS</strong>
+          <p style="margin:8px 0">In Mix It Up → Services → Webhooks, create a webhook, add a command, map the JSON field <code>message</code> to the Special Identifier <code>storePurchaseMessage</code>, then add a Chat Message action containing <code>$storePurchaseMessage</code>. Save and copy the webhook URL here.</p>
+          <div class="field" style="margin-top:10px">
+            <label for="storeMixItUpWebhookUrl">Mix It Up Webhook URL (private)</label>
+            <input id="storeMixItUpWebhookUrl" type="password" autocomplete="off" placeholder="https://desktop.api.mixitup.bot/api/webhook/…?secret=…">
+            <p style="margin:6px 0 0;color:var(--muted);font-size:12px">This URL contains a private trigger secret. It is saved server-side and never displayed again. Do not share it publicly.</p>
+          </div>
+          <div class="actions">
+            <button class="btn primary" id="saveStoreMixItUpWebhook" type="button">SAVE MIX IT UP WEBHOOK</button>
+          </div>
+          <div id="storeMixItUpStatus" class="notice" style="display:none;margin-top:10px" aria-live="polite"></div>
+        </div>
       </div>
     </section>
     <section id="stream-chat-integration" class="panel">
@@ -2132,6 +2145,27 @@ document.getElementById('saveStoreChatBotApp')?.addEventListener('click', async 
     setStoreChatBotStatus('Bot app credentials saved. Add the exact Redirect URL shown above in Twitch Developer Console, then click CONNECT STORE BOT.');
   }catch(error){
     setStoreChatBotStatus('Could not save bot app credentials: '+(error?.message||'Unknown error'),true);
+  }
+});
+document.getElementById('saveStoreMixItUpWebhook')?.addEventListener('click', async () => {
+  if(!adminReady)return;
+  const status=document.getElementById('storeMixItUpStatus');
+  const webhookUrl=document.getElementById('storeMixItUpWebhookUrl')?.value?.trim()||'';
+  if(!webhookUrl){if(status){status.style.display='block';status.textContent='Paste the webhook URL copied from Mix It Up.';}return;}
+  try{
+    if(status){status.style.display='block';status.textContent='Saving Mix It Up webhook securely…';}
+    const session=await getStoreChatBotAdminSession();
+    const {data,error}=await supabaseClient.functions.invoke('admin-store-chat-mixitup-config',{
+      body:{webhook_url:webhookUrl},
+      headers:{Authorization:'Bearer '+session.access_token}
+    });
+    if(error)throw error;
+    if(!data?.ok)throw new Error(data?.message||data?.error||'Could not save Mix It Up webhook.');
+    const input=document.getElementById('storeMixItUpWebhookUrl');
+    if(input)input.value='';
+    if(status)status.textContent='Mix It Up webhook saved securely. The Store chat queue will now send purchase alerts through Mix It Up.';
+  }catch(error){
+    if(status){status.style.display='block';status.style.borderColor='#e45b68';status.textContent='Could not save Mix It Up webhook: '+(error?.message||'Unknown error');}
   }
 });
 document.getElementById('connectStoreChatBot')?.addEventListener('click', async () => {
