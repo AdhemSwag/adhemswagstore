@@ -539,7 +539,7 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
           <p>Add promo / digital access codes only to rewards created as <strong style="color:var(--cyan)">ACCESS CODE</strong>. Item / Skin rewards are kept separate and use manual stock. A code is assigned automatically to the viewer immediately after a successful Store purchase and then appears in their MY PROFILE.</p>
           <div class="form-grid">
             <div class="field"><label>Reward</label><select id="accessCodeReward"></select></div>
-            <div class="field" id="accessCodeOperatorWrap" style="display:none"><label>FLEXY operator</label><select id="accessCodeOperator"><option value="">Choose operator</option><option value="DJEZZY">Djezzy</option><option value="OOREDOO">Ooredoo</option><option value="MOBILIS">Mobilis</option></select></div>
+            <div class="field" id="accessCodeOperatorWrap"><label>FLEXY operator</label><select id="accessCodeOperator"><option value="">Choose operator</option><option value="DJEZZY">Djezzy</option><option value="OOREDOO">Ooredoo</option><option value="MOBILIS">Mobilis</option></select></div>
             <div class="field"><label>Product access code</label><input id="accessCodeInput" type="text" maxlength="200" placeholder="PROMO-XXXX-XXXX"></div>
           </div>
           <div class="actions"><button class="btn primary" id="addAccessCode">ADD ACCESS CODE</button><button class="btn" id="refreshAccessCodes">REFRESH</button></div>
@@ -1908,7 +1908,9 @@ document.getElementById('addAccessCode')?.addEventListener('click',async()=>{
   const status=document.getElementById('accessCodeStatus');
   const code=input?.value.trim();
   if(!rewardId||!code){if(status){status.style.display='block';status.textContent='Choose an ACCESS CODE reward and enter a code.';}return;}
-  const {error}=await supabaseClient.from('reward_access_codes').insert({reward_id:rewardId,code});
+  const operator=document.getElementById('accessCodeOperator')?.value||null;
+  if(/flexy/i.test(selectedRewardName)&&!operator){if(status){status.style.display='block';status.textContent='Choose Djezzy, Ooredoo or Mobilis for this FLEXY ticket.';}return;}
+  const {error}=await supabaseClient.from('reward_access_codes').insert({reward_id:rewardId,code,operator:/flexy/i.test(selectedRewardName)?operator:null});
   if(status){status.style.display='block';status.textContent=error?'Add failed: '+error.message:'Access code added.';}
   if(!error&&input)input.value='';
   await loadAccessCodes();
