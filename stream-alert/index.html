@@ -3,65 +3,116 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>AdhemSwag - The Home of your favorite streamer</title>
+<title>AdhemSwag Store Purchase Alert</title>
 <style>
+:root{color-scheme:dark}
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:transparent;font-family:Arial,sans-serif}
-#alert{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(.86);width:min(900px,90vw);padding:28px 34px;border:1px solid rgba(17,217,247,.7);background:rgba(5,7,10,.94);box-shadow:0 0 35px rgba(17,217,247,.25);color:#eaf6f8;opacity:0;visibility:hidden;text-align:center;transition:opacity .25s,transform .25s}
-#alert.show{opacity:1;visibility:visible;transform:translate(-50%,-50%) scale(1)}
-.kicker{font:700 16px monospace;letter-spacing:.18em;color:#11d9f7;text-transform:uppercase}
-.reward{margin-top:8px;font:700 clamp(28px,4vw,54px) Arial;text-transform:uppercase}
-.cost{margin-top:8px;font:700 14px monospace;color:#91a6ac}
-@keyframes pulse{0%,100%{box-shadow:0 0 25px rgba(17,217,247,.2)}50%{box-shadow:0 0 55px rgba(17,217,247,.55)}}
-#alert.show{animation:pulse 1.2s ease-in-out infinite}
+#alert{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(.82);width:min(900px,90vw);padding:30px 34px;border:1px solid rgba(17,217,247,.78);background:linear-gradient(135deg,rgba(5,7,10,.97),rgba(7,19,24,.96));box-shadow:0 0 35px rgba(17,217,247,.25),inset 0 0 28px rgba(17,217,247,.045);color:#eaf6f8;opacity:0;visibility:hidden;text-align:center;transition:opacity .3s ease,transform .3s ease}
+#alert.show{opacity:1;visibility:visible;transform:translate(-50%,-50%) scale(1);animation:pulse 1.35s ease-in-out infinite}
+.kicker{font:700 15px monospace;letter-spacing:.2em;color:#11d9f7;text-transform:uppercase}
+.viewer{margin-top:12px;font:600 16px monospace;color:#9fb6bd}
+.reward{margin-top:8px;font:700 clamp(28px,4vw,54px) Arial;text-transform:uppercase;overflow-wrap:anywhere;text-shadow:0 0 18px rgba(17,217,247,.2)}
+.cost{margin-top:12px;font:700 15px monospace;color:#11d9f7;letter-spacing:.08em}
+@keyframes pulse{0%,100%{box-shadow:0 0 25px rgba(17,217,247,.2),inset 0 0 25px rgba(17,217,247,.04)}50%{box-shadow:0 0 60px rgba(17,217,247,.58),inset 0 0 35px rgba(17,217,247,.09)}}
+@media(max-width:600px){#alert{padding:22px 18px}.kicker{font-size:11px}.viewer{font-size:13px}.cost{font-size:12px}}
 </style>
 </head>
 <body>
-<div id="alert"><div class="kicker">FNC REWARD REDEEMED</div><div class="reward" id="reward"></div><div class="cost" id="cost"></div></div>
+<div id="alert" role="status" aria-live="polite">
+  <div class="kicker">NEW STORE PURCHASE</div>
+  <div class="viewer" id="viewer"></div>
+  <div class="reward" id="reward"></div>
+  <div class="cost" id="cost"></div>
+</div>
 <script>
 const endpoint='https://lpmocfdfpebcaseffugg.supabase.co/functions/v1/stream-reward-alert';
-const box=document.getElementById('alert'),reward=document.getElementById('reward'),cost=document.getElementById('cost');
-let since=new Date(Date.now()-30000).toISOString(),seen=new Set(),busy=false;
+const box=document.getElementById('alert');
+const viewer=document.getElementById('viewer');
+const reward=document.getElementById('reward');
+const cost=document.getElementById('cost');
+let since=new Date(Date.now()-30000).toISOString();
+let seen=new Set();
+let busy=false;
+let audioContext=null;
+let alertQueue=[];
+let showing=false;
+let hideTimer=null;
 
 function playSound(){
   try{
-    const C=window.AudioContext||window.webkitAudioContext;
-    if(C){
-      const c=new C(),o=c.createOscillator(),g=c.createGain();
-      o.type='sine';o.frequency.value=740;g.gain.value=.08;
-      o.connect(g);g.connect(c.destination);o.start();
-      setTimeout(()=>{o.frequency.value=980},90);
-      setTimeout(()=>{o.stop();c.close()},220);
-    }
-  }catch(e){}
+    const AudioCtx=window.AudioContext||window.webkitAudioContext;
+    if(!AudioCtx)return;
+    if(!audioContext)audioContext=new AudioCtx();
+    const ctx=audioContext;
+    const start=ctx.currentTime;
+    const notes=[659.25,880,1174.66,880];
+    if(ctx.state==='suspended')ctx.resume().catch(()=>{});
+    notes.forEach((frequency,index)=>{
+      const oscillator=ctx.createOscillator();
+      const gain=ctx.createGain();
+      const at=start+index*.18;
+      oscillator.type='triangle';
+      oscillator.frequency.setValueAtTime(frequency,at);
+      gain.gain.setValueAtTime(.0001,at);
+      gain.gain.exponentialRampToValueAtTime(.20,at+.025);
+      gain.gain.exponentialRampToValueAtTime(.0001,at+.16);
+      oscillator.connect(gain);
+      gain.connect(ctx.destination);
+      oscillator.start(at);
+      oscillator.stop(at+.17);
+    });
+  }catch(error){}
 }
 
-function show(a){
-  reward.textContent=a.reward||'FNC Reward';
-  cost.textContent=Number(a.fnc||0).toLocaleString('en-US')+' FNC';
+function showNext(){
+  if(!alertQueue.length){showing=false;return;}
+  showing=true;
+  const item=alertQueue.shift();
+  viewer.textContent='PURCHASED BY '+(item.viewer||'A VIEWER');
+  reward.textContent=item.reward||'FNC Reward';
+  cost.textContent=Number(item.fnc||0).toLocaleString('en-US')+' FNC';
   box.classList.add('show');
   playSound();
-  setTimeout(()=>box.classList.remove('show'),7000);
+  clearTimeout(hideTimer);
+  hideTimer=setTimeout(()=>{
+    box.classList.remove('show');
+    setTimeout(showNext,350);
+  },12000);
+}
+
+function show(item){
+  alertQueue.push(item);
+  if(!showing)showNext();
 }
 
 async function poll(){
-  if(busy)return;busy=true;
+  if(busy)return;
+  busy=true;
   try{
-    const r=await fetch(endpoint+'?since='+encodeURIComponent(since),{cache:'no-store'});
-    const j=await r.json();
-    for(const a of (j.alerts||[])){
-      if(!seen.has(a.id)){seen.add(a.id);show(a);}
-      if(a.created_at>since)since=a.created_at;
+    const response=await fetch(endpoint+'?since='+encodeURIComponent(since),{cache:'no-store'});
+    if(!response.ok)throw new Error('alert_endpoint_'+response.status);
+    const data=await response.json();
+    for(const item of (data.alerts||[])){
+      if(!seen.has(item.id)){
+        seen.add(item.id);
+        show(item);
+      }
+      if(item.created_at>since)since=item.created_at;
     }
-    if((j.alerts||[]).length && seen.size>200)seen=new Set([...seen].slice(-100));
-  }catch(e){} finally{busy=false}
+    if(seen.size>300)seen=new Set([...seen].slice(-150));
+  }catch(error){
+    // Keep the last successful cursor so a temporary network error does not lose alerts.
+  }finally{
+    busy=false;
+  }
 }
 
 const params=new URLSearchParams(location.search);
 if(params.get('test')==='1'){
-  setTimeout(()=>show({reward:'StatTrak™ Tec-9 | Snek-9 (Minimal Wear)',fnc:3810}),500);
+  setTimeout(()=>show({id:'overlay-test',viewer:'AdhemSwag Viewer',reward:'StatTrak™ Tec-9 | Snek-9 (Minimal Wear)',fnc:3810}),500);
 }
-setInterval(poll,2000);poll();
+setInterval(poll,2000);
+poll();
 </script>
-
 </body>
 </html>
