@@ -544,7 +544,7 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
           </div>
           <div class="actions"><button class="btn primary" id="addAccessCode">ADD ACCESS CODE</button><button class="btn" id="refreshAccessCodes">REFRESH</button></div>
           <div id="accessCodeStatus" class="notice" style="display:none"></div>
-          <div class="table-wrap"><table><thead><tr><th>Reward</th><th>Code</th><th>Status</th><th>Viewer</th><th>Date</th><th>Action</th></tr></thead><tbody id="accessCodeList"><tr><td colspan="6">Loading…</td></tr></tbody></table></div>
+          <div class="table-wrap"><table><thead><tr><th>Reward</th><th>Operator</th><th>Code</th><th>Status</th><th>Viewer</th><th>Date</th><th>Action</th></tr></thead><tbody id="accessCodeList"><tr><td colspan="6">Loading…</td></tr></tbody></table></div>
         </div>
       </div>
     </section>
@@ -1368,14 +1368,14 @@ async function loadAccessCodes(){
   const select=document.getElementById('accessCodeReward');
   if(!tbody||!adminReady)return;
   const rewardId=select?.value||'';
-  let q=supabaseClient.from('reward_access_codes').select('id,code,assigned_user_id,assigned_at,created_at,reward_id,rewards(name),users(twitch_username)').order('created_at',{ascending:false}).limit(200);
+  let q=supabaseClient.from('reward_access_codes').select('id,code,operator,assigned_user_id,assigned_at,created_at,reward_id,rewards(name),users(twitch_username)').order('created_at',{ascending:false}).limit(200);
   if(rewardId) q=q.eq('reward_id',rewardId);
   const {data,error}=await q;
   if(error){tbody.innerHTML='<tr><td colspan="6">Unable to load access codes.</td></tr>';return;}
   if(!data?.length){tbody.innerHTML='<tr><td colspan="6">No access codes yet.</td></tr>';return;}
   tbody.innerHTML=data.map(x=>{
     const used=!!x.assigned_user_id;
-    return '<tr><td>'+escapeHtml(x.rewards?.name||'—')+'</td><td><code>'+escapeHtml(x.code)+'</code></td><td>'+ (used?'USED':'AVAILABLE') +'</td><td>'+escapeHtml(x.users?.twitch_username||'—')+'</td><td>'+new Date(x.assigned_at||x.created_at).toLocaleString()+'</td><td>'+(!used?'<button class="btn danger" data-access-delete="'+x.id+'">DELETE</button>':'—')+'</td></tr>';
+    return '<tr><td>'+escapeHtml(x.rewards?.name||'—')+'</td><td>'+escapeHtml(x.operator||'—')+'</td><td><code>'+escapeHtml(x.code)+'</code></td><td>'+ (used?'USED':'AVAILABLE') +'</td><td>'+escapeHtml(x.users?.twitch_username||'—')+'</td><td>'+new Date(x.assigned_at||x.created_at).toLocaleString()+'</td><td>'+(!used?'<button class="btn danger" data-access-delete="'+x.id+'">DELETE</button>':'—')+'</td></tr>';
   }).join('');
   tbody.querySelectorAll('[data-access-delete]').forEach(btn=>btn.onclick=async()=>{
     if(!confirm('Delete this unused access code?'))return;
