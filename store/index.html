@@ -520,6 +520,9 @@ body.mobile-menu-open{overflow:hidden!important}
   const tradeError = document.getElementById('tradeError');
   const modal = document.getElementById('tradeModal');
   const tradeUrl = document.getElementById('tradeUrl');
+  const flexyOperatorWrap = document.getElementById('flexyOperatorWrap');
+  const flexyOperator = document.getElementById('flexyOperator');
+  const tradeUrlLabel = document.querySelector('label[for="tradeUrl"]');
   const tradeCancel = document.getElementById('tradeCancel');
   const tradeConfirm = document.getElementById('tradeConfirm');
   const resultModal = document.getElementById('redeemResultModal');
@@ -649,7 +652,8 @@ body.mobile-menu-open{overflow:hidden!important}
       const stock = !stockAvailable ? 'SOLD OUT' : (stockCount == null ? 'IN STOCK' : 'IN STOCK · ' + stockCount + ' AVAILABLE');
       const fncCost = Number(r.fnc_cost||0);
       const levelRequired = Number(r.level_required||1);
-      const monthlyLimited = !!r.uses_access_codes;
+      const isFlexy = /flexy/i.test(r.name||'');
+      const monthlyLimited = !!r.uses_access_codes && !isFlexy;
       const monthlyUsed = monthlyLimited && monthlyCodeRewardIds.has(r.id);
       const signedIn = !!viewer;
       const profileComplete = !!viewer?.profile_complete;
@@ -700,9 +704,17 @@ body.mobile-menu-open{overflow:hidden!important}
     selectedReward = reward;
     if (tradeError) { tradeError.textContent=''; tradeError.style.display='none'; }
     const needsTrade = /skin/i.test(reward.name||'');
-    if (!needsTrade) return redeem(null);
+    const isFlexy = /flexy/i.test(reward.name||'');
+    if (!needsTrade && !isFlexy) return redeem(null,null);
+    modal.querySelector('#tradeModalTitle').textContent = isFlexy ? 'FLEXY RECHARGE' : 'Steam Trade Link';
+    modal.querySelector('#tradeModalText').textContent = isFlexy ? 'Choose your mobile operator. Your matching ticket will be delivered to MY PROFILE → MY ACCESS CODES.' : 'Enter your Steam Trade Link for this reward. It is saved with the redemption for delivery.';
+    if(flexyOperatorWrap) flexyOperatorWrap.style.display = isFlexy ? 'block' : 'none';
+    if(flexyOperator) flexyOperator.value = '';
+    if(tradeUrlLabel) tradeUrlLabel.style.display = needsTrade ? 'block' : 'none';
+    tradeUrl.style.display = needsTrade ? 'block' : 'none';
     tradeUrl.value = viewer?.steam_trade_url || '';
-    modal.classList.add('open'); modal.setAttribute('aria-hidden','false'); tradeUrl.focus();
+    modal.classList.add('open'); modal.setAttribute('aria-hidden','false');
+    if(isFlexy) flexyOperator?.focus(); else tradeUrl.focus();
   }
   function closeModal(){modal.classList.remove('open');modal.setAttribute('aria-hidden','true');selectedReward=null;if(tradeError){tradeError.textContent='';tradeError.style.display='none'}}
   function closeResult(){resultModal.classList.remove('open');resultModal.setAttribute('aria-hidden','true')}
@@ -717,14 +729,14 @@ body.mobile-menu-open{overflow:hidden!important}
   modal.addEventListener('click',e=>{if(e.target===modal)closeModal()});
   resultClose.addEventListener('click',closeResult);
   resultModal.addEventListener('click',e=>{if(e.target===resultModal)closeResult()});
-  tradeConfirm.addEventListener('click',()=>redeem(tradeUrl.value.trim()));
-  async function redeem(url) {
+  tradeConfirm.addEventListener('click',()=>redeem(tradeUrl.value.trim(),flexyOperator?.value||null));
+  async function redeem(url,operator) {
     const reward = selectedReward;
     if (!reward) return;
     hideSay();
     if (tradeError) { tradeError.textContent=''; tradeError.style.display='none'; }
     tradeConfirm.disabled = true;
-    const {data,error} = await client.functions.invoke('redeem-reward-v2',{body:{reward_id:reward.id,steam_trade_url:url||null}});
+    const {data,error} = await client.functions.invoke('redeem-reward-v2',{body:{reward_id:reward.id,steam_trade_url:url||null,operator:operator||null}});
     tradeConfirm.disabled = false;
     if (error) {
       let details = null;
@@ -741,7 +753,7 @@ body.mobile-menu-open{overflow:hidden!important}
     }
     closeModal();
     if (data.access_code) {
-      showResult('ACCESS CODE DELIVERED','Your access code was delivered successfully. Open MY PROFILE → MY ACCESS CODES to copy it.','ok');
+      showResult('ACCESS CODE DELIVERED',data.operator ? ('Your '+data.operator+' FLEXY recharge ticket was delivered. Open MY PROFILE → MY ACCESS CODES to copy it.') : 'Your access code was delivered successfully. Open MY PROFILE → MY ACCESS CODES to copy it.','ok');
     } else {
       showResult(data.status==='sent' ? 'REWARD DELIVERED' : 'REDEMPTION SUBMITTED',
         data.status==='sent' ? 'Your reward was delivered successfully.' : 'Your redemption was accepted. FNC has been reserved and the reward is pending admin delivery.',
