@@ -151,6 +151,7 @@ footer a{color:var(--cyan);text-decoration:none}
 .store-message.error{border-color:rgba(255,59,59,.3);color:#ff8585}
 .store-message.ok{border-color:rgba(72,220,150,.3);color:#72e0a9}
 .store-filters{display:flex;flex-wrap:wrap;gap:12px;margin-top:22px;align-items:center}.store-filters label{display:flex;align-items:center;gap:9px;font:10px 'JetBrains Mono',monospace;letter-spacing:.08em;color:#71848a}.store-filters select{min-width:155px;padding:11px 12px;background:#080c10;color:#eaf6f8;border:1px solid rgba(17,217,247,.2);font:10px 'JetBrains Mono',monospace;outline:none}.store-filters select:focus{border-color:#11d9f7}.reward-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:18px}
+.reward-grid{scroll-margin-top:24px}.reward-card{scroll-margin-top:24px;transition:box-shadow .2s,border-color .2s}.reward-card.promo-target-highlight{border-color:var(--cyan,#11d9f7)!important;box-shadow:0 0 0 2px rgba(17,217,247,.22),0 12px 34px rgba(0,0,0,.3)!important}
 .reward-card{background:var(--panel);border:1px solid var(--line);padding:0;overflow:hidden;display:flex;flex-direction:column;min-height:360px}
 .reward-image{width:100%;height:180px;object-fit:cover;background:#070a0d;border-bottom:1px solid var(--line)}
 .reward-image.empty{display:flex;align-items:center;justify-content:center;font:11px 'JetBrains Mono',monospace;color:#3f5056}
@@ -613,6 +614,25 @@ body.mobile-menu-open{overflow:hidden!important}
     const heading = document.getElementById('storePromoHeading');
     const dots = document.getElementById('storePromoDots');
     if (!banner || !content || !pill || !heading || !dots) return;
+    /* Promo CTAs scroll to the exact reward card on both desktop and mobile. */
+    content.onclick = event => {
+      const cta = event.target.closest('[data-promo-target]');
+      if (!cta) return;
+      event.preventDefault();
+      const targetId = cta.dataset.promoTarget;
+      let target = targetId === 'flexy' ? document.getElementById('flexyRewardCard') : null;
+      if (!target && targetId !== 'flexy') {
+        target = [...grid.querySelectorAll('[data-reward-card-id]')].find(card => card.dataset.rewardCardId === targetId) || null;
+      }
+      target = target || grid;
+      target.scrollIntoView({behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block:'start'});
+      if (target !== grid) {
+        target.setAttribute('tabindex','-1');
+        target.focus({preventScroll:true});
+        target.classList.add('promo-target-highlight');
+        window.setTimeout(() => target.classList.remove('promo-target-highlight'), 1600);
+      }
+    };
     if (promoRotationTimer) { clearInterval(promoRotationTimer); promoRotationTimer = null; }
     const promos = [];
     const exitlagPromoExpiry = Date.parse('2026-11-23T23:59:59+01:00');
@@ -719,7 +739,7 @@ body.mobile-menu-open{overflow:hidden!important}
     else if (!flexyEnoughMin) flexyStatus = '1,500 FNC REQUIRED FOR THE 100 DA RECHARGE';
     const flexyImageHtml = flexyImage ? '<img class="reward-image" src="'+esc(flexyImage)+'" alt="FLEXY mobile recharge">' : '<div class="reward-image empty">FLEXY RECHARGE</div>';
     const flexyAmountsHtml = '<span class="reward-chip">100 DA · 1,500 FNC</span><span class="reward-chip">200 DA · 3,000 FNC</span>';
-    const flexyCardHtml = flexyRows.length ? '<article class="reward-card">'+flexyImageHtml+'<div class="reward-body"><h3>FLEXY — MOBILE RECHARGE</h3><div class="reward-desc">Choose the amount, operator and Algerian mobile number. The admin will process your recharge manually.</div><div class="reward-meta">'+flexyAmountsHtml+'<span class="reward-chip">LEVEL <strong>'+flexyLevel+'</strong></span></div><div class="reward-status '+(flexySignedIn && active && flexyProfileReady && flexyHasStock && flexyEnoughMin ? 'ready' : '')+'">'+esc(flexyStatus)+'</div><button class="reward-redeem" data-flexy="1" data-signin="'+(!flexySignedIn?'1':'0')+'" '+((!flexySignedIn || (active && flexyProfileReady && flexyHasStock && Number(viewer?.level||1)>=flexyLevel))?'':'disabled')+'>'+(!flexySignedIn?'SIGN IN TO REDEEM':'CHOOSE RECHARGE')+'</button></div></article>' : '';
+    const flexyCardHtml = flexyRows.length ? '<article class="reward-card" id="flexyRewardCard" data-reward-kind="flexy">'+flexyImageHtml+'<div class="reward-body"><h3>FLEXY — MOBILE RECHARGE</h3><div class="reward-desc">Choose the amount, operator and Algerian mobile number. The admin will process your recharge manually.</div><div class="reward-meta">'+flexyAmountsHtml+'<span class="reward-chip">LEVEL <strong>'+flexyLevel+'</strong></span></div><div class="reward-status '+(flexySignedIn && active && flexyProfileReady && flexyHasStock && flexyEnoughMin ? 'ready' : '')+'">'+esc(flexyStatus)+'</div><button class="reward-redeem" data-flexy="1" data-signin="'+(!flexySignedIn?'1':'0')+'" '+((!flexySignedIn || (active && flexyProfileReady && flexyHasStock && Number(viewer?.level||1)>=flexyLevel))?'':'disabled')+'>'+(!flexySignedIn?'SIGN IN TO REDEEM':'CHOOSE RECHARGE')+'</button></div></article>' : '';
     grid.innerHTML = flexyCardHtml + visibleRewards.map(r => {
       const stockCount = r.stock == null ? null : Math.max(0, Number(r.stock) || 0);
       const stockAvailable = stockCount == null || stockCount > 0;
@@ -762,7 +782,7 @@ body.mobile-menu-open{overflow:hidden!important}
         status = 'READY TO REDEEM';
       }
       const image = r.image_url ? '<img class="reward-image" src="'+esc(r.image_url)+'" alt="'+esc(r.name)+'">' : '<div class="reward-image empty">ADHEMSWAG REWARD</div>';
-      return '<article class="reward-card">'+image+'<div class="reward-body"><h3>'+esc(r.name)+'</h3><div class="reward-desc">'+esc(r.description||'AdhemSwag reward.')+'</div><div class="reward-meta"><span class="reward-chip '+(/exitlag/i.test(r.name||'')&&fncCost===1050?'exitlag-promo-price':'')+'">'+(/exitlag/i.test(r.name||'')&&fncCost===1050?'<span class="exitlag-old-price">'+money(1500)+' FNC</span> <strong>'+money(fncCost)+' FNC</strong> <b class="exitlag-discount">-30%</b>':'<strong>'+money(fncCost)+' FNC</strong>')+'</span><span class="reward-chip">LEVEL <strong>'+levelRequired+'</strong></span><span class="reward-chip">'+esc(stock)+'</span></div><div class="reward-status '+(can?'ready':'')+'">'+esc(status)+'</div><button class="reward-redeem" data-id="'+r.id+'" data-signin="'+(!signedIn?'1':'0')+'" '+((!signedIn||can)?'':'disabled')+'>'+(!signedIn?'SIGN IN TO REDEEM':(monthlyUsed?'MONTHLY LIMIT':'REDEEM'))+'</button></div></article>';
+      return '<article class="reward-card" data-reward-card-id="'+esc(r.id)+'">'+image+'<div class="reward-body"><h3>'+esc(r.name)+'</h3><div class="reward-desc">'+esc(r.description||'AdhemSwag reward.')+'</div><div class="reward-meta"><span class="reward-chip '+(/exitlag/i.test(r.name||'')&&fncCost===1050?'exitlag-promo-price':'')+'">'+(/exitlag/i.test(r.name||'')&&fncCost===1050?'<span class="exitlag-old-price">'+money(1500)+' FNC</span> <strong>'+money(fncCost)+' FNC</strong> <b class="exitlag-discount">-30%</b>':'<strong>'+money(fncCost)+' FNC</strong>')+'</span><span class="reward-chip">LEVEL <strong>'+levelRequired+'</strong></span><span class="reward-chip">'+esc(stock)+'</span></div><div class="reward-status '+(can?'ready':'')+'">'+esc(status)+'</div><button class="reward-redeem" data-id="'+r.id+'" data-signin="'+(!signedIn?'1':'0')+'" '+((!signedIn||can)?'':'disabled')+'>'+(!signedIn?'SIGN IN TO REDEEM':(monthlyUsed?'MONTHLY LIMIT':'REDEEM'))+'</button></div></article>';
     }).join('');    grid.querySelectorAll('.reward-redeem:not(:disabled)').forEach(btn => btn.addEventListener('click',async()=>{
       if(btn.dataset.signin==='1'){
         const {error}=await client.auth.signInWithOAuth({provider:'twitch',options:{redirectTo:window.location.href}});
