@@ -11,12 +11,7 @@
     link.setAttribute('data-adhem-skins-link', '1');
     link.setAttribute('aria-label', 'CS2 Skins');
     link.className = store.className || (mobile ? '' : 'sidebar-link');
-    if (mobile && nav.classList.contains('mobile-bottom-nav')) {
-      link.className = store.className || '';
-      link.innerHTML = icon + '<span>Skins</span>';
-    } else {
-      link.innerHTML = icon + '<span>CS2 Skins</span>';
-    }
+    link.innerHTML = icon + '<span>CS2 Skins</span>';
     link.style.setProperty('display','flex');
     link.style.setProperty('align-items','center');
     link.style.setProperty('gap','12px');
@@ -35,7 +30,6 @@
   }
   function apply() {
     document.querySelectorAll('.sidebar,.mobile-fallback-drawer').forEach(nav => addLink(nav, false));
-    document.querySelectorAll('.mobile-bottom-nav').forEach(nav => addLink(nav, true));
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', apply, {once:true});
   else apply();
