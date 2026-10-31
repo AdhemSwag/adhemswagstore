@@ -494,7 +494,8 @@ body.mobile-menu-open{overflow:hidden!important}
     <h2 id="tradeModalTitle">Steam Trade Link</h2>
     <p id="tradeModalText">Enter your Steam Trade Link for this reward. It is saved with the redemption for delivery.</p>
     <div id="flexyAmountWrap" style="display:none;margin-bottom:14px"><label for="flexyAmount">Choose recharge amount</label><select id="flexyAmount"><option value="100">100 DA — 1,500 FNC</option><option value="200">200 DA — 3,000 FNC</option></select></div>
-    <div id="flexyOperatorWrap" style="display:none"><label for="flexyOperator">Choose mobile operator</label><select id="flexyOperator"><option value="">Select operator</option><option value="DJEZZY">Djezzy</option><option value="OOREDOO">Ooredoo</option><option value="MOBILIS">Mobilis</option></select></div>
+    <div id="flexyOperatorWrap" style="display:none"><label for="flexyOperator">Choose mobile operator</label><select id="flexyOperator"><option value="">Select operator</option><option value="DJEZZY">Djezzy — 07</option><option value="MOBILIS">Mobilis — 06</option><option value="OOREDOO">Ooredoo — 05</option></select></div>
+    <div id="flexyPhoneWrap" style="display:none"><label for="flexyPhone">Mobile phone number</label><input id="flexyPhone" type="tel" inputmode="numeric" autocomplete="tel" maxlength="14" placeholder="07XXXXXXXX / 06XXXXXXXX / 05XXXXXXXX"><p style="margin-top:6px;color:#6f8389;font-size:10px">Enter the 10-digit Algerian number. The prefix must match the selected operator.</p></div>
     <label for="tradeUrl">Steam Trade Link</label>
     <input id="tradeUrl" type="url" maxlength="500" placeholder="https://steamcommunity.com/tradeoffer/new/?partner=...">
     <div class="store-message error" id="tradeError" style="display:none;margin-top:16px;white-space:pre-wrap;overflow-wrap:anywhere"></div>
@@ -550,6 +551,8 @@ body.mobile-menu-open{overflow:hidden!important}
   const flexyAmount = document.getElementById('flexyAmount');
   const flexyOperatorWrap = document.getElementById('flexyOperatorWrap');
   const flexyOperator = document.getElementById('flexyOperator');
+  const flexyPhoneWrap = document.getElementById('flexyPhoneWrap');
+  const flexyPhone = document.getElementById('flexyPhone');
   const tradeUrlLabel = document.querySelector('label[for="tradeUrl"]');
   const tradeCancel = document.getElementById('tradeCancel');
   const tradeConfirm = document.getElementById('tradeConfirm');
@@ -694,10 +697,10 @@ body.mobile-menu-open{overflow:hidden!important}
     const flexyRewards = visibleRewards.filter(r => /flexy/i.test(r.name || ''));
     visibleRewards = visibleRewards.filter(r => !/flexy/i.test(r.name || ''));
     if(!visibleRewards.length && !flexyRewards.length){grid.innerHTML='<div class="empty-rewards">NO PRODUCTS MATCH THIS FILTER.</div>';return;}
-    const flexy100 = flexyRewards.find(r => /100\s*da/i.test(r.name || ''));
-    const flexy200 = flexyRewards.find(r => /200\s*da/i.test(r.name || ''));
+    const flexy100 = flexyRewards.find(r => /100\s*(?:da|dzd)/i.test(r.name || ''));
+    const flexy200 = flexyRewards.find(r => /200\s*(?:da|dzd)/i.test(r.name || ''));
     const flexyRows = [flexy100, flexy200].filter(Boolean);
-    const flexyHasStock = flexyRows.some(r => r.stock == null || Number(r.stock) > 0);
+    const flexyHasStock = flexyRows.length > 0; // Manual admin fulfilment does not require voucher stock.
     const flexyImage = flexyRows.find(r => r.image_url)?.image_url;
     const flexyLevel = Math.min(...flexyRows.map(r => Number(r.level_required || 1)));
     const flexySignedIn = !!viewer;
@@ -711,8 +714,8 @@ body.mobile-menu-open{overflow:hidden!important}
     else if (!flexyHasStock) flexyStatus = 'SOLD OUT — CHECK BACK SOON';
     else if (!flexyEnoughMin) flexyStatus = '1,500 FNC REQUIRED FOR THE 100 DA RECHARGE';
     const flexyImageHtml = flexyImage ? '<img class="reward-image" src="'+esc(flexyImage)+'" alt="FLEXY mobile recharge">' : '<div class="reward-image empty">FLEXY RECHARGE</div>';
-    const flexyAmountsHtml = '<span class="reward-chip">100 DA · 1,500 FNC'+(flexy100 && flexy100.stock != null ? ' · '+Math.max(0,Number(flexy100.stock)||0)+' LEFT' : '')+'</span><span class="reward-chip">200 DA · 3,000 FNC'+(flexy200 && flexy200.stock != null ? ' · '+Math.max(0,Number(flexy200.stock)||0)+' LEFT' : '')+'</span>';
-    const flexyCardHtml = flexyRows.length ? '<article class="reward-card">'+flexyImageHtml+'<div class="reward-body"><h3>FLEXY — MOBILE RECHARGE</h3><div class="reward-desc">Choose your recharge amount and your operator: Djezzy, Ooredoo or Mobilis. Your matching ticket is delivered to MY PROFILE → MY ACCESS CODES.</div><div class="reward-meta">'+flexyAmountsHtml+'<span class="reward-chip">LEVEL <strong>'+flexyLevel+'</strong></span></div><div class="reward-status '+(flexySignedIn && active && flexyProfileReady && flexyHasStock && flexyEnoughMin ? 'ready' : '')+'">'+esc(flexyStatus)+'</div><button class="reward-redeem" data-flexy="1" data-signin="'+(!flexySignedIn?'1':'0')+'" '+((!flexySignedIn || (active && flexyProfileReady && flexyHasStock && Number(viewer?.level||1)>=flexyLevel))?'':'disabled')+'>'+(!flexySignedIn?'SIGN IN TO REDEEM':'CHOOSE RECHARGE')+'</button></div></article>' : '';
+    const flexyAmountsHtml = '<span class="reward-chip">100 DA · 1,500 FNC</span><span class="reward-chip">200 DA · 3,000 FNC</span>';
+    const flexyCardHtml = flexyRows.length ? '<article class="reward-card">'+flexyImageHtml+'<div class="reward-body"><h3>FLEXY — MOBILE RECHARGE</h3><div class="reward-desc">Choose the amount, operator and Algerian mobile number. The admin will process your recharge manually.</div><div class="reward-meta">'+flexyAmountsHtml+'<span class="reward-chip">LEVEL <strong>'+flexyLevel+'</strong></span></div><div class="reward-status '+(flexySignedIn && active && flexyProfileReady && flexyHasStock && flexyEnoughMin ? 'ready' : '')+'">'+esc(flexyStatus)+'</div><button class="reward-redeem" data-flexy="1" data-signin="'+(!flexySignedIn?'1':'0')+'" '+((!flexySignedIn || (active && flexyProfileReady && flexyHasStock && Number(viewer?.level||1)>=flexyLevel))?'':'disabled')+'>'+(!flexySignedIn?'SIGN IN TO REDEEM':'CHOOSE RECHARGE')+'</button></div></article>' : '';
     grid.innerHTML = flexyCardHtml + visibleRewards.map(r => {
       const stockCount = r.stock == null ? null : Math.max(0, Number(r.stock) || 0);
       const stockAvailable = stockCount == null || stockCount > 0;
@@ -775,21 +778,22 @@ body.mobile-menu-open{overflow:hidden!important}
     const isFlexy = Array.isArray(reward.flexyRewards) || /flexy/i.test(reward.name||'');
     if (!needsTrade && !isFlexy) return redeem(null,null);
     modal.querySelector('#tradeModalTitle').textContent = isFlexy ? 'FLEXY RECHARGE' : 'Steam Trade Link';
-    modal.querySelector('#tradeModalText').textContent = isFlexy ? 'Choose your mobile operator. Your matching ticket will be delivered to MY PROFILE → MY ACCESS CODES.' : 'Enter your Steam Trade Link for this reward. It is saved with the redemption for delivery.';
+    modal.querySelector('#tradeModalText').textContent = isFlexy ? 'Enter the mobile number to recharge and choose its operator. AdhemSwag will process the recharge manually.' : 'Enter your Steam Trade Link for this reward. It is saved with the redemption for delivery.';
     if(flexyAmountWrap) flexyAmountWrap.style.display = isFlexy ? 'block' : 'none';
     if(flexyOperatorWrap) flexyOperatorWrap.style.display = isFlexy ? 'block' : 'none';
+    if(flexyPhoneWrap) flexyPhoneWrap.style.display = isFlexy ? 'block' : 'none';
     if(flexyAmount) {
       const options = [...flexyAmount.options];
       options.forEach(option => {
         const amountReward = (reward.flexyRewards || []).find(r => Number(r.fnc_cost) === (Number(option.value) === 100 ? 1500 : 3000));
-        const amountStock = amountReward ? amountReward.stock : 0;
-        option.disabled = !amountReward || (amountStock != null && Number(amountStock) <= 0);
+        option.disabled = !amountReward;
         option.textContent = (option.value === '100' ? '100 DA — 1,500 FNC' : '200 DA — 3,000 FNC') + (option.disabled ? ' — SOLD OUT' : '');
       });
       const firstAvailable = options.find(option => !option.disabled);
       if(firstAvailable) flexyAmount.value = firstAvailable.value;
     }
     if(flexyOperator) flexyOperator.value = '';
+    if(flexyPhone) flexyPhone.value = '';
     if(tradeUrlLabel) tradeUrlLabel.style.display = needsTrade ? 'block' : 'none';
     tradeUrl.style.display = needsTrade ? 'block' : 'none';
     tradeUrl.value = viewer?.steam_trade_url || '';
@@ -809,8 +813,8 @@ body.mobile-menu-open{overflow:hidden!important}
   modal.addEventListener('click',e=>{if(e.target===modal)closeModal()});
   resultClose.addEventListener('click',closeResult);
   resultModal.addEventListener('click',e=>{if(e.target===resultModal)closeResult()});
-  tradeConfirm.addEventListener('click',()=>redeem(tradeUrl.value.trim(),flexyOperator?.value||null));
-  async function redeem(url,operator) {
+  tradeConfirm.addEventListener('click',()=>redeem(tradeUrl.value.trim(),flexyOperator?.value||null,flexyPhone?.value||null));
+  async function redeem(url,operator,phoneNumber) {
     let reward = selectedReward;
     if (!reward) return;
     if (Array.isArray(reward.flexyRewards)) {
@@ -821,14 +825,25 @@ body.mobile-menu-open{overflow:hidden!important}
         return;
       }
       if (!operator) {
-        if (tradeError) { tradeError.textContent='Please choose Djezzy, Ooredoo or Mobilis.'; tradeError.style.display='block'; }
+        if (tradeError) { tradeError.textContent='Please choose Djezzy, Mobilis or Ooredoo.'; tradeError.style.display='block'; }
         return;
       }
+      const phone = String(phoneNumber||'').replace(/[\s().-]/g,'');
+      const prefixOperator = {'07':'DJEZZY','06':'MOBILIS','05':'OOREDOO'}[phone.slice(0,2)];
+      if (!/^0[567]\d{8}$/.test(phone)) {
+        if (tradeError) { tradeError.textContent='Enter a valid 10-digit Algerian mobile number beginning with 05, 06 or 07.'; tradeError.style.display='block'; }
+        return;
+      }
+      if (prefixOperator !== operator) {
+        if (tradeError) { tradeError.textContent='The phone prefix does not match the selected operator (07 Djezzy, 06 Mobilis, 05 Ooredoo).'; tradeError.style.display='block'; }
+        return;
+      }
+      phoneNumber = phone;
     }
     hideSay();
     if (tradeError) { tradeError.textContent=''; tradeError.style.display='none'; }
     tradeConfirm.disabled = true;
-    const {data,error} = await client.functions.invoke('redeem-reward-v2',{body:{reward_id:reward.id,steam_trade_url:url||null,operator:operator||null}});
+    const {data,error} = await client.functions.invoke('redeem-reward-v2',{body:{reward_id:reward.id,steam_trade_url:url||null,phone_number:phoneNumber||null,operator:operator||null}});
     tradeConfirm.disabled = false;
     if (error) {
       let details = null;
@@ -846,6 +861,8 @@ body.mobile-menu-open{overflow:hidden!important}
     closeModal();
     if (data.access_code) {
       showResult('ACCESS CODE DELIVERED',data.operator ? ('Your '+reward.name+' for '+data.operator+' was delivered. Open MY PROFILE → MY ACCESS CODES to copy it.') : 'Your access code was delivered successfully. Open MY PROFILE → MY ACCESS CODES to copy it.','ok');
+    } else if (data.operator) {
+      showResult('FLEXY REQUEST RECEIVED','Your '+reward.name+' recharge request for '+data.operator+' was saved. The admin will recharge '+(phoneNumber||'your number')+' manually.','ok');
     } else {
       showResult(data.status==='sent' ? 'REWARD DELIVERED' : 'REDEMPTION SUBMITTED',
         data.status==='sent' ? 'Your reward was delivered successfully.' : 'Your redemption was accepted. FNC has been reserved and the reward is pending admin delivery.',
