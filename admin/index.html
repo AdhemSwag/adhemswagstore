@@ -370,7 +370,7 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
     <div class="nav-label">Admin</div>
     <button class="nav-btn active" data-panel="dashboard">Dashboard</button>
     <button class="nav-btn" data-panel="google-analytics">Google Analytics</button>
-    <button class="nav-btn" data-panel="rewards">Rewards / Store</button><button class="nav-btn" data-panel="sponsors">Sponsors</button>
+    <button class="nav-btn" data-panel="rewards">Rewards / Store</button><button class="nav-btn" data-panel="flexy-inventory">FLEXY STOCK</button><button class="nav-btn" data-panel="sponsors">Sponsors</button>
     <button class="nav-btn" data-panel="giveaways">Giveaways</button>
     <button class="nav-btn" data-panel="live-codes">LIVE Codes</button>
     <button class="nav-btn" data-panel="logs">Admin Logs</button>
@@ -621,7 +621,9 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
       </div>
     </section>
 
-        <section id="giveaways" class="panel">
+        <section id="flexy-inventory" class="panel"><div class="section"><h2>FLEXY <span style="color:var(--cyan)">INVENTORY</span></h2><p>Independent stock for each operator and recharge amount. Each combination is reserved separately.</p><div class="table-wrap"><table><thead><tr><th>Operator</th><th>Recharge</th><th>Available</th><th>Action</th></tr></thead><tbody id="flexyInventoryRows"><tr><td colspan="4">Loading…</td></tr></tbody></table></div><div id="flexyInventoryStatus" class="notice" style="display:none"></div></div></section>
+
+<section id="giveaways" class="panel">
 <div class="section"><h2>Giveaway Control</h2><p>Create and manage Twitch giveaways.</p>
 <div class="form-grid">
 <div class="field"><label>Giveaway title</label><input id="gwTitle" placeholder="Sport Gloves Giveaway"></div>
@@ -2343,12 +2345,31 @@ document.querySelectorAll('.nav-btn').forEach(btn=>{
     const panel=document.getElementById(btn.dataset.panel);
     if(!panel)return;
     panel.classList.add('active');
+    if(btn.dataset.panel==='flexy-inventory')loadFlexyInventory();
     requestAnimationFrame(()=>window.scrollTo({top:0,behavior:'smooth'}));
   });
 });
 
 
 document.getElementById('refreshDashboard')?.addEventListener('click',refreshDashboard);
+
+async function loadFlexyInventory(){
+ const body=document.getElementById('flexyInventoryRows');if(!body||!adminReady)return;
+ body.innerHTML='<tr><td colspan="4">Loading…</td></tr>';
+ const {data,error}=await supabaseClient.from('flexy_inventory').select('id,operator,quantity,reward:rewards(name,fnc_cost)').order('operator').order('reward_id');
+ if(error){body.innerHTML='<tr><td colspan="4">Unable to load FLEXY stock: '+escapeHtml(error.message)+'</td></tr>';return;}
+ body.innerHTML=(data||[]).map(x=>'<tr><td>'+escapeHtml(x.operator)+'</td><td>'+escapeHtml(String(x.reward?.name||'FLEXY'))+' — '+Number(x.reward?.fnc_cost||0).toLocaleString()+' FNC</td><td><input type="number" min="0" step="1" max="99" value="'+Number(x.quantity||0)+'" data-flexy-qty="'+x.id+'" style="width:85px"></td><td><button class="btn primary" data-flexy-save="'+x.id+'">SAVE</button></td></tr>').join('')||'<tr><td colspan="4">No FLEXY inventory rows found.</td></tr>';
+}
+document.addEventListener('click',async e=>{
+ const btn=e.target.closest('[data-flexy-save]');if(!btn)return;
+ const id=btn.dataset.flexySave,input=document.querySelector('[data-flexy-qty="'+id+'"]'),status=document.getElementById('flexyInventoryStatus');
+ const qty=Number(input?.value);if(!Number.isInteger(qty)||qty<0||qty>99){if(status){status.style.display='block';status.textContent='Enter a whole number from 0 to 99.';}return;}
+ btn.disabled=true;
+ const {error}=await supabaseClient.from('flexy_inventory').update({quantity:qty,updated_at:new Date().toISOString()}).eq('id',id);
+ btn.disabled=false;if(status){status.style.display='block';status.textContent=error?'Save failed: '+error.message:'FLEXY stock updated.';}
+ if(!error)await loadFlexyInventory();
+});
+
 document.getElementById('refreshMissionStats')?.addEventListener('click',loadMissionJoinStats);
 document.getElementById('refreshGoogleAnalytics')?.addEventListener('click',loadGoogleAnalytics);
 document.getElementById('loadRedemptions')?.addEventListener('click',loadRedemptions);
