@@ -1340,13 +1340,15 @@ async function loadRewards() {
     const index=data.findIndex(x=>x.id===id);
     const targetIndex=index+(direction==='up'?-1:1);
     if(index<0||targetIndex<0||targetIndex>=data.length)return;
-    const current=data[index], target=data[targetIndex];
-    const currentOrder=Number(current.display_order||index+1);
-    const targetOrder=Number(target.display_order||targetIndex+1);
-    const first=await supabaseClient.from('rewards').update({display_order:targetOrder,updated_at:new Date().toISOString()}).eq('id',current.id);
-    if(first.error){alert('Move failed: '+first.error.message);return;}
-    const second=await supabaseClient.from('rewards').update({display_order:currentOrder,updated_at:new Date().toISOString()}).eq('id',target.id);
-    if(second.error){alert('Move failed: '+second.error.message);return;}
+    const reordered=[...data];
+    const [moving]=reordered.splice(index,1);
+    reordered.splice(targetIndex,0,moving);
+    for(let i=0;i<reordered.length;i++){
+      const {error}=await supabaseClient.from('rewards')
+        .update({display_order:i+1,updated_at:new Date().toISOString()})
+        .eq('id',reordered[i].id);
+      if(error){alert('Move failed: '+error.message+' — refresh the list before trying again.');await loadRewards();return;}
+    }
     await loadRewards();
   }
   tbody.querySelectorAll('[data-reward-up]').forEach(b=>b.onclick=()=>moveReward(b.dataset.rewardUp,'up'));
