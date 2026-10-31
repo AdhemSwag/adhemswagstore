@@ -787,7 +787,7 @@
   function loadAdhemSkinsNav(){
     if(document.querySelector('script[data-adhem-skins-nav-loader]')) return;
     var script=document.createElement('script');
-    script.src='/assets/skins-nav.js?v=1';
+    script.src='/assets/skins-nav.js?v=2';
     script.defer=true;
     script.setAttribute('data-adhem-skins-nav-loader','1');
     document.head.appendChild(script);
