@@ -681,8 +681,11 @@ body.mobile-menu-open{overflow:hidden!important}
   }
 
   async function loadRewards(active) {
-    const {data, error} = await client.from('rewards').select('id,name,description,fnc_cost,level_required,stock,active,image_url,display_order,uses_access_codes,subscriber_only,created_at').eq('active',true).order('display_order',{ascending:true}).order('created_at',{ascending:false});
-    if (error) { grid.innerHTML='<div class="empty-rewards">UNABLE TO LOAD REWARDS.</div>'; return; }
+    const [{data, error}, {data:flexyInventoryData, error:flexyInventoryError}] = await Promise.all([
+      client.from('rewards').select('id,name,description,fnc_cost,level_required,stock,active,image_url,display_order,uses_access_codes,subscriber_only,created_at').eq('active',true).order('display_order',{ascending:true}).order('created_at',{ascending:false}),
+      client.from('flexy_inventory').select('reward_id,operator,quantity')
+    ]);
+    if (error || flexyInventoryError) { grid.innerHTML='<div class="empty-rewards">UNABLE TO LOAD REWARDS OR FLEXY STOCK.</div>'; return; }
     renderStorePromotions(data || []);
     if (!data?.length) { grid.innerHTML='<div class="empty-rewards">NO ACTIVE REWARDS YET — CHECK BACK SOON.</div>'; return; }
     const typeFilter=document.getElementById('storeTypeFilter')?.value||'all';
@@ -700,7 +703,8 @@ body.mobile-menu-open{overflow:hidden!important}
     const flexy100 = flexyRewards.find(r => /100\s*(?:da|dzd)/i.test(r.name || ''));
     const flexy200 = flexyRewards.find(r => /200\s*(?:da|dzd)/i.test(r.name || ''));
     const flexyRows = [flexy100, flexy200].filter(Boolean);
-    const flexyHasStock = flexyRows.length > 0; // Manual admin fulfilment does not require voucher stock.
+    const flexyInventory = flexyInventoryData || [];
+    const flexyHasStock = flexyInventory.some(x => Number(x.quantity||0)>0);
     const flexyImage = flexyRows.find(r => r.image_url)?.image_url;
     const flexyLevel = Math.min(...flexyRows.map(r => Number(r.level_required || 1)));
     const flexySignedIn = !!viewer;
@@ -765,7 +769,7 @@ body.mobile-menu-open{overflow:hidden!important}
         if(error) say('Twitch sign-in failed: '+(error.message||'Unknown error'),'error');
         return;
       }
-      if (btn.dataset.flexy === '1') openRedeem({name:'FLEXY RECHARGE',flexyRewards:flexyRows});
+      if (btn.dataset.flexy === '1') openRedeem({name:'FLEXY RECHARGE',flexyRewards:flexyRows,flexyInventory});
       else openRedeem(data.find(r=>r.id===btn.dataset.id));
     }));
   }
@@ -786,7 +790,8 @@ body.mobile-menu-open{overflow:hidden!important}
       const options = [...flexyAmount.options];
       options.forEach(option => {
         const amountReward = (reward.flexyRewards || []).find(r => Number(r.fnc_cost) === (Number(option.value) === 100 ? 1500 : 3000));
-        option.disabled = !amountReward;
+        const amountHasStock = (reward.flexyInventory||[]).some(x=>x.reward_id===amountReward?.id&&Number(x.quantity||0)>0);
+        option.disabled = !amountReward || !amountHasStock;
         option.textContent = (option.value === '100' ? '100 DA — 1,500 FNC' : '200 DA — 3,000 FNC') + (option.disabled ? ' — SOLD OUT' : '');
       });
       const firstAvailable = options.find(option => !option.disabled);
@@ -794,6 +799,17 @@ body.mobile-menu-open{overflow:hidden!important}
     }
     if(flexyOperator) flexyOperator.value = '';
     if(flexyPhone) flexyPhone.value = '';
+    if(isFlexy){
+      const refreshFlexyChoices=()=>{
+        const amount=Number(flexyAmount?.value||100);
+        const amountReward=(reward.flexyRewards||[]).find(r=>Number(r.fnc_cost)===(amount===100?1500:3000));
+        [...flexyOperator.options].forEach(opt=>{if(!opt.value)return;const available=(reward.flexyInventory||[]).some(x=>x.reward_id===amountReward?.id&&x.operator===opt.value&&Number(x.quantity||0)>0);opt.disabled=!available;opt.textContent=opt.value==='DJEZZY'?'Djezzy — 07':opt.value==='MOBILIS'?'Mobilis — 06':'Ooredoo — 05';if(!available)opt.textContent+=' — SOLD OUT';});
+        if(flexyOperator?.selectedOptions?.[0]?.disabled)flexyOperator.value='';
+      };
+      flexyAmount?.addEventListener('change',refreshFlexyChoices);
+      flexyOperator?.addEventListener('change',()=>{});
+      refreshFlexyChoices();
+    }
     if(tradeUrlLabel) tradeUrlLabel.style.display = needsTrade ? 'block' : 'none';
     tradeUrl.style.display = needsTrade ? 'block' : 'none';
     tradeUrl.value = viewer?.steam_trade_url || '';
