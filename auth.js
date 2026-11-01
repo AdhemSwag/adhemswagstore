@@ -528,6 +528,15 @@
 
       const sequence = weightedOrder(sponsors);
 
+      async function recordSponsorMetric(functionName, sponsorId) {
+        try {
+          const { error } = await client.rpc(functionName, { p_sponsor_id: sponsorId });
+          if (error) throw error;
+        } catch (error) {
+          console.warn('[AdhemSwag] Sponsor tracking failed (' + functionName + '):', error?.message || error);
+        }
+      }
+
       function showSponsor(sponsor) {
         if (!sponsor) return;
         if (box) box.remove();
@@ -583,11 +592,13 @@
         }
 
         link.addEventListener('click', () => {
-          client.rpc('record_sponsor_click', { p_sponsor_id: sponsor.id }).catch(() => {});
+          // PostgREST builders are thenables; await them instead of calling .catch() directly.
+          void recordSponsorMetric('record_sponsor_click', sponsor.id);
         });
 
         document.body.appendChild(box);
-        client.rpc('record_sponsor_impression', { p_sponsor_id: sponsor.id }).catch(() => {});
+        // Count each sponsor actually rendered in the rotation.
+        void recordSponsorMetric('record_sponsor_impression', sponsor.id);
 
         const seconds = Math.max(5, Number(sponsor.rotation_seconds || 30));
         if (sponsors.length > 1 && sponsor.rotation_enabled !== false && !sessionStorage.getItem('adhem_sponsor_closed_' + sponsor.id)) {
