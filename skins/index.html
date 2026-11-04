@@ -517,10 +517,14 @@ body.mobile-menu-open{overflow:hidden!important}
  <button class="skin-tab" type="button" data-skin-category="weapon">WEAPONS</button>
  <button class="skin-tab" type="button" data-skin-category="knife">KNIVES</button>
  <button class="skin-tab" type="button" data-skin-category="glove">GLOVES</button>
+ <button class="skin-tab" type="button" data-skin-category="agent">AGENTS</button>
+ <button class="skin-tab" type="button" data-skin-category="sticker">STICKERS</button>
+ <button class="skin-tab" type="button" data-skin-category="collection">COLLECTIONS</button>
+ <button class="skin-tab" type="button" data-skin-category="case">CASES</button>
 </nav>
 <div class="toolbar">
         <input class="control search-control" id="skinSearch" type="search" placeholder="Search skins or weapons…" autocomplete="off" aria-label="Search skins">
-        <select class="control" id="categoryFilter" aria-label="Category"><option value="all">All categories</option><option value="weapon">All weapons</option><option value="pistol">Pistols</option><option value="rifle">Rifles</option><option value="smg">SMGs</option><option value="shotgun">Shotguns</option><option value="machinegun">Machine guns</option><option value="knife">Knives</option><option value="glove">Gloves</option></select>
+        <select class="control" id="categoryFilter" aria-label="Category"><option value="all">All categories</option><option value="weapon">All weapons</option><option value="pistol">Pistols</option><option value="rifle">Rifles</option><option value="smg">SMGs</option><option value="shotgun">Shotguns</option><option value="machinegun">Machine guns</option><option value="knife">Knives</option><option value="glove">Gloves</option><option value="agent">Agents</option><option value="sticker">Stickers</option><option value="collection">Collections</option><option value="case">Cases</option></select>
         <select class="control" id="weaponFilter" aria-label="Weapon"><option value="all">All weapons</option></select>
         <select class="control" id="sortFilter" aria-label="Sort"><option value="name">Name A → Z</option><option value="name-desc">Name Z → A</option></select>
       </div>
@@ -552,139 +556,21 @@ body.mobile-menu-open{overflow:hidden!important}
 <script>
 (() => {
   const API = 'https://raw.githubusercontent.com/steamdashboard/cs2-items-api/main/data/api';
-  const grid = document.getElementById('skinGrid');
-  const search = document.getElementById('skinSearch');
-  const category = document.getElementById('categoryFilter');
-  const weapon = document.getElementById('weaponFilter');
-  const sort = document.getElementById('sortFilter');
-  const count = document.getElementById('resultCount');
-  const loadWrap = document.getElementById('loadMoreWrap');
-  const loadButton = document.getElementById('loadMore');
-  const sidebar = document.getElementById('skinsSidebar');
-  const PAGE_SIZE = 48;
-  let allSkins = [];
-  let visibleCount = PAGE_SIZE;
-  const slug = value => String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/™/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
-  const baseWeapon = name => String(name || '').split('|')[0].replace(/^★\\s*/, '').trim().toLowerCase();
-  const categoryFor = name => {
-    const weaponName = baseWeapon(name);
-    if (/gloves|wraps/.test(weaponName)) return 'glove';
-    if (/knife|karambit|bayonet|daggers|dagger|kukri|stiletto|talon|ursus|navaja|paracord|survival|skeleton|nomad|classic|falchion|bowie|huntsman|shadow/.test(weaponName)) return 'knife';
-    return 'weapon';
-  };
-  const weaponClassFor = name => {
-    const w = baseWeapon(name);
-    if (/^(glock-18|usp-s|p2000|p250|five-seven|tec-9|cz75-auto|dual berettas|r8 revolver|desert eagle)$/.test(w)) return 'pistol';
-    if (/^(ak-47|m4a4|m4a1-s|aug|sg 553|famas|galil ar|ssg 08|awp|g3sg1|scar-20)$/.test(w)) return 'rifle';
-    if (/^(mac-10|mp9|mp7|mp5-sd|ump-45|p90|pp-bizon)$/.test(w)) return 'smg';
-    if (/^(nova|xm1014|mag-7|sawed-off)$/.test(w)) return 'shotgun';
-    if (/^(m249|negev)$/.test(w)) return 'machinegun';
-    return 'other';
-  };
-  const labelFor = key => key === 'knife' ? 'KNIFE' : key === 'glove' ? 'GLOVES' : 'WEAPON';
-  const imageUrl = id => API + '/media/rendered/files/skins/' + encodeURIComponent(id) + '/light.png';
-  const inspectUrl = name => {
-    const parts = String(name).split('|');
-    const weaponSlug = slug(parts[0] || '');
-    const finishSlug = slug(parts.slice(1).join('|') || '');
-    return 'https://cs2inspect.skin/' + encodeURIComponent(weaponSlug) + '/' + encodeURIComponent(finishSlug);
-  };
-  function populateWeapons(items) {
-    const names = [...new Set(items.map(item => String(item.name).split('|')[0].trim()))].sort((a,b)=>a.localeCompare(b));
-    for (const name of names) {
-      const option = document.createElement('option');
-      option.value = name;
-      option.textContent = name;
-      weapon.appendChild(option);
-    }
-  }
-  function currentItems() {
-    const q = search.value.trim().toLocaleLowerCase();
-    let items = allSkins.filter(item => {
-      const cat = categoryFor(item.name);
-      return (!q || item.name.toLocaleLowerCase().includes(q) || String(item.search_slug || '').includes(slug(q))) &&
-        (category.value === 'all' || category.value === cat || (cat === 'weapon' && category.value === weaponClassFor(item.name))) &&
-        (weapon.value === 'all' || String(item.name).split('|')[0].trim() === weapon.value);
-    });
-    items.sort((a,b) => sort.value === 'name-desc' ? b.name.localeCompare(a.name) : a.name.localeCompare(b.name));
-    return items;
-  }
-  function render() {
-    const items = currentItems();
-    const shown = items.slice(0, visibleCount);
-    count.innerHTML = '<strong>' + items.length.toLocaleString('en-US') + '</strong> skins found · ' + shown.length.toLocaleString('en-US') + ' shown';
-    grid.replaceChildren();
-    if (!shown.length) {
-      const empty = document.createElement('div');
-      empty.className = 'empty';
-      empty.textContent = 'No skins match this search. Try another name or filter.';
-      grid.appendChild(empty);
-    } else {
-      const fragment = document.createDocumentFragment();
-      shown.forEach(item => {
-        const cat = categoryFor(item.name);
-        const weaponName = String(item.name).split('|')[0].trim();
-        const card = document.createElement('article');
-        card.className = 'skin-card';
-        card.dataset.skinName = item.name;
-        card.dataset.skinId = String(item.id);
-        const imageBox = document.createElement('div');
-        imageBox.className = 'skin-image';
-        const img = document.createElement('img');
-        img.loading = 'lazy';
-        img.decoding = 'async';
-        img.alt = item.name;
-        img.src = imageUrl(item.id);
-        img.onerror = () => {
-          img.remove();
-          const fallback = document.createElement('span');
-          fallback.className = 'skin-placeholder';
-          fallback.textContent = 'PREVIEW UNAVAILABLE';
-          imageBox.appendChild(fallback);
-        };
-        imageBox.appendChild(img);
-        const info = document.createElement('div');
-        info.className = 'skin-info';
-        const type = document.createElement('div');
-        type.className = 'skin-type';
-        type.textContent = labelFor(cat);
-        const title = document.createElement('div');
-        title.className = 'skin-name';
-        title.textContent = item.name;
-        const subtitle = document.createElement('div');
-        subtitle.className = 'skin-weapon';
-        subtitle.textContent = weaponName;
-        info.append(type,title,subtitle);
-        card.setAttribute('role','button');
-        card.setAttribute('tabindex','0');
-        card.setAttribute('aria-label','Open details for ' + item.name);
-        card.append(imageBox,info);
-        fragment.appendChild(card);
-      });
-      grid.appendChild(fragment);
-    }
-    loadWrap.hidden = shown.length >= items.length;
-  }
-  async function init() {
-    try {
-      const response = await fetch(API + '/consumer/browse/skins.json', {cache:'force-cache'});
-      if (!response.ok) throw new Error('catalogue HTTP ' + response.status);
-      const data = await response.json();
-      allSkins = (data.items || []).filter(item => item && item.name && item.id);
-      if (!allSkins.length) throw new Error('catalogue vide');
-      populateWeapons(allSkins);
-      document.getElementById('sourceStatus').textContent = 'SOURCE: CS2 ITEM DATABASE';
-      render();
-    } catch (error) {
-      console.error('CS2 skin catalogue failed to load:', error);
-      grid.innerHTML = '<div class="status">The catalogue could not be loaded. Check your connection and refresh the page.</div>';
-      count.textContent = 'Catalogue unavailable';
-    }
-  }
-  [search,category,weapon,sort].forEach(control => control.addEventListener(control === search ? 'input' : 'change', () => {visibleCount=PAGE_SIZE;render();}));
-  loadButton.addEventListener('click', () => {visibleCount += PAGE_SIZE;render();});
-  init();
-})();
+  const grid=document.getElementById('skinGrid'),search=document.getElementById('skinSearch'),category=document.getElementById('categoryFilter'),weapon=document.getElementById('weaponFilter'),sort=document.getElementById('sortFilter'),count=document.getElementById('resultCount'),loadWrap=document.getElementById('loadMoreWrap'),loadButton=document.getElementById('loadMore');
+  const PAGE_SIZE=48;let allSkins=[],visibleCount=PAGE_SIZE;
+  const slug=value=>String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/™/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+  const baseWeapon=name=>String(name||'').split('|')[0].replace(/^★\s*/,'').trim().toLowerCase();
+  const categoryFor=name=>{const w=baseWeapon(name);if(/gloves|wraps/.test(w))return 'glove';if(/knife|karambit|bayonet|daggers|dagger|kukri|stiletto|talon|ursus|navaja|paracord|survival|skeleton|nomad|classic|falchion|bowie|huntsman|shadow/.test(w))return 'knife';return 'weapon';};
+  const weaponClassFor=name=>{const w=baseWeapon(name);if(/^(glock-18|usp-s|p2000|p250|five-seven|tec-9|cz75-auto|dual berettas|r8 revolver|desert eagle)$/.test(w))return 'pistol';if(/^(ak-47|m4a4|m4a1-s|aug|sg 553|famas|galil ar|ssg 08|awp|g3sg1|scar-20)$/.test(w))return 'rifle';if(/^(mac-10|mp9|mp7|mp5-sd|ump-45|p90|pp-bizon)$/.test(w))return 'smg';if(/^(nova|xm1014|mag-7|sawed-off)$/.test(w))return 'shotgun';if(/^(m249|negev)$/.test(w))return 'machinegun';return 'other';};
+  const labelFor=key=>({knife:'KNIFE',glove:'GLOVES',weapon:'WEAPON',agent:'AGENT',sticker:'STICKER',collection:'COLLECTION',case:'CASE'}[key]||key.toUpperCase());
+  const groups={weapon:'skins',agent:'agents',sticker:'stickers',collection:'collections',case:'cases'};
+  const mediaGroups={weapon:'skins',agent:'agents',sticker:'stickers',collection:'collections',case:'containers'};
+  const itemImage=item=>item.media?.primary_image_png||item.media?.image||item.image||item.image_url||((item.id&&mediaGroups[item._type])?API+'/media/rendered/files/'+mediaGroups[item._type]+'/'+encodeURIComponent(item.id)+'/light.png':'');
+  function populateWeapons(items){weapon.replaceChildren(new Option('All weapons','all'));const names=[...new Set(items.filter(x=>x._type==='weapon').map(x=>String(x.name).split('|')[0].trim()))].sort((a,b)=>a.localeCompare(b));names.forEach(n=>weapon.add(new Option(n,n)));}
+  function currentItems(){const q=search.value.trim().toLocaleLowerCase();let items=allSkins.filter(item=>{const cat=item._type==='weapon'?categoryFor(item.name):item._type;return(!q||item.name.toLocaleLowerCase().includes(q)||String(item.search_slug||'').includes(slug(q)))&&(category.value==='all'||category.value===cat||(cat==='weapon'&&category.value===weaponClassFor(item.name)))&&(weapon.value==='all'||(item._type==='weapon'&&String(item.name).split('|')[0].trim()===weapon.value));});items.sort((a,b)=>sort.value==='name-desc'?b.name.localeCompare(a.name):a.name.localeCompare(b.name));return items;}
+  function render(){const items=currentItems(),shown=items.slice(0,visibleCount);count.innerHTML='<strong>'+items.length.toLocaleString('en-US')+'</strong> items found · '+shown.length.toLocaleString('en-US')+' shown';grid.replaceChildren();if(!shown.length){const empty=document.createElement('div');empty.className='empty';empty.textContent='No items match this search. Try another name or filter.';grid.appendChild(empty);}else{const fragment=document.createDocumentFragment();shown.forEach(item=>{const cat=item._type==='weapon'?categoryFor(item.name):item._type;const card=document.createElement('article');card.className='skin-card';card.dataset.skinName=item.name;card.dataset.skinId=String(item.id||'');card.dataset.itemType=item._type;card.dataset.marketHashName=item.market_hash_name||item.name;const imageBox=document.createElement('div');imageBox.className='skin-image';const img=document.createElement('img');img.loading='lazy';img.decoding='async';img.alt=item.name;img.src=itemImage(item);img.onerror=()=>{img.remove();const f=document.createElement('span');f.className='skin-placeholder';f.textContent='PREVIEW UNAVAILABLE';imageBox.appendChild(f);};if(img.src)imageBox.appendChild(img);else{const f=document.createElement('span');f.className='skin-placeholder';f.textContent='PREVIEW UNAVAILABLE';imageBox.appendChild(f);}const info=document.createElement('div');info.className='skin-info';const type=document.createElement('div');type.className='skin-type';type.textContent=labelFor(cat);const title=document.createElement('div');title.className='skin-name';title.textContent=item.name;const subtitle=document.createElement('div');subtitle.className='skin-weapon';subtitle.textContent=item.team?.name||item.collections?.[0]?.name||item.rarity?.name||labelFor(cat);info.append(type,title,subtitle);card.setAttribute('role','button');card.setAttribute('tabindex','0');card.setAttribute('aria-label','Open details for '+item.name);card.append(imageBox,info);fragment.appendChild(card);});grid.appendChild(fragment);}loadWrap.hidden=shown.length>=items.length;}
+  async function init(){try{const types=['weapon','agent','sticker','collection','case'];const results=await Promise.all(types.map(async type=>{const endpoint=type==='weapon'?'skins':type;const response=await fetch(API+'/consumer/browse/'+endpoint+'.json',{cache:'force-cache'});if(!response.ok)throw new Error(endpoint+' HTTP '+response.status);const data=await response.json();return(type==='weapon'?(data.items||[]):(data.items||[])).filter(x=>x&&x.name).map(x=>({...x,_type:type}));}));allSkins=results.flat();if(!allSkins.length)throw new Error('catalogue vide');populateWeapons(allSkins);document.getElementById('sourceStatus').textContent='SOURCE: CS2 ITEM DATABASE';render();}catch(error){console.error('CS2 catalogue failed:',error);grid.innerHTML='<div class="status">The catalogue could not be loaded. Check your connection and refresh the page.</div>';count.textContent='Catalogue unavailable';}}
+  [search,category,weapon,sort].forEach(control=>control.addEventListener(control===search?'input':'change',()=>{visibleCount=PAGE_SIZE;render();}));loadButton.addEventListener('click',()=>{visibleCount+=PAGE_SIZE;render();});init();
 </script>
 <script src="/assets/language-switcher.js?v=2" defer></script>
 <script src="/assets/skins-nav.js?v=2" defer></script>
@@ -738,7 +624,7 @@ body.mobile-menu-open{overflow:hidden!important}
   </section>
  </section>
 </div>
-<script src="/assets/skins-details.js?v=2" defer></script>
+<script src="/assets/skins-details.js?v=3" defer></script>
 <script id="skins-hide-exitlag-sponsor">
 (() => {
   // Keep the ExitLag sponsor campaign off the CS2 catalogue only.
