@@ -131,3 +131,16 @@
 @media (min-width:701px) {
   .mobile-drawer-close { display: none !important; }
 }
+
+
+/* Shared category layout — desktop and mobile */
+.sidebar-group{display:flex;flex-direction:column;gap:3px;margin:0 0 9px;padding:0;min-width:0}
+.sidebar-section-label{display:block;margin:13px 10px 6px;padding:0;color:#71838a;font:700 9px/1.3 'JetBrains Mono',monospace;letter-spacing:.15em;text-transform:uppercase;user-select:none}
+.sidebar-group:first-of-type .sidebar-section-label{margin-top:7px}
+.sidebar-group .sidebar-link{width:100%;box-sizing:border-box}
+.sidebar-group-social{padding-top:7px;border-top:1px solid rgba(17,217,247,.13)}
+@media(max-width:700px){
+  .sidebar-group{gap:2px;margin-bottom:8px}
+  .sidebar-section-label{margin:12px 10px 6px;font-size:9px;letter-spacing:.14em}
+  .sidebar-group-social{padding-top:6px}
+}
