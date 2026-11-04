@@ -606,7 +606,6 @@ body.mobile-menu-open{overflow:hidden!important}
     await loadRewards(active);
   }
 
-  let promoRotationTimer = null;
   function renderStorePromotions(rewards) {
     const banner = document.getElementById('storePromoBanner');
     const content = document.getElementById('storePromoContent');
@@ -633,7 +632,6 @@ body.mobile-menu-open{overflow:hidden!important}
         window.setTimeout(() => target.classList.remove('promo-target-highlight'), 1600);
       }
     };
-    if (promoRotationTimer) { clearInterval(promoRotationTimer); promoRotationTimer = null; }
     const promos = [];
     const exitlagPromoExpiry = Date.parse('2026-11-23T23:59:59+01:00');
     const exitlag = Date.now() <= exitlagPromoExpiry ? (rewards || []).find(r => /exitlag/i.test(r.name || '') && Number(r.fnc_cost) === 1050) : null;
@@ -693,11 +691,8 @@ body.mobile-menu-open{overflow:hidden!important}
       if (!btn) return;
       current = Number(btn.dataset.promoIndex);
       show(current);
-      if (promoRotationTimer) { clearInterval(promoRotationTimer); promoRotationTimer = null; }
-      if (promos.length > 1) promoRotationTimer = setInterval(() => { current = (current + 1) % promos.length; show(current); }, 7000);
     };
     show(current);
-    if (promos.length > 1) promoRotationTimer = setInterval(() => { current = (current + 1) % promos.length; show(current); }, 7000);
   }
 
   async function loadRewards(active) {
