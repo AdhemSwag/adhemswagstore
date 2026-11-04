@@ -13,7 +13,7 @@
   };
   // Public, domain-restricted key from cs2inspect.skin. Add adhemswag.com to its allowed origins.
   // This is intentionally blank until the site owner creates and supplies the publishable key.
-  const CS2INSPECT_PUBLIC_KEY='';
+  const CS2INSPECT_PUBLIC_KEY='pk_live_BsWeF9Rm-O7g2VPLwHowgA';
   const showViewer=()=>{
     preview.hidden=true;viewer.hidden=false;
     if(!CS2INSPECT_PUBLIC_KEY){
