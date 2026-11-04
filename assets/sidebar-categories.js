@@ -1,6 +1,6 @@
 /* AdhemSwag shared sidebar categories.
-   Include this file on every page that contains .sidebar.
-   New links are automatically placed by pathname; unknown links go to MORE. */
+   Include this file on every page that contains .sidebar or .admin-nav.
+   Future links are grouped by their route/panel; unknown links go to MORE/TOOLS. */
 (() => {
   "use strict";
   const groups = [
@@ -14,7 +14,7 @@
   const getGroup = (link) => {
     let url;
     try { url = new URL(link.getAttribute("href"), location.origin); } catch (_) { return groups[5]; }
-    const path = url.pathname.replace(/\\/+$/, "") + "/";
+    const path = url.pathname.replace(/\/+$/, "") + "/";
     const byPath = groups.find(group => group.paths.includes(path));
     if (byPath) return byPath;
     if (url.origin !== location.origin && groups[4].hosts.some(host => url.hostname === host || url.hostname.endsWith("." + host))) return groups[4];
@@ -53,8 +53,42 @@
     preserved.forEach(node => sidebar.appendChild(node));
     sidebar.dataset.categoriesReady = "true";
   }
+  function organizeAdminNav(nav) {
+    if (!nav || nav.dataset.categoriesReady === "true") return;
+    const buttons = [...nav.querySelectorAll(".nav-btn[data-panel]")];
+    if (!buttons.length) return;
+    const adminGroups = [
+      {id:"overview",label:"OVERVIEW",panels:["dashboard","google-analytics"]},
+      {id:"rewards",label:"REWARDS",panels:["rewards","redemptions","giveaways","live-codes","sponsors","reward-analytics"]},
+      {id:"community",label:"COMMUNITY",panels:["viewers","leaderboard","transactions","fnc-settings","fnc-analytics"]},
+      {id:"tools",label:"TOOLS",panels:["media","stream-chat-integration","operations","logs"]},
+      {id:"system",label:"SYSTEM",panels:["system","admin-access","security-audit"]}
+    ];
+    const brand = nav.querySelector(".brand");
+    const buckets = new Map(adminGroups.map(group => [group.id, []]));
+    buttons.forEach(button => {
+      const group = adminGroups.find(item => item.panels.includes(button.dataset.panel)) || adminGroups[3];
+      buckets.get(group.id).push(button);
+    });
+    nav.replaceChildren();
+    if (brand) nav.appendChild(brand);
+    adminGroups.forEach(group => {
+      const items = buckets.get(group.id);
+      if (!items.length) return;
+      const section = document.createElement("section");
+      section.className = "sidebar-group sidebar-group-" + group.id;
+      const heading = document.createElement("div");
+      heading.className = "sidebar-section-label";
+      heading.textContent = group.label;
+      section.appendChild(heading);
+      items.forEach(button => section.appendChild(button));
+      nav.appendChild(section);
+    });
+    nav.dataset.categoriesReady = "true";
+  }
   function init() {
     document.querySelectorAll(".sidebar").forEach(organizeSidebar);
+    document.querySelectorAll(".admin-nav").forEach(organizeAdminNav);
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, {once:true});
   else init();
