@@ -54,7 +54,7 @@
   const renderHistory=()=>{
     if(!historyChart)return;
     const cutoff=Date.now()-historyRange*86400000;
-    const points=steamSnapshots.filter(x=>new Date(x.observed_at).getTime()>=cutoff).sort((a,b)=>new Date(a.observed_at)-new Date(b.observed_at));
+    const points=steamSnapshots.filter(x=>x.currency==='EUR'&&new Date(x.observed_at).getTime()>=cutoff).sort((a,b)=>new Date(a.observed_at)-new Date(b.observed_at));
     if(points.length<2){historyChart.textContent=points.length?'One verified price snapshot saved. More checks are needed to draw a price trend.':'No verified price history in this period yet. It will build from real Steam price checks.';return;}
     const vals=points.map(x=>Number(x.price)).filter(Number.isFinite);
     if(vals.length<2){historyChart.textContent='Not enough numeric price history yet.';return;}
