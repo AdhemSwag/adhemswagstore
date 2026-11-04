@@ -27,6 +27,8 @@
   const wears=['Factory New','Minimal Wear','Field-Tested','Well-Worn','Battle-Scarred'];
   const wearCodes={'Factory New':'FN','Minimal Wear':'MW','Field-Tested':'FT','Well-Worn':'WW','Battle-Scarred':'BS'};
   let activeSkinName='';
+  let activeMarketHashName='';
+  let activeItemType='weapon';
   let activeWear='Factory New';
   let priceRequest=0;
   let historyRange=30;
@@ -67,17 +69,32 @@
     if(!activeSkinName||!variantList)return;
     const request=++priceRequest;
     variantPrices={};steamSnapshots=[];
-    variantList.innerHTML=wears.map(w=>'<button type="button" class="skin-variant-row" data-wear="'+w+'"><span>'+w+'</span><strong>Loading…</strong></button>').join('');
+    const isSkin=activeItemType==='weapon';
+    if(!isSkin){
+      const label=activeItemType==='agent'?'Agent':activeItemType==='sticker'?'Sticker':activeItemType==='case'?'Case':'Collection';
+      if(activeItemType==='collection'){
+        variantList.innerHTML='<div class="skin-variant-row"><span>Collection</span><strong>—</strong></div>';
+        marketStatus.textContent='Collections are drop pools, not individually tradable market items. Open a skin from this collection to see its market price.';
+        if(historyChart)historyChart.textContent='No direct market history exists for a collection itself.';
+        return;
+      }
+      variantList.innerHTML='<div class="skin-variant-row selected" data-wear="base"><span>'+label+'</span><strong>Loading…</strong></div>';
+      marketStatus.textContent='Loading live Steam Market price…';
+    }else{
+      variantList.innerHTML=wears.map(w=>'<button type="button" class="skin-variant-row" data-wear="'+w+'"><span>'+w+'</span><strong>Loading…</strong></button>').join('');
+      marketStatus.textContent='Loading live prices from Steam. Other selected marketplaces are waiting for API access.';
+    }
     marketStatus.textContent='Loading live prices from Steam. Other selected marketplaces are waiting for API access.';
     const active=selectedMarkets();
     if(!active.includes('steam')){marketStatus.textContent='Select Steam to load its verified prices. Other marketplace APIs are not connected yet.';variantList.querySelectorAll('strong').forEach(x=>x.textContent='Not connected');return;}
-    await Promise.all(wears.map(async wear=>{
-      const hashName=activeSkinName+' ('+wear+')';
+    const variants=isSkin?wears:['base'];
+    await Promise.all(variants.map(async wear=>{
+      const hashName=isSkin?activeMarketHashName+' ('+wear+')':activeMarketHashName;
       try{
         const data=await fetchSteam(hashName,request);
         if(request!==priceRequest||!data)return;
         variantPrices[wear]=data.lowest_price||'Not listed';
-        if(wear===activeWear&&Array.isArray(data.history))steamSnapshots=data.history;
+        if((wear===activeWear||wear==='base')&&Array.isArray(data.history))steamSnapshots=data.history;
         const row=variantList.querySelector('[data-wear="'+wear+'"] strong');
         if(row)row.textContent=data.lowest_price||'Not listed';
       }catch(error){
@@ -98,7 +115,8 @@
       variantList.querySelectorAll('strong').forEach(x=>x.textContent='Not connected');
       marketStatus.textContent='Steam is disabled. Selected third-party marketplaces require API connections before prices can be displayed.';
     }else{
-      wears.forEach(w=>{const row=variantList.querySelector('[data-wear="'+w+'"] strong');if(row)row.textContent=variantPrices[w]||'—';});
+      const list=activeItemType==='weapon'?wears:['base'];
+      list.forEach(w=>{const row=variantList.querySelector('[data-wear="'+w+'"] strong');if(row)row.textContent=variantPrices[w]||'—';});
       marketStatus.textContent='Showing verified Steam prices. Third-party sources are selectable but not connected yet.';
     }
   };
@@ -107,7 +125,8 @@
     activeWear=row.dataset.wear;
     variantList.querySelectorAll('[data-wear]').forEach(x=>x.classList.toggle('selected',x===row));
     const request=priceRequest;
-    const hashName=activeSkinName+' ('+activeWear+')';
+    if(activeItemType!=='weapon')return;
+    const hashName=activeMarketHashName+' ('+activeWear+')';
     fetchSteam(hashName,request).then(data=>{if(data&&request===priceRequest){steamSnapshots=data.history||[];renderHistory();}}).catch(()=>{});
   });
   rangeButtons.forEach(button=>button.addEventListener('click',()=>{
@@ -124,9 +143,19 @@
     const name=card.dataset.skinName||card.querySelector('.skin-name')?.textContent||'CS2 Skin';
     title.textContent=name;
     activeSkinName=name;
+    activeMarketHashName=card.dataset.marketHashName||name;
+    activeItemType=card.dataset.itemType||'weapon';
     activeWear='Factory New';
+    const isWeapon=activeItemType==='weapon';
+    const marketTitle=document.getElementById('skinMarketTitle');
+    if(marketTitle)marketTitle.textContent=(activeItemType==='weapon'?'SKIN':activeItemType.toUpperCase())+' MARKET PRICES';
+    const variantsTitle=document.querySelector('.skin-variants-title');
+    if(variantsTitle)variantsTitle.textContent=isWeapon?'ALL WEAR VARIANTS ⓘ':activeItemType==='sticker'?'STICKER MARKET ITEM':'ITEM MARKET PRICE';
+    if(inspect){inspect.style.display=isWeapon?'':'none';}
     if(inspect) inspect.href=inspectUrl(name);
     loadVariantPrices();
+    const buy=document.querySelector('.skin-detail-action.buy');
+    if(buy)buy.style.display=activeItemType==='collection'?'none':'';
     const source=card.querySelector('.skin-image img');
     image.src=source?.src||'';image.alt=name;
     preview.hidden=false;viewer.hidden=true;viewer.replaceChildren();
