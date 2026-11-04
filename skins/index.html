@@ -609,6 +609,7 @@ body.mobile-menu-open{overflow:hidden!important}
     }
   }
   [search,category,weapon,sort].forEach(control=>control.addEventListener(control===search?'input':'change',()=>{visibleCount=PAGE_SIZE;render();}));loadButton.addEventListener('click',()=>{visibleCount+=PAGE_SIZE;render();});init();
+})();
 </script>
 <script src="/assets/language-switcher.js?v=2" defer></script>
 <script src="/assets/skins-nav.js?v=2" defer></script>
