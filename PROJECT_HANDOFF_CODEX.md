@@ -582,3 +582,11 @@ Recommended order:
 User prefers practical, concise explanations.
 User often writes French/DZ Arabic.
 When changing the website, execute the change directly when possible rather than only giving instructions.
+
+
+## 22. SHARED SIDEBAR CATEGORIES — GLOBAL RULE
+- Shared renderer: `/assets/sidebar-categories.js`; shared styling: `/assets/mobile-sidebar.css`.
+- Every new page that has the public left sidebar MUST include both assets and use the existing `.sidebar` + `.sidebar-link` markup. The script groups routes into GENERAL, CS2 GAMING, REWARDS, COMMUNITY, SOCIAL, and MORE.
+- The admin page uses the same shared script with admin-specific groups: OVERVIEW, REWARDS, COMMUNITY, TOOLS, SYSTEM.
+- Keep new navigation links as normal `.sidebar-link` anchors; known routes are categorized automatically. Unknown routes appear in MORE until assigned.
+- Do not duplicate category markup or create a separate sidebar design on new pages. Preserve the logo, mobile drawer behavior, bottom navigation, and existing page functionality.
