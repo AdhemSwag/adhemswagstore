@@ -312,6 +312,29 @@ body.mobile-menu-open{overflow:hidden!important}
 }
 </style>
 <link rel="stylesheet" href="/assets/mobile-sidebar.css?v=1" id="adhemswag-shared-mobile-sidebar">
+
+<style id="adhem-skin-detail-modal">
+.skin-card{cursor:pointer}
+.skin-detail-backdrop{position:fixed;inset:0;z-index:30000;background:rgba(0,0,0,.78);backdrop-filter:blur(9px);display:none;align-items:center;justify-content:center;padding:18px}
+.skin-detail-backdrop.open{display:flex}
+.skin-detail-dialog{width:min(900px,100%);max-height:min(92vh,900px);overflow:auto;background:#091219;border:1px solid rgba(17,217,247,.32);border-radius:16px;box-shadow:0 25px 90px #000b;position:relative}
+.skin-detail-head{display:flex;justify-content:space-between;align-items:center;gap:15px;padding:18px 22px;border-bottom:1px solid rgba(17,217,247,.16)}
+.skin-detail-head h2{font-size:clamp(17px,3vw,24px);margin:0;overflow-wrap:anywhere}
+.skin-detail-close{width:36px;height:36px;border:1px solid #24404b;background:#0c1b23;color:#dffaff;border-radius:9px;font-size:22px;cursor:pointer}
+.skin-detail-body{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:20px;padding:22px}
+.skin-detail-preview{min-height:250px;display:grid;place-items:center;background:radial-gradient(ellipse,rgba(17,217,247,.12),transparent 70%);border:1px solid rgba(17,217,247,.14);border-radius:12px;padding:16px}
+.skin-detail-preview img{width:100%;height:240px;object-fit:contain}
+.skin-detail-section{border:1px solid rgba(17,217,247,.15);border-radius:12px;padding:15px;margin-bottom:13px;background:rgba(14,27,35,.7)}
+.skin-detail-section h3{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#11d9f7;margin:0 0 13px}
+.skin-market-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid rgba(140,180,195,.1);font-size:12px}
+.skin-market-row:last-child{border:0}.skin-market-value{color:#91aab4;font-weight:700}
+.skin-history-empty{min-height:160px;display:grid;place-items:center;text-align:center;color:#8098a2;font-size:12px;line-height:1.7}
+.skin-detail-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
+.skin-detail-action{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:0 16px;border-radius:9px;text-decoration:none;font-size:11px;font-weight:900;letter-spacing:.06em;border:1px solid rgba(17,217,247,.4);background:rgba(17,217,247,.09);color:#11d9f7}
+.skin-detail-action.buy{background:#11d9f7;color:#041014;border-color:#11d9f7}
+.skin-detail-note{font-size:10px;color:#718994;line-height:1.6;margin-top:9px}
+@media(max-width:650px){.skin-detail-backdrop{padding:8px}.skin-detail-body{grid-template-columns:1fr;padding:13px;gap:12px}.skin-detail-preview{min-height:180px}.skin-detail-preview img{height:175px}.skin-detail-head{padding:14px}.skin-detail-section{padding:12px}}
+</style>
 </head>
 <body>
 <nav class="sidebar" id="skinsSidebar" aria-label="Main navigation">
@@ -530,6 +553,8 @@ body.mobile-menu-open{overflow:hidden!important}
         const weaponName = String(item.name).split('|')[0].trim();
         const card = document.createElement('article');
         card.className = 'skin-card';
+        card.dataset.skinName = item.name;
+        card.dataset.skinId = String(item.id);
         const imageBox = document.createElement('div');
         imageBox.className = 'skin-image';
         const img = document.createElement('img');
@@ -597,5 +622,31 @@ body.mobile-menu-open{overflow:hidden!important}
 </script>
 <script src="/assets/language-switcher.js?v=2" defer></script>
 <script src="/assets/skins-nav.js?v=2" defer></script>
+
+<div class="skin-detail-backdrop" id="skinDetailBackdrop" aria-hidden="true">
+ <section class="skin-detail-dialog" role="dialog" aria-modal="true" aria-labelledby="skinDetailTitle">
+  <header class="skin-detail-head"><h2 id="skinDetailTitle">CS2 SKIN DETAILS</h2><button class="skin-detail-close" id="skinDetailClose" type="button" aria-label="Close">×</button></header>
+  <div class="skin-detail-body">
+   <div>
+    <div class="skin-detail-preview"><img id="skinDetailImage" alt=""></div>
+    <div class="skin-detail-actions">
+     <a class="skin-detail-action" id="skinDetailInspect" href="#" target="_blank" rel="noopener noreferrer">INSPECT IN 3D</a>
+     <a class="skin-detail-action buy" href="https://tradeit.gg/?aff=AdhemSwag" target="_blank" rel="noopener noreferrer">BUY · ADHEMSWAG</a>
+    </div>
+    <p class="skin-detail-note">Tradeit affiliate link: purchases open with your AdhemSwag referral.</p>
+   </div>
+   <div>
+    <section class="skin-detail-section"><h3>Market prices</h3>
+     <div class="skin-market-row"><span>Steam</span><span class="skin-market-value">API connection required</span></div>
+     <div class="skin-market-row"><span>BUFF163</span><span class="skin-market-value">API connection required</span></div>
+     <div class="skin-market-row"><span>DMarket</span><span class="skin-market-value">API connection required</span></div>
+     <p class="skin-detail-note">No estimated or invented prices are displayed. Live prices will appear when the market data providers are connected.</p>
+    </section>
+    <section class="skin-detail-section"><h3>Price history · 30 days</h3><div class="skin-history-empty">30-day price history will appear here<br>after the historical market data API is connected.</div></section>
+   </div>
+  </div>
+ </section>
+</div>
+<script src="/assets/skins-details.js?v=1" defer></script>
 </body>
 </html>
