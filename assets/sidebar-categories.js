@@ -5,7 +5,7 @@
   "use strict";
   const groups = [
     { id:"general", label:"GENERAL", paths:["/dashboard/","/profile/"] },
-    { id:"gaming", label:"CS2 GAMING", paths:["/config/","/skins/","/faceit/"] },
+    { id:"gaming", label:"CS2", paths:["/config/","/skins/","/faceit/"] },
     { id:"rewards", label:"REWARDS", paths:["/missions/","/store/","/bonuses/","/giveaway/","/leaderboard/"] },
     { id:"community", label:"COMMUNITY", paths:["/donate/","/faq/"] },
     { id:"social", label:"SOCIAL", hosts:["twitch.tv","kick.com","instagram.com","t.me","x.com","tiktok.com","discord.gg","discord.com","youtube.com"] },
