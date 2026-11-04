@@ -680,5 +680,43 @@ body.mobile-menu-open{overflow:hidden!important}
  </section>
 </div>
 <script src="/assets/skins-details.js?v=1" defer></script>
+<script id="skins-hide-exitlag-sponsor">
+(() => {
+  // Keep the ExitLag sponsor campaign off the CS2 catalogue only.
+  const isExitLag = el => {
+    const value = [
+      el.getAttribute && el.getAttribute('href'),
+      el.getAttribute && el.getAttribute('src'),
+      el.getAttribute && el.getAttribute('alt'),
+      el.getAttribute && el.getAttribute('aria-label'),
+      el.textContent
+    ].filter(Boolean).join(' ').toLowerCase();
+    return value.includes('exitlag');
+  };
+  const hideCampaign = root => {
+    if (!root || root.nodeType !== 1) return;
+    const candidates = [];
+    if (isExitLag(root)) candidates.push(root);
+    if (root.querySelectorAll) {
+      root.querySelectorAll('a[href*="exitlag" i], img[src*="exitlag" i], img[alt*="exitlag" i], [aria-label*="exitlag" i]').forEach(el => candidates.push(el));
+    }
+    candidates.forEach(el => {
+      let target = el;
+      for (let i = 0; i < 5 && target.parentElement; i++) {
+        const parent = target.parentElement;
+        const signature = ((parent.id || '') + ' ' + (typeof parent.className === 'string' ? parent.className : '')).toLowerCase();
+        if (/sponsor|advert|ad-banner|ad-slot/.test(signature)) { target = parent; break; }
+        if (parent === document.body || parent === document.documentElement || parent.matches('main, header, footer, nav')) break;
+        target = parent;
+      }
+      target.style.setProperty('display', 'none', 'important');
+      target.setAttribute('aria-hidden', 'true');
+    });
+  };
+  const run = () => hideCampaign(document.body);
+  run();
+  new MutationObserver(records => records.forEach(record => record.addedNodes.forEach(run))).observe(document.documentElement, {childList:true,subtree:true});
+})();
+</script>
 </body>
 </html>
