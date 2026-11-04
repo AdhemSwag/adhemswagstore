@@ -606,6 +606,7 @@ body.mobile-menu-open{overflow:hidden!important}
     await loadRewards(active);
   }
 
+  let promoRotationTimer = null;
   function renderStorePromotions(rewards) {
     const banner = document.getElementById('storePromoBanner');
     const content = document.getElementById('storePromoContent');
@@ -614,6 +615,7 @@ body.mobile-menu-open{overflow:hidden!important}
     const dots = document.getElementById('storePromoDots');
     if (!banner || !content || !pill || !heading || !dots) return;
     /* Promo CTAs scroll to the exact reward card on both desktop and mobile. */
+    if (promoRotationTimer) { clearInterval(promoRotationTimer); promoRotationTimer = null; }
     content.onclick = event => {
       const cta = event.target.closest('[data-promo-target]');
       if (!cta) return;
@@ -691,8 +693,11 @@ body.mobile-menu-open{overflow:hidden!important}
       if (!btn) return;
       current = Number(btn.dataset.promoIndex);
       show(current);
+      if (promoRotationTimer) { clearInterval(promoRotationTimer); promoRotationTimer = null; }
+      if (promos.length > 1) promoRotationTimer = setInterval(() => { current = (current + 1) % promos.length; show(current); }, 7000);
     };
     show(current);
+    if (promos.length > 1) promoRotationTimer = setInterval(() => { current = (current + 1) % promos.length; show(current); }, 7000);
   }
 
   async function loadRewards(active) {
