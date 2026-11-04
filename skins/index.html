@@ -696,7 +696,7 @@ body.mobile-menu-open{overflow:hidden!important}
   const hideCampaign = root => {
     if (!root || root.nodeType !== 1) return;
     const candidates = [];
-    if (isExitLag(root)) candidates.push(root);
+    // Never hide the page root; inspect only individual sponsor elements.
     if (root.querySelectorAll) {
       root.querySelectorAll('a[href*="exitlag" i], img[src*="exitlag" i], img[alt*="exitlag" i], [aria-label*="exitlag" i]').forEach(el => candidates.push(el));
     }
