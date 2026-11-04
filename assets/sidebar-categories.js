@@ -90,6 +90,29 @@
     document.querySelectorAll(".sidebar").forEach(organizeSidebar);
     document.querySelectorAll(".admin-nav").forEach(organizeAdminNav);
   }
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, {once:true});
-  else init();
+  function boot() {
+    init();
+    // Some pages build or replace their navigation after DOMContentLoaded.
+    // Watch for late-inserted sidebars and initialize them when their links arrive.
+    const observer = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        for (const node of mutation.addedNodes) {
+          if (node.nodeType !== 1) continue;
+          if (node.matches?.(".sidebar, .admin-nav") ||
+              node.querySelector?.(".sidebar, .admin-nav")) {
+            init();
+            return;
+          }
+          const parentNav = node.closest?.(".sidebar, .admin-nav");
+          if (parentNav && parentNav.dataset.categoriesReady !== "true") {
+            init();
+            return;
+          }
+        }
+      }
+    });
+    observer.observe(document.documentElement, { childList: true, subtree: true });
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot, {once:true});
+  else boot();
 })();
