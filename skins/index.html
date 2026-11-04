@@ -349,7 +349,7 @@ body.mobile-menu-open{overflow:hidden!important}
 .skin-variant-list{display:grid;gap:6px}
 .skin-variant-row{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:36px;padding:7px 10px;background:#101214;border:1px solid #25292d;border-radius:10px;color:#dce1e5;font-size:12px}
 .skin-variant-row:before{content:"";width:6px;height:6px;border-radius:50%;background:#777;flex:none}
-.skin-variant-row span{flex:1}.skin-variant-row strong{font-size:12px;color:#f2f2f2}.skin-variant-row.unavailable{opacity:.55}
+.skin-variant-row span{flex:1}.skin-variant-row strong{font-size:12px;color:#f2f2f2}.skin-variant-row.selected{border-color:#55c8f4;background:#111c22}.skin-variant-row.unavailable{opacity:.55}
 .skin-history-panel{margin-top:10px}
 .skin-history-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
 #skinHistoryRanges{display:flex;gap:5px}
@@ -729,16 +729,16 @@ body.mobile-menu-open{overflow:hidden!important}
      </div>
      <p class="skin-detail-note" id="skinMarketStatus">Steam is the default live source. Other markets appear when their data access is connected.</p>
     </section>
-    <section class="skin-detail-section skin-history-panel">
-     <div class="skin-history-head"><strong>PRICE HISTORY · 30 DAYS</strong><div id="skinHistoryRanges"><button data-range="7">7D</button><button class="active" data-range="30">30D</button><button data-range="90">90D</button><button data-range="180">6M</button><button data-range="365">1Y</button></div></div>
-     <p class="skin-detail-note" id="skinHistorySource">Showing: Steam</p>
-     <div class="skin-price-chart" id="skinPriceChart">Price history will build from verified market snapshots.</div>
-    </section>
    </div>
   </div>
+  <section class="skin-detail-section skin-history-panel">
+   <div class="skin-history-head"><strong>PRICE HISTORY · 30 DAYS</strong><div id="skinHistoryRanges"><button data-range="7">7D</button><button class="active" data-range="30">30D</button><button data-range="90">90D</button><button data-range="180">6M</button><button data-range="365">1Y</button></div></div>
+   <p class="skin-detail-note" id="skinHistorySource">Showing: Steam</p>
+   <div class="skin-price-chart" id="skinPriceChart">Price history will build from verified market snapshots.</div>
+  </section>
  </section>
 </div>
-<script src="/assets/skins-details.js?v=1" defer></script>
+<script src="/assets/skins-details.js?v=2" defer></script>
 <script id="skins-hide-exitlag-sponsor">
 (() => {
   // Keep the ExitLag sponsor campaign off the CS2 catalogue only.
