@@ -159,3 +159,16 @@
 .admin-nav .nav-btn * {
   text-transform: uppercase !important;
 }
+
+
+/* Category visibility fix: keep grouped navigation readable on compact desktop/tablet widths. */
+@media (min-width:701px) and (max-width:1024px) {
+  .sidebar { width:200px !important; }
+  body { padding-left:200px !important; }
+  .sidebar-section-label { display:block !important; visibility:visible !important; opacity:1 !important; }
+  .sidebar-link { justify-content:flex-start !important; padding:10px 10px !important; }
+  .sidebar-link span { display:inline !important; visibility:visible !important; opacity:1 !important; }
+}
+/* Always show generated category headings on every viewport. */
+.sidebar .sidebar-section-label,
+.admin-nav .sidebar-section-label { display:block !important; visibility:visible !important; opacity:1 !important; }
