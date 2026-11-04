@@ -496,7 +496,7 @@ body.mobile-menu-open{overflow:hidden!important}
 </nav>
 <div class="toolbar">
         <input class="control search-control" id="skinSearch" type="search" placeholder="Search skins or weapons…" autocomplete="off" aria-label="Search skins">
-        <select class="control" id="categoryFilter" aria-label="Category"><option value="all">All categories</option><option value="weapon">Weapons</option><option value="knife">Knives</option><option value="glove">Gloves</option></select>
+        <select class="control" id="categoryFilter" aria-label="Category"><option value="all">All categories</option><option value="weapon">All weapons</option><option value="pistol">Pistols</option><option value="rifle">Rifles</option><option value="smg">SMGs</option><option value="shotgun">Shotguns</option><option value="machinegun">Machine guns</option><option value="knife">Knives</option><option value="glove">Gloves</option></select>
         <select class="control" id="weaponFilter" aria-label="Weapon"><option value="all">All weapons</option></select>
         <select class="control" id="sortFilter" aria-label="Sort"><option value="name">Name A → Z</option><option value="name-desc">Name Z → A</option></select>
       </div>
@@ -541,11 +541,21 @@ body.mobile-menu-open{overflow:hidden!important}
   let allSkins = [];
   let visibleCount = PAGE_SIZE;
   const slug = value => String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/™/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+  const baseWeapon = name => String(name || '').split('|')[0].replace(/^★\\s*/, '').trim().toLowerCase();
   const categoryFor = name => {
-    const weaponName = String(name).split('|')[0].trim().toLowerCase();
+    const weaponName = baseWeapon(name);
     if (/gloves|wraps/.test(weaponName)) return 'glove';
     if (/knife|karambit|bayonet|daggers|dagger|kukri|stiletto|talon|ursus|navaja|paracord|survival|skeleton|nomad|classic|falchion|bowie|huntsman|shadow/.test(weaponName)) return 'knife';
     return 'weapon';
+  };
+  const weaponClassFor = name => {
+    const w = baseWeapon(name);
+    if (/^(glock-18|usp-s|p2000|p250|five-seven|tec-9|cz75-auto|dual berettas|r8 revolver|desert eagle)$/.test(w)) return 'pistol';
+    if (/^(ak-47|m4a4|m4a1-s|aug|sg 553|famas|galil ar|ssg 08|awp|g3sg1|scar-20)$/.test(w)) return 'rifle';
+    if (/^(mac-10|mp9|mp7|mp5-sd|ump-45|p90|pp-bizon)$/.test(w)) return 'smg';
+    if (/^(nova|xm1014|mag-7|sawed-off)$/.test(w)) return 'shotgun';
+    if (/^(m249|negev)$/.test(w)) return 'machinegun';
+    return 'other';
   };
   const labelFor = key => key === 'knife' ? 'KNIFE' : key === 'glove' ? 'GLOVES' : 'WEAPON';
   const imageUrl = id => API + '/media/rendered/files/skins/' + encodeURIComponent(id) + '/light.png';
@@ -569,7 +579,7 @@ body.mobile-menu-open{overflow:hidden!important}
     let items = allSkins.filter(item => {
       const cat = categoryFor(item.name);
       return (!q || item.name.toLocaleLowerCase().includes(q) || String(item.search_slug || '').includes(slug(q))) &&
-        (category.value === 'all' || category.value === cat) &&
+        (category.value === 'all' || category.value === cat || (cat === 'weapon' && category.value === weaponClassFor(item.name))) &&
         (weapon.value === 'all' || String(item.name).split('|')[0].trim() === weapon.value);
     });
     items.sort((a,b) => sort.value === 'name-desc' ? b.name.localeCompare(a.name) : a.name.localeCompare(b.name));
