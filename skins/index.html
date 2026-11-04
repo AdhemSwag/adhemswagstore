@@ -678,13 +678,15 @@ body.mobile-menu-open{overflow:hidden!important}
     <p class="skin-detail-note">Tradeit affiliate link: purchases open with your AdhemSwag referral.</p>
    </div>
    <div>
-    <section class="skin-detail-section"><h3>Market prices</h3>
-     <div class="skin-market-row"><span>Steam</span><span class="skin-market-value">API connection required</span></div>
-     <div class="skin-market-row"><span>BUFF163</span><span class="skin-market-value">API connection required</span></div>
-     <div class="skin-market-row"><span>DMarket</span><span class="skin-market-value">API connection required</span></div>
-     <p class="skin-detail-note">No estimated or invented prices are displayed. Live prices will appear when the market data providers are connected.</p>
+    <section class="skin-detail-section"><h3>MARKET PRICES · STEAM</h3>
+     <label class="skin-detail-note" for="skinWearSelect">Wear / condition</label>
+     <select id="skinWearSelect" class="control" style="margin:8px 0 12px;width:100%"><option value="">Base item</option><option value="Factory New">Factory New (FN)</option><option value="Minimal Wear">Minimal Wear (MW)</option><option value="Field-Tested">Field-Tested (FT)</option><option value="Well-Worn">Well-Worn (WW)</option><option value="Battle-Scarred">Battle-Scarred (BS)</option></select>
+     <div class="skin-market-row"><span>Steam lowest price</span><span class="skin-market-value" id="skinSteamPrice">Loading…</span></div>
+     <div class="skin-market-row"><span>Steam median price</span><span class="skin-market-value" id="skinSteamMedian">—</span></div>
+     <div class="skin-market-row"><span>Market volume</span><span class="skin-market-value" id="skinSteamVolume">—</span></div>
+     <p class="skin-detail-note" id="skinMarketStatus">Live Steam Market data. Other marketplaces will be enabled when their API access is configured.</p>
     </section>
-    <section class="skin-detail-section"><h3>Price history · 30 days</h3><div class="skin-history-empty">30-day price history will appear here<br>after the historical market data API is connected.</div></section>
+    <section class="skin-detail-section"><h3>STEAM PRICE HISTORY</h3><div class="skin-history-empty" id="skinPriceHistory">History will build from real price checks over time. No historical values are fabricated.</div></section>
    </div>
   </div>
  </section>
