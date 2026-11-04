@@ -569,7 +569,45 @@ body.mobile-menu-open{overflow:hidden!important}
   function populateWeapons(items){weapon.replaceChildren(new Option('All weapons','all'));const names=[...new Set(items.filter(x=>x._type==='weapon').map(x=>String(x.name).split('|')[0].trim()))].sort((a,b)=>a.localeCompare(b));names.forEach(n=>weapon.add(new Option(n,n)));}
   function currentItems(){const q=search.value.trim().toLocaleLowerCase();let items=allSkins.filter(item=>{const cat=item._type==='weapon'?categoryFor(item.name):item._type;return(!q||item.name.toLocaleLowerCase().includes(q)||String(item.search_slug||'').includes(slug(q)))&&(category.value==='all'||category.value===cat||(cat==='weapon'&&category.value===weaponClassFor(item.name)))&&(weapon.value==='all'||(item._type==='weapon'&&String(item.name).split('|')[0].trim()===weapon.value));});items.sort((a,b)=>sort.value==='name-desc'?b.name.localeCompare(a.name):a.name.localeCompare(b.name));return items;}
   function render(){const items=currentItems(),shown=items.slice(0,visibleCount);count.innerHTML='<strong>'+items.length.toLocaleString('en-US')+'</strong> items found · '+shown.length.toLocaleString('en-US')+' shown';grid.replaceChildren();if(!shown.length){const empty=document.createElement('div');empty.className='empty';empty.textContent='No items match this search. Try another name or filter.';grid.appendChild(empty);}else{const fragment=document.createDocumentFragment();shown.forEach(item=>{const cat=item._type==='weapon'?categoryFor(item.name):item._type;const card=document.createElement('article');card.className='skin-card';card.dataset.skinName=item.name;card.dataset.skinId=String(item.id||'');card.dataset.itemType=item._type;card.dataset.marketHashName=item.market_hash_name||item.name;const imageBox=document.createElement('div');imageBox.className='skin-image';const img=document.createElement('img');img.loading='lazy';img.decoding='async';img.alt=item.name;img.src=itemImage(item);img.onerror=()=>{img.remove();const f=document.createElement('span');f.className='skin-placeholder';f.textContent='PREVIEW UNAVAILABLE';imageBox.appendChild(f);};if(img.src)imageBox.appendChild(img);else{const f=document.createElement('span');f.className='skin-placeholder';f.textContent='PREVIEW UNAVAILABLE';imageBox.appendChild(f);}const info=document.createElement('div');info.className='skin-info';const type=document.createElement('div');type.className='skin-type';type.textContent=labelFor(cat);const title=document.createElement('div');title.className='skin-name';title.textContent=item.name;const subtitle=document.createElement('div');subtitle.className='skin-weapon';subtitle.textContent=item.team?.name||item.collections?.[0]?.name||item.rarity?.name||labelFor(cat);info.append(type,title,subtitle);card.setAttribute('role','button');card.setAttribute('tabindex','0');card.setAttribute('aria-label','Open details for '+item.name);card.append(imageBox,info);fragment.appendChild(card);});grid.appendChild(fragment);}loadWrap.hidden=shown.length>=items.length;}
-  async function init(){try{const types=['weapon','agent','sticker','collection','case'];const results=await Promise.all(types.map(async type=>{const endpoint=type==='weapon'?'skins':type;const response=await fetch(API+'/consumer/browse/'+endpoint+'.json',{cache:'force-cache'});if(!response.ok)throw new Error(endpoint+' HTTP '+response.status);const data=await response.json();return(type==='weapon'?(data.items||[]):(data.items||[])).filter(x=>x&&x.name).map(x=>({...x,_type:type}));}));allSkins=results.flat();if(!allSkins.length)throw new Error('catalogue vide');populateWeapons(allSkins);document.getElementById('sourceStatus').textContent='SOURCE: CS2 ITEM DATABASE';render();}catch(error){console.error('CS2 catalogue failed:',error);grid.innerHTML='<div class="status">The catalogue could not be loaded. Check your connection and refresh the page.</div>';count.textContent='Catalogue unavailable';}}
+  async function init(){
+    const types=['weapon','agent','sticker','collection','case'];
+    const timeoutFetch=async(url,ms=15000)=>{
+      const controller=new AbortController();
+      const timer=setTimeout(()=>controller.abort(),ms);
+      try{return await fetch(url,{cache:'no-store',signal:controller.signal});}
+      finally{clearTimeout(timer);}
+    };
+    try{
+      grid.innerHTML='<div class="status">Loading CS2 catalogue…</div>';
+      const settled=await Promise.allSettled(types.map(async type=>{
+        const endpoint=type==='weapon'?'skins':type;
+        const response=await timeoutFetch(API+'/consumer/browse/'+endpoint+'.json');
+        if(!response.ok)throw new Error(endpoint+' HTTP '+response.status);
+        const data=await response.json();
+        if(!Array.isArray(data.items))throw new Error(endpoint+' invalid data format');
+        return data.items.filter(x=>x&&x.name).map(x=>({...x,_type:type}));
+      }));
+      const failed=[];
+      allSkins=settled.flatMap((result,index)=>{
+        if(result.status==='fulfilled')return result.value;
+        failed.push(types[index]);
+        console.warn('CS2 catalogue category failed:',types[index],result.reason);
+        return [];
+      });
+      if(!allSkins.length)throw new Error('No catalogue categories responded successfully');
+      populateWeapons(allSkins);
+      document.getElementById('sourceStatus').textContent=failed.length
+        ?'SOURCE: CS2 ITEM DATABASE · PARTIAL'
+        :'SOURCE: CS2 ITEM DATABASE';
+      render();
+      if(failed.length)console.warn('Some CS2 categories are temporarily unavailable:',failed.join(', '));
+    }catch(error){
+      console.error('CS2 catalogue failed:',error);
+      grid.innerHTML='<div class="status">CS2 catalogue is temporarily unavailable. Please refresh in a moment.</div>';
+      count.textContent='Catalogue unavailable';
+      document.getElementById('sourceStatus').textContent='SOURCE: TEMPORARILY UNAVAILABLE';
+    }
+  }
   [search,category,weapon,sort].forEach(control=>control.addEventListener(control===search?'input':'change',()=>{visibleCount=PAGE_SIZE;render();}));loadButton.addEventListener('click',()=>{visibleCount+=PAGE_SIZE;render();});init();
 </script>
 <script src="/assets/language-switcher.js?v=2" defer></script>
