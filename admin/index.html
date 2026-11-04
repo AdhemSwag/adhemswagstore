@@ -370,7 +370,7 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
     <div class="nav-label">Admin</div>
     <button class="nav-btn active" data-panel="dashboard">Dashboard</button>
     <button class="nav-btn" data-panel="google-analytics">Google Analytics</button>
-    <button class="nav-btn" data-panel="rewards">Rewards / Store</button><button class="nav-btn" data-panel="flexy-inventory">FLEXY STOCK</button><button class="nav-btn" data-panel="sponsors">Sponsors</button>
+    <button class="nav-btn" data-panel="rewards">Rewards / Store</button><button class="nav-btn" data-panel="sponsors">Sponsors</button>
     <button class="nav-btn" data-panel="giveaways">Giveaways</button>
     <button class="nav-btn" data-panel="live-codes">LIVE Codes</button>
     <button class="nav-btn" data-panel="logs">Admin Logs</button>
@@ -619,9 +619,9 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
         <div class="actions"><button class="btn primary" id="saveBonusSettings">SAVE BONUS SETTINGS</button><span id="bonusSaveStatus" class="notice" style="display:none;margin-top:0"></span></div>
         <div class="notice">Database settings are created and default to OFF. Secure admin authentication/write access will be connected before production rewards are enabled.</div>
       </div>
-    </section>
+            <div class="section" id="flexy-inventory"><h2>FLEXY <span style="color:var(--cyan)">OPERATOR STOCK</span></h2><p>Manage the available quantity for each operator and recharge amount here, inside Rewards / Store. This is the single Flexy stock manager.</p><div class="table-wrap"><table><thead><tr><th>Operator</th><th>Recharge</th><th>Available</th><th>Action</th></tr></thead><tbody id="flexyInventoryRows"><tr><td colspan="4">Open Rewards / Store to load stock.</td></tr></tbody></table></div><div id="flexyInventoryStatus" class="notice" style="display:none"></div></div>
 
-        <section id="flexy-inventory" class="panel"><div class="section"><h2>FLEXY <span style="color:var(--cyan)">INVENTORY</span></h2><p>Independent stock for each operator and recharge amount. Each combination is reserved separately.</p><div class="table-wrap"><table><thead><tr><th>Operator</th><th>Recharge</th><th>Available</th><th>Action</th></tr></thead><tbody id="flexyInventoryRows"><tr><td colspan="4">Loading…</td></tr></tbody></table></div><div id="flexyInventoryStatus" class="notice" style="display:none"></div></div></section>
+</section>
 
 <section id="giveaways" class="panel">
 <div class="section"><h2>Giveaway Control</h2><p>Create and manage Twitch giveaways.</p>
@@ -2347,7 +2347,7 @@ document.querySelectorAll('.nav-btn').forEach(btn=>{
     const panel=document.getElementById(btn.dataset.panel);
     if(!panel)return;
     panel.classList.add('active');
-    if(btn.dataset.panel==='flexy-inventory')loadFlexyInventory();
+    if(btn.dataset.panel==='rewards')loadFlexyInventory();
     requestAnimationFrame(()=>window.scrollTo({top:0,behavior:'smooth'}));
   });
 });
