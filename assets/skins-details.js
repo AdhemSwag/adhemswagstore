@@ -59,6 +59,7 @@
     const name=card.dataset.skinName||card.querySelector('.skin-name')?.textContent||'CS2 Skin';
     title.textContent=name;
     activeSkinName=name;
+    window.dispatchEvent(new CustomEvent('adhem:skin-recent',{detail:{name}}));
     activeMarketHashName=card.dataset.marketHashName||name;
     activeItemType=card.dataset.itemType||'weapon';
     activeWear='Factory New';
