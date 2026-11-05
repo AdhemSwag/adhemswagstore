@@ -15,7 +15,7 @@
   // This is intentionally blank until the site owner creates and supplies the publishable key.
   const CS2INSPECT_PUBLIC_KEY='pk_live_BsWeF9Rm-O7g2VPLwHowgA';
   const slug=value=>String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/™/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
-  const inspectUrl=name=>{const parts=String(name||'').split('|');return 'https://cs2inspect.skin/'+slug(parts[0]||'')+'/'+slug(parts.slice(1).join('|')||'');};
+  const inspectUrl=name=>{const params=new URLSearchParams({key:CS2INSPECT_PUBLIC_KEY,name:String(name||''),spin:'6',bg:'transparent',accent:'11D9F7',controls:'1',logo:'minimal'});return 'https://cs2inspect.skin/embed?'+params.toString();};
   const variantList=document.getElementById('skinVariantList');
   const marketPickerButton=document.getElementById('skinMarketPickerButton');
   const marketMenu=document.getElementById('skinMarketMenu');
@@ -137,7 +137,16 @@
     renderHistory();
   }));
   refreshMarketButton();
-  const showViewer=()=>{window.open(inspectUrl(title.textContent),'_blank','noopener,noreferrer');};
+  const showViewer=()=>{
+    if(!viewer||!activeSkinName)return;
+    preview.hidden=true;viewer.hidden=false;viewer.replaceChildren();
+    const frame=document.createElement('iframe');
+    frame.src=inspectUrl(activeMarketHashName||activeSkinName);
+    frame.title='3D inspection — '+activeSkinName;
+    frame.loading='lazy';frame.allow='fullscreen';frame.referrerPolicy='strict-origin-when-cross-origin';
+    frame.style.cssText='display:block;width:100%;height:100%;min-height:360px;border:0;background:transparent';
+    viewer.appendChild(frame);
+  };
   document.getElementById('skinGrid')?.addEventListener('click',event=>{
     const card=event.target.closest('.skin-card');if(!card) return;
     const name=card.dataset.skinName||card.querySelector('.skin-name')?.textContent||'CS2 Skin';
@@ -151,8 +160,7 @@
     if(marketTitle)marketTitle.textContent=(activeItemType==='weapon'?'SKIN':activeItemType.toUpperCase())+' MARKET PRICES';
     const variantsTitle=document.querySelector('.skin-variants-title');
     if(variantsTitle)variantsTitle.textContent=isWeapon?'ALL WEAR VARIANTS ⓘ':activeItemType==='sticker'?'STICKER MARKET ITEM':'ITEM MARKET PRICE';
-    if(inspect){inspect.style.display=isWeapon?'':'none';}
-    if(inspect) inspect.href=inspectUrl(name);
+    if(inspect){inspect.style.display=isWeapon?'':'none';inspect.href='#';inspect.textContent='INSPECT IN 3D';}
     loadVariantPrices();
     const buy=document.querySelector('.skin-detail-action.buy');
     if(buy)buy.style.display=activeItemType==='collection'?'none':'';
@@ -161,7 +169,7 @@
     preview.hidden=false;viewer.hidden=true;viewer.replaceChildren();
     backdrop.classList.add('open');backdrop.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';
   });
-  inspect?.addEventListener('click',event=>{if(!event.isTrusted)return;});
+  inspect?.addEventListener('click',event=>{event.preventDefault();showViewer();});
   document.getElementById('skinGrid')?.addEventListener('keydown',event=>{const card=event.target.closest('.skin-card');if(card&&(event.key==='Enter'||event.key===' ')){event.preventDefault();card.click();}});
   document.getElementById('skinDetailClose')?.addEventListener('click',close);
   backdrop.addEventListener('click',event=>{if(event.target===backdrop)close();});
