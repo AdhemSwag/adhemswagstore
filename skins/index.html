@@ -608,7 +608,7 @@ body.mobile-menu-open{overflow:hidden!important}
     try{
       grid.innerHTML='<div class="status">Loading CS2 catalogue…</div>';
       const settled=await Promise.allSettled(types.map(async type=>{
-        const endpoint=type==='weapon'?'skins':type;
+        const endpoint={weapon:'skins',agent:'agents',sticker:'stickers',collection:'collections',case:'cases'}[type];
         const response=await timeoutFetch(API+'/consumer/browse/'+endpoint+'.json');
         if(!response.ok)throw new Error(endpoint+' HTTP '+response.status);
         const data=await response.json();
