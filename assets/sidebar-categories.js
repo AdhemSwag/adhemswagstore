@@ -62,6 +62,79 @@
     });
     sidebar.dataset.categoriesReady="true";
   }
+
+  // One shared mobile menu controller for every page that loads this sidebar asset.
+  // Capture early and stop legacy per-page handlers from forcing the drawer open.
+  if (!window.__adhemMobileMenuToggleInstalled) {
+    window.__adhemMobileMenuToggleInstalled = true;
+    const getSide = () => document.querySelector(".sidebar") || document.querySelector(".admin-nav") || document.querySelector(".mobile-fallback-drawer");
+    const getScrim = () => document.querySelector("[data-mobile-scrim],.mobile-nav-scrim");
+    const getButton = () => document.querySelector("[data-mobile-menu]");
+    const closeMenu = () => {
+      const side = getSide(), scrim = getScrim(), button = getButton();
+      if (side) {
+        side.classList.remove("mobile-open");
+        side.style.removeProperty("transform");
+        side.style.removeProperty("visibility");
+        side.style.removeProperty("pointer-events");
+        side.style.removeProperty("z-index");
+      }
+      document.body.classList.remove("mobile-menu-open");
+      if (scrim) {
+        scrim.classList.remove("open");
+        scrim.style.removeProperty("visibility");
+        scrim.style.removeProperty("opacity");
+        scrim.style.removeProperty("pointer-events");
+        scrim.style.removeProperty("z-index");
+      }
+      if (button) button.setAttribute("aria-expanded", "false");
+    };
+    const openMenu = () => {
+      if (!window.matchMedia("(max-width:700px)").matches) return;
+      const side = getSide(), scrim = getScrim(), button = getButton();
+      if (!side) return;
+      side.classList.add("mobile-open");
+      side.style.setProperty("transform", "translate3d(0,0,0)", "important");
+      side.style.setProperty("visibility", "visible", "important");
+      side.style.setProperty("pointer-events", "auto", "important");
+      side.style.setProperty("z-index", "2147483001", "important");
+      document.body.classList.add("mobile-menu-open");
+      if (scrim) {
+        scrim.classList.add("open");
+        scrim.style.setProperty("visibility", "visible", "important");
+        scrim.style.setProperty("opacity", "1", "important");
+        scrim.style.setProperty("pointer-events", "auto", "important");
+        scrim.style.setProperty("z-index", "2147483000", "important");
+      }
+      if (button) button.setAttribute("aria-expanded", "true");
+    };
+    document.addEventListener("click", event => {
+      const menu = event.target.closest("[data-mobile-menu]");
+      const close = event.target.closest("[data-mobile-scrim],.mobile-nav-scrim,.mobile-drawer-close");
+      if (menu) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        const side = getSide();
+        if (document.body.classList.contains("mobile-menu-open") || (side && side.classList.contains("mobile-open"))) closeMenu();
+        else openMenu();
+        return;
+      }
+      if (close) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        closeMenu();
+        return;
+      }
+      if (event.target.closest(".sidebar a,.admin-nav a,.mobile-fallback-drawer a")) closeMenu();
+    }, true);
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape") closeMenu();
+    });
+    window.addEventListener("resize", () => {
+      if (window.innerWidth > 700) closeMenu();
+    });
+  }
+
   function boot(){document.querySelectorAll(".sidebar").forEach(organize);}
   if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",boot,{once:true});
   else boot();
