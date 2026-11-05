@@ -1696,7 +1696,15 @@ footer .footer-copy .row{margin:0;}
       }catch(e){ return {live:false, viewers:null, error:true}; }
     }
 
-    const [twitch, kick] = await Promise.all([getTwitch(), getKick()]);
+    // Never let a slow Twitch/Kick endpoint hold the dashboard status indefinitely.
+    const withTimeout = (promise, ms, fallback) => Promise.race([
+      promise,
+      new Promise(resolve => window.setTimeout(() => resolve(fallback), ms))
+    ]);
+    const [twitch, kick] = await Promise.all([
+      withTimeout(getTwitch(), 4500, {live:false, viewers:null, error:true, timeout:true}),
+      withTimeout(getKick(), 4500, {live:false, viewers:null, error:true, timeout:true})
+    ]);
     const bothLive = twitch.live && kick.live;
     const selected = twitch.live ? 'TWITCH' : (kick.live ? 'KICK' : 'OFFLINE');
 
