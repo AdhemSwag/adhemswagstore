@@ -108,7 +108,7 @@
       }
       if (button) button.setAttribute("aria-expanded", "true");
     };
-    document.addEventListener("click", event => {
+    window.addEventListener("click", event => {
       const menu = event.target.closest("[data-mobile-menu]");
       const close = event.target.closest("[data-mobile-scrim],.mobile-nav-scrim,.mobile-drawer-close");
       if (menu) {
