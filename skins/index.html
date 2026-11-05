@@ -74,6 +74,7 @@ body{padding-left:200px;background:#05070a;background-image:linear-gradient(rgba
  .toolbar{grid-template-columns:1fr 1fr}.toolbar .search-control{grid-column:1/-1}
  .footer-inner{align-items:flex-start;flex-direction:column}.footer-socials{gap:10px}
 }
+.daily-skins-panel{margin:24px 0 30px;padding:18px;border:1px solid rgba(17,217,247,.22);border-radius:14px;background:linear-gradient(135deg,rgba(17,217,247,.075),rgba(10,18,24,.94) 48%)}.daily-skins-heading{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;margin-bottom:15px}.daily-skins-heading h2{margin:7px 0 5px;font-size:clamp(20px,3vw,27px);letter-spacing:-.03em}.daily-skins-heading p{margin:0;color:#8ea4b1;font-size:12px;line-height:1.5}.daily-skins-date{flex:0 0 auto;border:1px solid rgba(17,217,247,.25);border-radius:8px;padding:8px 10px;color:#11d9f7;font:10px 'JetBrains Mono',monospace;letter-spacing:.08em}.daily-skins-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.daily-skin-tile{min-width:0;display:flex;align-items:center;gap:10px;padding:9px;border:1px solid rgba(139,178,194,.14);border-radius:10px;background:rgba(5,12,17,.72);color:#edf8fc;text-align:left;cursor:pointer;transition:border-color .18s,transform .18s}.daily-skin-tile:hover{border-color:rgba(17,217,247,.55);transform:translateY(-2px)}.daily-skin-tile img{width:70px;height:58px;flex:0 0 70px;object-fit:contain}.daily-skin-tile span{min-width:0;font-size:11px;font-weight:800;line-height:1.35;overflow-wrap:anywhere}.daily-skin-tile small{display:block;margin-top:5px;color:#11d9f7;font-size:9px;letter-spacing:.08em}@media(max-width:760px){.daily-skins-panel{padding:13px;margin:18px 0 22px}.daily-skins-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.daily-skin-tile{gap:7px;padding:7px}.daily-skin-tile img{width:54px;height:50px;flex-basis:54px}.daily-skin-tile span{font-size:10px}.daily-skins-date{font-size:8px;padding:7px}.daily-skins-heading{align-items:flex-start}}
 </style>
 <style id="adhemswag-mobile-first-paint">@media(max-width:700px){html,body{width:100%!important;max-width:100%!important;min-width:0!important;margin:0!important;padding:0!important;overflow-x:hidden!important}body{position:relative!important;left:0!important}main{margin-left:0!important;margin-right:0!important;width:100%!important;max-width:100%!important;transform:none!important}}
 @media(max-width:700px){.adhem-account{transform:scale(.88)!important;transform-origin:right center!important;margin-right:-4px!important}.adhem-account-connect{min-height:32px!important;padding:6px 8px!important;font-size:8px!important;gap:6px!important}.adhem-account-user{min-height:32px!important;padding:3px 7px 3px 3px!important;gap:5px!important}.adhem-account-avatar{width:24px!important;height:24px!important}.adhem-account-chevron{font-size:9px!important}}
@@ -524,6 +525,10 @@ body.mobile-menu-open{overflow:hidden!important}
       <p>Explore Counter-Strike 2 skins, search by weapon or finish, and filter the catalogue. Open a skin in an external 3D viewer to inspect its appearance.</p>
       <div class="hero-meta"><span class="pill">CS2 CATALOGUE</span><span class="pill">INSTANT SEARCH</span><span class="pill">3D INSPECTION</span></div>
     </section>
+    <section class="daily-skins-panel" id="dailySkinsPanel" aria-label="Daily skin picks">
+      <div class="daily-skins-heading"><div><span class="eyebrow">ADHEMSWAG DAILY DROP</span><h2>DAILY SKIN PICKS</h2><p>8 different weapon skins selected for today. The selection changes every day.</p></div><span class="daily-skins-date" id="dailySkinsDate"></span></div>
+      <div class="daily-skins-grid" id="dailySkinsGrid"><div class="status">Preparing today's skins…</div></div>
+    </section>
     <section aria-label="Catalogue filters">
       <nav class="skin-category-tabs" aria-label="Skin categories">
  <button class="skin-tab active" type="button" data-skin-category="all">ALL SKINS</button>
@@ -593,6 +598,23 @@ body.mobile-menu-open{overflow:hidden!important}
   const groups={weapon:'skins',agent:'agents',sticker:'stickers',collection:'collections',case:'cases'};
   const mediaGroups={weapon:'skins',agent:'agents',sticker:'stickers',collection:'collections',case:'containers'};
   const itemImage=item=>{const mediaPath=item.media?.primary_image_png||item.media?.images_png?.[0]||item.media?.image||item.image||item.image_url;if(mediaPath)return /^https?:\/\//i.test(mediaPath)?mediaPath:API+'/'+String(mediaPath).replace(/^\/+|^(?:\.\.\/)+/,'').replace(/^data\/api\//,'');return(item.id&&mediaGroups[item._type])?API+'/media/rendered/files/'+mediaGroups[item._type]+'/'+encodeURIComponent(item.id)+'/primary.png':'';};
+  const dailySkinsGrid=document.getElementById('dailySkinsGrid'),dailySkinsDate=document.getElementById('dailySkinsDate');
+  function renderDailySkins(){
+    if(!dailySkinsGrid)return;
+    const pool=allSkins.filter(item=>item._type==='weapon'&&item.name&&item.id).slice().sort((a,b)=>a.name.localeCompare(b.name));
+    if(!pool.length){dailySkinsGrid.innerHTML='<div class="status">Daily picks are temporarily unavailable.</div>';return;}
+    const now=new Date(),dayKey=Date.UTC(now.getFullYear(),now.getMonth(),now.getDate()),dayIndex=Math.floor(dayKey/86400000);
+    const start=(dayIndex*8)%pool.length,selected=Array.from({length:Math.min(8,pool.length)},(_,i)=>pool[(start+i)%pool.length]);
+    if(dailySkinsDate)dailySkinsDate.textContent=now.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}).toUpperCase();
+    dailySkinsGrid.replaceChildren();
+    selected.forEach(item=>{
+      const button=document.createElement('button');button.type='button';button.className='daily-skin-tile';button.dataset.dailySkinName=item.name;
+      const img=document.createElement('img');img.loading='lazy';img.decoding='async';img.alt='';img.src=itemImage(item);img.onerror=()=>{img.remove();};
+      const label=document.createElement('span');label.textContent=item.name;const action=document.createElement('small');action.textContent='VIEW SKIN';label.appendChild(action);
+      button.append(img,label);dailySkinsGrid.appendChild(button);
+    });
+  }
+
   function populateWeapons(items){weapon.replaceChildren(new Option('All weapons','all'));const names=[...new Set(items.filter(x=>x._type==='weapon').map(x=>String(x.name).split('|')[0].trim()))].sort((a,b)=>a.localeCompare(b));names.forEach(n=>weapon.add(new Option(n,n)));}
   function populateRarities(items){if(!rarity)return;rarity.replaceChildren(new Option('All rarities','all'));const names=[...new Set(items.map(x=>typeof x.rarity==='string'?x.rarity:x.rarity?.name).filter(Boolean))].sort((a,b)=>a.localeCompare(b));names.forEach(n=>rarity.add(new Option(n,n)));}
   function currentItems(){const q=search.value.trim().toLocaleLowerCase();let items=allSkins.filter(item=>{const cat=item._type==='weapon'?categoryFor(item.name):item._type;const rarityName=typeof item.rarity==='string'?item.rarity:item.rarity?.name||'';const isStatTrak=/stattrak/i.test(item.name);if(showFavorites&&!favoriteIds.has(String(item.id||item.market_hash_name||item.name)))return false;if(rarity?.value!=='all'&&rarityName!==rarity.value)return false;if(stattrak?.value==='yes'&&!isStatTrak)return false;if(stattrak?.value==='no'&&isStatTrak)return false;return(!q||item.name.toLocaleLowerCase().includes(q)||String(item.search_slug||'').includes(slug(q)))&&(category.value==='all'||category.value===cat||(cat==='weapon'&&category.value===weaponClassFor(item.name)))&&(weapon.value==='all'||(item._type==='weapon'&&String(item.name).split('|')[0].trim()===weapon.value));});items.sort((a,b)=>sort.value==='name-desc'?b.name.localeCompare(a.name):a.name.localeCompare(b.name));return items;}
@@ -626,6 +648,7 @@ body.mobile-menu-open{overflow:hidden!important}
       populateWeapons(allSkins);
       populateRarities(allSkins);
       renderRecent();
+      renderDailySkins();
       document.getElementById('sourceStatus').textContent=failed.length
         ?'SOURCE: CS2 ITEM DATABASE · PARTIAL'
         :'SOURCE: CS2 ITEM DATABASE';
@@ -639,6 +662,11 @@ body.mobile-menu-open{overflow:hidden!important}
     }
   }
   favoritesToggle?.addEventListener('click',()=>{showFavorites=!showFavorites;visibleCount=PAGE_SIZE;render();});
+  dailySkinsGrid?.addEventListener('click',event=>{
+    const button=event.target.closest('[data-daily-skin-name]');if(!button)return;
+    search.value=button.dataset.dailySkinName;category.value='all';weapon.value='all';if(rarity)rarity.value='all';if(stattrak)stattrak.value='all';sort.value='name';showFavorites=false;visibleCount=PAGE_SIZE;render();
+    const card=[...grid.querySelectorAll('.skin-card')].find(x=>x.dataset.skinName===button.dataset.dailySkinName);card?.click();
+  });
   grid.addEventListener('click',event=>{const button=event.target.closest('[data-favorite-id]');if(!button)return;event.preventDefault();event.stopPropagation();const id=button.dataset.favoriteId;if(favoriteIds.has(id))favoriteIds.delete(id);else favoriteIds.add(id);saveFavorites();render();});
   [search,category,weapon,rarity,stattrak,sort].filter(Boolean).forEach(control=>control.addEventListener(control===search?'input':'change',()=>{visibleCount=PAGE_SIZE;render();}));
   recentList?.addEventListener('click',event=>{const button=event.target.closest('[data-recent-name]');if(!button)return;search.value=button.dataset.recentName;category.value='all';weapon.value='all';if(rarity)rarity.value='all';if(stattrak)stattrak.value='all';showFavorites=false;visibleCount=PAGE_SIZE;render();const card=[...grid.querySelectorAll('.skin-card')].find(x=>x.dataset.skinName===button.dataset.recentName);card?.click();});
