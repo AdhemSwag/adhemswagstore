@@ -750,7 +750,7 @@ body.mobile-menu-open{overflow:hidden!important}
  }
  document.addEventListener('click',e=>{
    const m=e.target.closest('[data-mobile-menu]');
-   if(m){e.preventDefault();e.stopPropagation();open();return;}
+   if(m){e.preventDefault();e.stopPropagation();const s=side();if(document.body.classList.contains('mobile-menu-open')||(s&&s.classList.contains('mobile-open')))close();else open();return;}
    if(e.target.closest('[data-mobile-scrim],.mobile-drawer-close')){e.preventDefault();close();return;}
    if(e.target.closest('.sidebar a,.admin-nav a,.mobile-fallback-drawer a'))close();
  },{capture:true});
