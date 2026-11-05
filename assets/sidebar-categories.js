@@ -115,11 +115,11 @@
       for (const mutation of mutations) {
         for (const node of mutation.addedNodes) {
           if (node.nodeType !== 1) continue;
-          if (node.matches?.("a.sidebar-link")) {
+          if (node.matches?.("a.sidebar-link") && !node.closest(".sidebar-group")) {
             const sidebar = node.closest(".sidebar");
             if (sidebar) sidebarsToRefresh.add(sidebar);
           }
-          if (node.matches?.(".nav-btn[data-panel]")) {
+          if (node.matches?.(".nav-btn[data-panel]") && !node.closest(".sidebar-group")) {
             const nav = node.closest(".admin-nav");
             if (nav) adminToRefresh.add(nav);
           }
