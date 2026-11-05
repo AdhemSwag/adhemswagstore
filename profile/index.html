@@ -646,7 +646,7 @@ body.mobile-menu-open{overflow:hidden!important}
 </div>
 <section class="card badge-collection">
   <div class="section-head"><h2>BADGE COLLECTION</h2><span class="section-state">PROFILE BADGES</span></div>
-  <p class="badge-collection-intro">Badges unlock from verified account events. Twitch Watch Streak badges are earned at 3, 5, 10, 20 and 30 consecutive AdhemSwag Twitch broadcasts with at least 10 active minutes watched per live. XP rewards are granted once per milestone, and earned badges stay unlocked permanently even if your streak resets. Twitch Subscriber, FNC Supporter and FNC VIP rules remain unchanged.</p>
+  <p class="badge-collection-intro">Badges unlock from verified account events. Your single STREAM WATCH STREAK badge upgrades at 3, 5, 10, 20 and 30 consecutive AdhemSwag Twitch broadcasts with at least 10 active minutes watched per live. XP rewards are granted once per milestone. Twitch Subscriber, FNC Supporter and FNC VIP rules remain unchanged.</p>
   <div class="badge-grid">
     <div class="badge-item unlocked" id="badgeLevelCard">
       <div class="badge-icon" id="badgeLevelIcon">🆕</div>
@@ -665,25 +665,9 @@ body.mobile-menu-open{overflow:hidden!important}
       <div class="badge-icon">♛</div>
       <div><div class="badge-name">FNC VIP</div><div class="badge-state" id="badgeVipState">ADMIN ASSIGNMENT REQUIRED</div></div>
     </div>
-    <div class="badge-item locked" id="badgeStreak3Card">
-      <div class="badge-icon">🔥</div>
-      <div><div class="badge-name">STREAK STARTER</div><div class="badge-state" id="badgeStreak3State">REACH 3 CONSECUTIVE LIVES</div></div>
-    </div>
-    <div class="badge-item locked" id="badgeStreak5Card">
-      <div class="badge-icon">🥉</div>
-      <div><div class="badge-name">STREAK BRONZE</div><div class="badge-state" id="badgeStreak5State">REACH 5 CONSECUTIVE LIVES</div></div>
-    </div>
-    <div class="badge-item locked" id="badgeStreak10Card">
-      <div class="badge-icon">🥈</div>
-      <div><div class="badge-name">STREAK SILVER</div><div class="badge-state" id="badgeStreak10State">REACH 10 CONSECUTIVE LIVES</div></div>
-    </div>
-    <div class="badge-item locked" id="badgeStreak20Card">
-      <div class="badge-icon">🥇</div>
-      <div><div class="badge-name">STREAK GOLD</div><div class="badge-state" id="badgeStreak20State">REACH 20 CONSECUTIVE LIVES</div></div>
-    </div>
-    <div class="badge-item locked" id="badgeStreak30Card">
-      <div class="badge-icon">👑</div>
-      <div><div class="badge-name">STREAK LEGEND</div><div class="badge-state" id="badgeStreak30State">REACH 30 CONSECUTIVE LIVES</div></div>
+    <div class="badge-item locked" id="badgeTwitchStreakCard">
+      <div class="badge-icon" id="badgeTwitchStreakIcon">🔥</div>
+      <div><div class="badge-name" id="badgeTwitchStreakName">STREAM WATCH STREAK</div><div class="badge-state" id="badgeTwitchStreakState">REACH 3 CONSECUTIVE LIVES</div></div>
     </div>
   </div>
 </section>
@@ -752,17 +736,22 @@ function renderProfileBadges(level,profile,streakBadgeIds){
  setProfileBadgeState('badgeSupporterCard','badgeSupporterState',supporter,supporter?'CONFIRMED DONOR':'FIRST CONFIRMED DONATION REQUIRED');
  setProfileBadgeState('badgeVipCard','badgeVipState',vip,vip?'VIP ASSIGNED BY ADMIN':'ADMIN ASSIGNMENT REQUIRED');
  const earned=new Set(Array.isArray(streakBadgeIds)?streakBadgeIds:[]);
- const streakBadges=[
-  {id:'streak_3',card:'badgeStreak3Card',state:'badgeStreak3State',xp:25,streams:3},
-  {id:'streak_5',card:'badgeStreak5Card',state:'badgeStreak5State',xp:50,streams:5},
-  {id:'streak_10',card:'badgeStreak10Card',state:'badgeStreak10State',xp:100,streams:10},
-  {id:'streak_20',card:'badgeStreak20Card',state:'badgeStreak20State',xp:250,streams:20},
-  {id:'streak_30',card:'badgeStreak30Card',state:'badgeStreak30State',xp:500,streams:30}
+ const streakLevels=[
+  {id:'streak_3',name:'STREAK STARTER',icon:'🔥',xp:25,streams:3},
+  {id:'streak_5',name:'STREAK BRONZE',icon:'🥉',xp:50,streams:5},
+  {id:'streak_10',name:'STREAK SILVER',icon:'🥈',xp:100,streams:10},
+  {id:'streak_20',name:'STREAK GOLD',icon:'🥇',xp:250,streams:20},
+  {id:'streak_30',name:'STREAK LEGEND',icon:'👑',xp:500,streams:30}
  ];
- streakBadges.forEach(item=>{
-  const unlocked=earned.has(item.id);
-  setProfileBadgeState(item.card,item.state,unlocked,unlocked?'EARNED · +'+item.xp+' XP':'REACH '+item.streams+' CONSECUTIVE LIVES');
- });
+ const current=[...streakLevels].reverse().find(item=>earned.has(item.id));
+ const streakCard=document.getElementById('badgeTwitchStreakCard');
+ const streakIcon=document.getElementById('badgeTwitchStreakIcon');
+ const streakName=document.getElementById('badgeTwitchStreakName');
+ const streakState=document.getElementById('badgeTwitchStreakState');
+ if(streakCard){streakCard.classList.toggle('unlocked',!!current);streakCard.classList.toggle('locked',!current);}
+ if(streakIcon)streakIcon.textContent=current?current.icon:'🔥';
+ if(streakName)streakName.textContent=current?current.name:'STREAM WATCH STREAK';
+ if(streakState)streakState.textContent=current?'LEVEL '+current.streams+' · +'+current.xp+' XP EARNED':'REACH 3 CONSECUTIVE LIVES';
 }
 
 const adminPreviewUsername = new URLSearchParams(window.location.search).get('admin_preview');
