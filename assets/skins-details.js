@@ -24,7 +24,7 @@
   const historyChart=document.getElementById('skinPriceChart'),historySource=document.getElementById('skinHistorySource'),currencySelect=document.getElementById('skinCurrencySelect');
   const rangeButtons=[...document.querySelectorAll('#skinHistoryRanges button')],wears=['Factory New','Minimal Wear','Field-Tested','Well-Worn','Battle-Scarred'];
   const labels={steam:'Steam',skinport:'Skinport',buff:'BUFF163',youpin:'YouPin',csfloat:'CSFloat'};
-  let activeSkinName='',activeMarketHashName='',activeItemType='weapon',activeWear='Factory New',priceRequest=0,historyRange=30,variantPrices={},displayCurrency='EUR',eurUsdRate=null;
+  let activeSkinName='',activeMarketHashName='',activeItemType='weapon',activeWear='Factory New',priceRequest=0,historyRange=30,variantPrices={},displayCurrency='USD',eurUsdRate=null;
   try{const v=localStorage.getItem('adhem_skins_currency');if(v==='USD'||v==='EUR')displayCurrency=v;}catch(_){}
   if(currencySelect)currencySelect.value=displayCurrency;
   const selectedMarkets=()=>marketChecks.filter(x=>x.checked).map(x=>x.value).filter(x=>labels[x]);
