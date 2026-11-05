@@ -1207,6 +1207,16 @@ footer .footer-copy .row{margin:0;}
 </style>
 
 <link rel="stylesheet" href="/assets/mobile-sidebar.css?v=6" id="adhemswag-shared-mobile-sidebar">
+<style id="adhemswag-desktop-sidebar-categories-after-mobile-css">
+/* Keep category headings and labels visible on desktop after shared/mobile CSS loads. */
+@media (min-width:701px){
+  body .sidebar .sidebar-section-label{display:block!important;visibility:visible!important;opacity:1!important;color:#71838a!important;font:700 9px/1.4 'JetBrains Mono',monospace!important;letter-spacing:.14em!important;text-transform:uppercase!important;margin:14px 10px 7px!important;white-space:nowrap!important}
+  body .sidebar .sidebar-group{display:flex!important;flex-direction:column!important;gap:3px!important;margin:0 0 9px!important;min-width:0!important}
+  body .sidebar .sidebar-link span{display:inline!important;visibility:visible!important;opacity:1!important;width:auto!important;height:auto!important;max-width:none!important;overflow:visible!important}
+  body .sidebar .sidebar-link{justify-content:flex-start!important;min-height:40px!important;padding:9px 10px!important;gap:11px!important}
+  body .sidebar .sidebar-link svg,body .sidebar .sidebar-link img{display:block!important;width:17px!important;height:17px!important;flex-shrink:0!important}
+}
+</style>
 </head>
 <body>
 
@@ -1990,7 +2000,7 @@ footer .footer-copy .row{margin:0;}
 
 <script src="/assets/language-switcher.js?v=1" defer></script>
 
-<script src="/assets/sidebar-categories.js?v=8" defer></script>
+<script src="/assets/sidebar-categories.js?v=9" defer></script>
 
 <style id="adhemswag-desktop-sidebar-categories-final">
 /* Final PC-only sidebar override. Mobile drawer rules are intentionally untouched. */
