@@ -545,10 +545,10 @@ body.mobile-menu-open{overflow:hidden!important}
         <a class="profile-stat reward-stat-link" href="/leaderboard/" aria-label="Open FNC Points leaderboard"><span><i class="stat-icon">💎</i>FNC POINTS</span><strong id="profileFncPoints">0</strong></a>
         <div class="profile-stat"><span><i class="stat-icon">⚡</i>XP</span><strong id="profileXp">0 XP</strong></div>
         <div class="profile-stat"><span><i class="stat-icon">👀</i>WATCH TIME</span><strong id="profileWatchMinutes">0 min</strong></div>
-        <div class="profile-stat"><span><i class="stat-icon">🔥</i>STREAK</span><strong id="profileStreak">0 DAYS</strong></div>
+        <div class="profile-stat"><span><i class="stat-icon">🔥</i>TWITCH WATCH STREAK</span><strong id="profileStreak">0 STREAMS</strong></div>
       </div>
     </div>
-    <p class="note">Keep watching on Twitch for at least 10 active minutes per day to build your streak. A missed day resets the streak. FNC Points and XP rules are unchanged.</p>
+    <p class="note">Watch at least 10 verified active minutes during each consecutive AdhemSwag Twitch broadcast to build your Twitch Watch Streak. Missing a broadcast resets the streak. FNC Points and XP rules are unchanged.</p>
   </section>
 </div>
 
@@ -880,7 +880,7 @@ async function renderAdminPublicPreview(username){
  if(activeTitle){activeTitle.textContent='FNC PROGRESSION';activeTitle.classList.remove('profile-active-offline');}
  set('profileFncPoints',Number(p.fnc_points||0).toLocaleString());
  const xp=Number(p.xp||0),level=Number(p.level||1);
- set('profileXp',xp.toLocaleString()+' XP');set('profileLevel',level);set('profileWatchMinutes',formatWatchTime(Number(p.total_watch_minutes||0)));set('profileStreak',Number(p.streak||0)+' DAYS');
+ set('profileXp',xp.toLocaleString()+' XP');set('profileLevel',level);set('profileWatchMinutes',formatWatchTime(Number(p.total_watch_minutes||0)));set('profileStreak',Number(p.twitch_watch_streak||0)+' STREAMS');
  const cur=getLevelThreshold(level),nextLevel=Math.min(100,level+1),next=getLevelThreshold(nextLevel);
  const pct=level>=100?100:Math.max(0,Math.min(100,(xp-cur)/(next-cur)*100));
  const badge=getLevelBadge(level),badgeEl=document.getElementById('profileBadge');
@@ -952,7 +952,7 @@ window.addEventListener('adhem:viewer', async function(e){
  if(activeTitle){activeTitle.textContent='FNC PROGRESSION';activeTitle.classList.remove('profile-active-offline');}
  set('profileFncPoints',Number(p&&p.fnc_points||0).toLocaleString());
  const xp=Number(p&&p.xp||0),level=Number(p&&p.level||1);
- set('profileXp',xp.toLocaleString()+' XP');set('profileLevel',level);set('profileWatchMinutes',formatWatchTime(Number(p&&p.total_watch_minutes||0)));set('profileStreak',Number(p&&p.streak||0)+' DAYS');
+ set('profileXp',xp.toLocaleString()+' XP');set('profileLevel',level);set('profileWatchMinutes',formatWatchTime(Number(p&&p.total_watch_minutes||0)));set('profileStreak',Number(p&&p.twitch_watch_streak||0)+' STREAMS');
  renderProfileBadges(level,p);
  const thresholds={1:0,2:750,3:1750,4:3000,5:4500,6:6250,7:8250,8:10500,9:13000,10:15750};
  const cur=thresholds[level]??0,next=Object.keys(thresholds).map(Number).sort((a,b)=>a-b).find(x=>x>level);
