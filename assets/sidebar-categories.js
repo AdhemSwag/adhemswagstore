@@ -22,6 +22,22 @@
   };
   function organizeSidebar(sidebar) {
     if (!sidebar || sidebar.dataset.categoriesReady === "true") return;
+    // Ensure every requested destination exists in the shared navigation.
+    const requiredLinks = [
+      ["/skins/", "CS2 SKINS"],
+      ["/faq/", "FAQ"]
+    ];
+    requiredLinks.forEach(([href, label]) => {
+      if (!sidebar.querySelector(`a.sidebar-link[href="${href}"]`)) {
+        const link = document.createElement("a");
+        link.className = "sidebar-link";
+        link.href = href;
+        const text = document.createElement("span");
+        text.textContent = label;
+        link.appendChild(text);
+        sidebar.appendChild(link);
+      }
+    });
     const links = [...sidebar.querySelectorAll("a.sidebar-link")];
     if (!links.length) return;
     const brand = sidebar.querySelector(".sidebar-brand");
@@ -39,7 +55,6 @@
     sidebar.appendChild(topDivider);
     groups.forEach(group => {
       const items = buckets.get(group.id);
-      if (!items.length) return;
       const section = document.createElement("section");
       section.className = "sidebar-group sidebar-group-" + group.id;
       section.setAttribute("aria-label", group.label);
