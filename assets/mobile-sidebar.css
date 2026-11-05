@@ -1,174 +1,71 @@
-/* AdhemSwag shared mobile sidebar — single source of truth.
-   Mobile only. Keeps the desktop sidebar, bottom navigation, FNC and XP untouched. */
-@media (max-width:700px) {
-  .sidebar,
-  .admin-nav,
-  .mobile-fallback-drawer {
-    position: fixed !important;
-    top: 0 !important;
-    right: auto !important;
-    bottom: 0 !important;
-    left: 0 !important;
-    width: min(285px, 84vw) !important;
-    min-width: 0 !important;
-    max-width: 84vw !important;
-    height: 100dvh !important;
-    max-height: 100dvh !important;
-    box-sizing: border-box !important;
-    display: flex !important;
-    flex-direction: column !important;
-    padding: 18px 14px 28px !important;
-    gap: 2px !important;
-    overflow-x: hidden !important;
-    overflow-y: auto !important;
-    background: rgba(5, 8, 12, .98) !important;
-    border-right: 1px solid rgba(17, 217, 247, .3) !important;
-    box-shadow: 16px 0 55px rgba(0, 0, 0, .55) !important;
-    transform: translate3d(-110%, 0, 0) !important;
-    transition: transform .28s cubic-bezier(.2, .8, .2, 1) !important;
-    z-index: 2147483001 !important;
-  }
-  .sidebar.mobile-open,
-  .admin-nav.mobile-open,
-  .mobile-fallback-drawer.mobile-open {
-    transform: translate3d(0, 0, 0) !important;
-    visibility: visible !important;
-    pointer-events: auto !important;
-  }
-  .sidebar-brand,
-  .sidebar-brand a {
-    display: flex !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    align-items: center !important;
-    justify-content: center !important;
-    width: 100% !important;
-    min-height: 76px !important;
-    height: auto !important;
-    margin: 0 !important;
-    padding: 10px 8px 20px !important;
-    box-sizing: border-box !important;
-  }
-  .sidebar-brand img,
-  .sidebar-logo-img {
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    width: auto !important;
-    max-width: 190px !important;
-    max-height: 68px !important;
-    height: auto !important;
-    object-fit: contain !important;
-  }
-  .sidebar-section-label {
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    width: auto !important;
-    height: auto !important;
-    margin: 14px 10px 7px !important;
-    padding: 0 !important;
-  }
-  .sidebar-divider {
-    display: block !important;
-    visibility: visible !important;
-    height: 1px !important;
-    margin: 10px 8px !important;
-    padding: 0 !important;
-  }
-  .sidebar-link,
-  .admin-nav .nav-btn,
-  .mobile-fallback-drawer a {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: flex-start !important;
-    width: 100% !important;
-    min-width: 0 !important;
-    min-height: 46px !important;
-    margin: 3px 0 !important;
-    padding: 11px 12px !important;
-    gap: 12px !important;
-    border-radius: 8px !important;
-    box-sizing: border-box !important;
-  }
-  .sidebar-link span,
-  .admin-nav .nav-btn span,
-  .sidebar-link .label,
-  .admin-nav .nav-btn .label,
-  .mobile-fallback-drawer a span {
-    display: inline !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    width: auto !important;
-    max-width: none !important;
-    height: auto !important;
-    white-space: normal !important;
-  }
-  .sidebar-link svg,
-  .sidebar-link img,
-  .admin-nav .nav-btn svg,
-  .admin-nav .nav-btn img {
-    display: block !important;
-    width: 19px !important;
-    height: 19px !important;
-    max-width: 19px !important;
-    max-height: 19px !important;
-    flex: 0 0 19px !important;
-    opacity: 1 !important;
-  }
-  .admin-nav .brand {
-    display: flex !important;
-    align-items: center !important;
-    gap: 10px !important;
-    padding: 8px 8px 20px !important;
-  }
-  .mobile-drawer-close {
-    display: none !important;
-    visibility: hidden !important;
-    pointer-events: none !important;
-  }
-}
-@media (min-width:701px) {
-  .mobile-drawer-close { display: none !important; }
-}
-
-
-/* Shared category layout — desktop and mobile */
+/* AdhemSwag shared sidebar layout — one mobile source of truth.
+   Mobile-only drawer rules; desktop navigation and bottom navigation remain unchanged. */
 .sidebar-group{display:flex;flex-direction:column;gap:3px;margin:0 0 9px;padding:0;min-width:0}
-.sidebar-section-label{display:block;margin:13px 10px 6px;padding:0;color:#71838a;font:700 9px/1.3 'JetBrains Mono',monospace;letter-spacing:.15em;text-transform:uppercase;user-select:none}
+.sidebar-section-label{display:block!important;visibility:visible!important;opacity:1!important;margin:13px 10px 6px;padding:0;color:#71838a;font:700 9px/1.3 'JetBrains Mono',monospace;letter-spacing:.15em;text-transform:uppercase;user-select:none}
 .sidebar-group:first-of-type .sidebar-section-label{margin-top:7px}
 .sidebar-group .sidebar-link{width:100%;box-sizing:border-box}
 .sidebar-group-social{padding-top:7px;border-top:1px solid rgba(17,217,247,.13)}
-@media(max-width:700px){
-  .sidebar-group{gap:2px;margin-bottom:8px}
-  .sidebar-section-label{margin:12px 10px 6px;font-size:9px;letter-spacing:.14em}
-  .sidebar-group-social{padding-top:6px}
-}
-
-/* Admin navigation uses the same grouped visual language. */
-.admin-nav .sidebar-group{display:flex;flex-direction:column;gap:3px;margin:0 0 9px;padding:0}
-.admin-nav .sidebar-section-label{display:block;margin:13px 10px 6px;color:#71838a;font:700 9px/1.3 'JetBrains Mono',monospace;letter-spacing:.15em;text-transform:uppercase}
+.admin-nav .sidebar-group{display:flex;flex-direction:column;gap:3px;margin:0 0 9px;padding:0;min-width:0}
+.admin-nav .sidebar-section-label{display:block!important;visibility:visible!important;opacity:1!important;margin:13px 10px 6px;color:#71838a;font:700 9px/1.3 'JetBrains Mono',monospace;letter-spacing:.15em;text-transform:uppercase}
 .admin-nav .sidebar-group .nav-btn{width:100%;box-sizing:border-box}
-@media(max-width:700px){.admin-nav .sidebar-group{gap:2px;margin-bottom:8px}.admin-nav .sidebar-section-label{margin:12px 10px 6px}}
+.sidebar .sidebar-link,.sidebar .sidebar-link *, .admin-nav .nav-btn,.admin-nav .nav-btn *{text-transform:uppercase!important}
 
-
-/* Keep every sidebar navigation label consistently uppercase. */
-.sidebar .sidebar-link,
-.sidebar .sidebar-link *,
-.admin-nav .nav-btn,
-.admin-nav .nav-btn * {
-  text-transform: uppercase !important;
+/* Tablet: keep the desktop sidebar readable without changing phone layout. */
+@media (min-width:701px) and (max-width:1024px){
+  .sidebar{width:200px!important}
+  body{padding-left:200px!important}
+  .sidebar-section-label{display:block!important;visibility:visible!important;opacity:1!important}
+  .sidebar-link{justify-content:flex-start!important;padding:10px 10px!important}
+  .sidebar-link span{display:inline!important;visibility:visible!important;opacity:1!important}
 }
 
-
-/* Category visibility fix: keep grouped navigation readable on compact desktop/tablet widths. */
-@media (min-width:701px) and (max-width:1024px) {
-  .sidebar { width:200px !important; }
-  body { padding-left:200px !important; }
-  .sidebar-section-label { display:block !important; visibility:visible !important; opacity:1 !important; }
-  .sidebar-link { justify-content:flex-start !important; padding:10px 10px !important; }
-  .sidebar-link span { display:inline !important; visibility:visible !important; opacity:1 !important; }
+/* Phones: one consistent drawer size, position, scroll area and open/closed state. */
+@media (max-width:700px){
+  .sidebar,.admin-nav,.mobile-fallback-drawer{
+    position:fixed!important;top:0!important;right:auto!important;bottom:0!important;left:0!important;
+    width:min(330px,88vw)!important;min-width:0!important;max-width:88vw!important;
+    height:100vh!important;height:100dvh!important;max-height:100dvh!important;
+    box-sizing:border-box!important;display:flex!important;flex-direction:column!important;
+    padding:18px 16px 28px!important;gap:2px!important;
+    overflow-x:hidden!important;overflow-y:auto!important;overscroll-behavior:contain;
+    -webkit-overflow-scrolling:touch;scrollbar-width:thin;
+    background:rgba(5,8,12,.98)!important;border-right:1px solid rgba(17,217,247,.3)!important;
+    box-shadow:16px 0 55px rgba(0,0,0,.55)!important;
+    transform:translate3d(-110%,0,0)!important;visibility:hidden!important;pointer-events:none!important;
+    transition:transform .28s cubic-bezier(.2,.8,.2,1),visibility 0s linear .28s!important;
+    z-index:2147483001!important;
+  }
+  .sidebar.mobile-open,.admin-nav.mobile-open,.mobile-fallback-drawer.mobile-open{
+    transform:translate3d(0,0,0)!important;visibility:visible!important;pointer-events:auto!important;
+    transition:transform .28s cubic-bezier(.2,.8,.2,1),visibility 0s!important;
+  }
+  .sidebar-brand,.sidebar-brand a{
+    display:flex!important;visibility:visible!important;opacity:1!important;align-items:center!important;
+    justify-content:center!important;width:100%!important;min-height:76px!important;height:auto!important;
+    margin:0!important;padding:10px 8px 20px!important;box-sizing:border-box!important;
+  }
+  .sidebar-brand img,.sidebar-logo-img{
+    display:block!important;visibility:visible!important;opacity:1!important;width:auto!important;
+    max-width:230px!important;max-height:74px!important;height:auto!important;object-fit:contain!important;
+  }
+  .sidebar-group{gap:2px;margin:0 0 8px;padding:0}
+  .sidebar-section-label{margin:12px 10px 6px!important;font-size:9px!important;letter-spacing:.14em!important}
+  .sidebar-group-social{padding-top:6px}
+  .sidebar-divider{display:block!important;visibility:visible!important;height:1px!important;margin:10px 8px!important;padding:0!important}
+  .sidebar-link,.admin-nav .nav-btn,.mobile-fallback-drawer a{
+    display:flex!important;align-items:center!important;justify-content:flex-start!important;
+    width:100%!important;min-width:0!important;min-height:46px!important;margin:3px 0!important;
+    padding:11px 12px!important;gap:12px!important;border-radius:8px!important;box-sizing:border-box!important;
+  }
+  .sidebar-link span,.admin-nav .nav-btn span,.sidebar-link .label,.admin-nav .nav-btn .label,.mobile-fallback-drawer a span{
+    display:inline!important;visibility:visible!important;opacity:1!important;width:auto!important;
+    max-width:none!important;height:auto!important;white-space:normal!important;overflow:visible!important;
+  }
+  .sidebar-link svg,.sidebar-link img,.admin-nav .nav-btn svg,.admin-nav .nav-btn img{
+    display:block!important;width:19px!important;height:19px!important;max-width:19px!important;max-height:19px!important;
+    flex:0 0 19px!important;opacity:1!important;
+  }
+  .admin-nav .brand{display:flex!important;align-items:center!important;gap:10px!important;padding:8px 8px 20px!important}
+  .mobile-drawer-close{display:none!important;visibility:hidden!important;pointer-events:none!important}
 }
-/* Always show generated category headings on every viewport. */
-.sidebar .sidebar-section-label,
-.admin-nav .sidebar-section-label { display:block !important; visibility:visible !important; opacity:1 !important; }
+@media (min-width:701px){.mobile-drawer-close{display:none!important}}
