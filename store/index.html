@@ -785,7 +785,11 @@ body.mobile-menu-open{overflow:hidden!important}
       }
       const image = r.image_url ? '<img class="reward-image" src="'+esc(r.image_url)+'" alt="'+esc(r.name)+'">' : '<div class="reward-image empty">ADHEMSWAG REWARD</div>';
       return '<article class="reward-card" data-reward-card-id="'+esc(r.id)+'">'+image+'<div class="reward-body"><h3>'+esc(r.name)+'</h3><div class="reward-desc">'+esc(r.description||'AdhemSwag reward.')+'</div><div class="reward-meta"><span class="reward-chip '+(/exitlag/i.test(r.name||'')&&fncCost===1050?'exitlag-promo-price':'')+'">'+(/exitlag/i.test(r.name||'')&&fncCost===1050?'<span class="exitlag-old-price">'+money(1500)+' FNC</span> <strong>'+money(fncCost)+' FNC</strong> <b class="exitlag-discount">-30%</b>':'<strong>'+money(fncCost)+' FNC</strong>')+'</span><span class="reward-chip">LEVEL <strong>'+levelRequired+'</strong></span><span class="reward-chip">'+esc(stock)+'</span></div><div class="reward-status '+(can?'ready':'')+'">'+esc(status)+'</div><button class="reward-redeem" data-id="'+r.id+'" data-signin="'+(!signedIn?'1':'0')+'" '+((!signedIn||can)?'':'disabled')+'>'+(!signedIn?'SIGN IN TO REDEEM':(monthlyUsed?'MONTHLY LIMIT':'REDEEM'))+'</button></div></article>';
-    }).join('');    grid.querySelectorAll('.reward-redeem:not(:disabled)').forEach(btn => btn.addEventListener('click',async()=>{
+    }).join('');
+    /* Keep ExitLag pinned as the first product, ahead of Flexy and every other reward, regardless of sort selection. */
+    const exitlagFirstCard = [...grid.querySelectorAll('.reward-card')].find(card => /exitlag/i.test(card.querySelector('h3')?.textContent || ''));
+    if (exitlagFirstCard) grid.prepend(exitlagFirstCard);
+    grid.querySelectorAll('.reward-redeem:not(:disabled)').forEach(btn => btn.addEventListener('click',async()=>{
       if(btn.dataset.signin==='1'){
         const {error}=await client.auth.signInWithOAuth({provider:'twitch',options:{redirectTo:window.location.href}});
         if(error) say('Twitch sign-in failed: '+(error.message||'Unknown error'),'error');
