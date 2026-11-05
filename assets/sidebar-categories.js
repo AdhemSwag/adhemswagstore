@@ -92,24 +92,36 @@
   }
   function boot() {
     init();
-    // Some pages build or replace their navigation after DOMContentLoaded.
-    // Watch for late-inserted sidebars and initialize them when their links arrive.
+    // Re-group links whenever a page adds/replaces navigation items dynamically.
+    // Ignore the sections we create ourselves to prevent observer loops.
     const observer = new MutationObserver((mutations) => {
+      const sidebarsToRefresh = new Set();
+      const adminToRefresh = new Set();
       for (const mutation of mutations) {
         for (const node of mutation.addedNodes) {
           if (node.nodeType !== 1) continue;
-          if (node.matches?.(".sidebar, .admin-nav") ||
-              node.querySelector?.(".sidebar, .admin-nav")) {
-            init();
-            return;
+          if (node.matches?.("a.sidebar-link")) {
+            const sidebar = node.closest(".sidebar");
+            if (sidebar) sidebarsToRefresh.add(sidebar);
           }
-          const parentNav = node.closest?.(".sidebar, .admin-nav");
-          if (parentNav && parentNav.dataset.categoriesReady !== "true") {
+          if (node.matches?.(".nav-btn[data-panel]")) {
+            const nav = node.closest(".admin-nav");
+            if (nav) adminToRefresh.add(nav);
+          }
+          // A complete sidebar/nav may be mounted after this script starts.
+          if (node.matches?.(".sidebar, .admin-nav")) {
             init();
-            return;
           }
         }
       }
+      sidebarsToRefresh.forEach(sidebar => {
+        sidebar.dataset.categoriesReady = "false";
+        organizeSidebar(sidebar);
+      });
+      adminToRefresh.forEach(nav => {
+        nav.dataset.categoriesReady = "false";
+        organizeAdminNav(nav);
+      });
     });
     observer.observe(document.documentElement, { childList: true, subtree: true });
   }
