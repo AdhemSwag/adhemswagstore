@@ -643,7 +643,7 @@ body.mobile-menu-open{overflow:hidden!important}
        </div>
       </div>
      </div>
-     <div class="skin-variants-title">ALL WEAR VARIANTS ⓘ</div>
+     <div class="skin-variants-title">WEAR CONDITION · SELECT A ROW TO VIEW ITS PRICE HISTORY</div>
      <div class="skin-variant-list" id="skinVariantList">
       <div class="skin-variant-row"><span>Factory New</span><strong>—</strong></div>
       <div class="skin-variant-row"><span>Minimal Wear</span><strong>—</strong></div>
@@ -651,18 +651,18 @@ body.mobile-menu-open{overflow:hidden!important}
       <div class="skin-variant-row"><span>Well-Worn</span><strong>—</strong></div>
       <div class="skin-variant-row"><span>Battle-Scarred</span><strong>—</strong></div>
      </div>
-     <p class="skin-detail-note" id="skinMarketStatus">Steam is the default live source. Prices and history are loaded from the free OpenSkin API.</p>
+     <p class="skin-detail-note">Compare the same item across the selected marketplaces. Weapon prices are separated by wear condition: Factory New, Minimal Wear, Field-Tested, Well-Worn and Battle-Scarred. USD is the default; EUR is an optional converted display.</p><p class="skin-detail-note" id="skinMarketStatus" role="status" aria-live="polite">Loading marketplace data…</p><p class="skin-detail-note">Prices are indicative market data, not guaranteed buy or sell offers. Listings, fees, liquidity and prices can change at any time. A dash means no price was returned for that item on that marketplace.</p>
     </section>
    </div>
   </div>
   <section class="skin-detail-section skin-history-panel">
    <div class="skin-history-head"><strong>PRICE HISTORY · 30 DAYS</strong><div id="skinHistoryRanges"><button data-range="7">7D</button><button class="active" data-range="30">30D</button><button data-range="90">90D</button><button data-range="180">6M</button><button data-range="365">1Y</button></div></div>
-   <p class="skin-detail-note" id="skinHistorySource">Showing: Steam</p>
-   <div class="skin-price-chart" id="skinPriceChart">Price history will build from verified market snapshots.</div>
+   <p class="skin-detail-note">This chart shows recorded daily prices for the selected wear condition on one marketplace. Steam is used first when selected; otherwise the first selected marketplace is used. Choose 7D, 30D, 90D, 6M or 1Y to change the period. Some items or markets may have limited history.</p><p class="skin-detail-note" id="skinHistorySource" aria-live="polite">Waiting for history data…</p>
+   <div class="skin-price-chart" id="skinPriceChart">Select a skin to load its available daily price history.</div>
   </section>
  </section>
 </div>
-<script src="/assets/skins-details.js?v=4" defer></script>
+<script src="/assets/skins-details.js?v=5" defer></script>
 <script id="skins-hide-exitlag-sponsor">
 (() => {
   // Keep the ExitLag sponsor campaign off the CS2 catalogue only.
