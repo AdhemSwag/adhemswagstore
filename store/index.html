@@ -741,7 +741,7 @@ body.mobile-menu-open{overflow:hidden!important}
     else if (!flexyEnoughMin) flexyStatus = '1,500 FNC REQUIRED FOR THE 100 DA RECHARGE';
     const flexyImageHtml = flexyImage ? '<img class="reward-image" src="'+esc(flexyImage)+'" alt="FLEXY mobile recharge">' : '<div class="reward-image empty">FLEXY RECHARGE</div>';
     const flexyAmountsHtml = '<span class="reward-chip">100 DA · 1,500 FNC</span><span class="reward-chip">200 DA · 3,000 FNC</span>';
-    const flexyCardHtml = flexyRows.length ? '<article class="reward-card" id="flexyRewardCard" data-reward-kind="flexy" data-reward-card-id="'+esc((flexy100 || flexy200).id)+'">'+flexyImageHtml+'<div class="reward-body"><h3>FLEXY — MOBILE RECHARGE</h3><div class="reward-desc">Choose the amount, operator and Algerian mobile number. The admin will process your recharge manually.</div><div class="reward-meta">'+flexyAmountsHtml+'<span class="reward-chip">LEVEL <strong>'+flexyLevel+'</strong></span></div><div class="reward-status '+(flexySignedIn && active && flexyProfileReady && flexyHasStock && flexyEnoughMin ? 'ready' : '')+'">'+esc(flexyStatus)+'</div><button class="reward-redeem" data-flexy="1" data-signin="'+(!flexySignedIn?'1':'0')+'" '+((!flexySignedIn || (active && flexyProfileReady && flexyHasStock && Number(viewer?.level||1)>=flexyLevel))?'':'disabled')+'>'+(!flexySignedIn?'SIGN IN TO REDEEM':'CHOOSE RECHARGE')+'</button></div></article>' : '';
+    const flexyCardHtml = flexyRows.length ? '<article class="reward-card" id="flexyRewardCard" data-reward-kind="flexy" data-reward-card-id="'+esc((flexy100 || flexy200).id)+'">'+flexyImageHtml+'<div class="reward-body"><h3>FLEXY — MOBILE RECHARGE</h3><div class="reward-desc">Choose the amount and operator. Your access code is delivered instantly after a successful redemption.</div><div class="reward-meta">'+flexyAmountsHtml+'<span class="reward-chip">LEVEL <strong>'+flexyLevel+'</strong></span></div><div class="reward-status '+(flexySignedIn && active && flexyProfileReady && flexyHasStock && flexyEnoughMin ? 'ready' : '')+'">'+esc(flexyStatus)+'</div><button class="reward-redeem" data-flexy="1" data-signin="'+(!flexySignedIn?'1':'0')+'" '+((!flexySignedIn || (active && flexyProfileReady && flexyHasStock && Number(viewer?.level||1)>=flexyLevel))?'':'disabled')+'>'+(!flexySignedIn?'SIGN IN TO REDEEM':'CHOOSE RECHARGE')+'</button></div></article>' : '';
     grid.innerHTML = flexyCardHtml + visibleRewards.map(r => {
       const stockCount = r.stock == null ? null : Math.max(0, Number(r.stock) || 0);
       const stockAvailable = stockCount == null || stockCount > 0;
@@ -806,12 +806,13 @@ body.mobile-menu-open{overflow:hidden!important}
     if (tradeError) { tradeError.textContent=''; tradeError.style.display='none'; }
     const needsTrade = /skin/i.test(reward.name||'');
     const isFlexy = Array.isArray(reward.flexyRewards) || /flexy/i.test(reward.name||'');
+    const flexyCodeMode = Array.isArray(reward.flexyRewards) && reward.flexyRewards.some(r=>r.uses_access_codes);
     if (!needsTrade && !isFlexy) return redeem(null,null);
     modal.querySelector('#tradeModalTitle').textContent = isFlexy ? 'FLEXY RECHARGE' : 'Steam Trade Link';
-    modal.querySelector('#tradeModalText').textContent = isFlexy ? 'Enter the mobile number to recharge and choose its operator. AdhemSwag will process the recharge manually.' : 'Enter your Steam Trade Link for this reward. It is saved with the redemption for delivery.';
+    modal.querySelector('#tradeModalText').textContent = isFlexy ? (flexyCodeMode ? 'Choose the amount and operator. Your code is delivered instantly in MY PROFILE → MY ACCESS CODES.' : 'Enter the mobile number to recharge and choose its operator. AdhemSwag will process the recharge manually.') : 'Enter your Steam Trade Link for this reward. It is saved with the redemption for delivery.';
     if(flexyAmountWrap) flexyAmountWrap.style.display = isFlexy ? 'block' : 'none';
     if(flexyOperatorWrap) flexyOperatorWrap.style.display = isFlexy ? 'block' : 'none';
-    if(flexyPhoneWrap) flexyPhoneWrap.style.display = isFlexy ? 'block' : 'none';
+    if(flexyPhoneWrap) flexyPhoneWrap.style.display = isFlexy && !flexyCodeMode ? 'block' : 'none';
     if(flexyAmount) {
       const options = [...flexyAmount.options];
       options.forEach(option => {
@@ -870,17 +871,22 @@ body.mobile-menu-open{overflow:hidden!important}
         if (tradeError) { tradeError.textContent='Please choose Djezzy, Mobilis or Ooredoo.'; tradeError.style.display='block'; }
         return;
       }
-      const phone = String(phoneNumber||'').replace(/[\s().-]/g,'');
-      const prefixOperator = {'07':'DJEZZY','06':'MOBILIS','05':'OOREDOO'}[phone.slice(0,2)];
-      if (!/^0[567]\d{8}$/.test(phone)) {
-        if (tradeError) { tradeError.textContent='Enter a valid 10-digit Algerian mobile number beginning with 05, 06 or 07.'; tradeError.style.display='block'; }
-        return;
+      const flexyCodeMode = !!reward.uses_access_codes;
+      if (flexyCodeMode) {
+        phoneNumber = null;
+      } else {
+        const phone = String(phoneNumber||'').replace(/[\\s().-]/g,'');
+        const prefixOperator = {'07':'DJEZZY','06':'MOBILIS','05':'OOREDOO'}[phone.slice(0,2)];
+        if (!/^0[567]\\d{8}$/.test(phone)) {
+          if (tradeError) { tradeError.textContent='Enter a valid 10-digit Algerian mobile number beginning with 05, 06 or 07.'; tradeError.style.display='block'; }
+          return;
+        }
+        if (prefixOperator !== operator) {
+          if (tradeError) { tradeError.textContent='The phone prefix does not match the selected operator (07 Djezzy, 06 Mobilis, 05 Ooredoo).'; tradeError.style.display='block'; }
+          return;
+        }
+        phoneNumber = phone;
       }
-      if (prefixOperator !== operator) {
-        if (tradeError) { tradeError.textContent='The phone prefix does not match the selected operator (07 Djezzy, 06 Mobilis, 05 Ooredoo).'; tradeError.style.display='block'; }
-        return;
-      }
-      phoneNumber = phone;
     }
     hideSay();
     if (tradeError) { tradeError.textContent=''; tradeError.style.display='none'; }
