@@ -666,8 +666,18 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
 </div>
 <div class="section">
 <h2>Code Inventory</h2>
+<p>Manage and copy your live codes. Used / disabled codes are kept separately below.</p>
+<div class="form-grid">
+<div class="field"><label>Filter codes</label><select id="liveCodeFilter"><option value="all">ALL CODES</option><option value="available">NOT USED / ACTIVE</option><option value="used">ALREADY USED</option><option value="expired">EXPIRED</option></select></div>
+<div class="field"><label>Search code</label><input id="liveCodeSearch" type="search" placeholder="Search a code…"></div>
+</div>
 <div class="actions"><button class="btn primary" id="refreshLiveCodes">REFRESH CODES</button></div>
 <div class="table-wrap"><table><thead><tr><th>Code</th><th>FNC</th><th>Uses</th><th>Status</th><th>Expires</th><th>Action</th></tr></thead><tbody id="liveCodeList"><tr><td colspan="6">Loading…</td></tr></tbody></table></div>
+</div>
+<div class="section" id="liveCodesUsedSection">
+<h2>USED / OFF <span style="color:var(--cyan)">CODES</span></h2>
+<p>Archived codes stay visible here for reference. You can still copy them without changing their status.</p>
+<div class="table-wrap"><table><thead><tr><th>Code</th><th>FNC</th><th>Uses</th><th>Status</th><th>Expires</th><th>Action</th></tr></thead><tbody id="liveCodeUsedList"><tr><td colspan="6">Loading…</td></tr></tbody></table></div>
 </div>
 </section>
 <section id="logs" class="panel"><div class="section"><h2>Admin Logs</h2><p>Every important admin action is recorded for traceability.</p><div class="actions"><button class="btn primary" id="refreshAdminLogs">REFRESH LOGS</button></div><div id="adminLogStatus" class="notice" style="display:none"></div><div class="table-wrap"><table><thead><tr><th>Date</th><th>Action</th><th>Target</th><th>Details</th></tr></thead><tbody id="adminLogList"><tr><td colspan="4">Loading…</td></tr></tbody></table></div></div></section>
@@ -1978,21 +1988,61 @@ function liveCodeStatus(row){
 }
 let liveCodesRefreshTimer = null;
 
+function liveCodeCopyButton(code){
+  return '<button class="btn" type="button" data-lc-copy="'+escapeAttr(code)+'">COPY CODE</button>';
+}
+async function copyLiveCode(code,button){
+  try{
+    await navigator.clipboard.writeText(code);
+    const previous=button.textContent;
+    button.textContent='COPIED';
+    setTimeout(()=>{if(button.isConnected)button.textContent=previous;},1400);
+  }catch(error){
+    const helper=document.createElement('textarea');
+    helper.value=code;helper.setAttribute('readonly','');helper.style.position='fixed';helper.style.opacity='0';
+    document.body.appendChild(helper);helper.select();
+    const copied=document.execCommand('copy');helper.remove();
+    button.textContent=copied?'COPIED':'SELECT CODE';
+    setTimeout(()=>{if(button.isConnected)button.textContent='COPY CODE';},1400);
+  }
+}
 async function loadLiveCodes(){
   if(!adminReady)return;
-  const tbody=document.getElementById('liveCodeList'); if(!tbody)return;
+  const tbody=document.getElementById('liveCodeList');
+  const usedTbody=document.getElementById('liveCodeUsedList');
+  if(!tbody||!usedTbody)return;
   tbody.innerHTML='<tr><td colspan="6">Loading…</td></tr>';
+  usedTbody.innerHTML='<tr><td colspan="6">Loading…</td></tr>';
   const {data,error}=await supabaseClient.from('live_codes').select('id,code,reward_fnc,max_uses,uses_count,active,expires_at,created_at').order('created_at',{ascending:false}).limit(200);
-  if(error){tbody.innerHTML='<tr><td colspan="6">Unable to load codes: '+escapeHtml(error.message)+'</td></tr>';return;}
-  tbody.innerHTML=(data||[]).map(row=>{
-  const uses=Number(row.uses_count||0);
-  const maxUses=Math.max(1,Number(row.max_uses||1));
-  const exhausted=uses>=maxUses;
-  const active=!!row.active&&!exhausted;
-  return '<tr><td><code>'+escapeHtml(row.code)+'</code></td><td>'+Number(row.reward_fnc||0).toLocaleString()+'</td><td>'+uses+' / '+maxUses+'</td><td>'+escapeHtml(liveCodeStatus({...row,active}))+'</td><td>'+ (row.expires_at?new Date(row.expires_at).toLocaleString():'—') +'</td><td>'+(active?'<button class="btn danger" data-lc-disable="'+row.id+'">DISABLE</button>':'—')+'</td></tr>';
-}).join('')||'<tr><td colspan="6">No codes yet.</td></tr>';
-  tbody.querySelectorAll('[data-lc-disable]').forEach(btn=>btn.onclick=()=>disableLiveCode(btn.dataset.lcDisable));
+  if(error){
+    const message='Unable to load codes: '+escapeHtml(error.message);
+    tbody.innerHTML='<tr><td colspan="6">'+message+'</td></tr>';
+    usedTbody.innerHTML='<tr><td colspan="6">'+message+'</td></tr>';
+    return;
+  }
+  const rows=(data||[]).map(row=>{
+    const uses=Number(row.uses_count||0);
+    const maxUses=Math.max(1,Number(row.max_uses||1));
+    const exhausted=uses>=maxUses;
+    const active=!!row.active&&!exhausted;
+    const status=liveCodeStatus({...row,active});
+    const archived=status==='USED / OFF';
+    const expired=status==='EXPIRED';
+    const html='<tr><td><code>'+escapeHtml(row.code)+'</code></td><td>'+Number(row.reward_fnc||0).toLocaleString()+'</td><td>'+uses+' / '+maxUses+'</td><td>'+escapeHtml(status)+'</td><td>'+(row.expires_at?new Date(row.expires_at).toLocaleString():'—')+'</td><td>'+liveCodeCopyButton(row.code)+(active?' <button class="btn danger" data-lc-disable="'+row.id+'">DISABLE</button>':'')+'</td></tr>';
+    return {row,status,active,archived,expired,html};
+  });
+  const filter=document.getElementById('liveCodeFilter')?.value||'all';
+  const search=(document.getElementById('liveCodeSearch')?.value||'').trim().toLowerCase();
+  const matches=x=>(!search||String(x.row.code||'').toLowerCase().includes(search));
+  const mainRows=rows.filter(x=>!x.archived&&matches(x)&&(filter==='all'||(filter==='available'&&x.active)||(filter==='expired'&&x.expired)||(filter==='used'&&x.archived)));
+  const archivedRows=rows.filter(x=>x.archived&&matches(x));
+  tbody.innerHTML=mainRows.map(x=>x.html).join('')||'<tr><td colspan="6">No matching active or expired codes.</td></tr>';
+  usedTbody.innerHTML=archivedRows.map(x=>x.html).join('')||'<tr><td colspan="6">No USED / OFF codes.</td></tr>';
+  document.querySelectorAll('[data-lc-disable]').forEach(btn=>btn.onclick=()=>disableLiveCode(btn.dataset.lcDisable));
+  document.querySelectorAll('[data-lc-copy]').forEach(btn=>btn.onclick=()=>copyLiveCode(btn.dataset.lcCopy,btn));
 }
+document.getElementById('liveCodeFilter')?.addEventListener('change',loadLiveCodes);
+document.getElementById('liveCodeSearch')?.addEventListener('input',loadLiveCodes);
 function startLiveCodesAutoRefresh(){
   clearInterval(liveCodesRefreshTimer);
   liveCodesRefreshTimer=setInterval(()=>{
@@ -2571,4 +2621,3 @@ document.getElementById('enableRedemptionBrowserNotifications')?.addEventListene
 <link rel="stylesheet" href="/assets/mobile-sidebar.css?v=7" id="adhemswag-mobile-sidebar-final">
 </body>
 </html>
-
