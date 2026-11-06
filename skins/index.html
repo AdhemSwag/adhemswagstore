@@ -641,11 +641,6 @@ body.mobile-menu-open{overflow:hidden!important}
     }
   }
   favoritesToggle?.addEventListener('click',()=>{showFavorites=!showFavorites;visibleCount=PAGE_SIZE;render();});
-  dailySkinsGrid?.addEventListener('click',event=>{
-    const button=event.target.closest('[data-daily-skin-name]');if(!button)return;
-    search.value=button.dataset.dailySkinName;category.value='all';weapon.value='all';if(rarity)rarity.value='all';if(stattrak)stattrak.value='all';sort.value='name';showFavorites=false;visibleCount=PAGE_SIZE;render();
-    const card=[...grid.querySelectorAll('.skin-card')].find(x=>x.dataset.skinName===button.dataset.dailySkinName);card?.click();
-  });
   grid.addEventListener('click',event=>{const button=event.target.closest('[data-favorite-id]');if(!button)return;event.preventDefault();event.stopPropagation();const id=button.dataset.favoriteId;if(favoriteIds.has(id))favoriteIds.delete(id);else favoriteIds.add(id);saveFavorites();render();});
   [search,category,weapon,rarity,stattrak,sort].filter(Boolean).forEach(control=>control.addEventListener(control===search?'input':'change',()=>{visibleCount=PAGE_SIZE;render();}));
   recentList?.addEventListener('click',event=>{const button=event.target.closest('[data-recent-name]');if(!button)return;search.value=button.dataset.recentName;category.value='all';weapon.value='all';if(rarity)rarity.value='all';if(stattrak)stattrak.value='all';showFavorites=false;visibleCount=PAGE_SIZE;render();const card=[...grid.querySelectorAll('.skin-card')].find(x=>x.dataset.skinName===button.dataset.recentName);card?.click();});
