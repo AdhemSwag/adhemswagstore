@@ -537,7 +537,7 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
         <div class="table-wrap"><table><thead><tr><th>Position</th><th>Reward</th><th>FNC</th><th>Level</th><th>Stock</th><th>Access</th><th>Status</th><th>Image</th><th>Actions</th></tr></thead><tbody id="rewardList"><tr><td colspan="9">Loading…</td></tr></tbody></table></div>
         <div class="section" style="margin-top:18px">
           <h2>Access Codes</h2>
-          <p>Add promo / digital access codes only to rewards created as <strong style="color:var(--cyan)">ACCESS CODE</strong>. Item / Skin rewards are kept separate and use manual stock. A code is assigned automatically to the viewer immediately after a successful Store purchase and then appears in their MY PROFILE.</p>
+          <p>Add digital access codes to <strong style="color:var(--cyan)">ACCESS CODE</strong> rewards, including FLEXY. Codes are assigned automatically after a successful Store redemption and appear in the viewer’s MY PROFILE. FLEXY stock syncs automatically by operator.</p>
           <div class="form-grid">
             <div class="field"><label>Reward</label><select id="accessCodeReward"></select></div>
             <div class="field" id="accessCodeOperatorWrap"><label>FLEXY operator</label><select id="accessCodeOperator"><option value="">Choose operator</option><option value="DJEZZY">Djezzy</option><option value="OOREDOO">Ooredoo</option><option value="MOBILIS">Mobilis</option></select></div>
@@ -853,7 +853,7 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
           <div class="field">
             <label>Command</label><input value="!fnc" readonly>
             <label style="margin-top:8px">Nightbot response · GIVEAWAY</label>
-            <textarea id="adminChatResponseFncGiveaway" readonly>🎁 LIVE GIVEAWAY: 10 key codes to win! Type !fnc giveaway to see the giveaway details. Good luck!</textarea>
+            <textarea id="adminChatResponseFncGiveaway" readonly>🎁 GIVEAWAY LIVE : 10 KEY CODES À GAGNER ! Bonne chance !</textarea>
             <div class="actions"><button class="btn primary" type="button" data-admin-copy="adminChatResponseFncGiveaway">COPY RESPONSE</button></div>
           </div>
         </div>
@@ -2365,9 +2365,15 @@ document.getElementById('refreshDashboard')?.addEventListener('click',refreshDas
 async function loadFlexyInventory(){
  const body=document.getElementById('flexyInventoryRows');if(!body||!adminReady)return;
  body.innerHTML='<tr><td colspan="4">Loading…</td></tr>';
- const {data,error}=await supabaseClient.from('flexy_inventory').select('id,operator,quantity,reward:rewards(name,fnc_cost)').order('operator').order('reward_id');
+ const {data,error}=await supabaseClient.from('flexy_inventory').select('id,operator,quantity,reward:rewards(name,fnc_cost,uses_access_codes)').order('operator').order('reward_id');
  if(error){body.innerHTML='<tr><td colspan="4">Unable to load FLEXY stock: '+escapeHtml(error.message)+'</td></tr>';return;}
- body.innerHTML=(data||[]).map(x=>'<tr><td>'+escapeHtml(x.operator)+'</td><td>'+escapeHtml(String(x.reward?.name||'FLEXY'))+' — '+Number(x.reward?.fnc_cost||0).toLocaleString()+' FNC</td><td><input type="number" min="0" step="1" max="99" value="'+Number(x.quantity||0)+'" data-flexy-qty="'+x.id+'" style="width:85px"></td><td><button class="btn primary" data-flexy-save="'+x.id+'">SAVE</button></td></tr>').join('')||'<tr><td colspan="4">No FLEXY inventory rows found.</td></tr>';
+ body.innerHTML=(data||[]).map(x=>{
+  const codeMode=!!x.reward?.uses_access_codes;
+  const qty=Number(x.quantity||0);
+  const available=codeMode?'<strong>'+qty+'</strong> <small style="color:var(--muted)">READY CODES · AUTO-SYNC</small>':'<input type="number" min="0" step="1" max="99" value="'+qty+'" data-flexy-qty="'+x.id+'" style="width:85px">';
+  const action=codeMode?'<span style="color:var(--muted)">CODE INVENTORY</span>':'<button class="btn primary" data-flexy-save="'+x.id+'">SAVE</button>';
+  return '<tr><td>'+escapeHtml(x.operator)+'</td><td>'+escapeHtml(String(x.reward?.name||'FLEXY'))+' — '+Number(x.reward?.fnc_cost||0).toLocaleString()+' FNC</td><td>'+available+'</td><td>'+action+'</td></tr>';
+ }).join('')||'<tr><td colspan="4">No FLEXY inventory rows found.</td></tr>';
 }
 document.addEventListener('click',async e=>{
  const btn=e.target.closest('[data-flexy-save]');if(!btn)return;
