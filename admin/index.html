@@ -902,7 +902,24 @@ let adminReady = false;
 let selectedImage = null;
 let selectedGiveawayImage = null;
 
+let twitchWatchCallbackPromise = null;
+let twitchWatchCallbackCaptured = false;
+
 async function captureTwitchWatchCallback() {
+  if (twitchWatchCallbackCaptured) return true;
+  if (twitchWatchCallbackPromise) return twitchWatchCallbackPromise;
+
+  twitchWatchCallbackPromise = captureTwitchWatchCallbackOnce();
+  try {
+    const result = await twitchWatchCallbackPromise;
+    if (result) twitchWatchCallbackCaptured = true;
+    return result;
+  } finally {
+    twitchWatchCallbackPromise = null;
+  }
+}
+
+async function captureTwitchWatchCallbackOnce() {
   if (localStorage.getItem('adhem_twitch_watch_connect') !== '1') return false;
   const status = document.getElementById('twitchWatchStatus');
   try {
