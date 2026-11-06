@@ -2034,8 +2034,8 @@ async function loadLiveCodes(){
   const filter=document.getElementById('liveCodeFilter')?.value||'all';
   const search=(document.getElementById('liveCodeSearch')?.value||'').trim().toLowerCase();
   const matches=x=>(!search||String(x.row.code||'').toLowerCase().includes(search));
-  const mainRows=rows.filter(x=>!x.archived&&matches(x)&&(filter==='all'||(filter==='available'&&x.active)||(filter==='expired'&&x.expired)||(filter==='used'&&x.archived)));
-  const archivedRows=rows.filter(x=>x.archived&&matches(x));
+  const mainRows=rows.filter(x=>!x.archived&&matches(x)&&(filter==='all'||(filter==='available'&&x.active)||(filter==='expired'&&x.expired)));
+  const archivedRows=rows.filter(x=>x.archived&&matches(x)&&(filter==='all'||filter==='used'));
   tbody.innerHTML=mainRows.map(x=>x.html).join('')||'<tr><td colspan="6">No matching active or expired codes.</td></tr>';
   usedTbody.innerHTML=archivedRows.map(x=>x.html).join('')||'<tr><td colspan="6">No USED / OFF codes.</td></tr>';
   document.querySelectorAll('[data-lc-disable]').forEach(btn=>btn.onclick=()=>disableLiveCode(btn.dataset.lcDisable));
