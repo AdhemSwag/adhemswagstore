@@ -525,10 +525,6 @@ body.mobile-menu-open{overflow:hidden!important}
       <p>Explore Counter-Strike 2 skins, search by weapon or finish, and filter the catalogue. Open a skin in an external 3D viewer to inspect its appearance.</p>
       <div class="hero-meta"><span class="pill">CS2 CATALOGUE</span><span class="pill">INSTANT SEARCH</span><span class="pill">3D INSPECTION</span></div>
     </section>
-    <section class="daily-skins-panel" id="dailySkinsPanel" aria-label="Daily skin picks">
-      <div class="daily-skins-heading"><div><span class="eyebrow">ADHEMSWAG DAILY DROP</span><h2>DAILY SKIN PICKS</h2><p>8 different weapon skins selected for today. The selection changes every day.</p></div><span class="daily-skins-date" id="dailySkinsDate"></span></div>
-      <div class="daily-skins-grid" id="dailySkinsGrid"><div class="status">Preparing today's skins…</div></div>
-    </section>
     <section aria-label="Catalogue filters">
       <nav class="skin-category-tabs" aria-label="Skin categories">
  <button class="skin-tab active" type="button" data-skin-category="all">ALL SKINS</button>
@@ -546,7 +542,7 @@ body.mobile-menu-open{overflow:hidden!important}
         <select class="control" id="weaponFilter" aria-label="Weapon"><option value="all">All weapons</option></select>
         <select class="control" id="rarityFilter" aria-label="Rarity"><option value="all">All rarities</option></select>
         <select class="control" id="stattrakFilter" aria-label="StatTrak filter"><option value="all">StatTrak: All</option><option value="yes">StatTrak only</option><option value="no">Non-StatTrak</option></select>
-        <select class="control" id="sortFilter" aria-label="Sort"><option value="name">Name A → Z</option><option value="name-desc">Name Z → A</option></select>
+        <select class="control" id="sortFilter" aria-label="Sort"><option value="daily">Daily rotation</option><option value="name">Name A → Z</option><option value="name-desc">Name Z → A</option></select>
       </div>
       <div class="resultline"><span id="resultCount">Loading catalogue…</span><button class="favorites-toggle" id="skinFavoritesToggle" type="button" aria-pressed="false">☆ FAVORITES 0</button><span id="sourceStatus">SOURCE: CS2 ITEM DATABASE</span></div>
       <section class="skin-recent-panel" id="skinRecentPanel" hidden aria-label="Recently viewed skins"><div class="skin-recent-heading"><strong>RECENTLY VIEWED</strong><span>YOUR LAST 8 SKINS</span></div><div class="skin-recent-list" id="skinRecentList"></div></section>
@@ -598,31 +594,10 @@ body.mobile-menu-open{overflow:hidden!important}
   const groups={weapon:'skins',agent:'agents',sticker:'stickers',collection:'collections',case:'cases'};
   const mediaGroups={weapon:'skins',agent:'agents',sticker:'stickers',collection:'collections',case:'containers'};
   const itemImage=item=>{const mediaPath=item.media?.primary_image_png||item.media?.images_png?.[0]||item.media?.image||item.image||item.image_url;if(mediaPath)return /^https?:\/\//i.test(mediaPath)?mediaPath:API+'/'+String(mediaPath).replace(/^\/+|^(?:\.\.\/)+/,'').replace(/^data\/api\//,'');return(item.id&&mediaGroups[item._type])?API+'/media/rendered/files/'+mediaGroups[item._type]+'/'+encodeURIComponent(item.id)+'/primary.png':'';};
-  const dailySkinsGrid=document.getElementById('dailySkinsGrid'),dailySkinsDate=document.getElementById('dailySkinsDate');
-  function renderDailySkins(){
-    if(!dailySkinsGrid)return;
-    const pool=allSkins.filter(item=>item._type==='weapon'&&item.name&&item.id).slice().sort((a,b)=>a.name.localeCompare(b.name));
-    if(!pool.length){dailySkinsGrid.innerHTML='<div class="status">Daily picks are temporarily unavailable.</div>';return;}
-    const now=new Date(),dayKey=Date.UTC(now.getFullYear(),now.getMonth(),now.getDate()),dayIndex=Math.floor(dayKey/86400000);
-    const start=(dayIndex*8)%pool.length,selected=Array.from({length:Math.min(8,pool.length)},(_,i)=>pool[(start+i)%pool.length]);
-    if(dailySkinsDate)dailySkinsDate.textContent=now.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}).toUpperCase();
-    dailySkinsGrid.replaceChildren();
-    selected.forEach(item=>{
-      const button=document.createElement('button');button.type='button';button.className='daily-skin-tile';button.dataset.dailySkinName=item.name;
-      const img=document.createElement('img');img.loading='eager';img.decoding='async';img.alt=item.name;img.referrerPolicy='no-referrer';
-      const imagePaths=[item.media?.primary_image_png,...(Array.isArray(item.media?.images_png)?item.media.images_png:[]),item.media?.image,item.image,item.image_url].filter(Boolean);
-      const imageCandidates=[...new Set(imagePaths.map(path=>/^https?:\/\//i.test(String(path))?String(path):API+'/'+String(path).replace(/^\/+|^(?:\.\.\/)+/,'').replace(/^data\/api\//,'')))];
-      imageCandidates.push(API+'/media/rendered/files/skins/'+encodeURIComponent(item.id)+'/primary.png');
-      let imageAttempt=0;const tryDailyImage=()=>{if(imageAttempt<imageCandidates.length){img.src=imageCandidates[imageAttempt++];}else{img.onerror=null;img.classList.add('daily-image-unavailable');img.alt='Image unavailable: '+item.name;img.removeAttribute('src');}};
-      img.onerror=tryDailyImage;tryDailyImage();
-      const label=document.createElement('span');label.textContent=item.name;const action=document.createElement('small');action.textContent='VIEW SKIN';label.appendChild(action);
-      button.append(img,label);dailySkinsGrid.appendChild(button);
-    });
-  }
 
   function populateWeapons(items){weapon.replaceChildren(new Option('All weapons','all'));const names=[...new Set(items.filter(x=>x._type==='weapon').map(x=>String(x.name).split('|')[0].trim()))].sort((a,b)=>a.localeCompare(b));names.forEach(n=>weapon.add(new Option(n,n)));}
   function populateRarities(items){if(!rarity)return;rarity.replaceChildren(new Option('All rarities','all'));const names=[...new Set(items.map(x=>typeof x.rarity==='string'?x.rarity:x.rarity?.name).filter(Boolean))].sort((a,b)=>a.localeCompare(b));names.forEach(n=>rarity.add(new Option(n,n)));}
-  function currentItems(){const q=search.value.trim().toLocaleLowerCase();let items=allSkins.filter(item=>{const cat=item._type==='weapon'?categoryFor(item.name):item._type;const rarityName=typeof item.rarity==='string'?item.rarity:item.rarity?.name||'';const isStatTrak=/stattrak/i.test(item.name);if(showFavorites&&!favoriteIds.has(String(item.id||item.market_hash_name||item.name)))return false;if(rarity?.value!=='all'&&rarityName!==rarity.value)return false;if(stattrak?.value==='yes'&&!isStatTrak)return false;if(stattrak?.value==='no'&&isStatTrak)return false;return(!q||item.name.toLocaleLowerCase().includes(q)||String(item.search_slug||'').includes(slug(q)))&&(category.value==='all'||category.value===cat||(cat==='weapon'&&category.value===weaponClassFor(item.name)))&&(weapon.value==='all'||(item._type==='weapon'&&String(item.name).split('|')[0].trim()===weapon.value));});items.sort((a,b)=>sort.value==='name-desc'?b.name.localeCompare(a.name):a.name.localeCompare(b.name));return items;}
+  function currentItems(){const q=search.value.trim().toLocaleLowerCase();let items=allSkins.filter(item=>{const cat=item._type==='weapon'?categoryFor(item.name):item._type;const rarityName=typeof item.rarity==='string'?item.rarity:item.rarity?.name||'';const isStatTrak=/stattrak/i.test(item.name);if(showFavorites&&!favoriteIds.has(String(item.id||item.market_hash_name||item.name)))return false;if(rarity?.value!=='all'&&rarityName!==rarity.value)return false;if(stattrak?.value==='yes'&&!isStatTrak)return false;if(stattrak?.value==='no'&&isStatTrak)return false;return(!q||item.name.toLocaleLowerCase().includes(q)||String(item.search_slug||'').includes(slug(q)))&&(category.value==='all'||category.value===cat||(cat==='weapon'&&category.value===weaponClassFor(item.name)))&&(weapon.value==='all'||(item._type==='weapon'&&String(item.name).split('|')[0].trim()===weapon.value));});if(sort.value==='daily'){const day=new Date(),dayKey=Date.UTC(day.getFullYear(),day.getMonth(),day.getDate());const dailyKey=item=>{const value=String(dayKey)+'|'+String(item.id||item.market_hash_name||item.name);let hash=2166136261;for(let i=0;i<value.length;i++){hash^=value.charCodeAt(i);hash=Math.imul(hash,16777619);}return hash>>>0;};items.sort((a,b)=>dailyKey(a)-dailyKey(b)||a.name.localeCompare(b.name));}else items.sort((a,b)=>sort.value==='name-desc'?b.name.localeCompare(a.name):a.name.localeCompare(b.name));return items;}
   function render(){const items=currentItems(),shown=items.slice(0,visibleCount);count.innerHTML='<strong>'+items.length.toLocaleString('en-US')+'</strong> items found · '+shown.length.toLocaleString('en-US')+' shown';grid.replaceChildren();if(!shown.length){const empty=document.createElement('div');empty.className='empty';empty.textContent='No items match this search. Try another name or filter.';grid.appendChild(empty);}else{const fragment=document.createDocumentFragment();shown.forEach(item=>{const cat=item._type==='weapon'?categoryFor(item.name):item._type;const card=document.createElement('article');card.className='skin-card';card.dataset.skinName=item.name;const favorite=document.createElement('button');favorite.type='button';favorite.className='skin-favorite';const favoriteId=String(item.id||item.market_hash_name||item.name);favorite.dataset.favoriteId=favoriteId;favorite.setAttribute('aria-label',favoriteIds.has(favoriteId)?'Remove from favorites':'Add to favorites');favorite.setAttribute('aria-pressed',String(favoriteIds.has(favoriteId)));favorite.textContent=favoriteIds.has(favoriteId)?'★':'☆';card.dataset.skinId=String(item.id||'');card.dataset.itemType=item._type;card.dataset.marketHashName=item.market_hash_name||item.name;const imageBox=document.createElement('div');imageBox.className='skin-image';const img=document.createElement('img');img.loading='lazy';img.decoding='async';img.alt=item.name;img.src=itemImage(item);img.onerror=()=>{img.onerror=null;img.remove();const f=document.createElement('span');f.className='skin-placeholder';f.textContent=cat==='collection'?'COLLECTION ARTWORK UNAVAILABLE':'PREVIEW UNAVAILABLE';f.setAttribute('aria-label','Image unavailable for '+item.name);imageBox.appendChild(f);};if(img.src)imageBox.appendChild(img);else{const f=document.createElement('span');f.className='skin-placeholder';f.textContent='PREVIEW UNAVAILABLE';imageBox.appendChild(f);}const info=document.createElement('div');info.className='skin-info';const type=document.createElement('div');type.className='skin-type';type.textContent=labelFor(cat);const title=document.createElement('div');title.className='skin-name';title.textContent=item.name;const subtitle=document.createElement('div');subtitle.className='skin-weapon';subtitle.textContent=item.team?.name||item.collections?.[0]?.name||item.rarity?.name||labelFor(cat);info.append(type,title,subtitle);card.setAttribute('role','button');card.setAttribute('tabindex','0');card.setAttribute('aria-label','Open details for '+item.name);card.append(imageBox,info,favorite);fragment.appendChild(card);});grid.appendChild(fragment);}loadWrap.hidden=shown.length>=items.length;updateFavoritesUI();}
   async function init(){
     const types=['weapon','agent','sticker','collection','case'];
@@ -653,7 +628,6 @@ body.mobile-menu-open{overflow:hidden!important}
       populateWeapons(allSkins);
       populateRarities(allSkins);
       renderRecent();
-      renderDailySkins();
       document.getElementById('sourceStatus').textContent=failed.length
         ?'SOURCE: CS2 ITEM DATABASE · PARTIAL'
         :'SOURCE: CS2 ITEM DATABASE';
