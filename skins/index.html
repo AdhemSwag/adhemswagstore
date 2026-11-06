@@ -611,7 +611,7 @@ body.mobile-menu-open{overflow:hidden!important}
       const button=document.createElement('button');button.type='button';button.className='daily-skin-tile';button.dataset.dailySkinName=item.name;
       const img=document.createElement('img');img.loading='eager';img.decoding='async';img.alt=item.name;img.referrerPolicy='no-referrer';
       const imagePaths=[item.media?.primary_image_png,...(Array.isArray(item.media?.images_png)?item.media.images_png:[]),item.media?.image,item.image,item.image_url].filter(Boolean);
-      const imageCandidates=[...new Set(imagePaths.map(path=>/^https?:\\/\\//i.test(String(path))?String(path):API+'/'+String(path).replace(/^\\/+|^(?:\\.\\.\\/)+/,'').replace(/^data\\/api\\//,'')))];
+      const imageCandidates=[...new Set(imagePaths.map(path=>/^https?:\/\//i.test(String(path))?String(path):API+'/'+String(path).replace(/^\/+|^(?:\.\.\/)+/,'').replace(/^data\/api\//,'')))];
       imageCandidates.push(API+'/media/rendered/files/skins/'+encodeURIComponent(item.id)+'/primary.png');
       let imageAttempt=0;const tryDailyImage=()=>{if(imageAttempt<imageCandidates.length){img.src=imageCandidates[imageAttempt++];}else{img.onerror=null;img.classList.add('daily-image-unavailable');img.alt='Image unavailable: '+item.name;img.removeAttribute('src');}};
       img.onerror=tryDailyImage;tryDailyImage();
