@@ -1929,6 +1929,7 @@ document.getElementById('addAccessCode')?.addEventListener('click',async()=>{
   if(!error&&input)input.value='';
   await loadAccessCodes();
   await loadRewards();
+  await loadFlexyInventory();
 });
 document.getElementById('refreshAccessCodes')?.addEventListener('click',loadAccessCodes);
 document.getElementById('accessCodeReward')?.addEventListener('change',loadAccessCodes);
