@@ -592,6 +592,8 @@
     z-index:9999; align-items:center; justify-content:center; padding:20px;
   }
   .partner-popup:target{ display:flex; }
+  #allstar-popup{backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);background:rgba(2,4,6,.82)}
+  #allstar-popup .partner-popup-box{box-shadow:0 0 42px rgba(77,189,148,.18),0 0 40px rgba(17,217,247,.18)}
   .partner-popup-backdrop{
     position:absolute; inset:0; z-index:1;
   }
@@ -1639,7 +1641,8 @@ footer .footer-copy .row{margin:0;}
       <div class="partner-popup-box bracket">
         <span class="bc-tr"></span><span class="bc-bl"></span>
         <a href="#home" class="partner-popup-close">&times;</a>
-        <img src="https://allstar.gg/favicon.ico" alt="Allstar logo" class="partner-popup-img" style="object-fit:contain;">
+        <img src="https://allstar.gg/favicon.ico" alt="Allstar logo" class="partner-popup-img" style="width:84px;height:84px;object-fit:contain;margin:0 auto 16px;filter:drop-shadow(0 0 12px rgba(77,189,148,.35));">
+        <div style="font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:800;letter-spacing:.12em;color:#f7fcfd;margin:-8px 0 14px;">ALLSTAR</div>
         <h2>Allstar — Create and share your CS2 highlights with ease.</h2>
         <p style="color:var(--muted);font-size:13px;line-height:1.6;margin:12px 0 20px;">Capture your best gaming moments and turn them into shareable clips.</p>
         <a href="https://allstar.gg/invite?ref=5f487c231114e969d4093e88" target="_blank" rel="noopener noreferrer sponsored" class="partner-popup-cta">Join Allstar</a>
