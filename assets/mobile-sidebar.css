@@ -185,3 +185,16 @@
 @media (min-width:701px){
   .mobile-bottom-nav,.mobile-nav-scrim,.mobile-drawer-close{display:none!important}
 }
+
+
+/* MOBILE SIDEBAR LABELS — enforce uppercase in the phone drawer and fallback drawer. */
+@media (max-width:700px){
+  .sidebar .sidebar-link,
+  .sidebar .sidebar-link *,
+  .admin-nav .nav-btn,
+  .admin-nav .nav-btn *,
+  .mobile-fallback-drawer a,
+  .mobile-fallback-drawer a *{
+    text-transform:uppercase!important;
+  }
+}
