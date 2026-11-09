@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <title>AdhemSwag — Missions</title>
-<meta name="description" content="Complete verified Twitch watch missions and earn modest XP and FNC bonuses.">
+<meta name="description" content="Complete verified Twitch watch and chat missions on AdhemSwag to earn XP and FNC rewards.">
 <link rel="canonical" href="https://adhemswag.com/missions/">
 <link rel="icon" href="/favicon.ico">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -425,13 +425,13 @@ body.mobile-menu-open{overflow:hidden!important}
 <main>
   <section class="hero"><div class="eyebrow">ADHEMSWAG REWARDS / MISSION CONTROL</div>
   <h1>PLAY YOUR PART.<br><span>CLAIM YOUR PROGRESS.</span></h1>
-  <p class="lede">Join daily missions again each day, and join weekly missions once per week. Only verified Twitch watch time after joining counts. Rewards are credited automatically when you complete an objective.</p>
-  <div class="hero-meta"><span class="hero-chip"><i></i> TWITCH VERIFIED</span><span class="hero-chip">AUTO XP + FNC</span><span class="hero-chip">DAILY &amp; WEEKLY</span></div></section>
+  <p class="lede">Complete daily and weekly missions by watching AdhemSwag’s live Twitch stream and taking part in the chat. Join each period first. Verified watch time and anti-spam-approved chat activity count toward separate objectives.</p>
+  <div class="hero-meta"><span class="hero-chip"><i></i> TWITCH VERIFIED</span><span class="hero-chip">WATCH + CHAT</span><span class="hero-chip">AUTO XP + FNC</span><span class="hero-chip">DAILY &amp; WEEKLY</span></div></section>
   <div id="status" role="status" aria-live="polite">Checking your Twitch-linked profile…</div>
   <div class="section-head"><h2>YOUR ACTIVE MISSIONS</h2><p>Daily: join every day • Weekly: join once each week</p></div>
   <div id="missionGrid" class="grid" hidden></div>
-  <div class="rules-strip"><div class="rule"><b>01 / DAILY JOIN</b><span>Join daily missions every day after the midnight reset. Previous-day minutes do not count.</span></div><div class="rule"><b>02 / WEEKLY JOIN</b><span>Join weekly missions once per week. Your enrollment stays active until the Monday reset.</span></div><div class="rule"><b>03 / TWITCH ONLY</b><span>Only verified Twitch watch time after joining counts. Rewards are credited automatically once per mission period, subject to existing platform limits.</span></div></div>
-  <p class="note">Mission bonuses are separate from standard watch rewards. Existing global XP/FNC settings and the configured daily FNC cap remain in effect. Daily missions reset at midnight; weekly missions reset every Monday, using Algeria time. <a href="/faq/" style="color:var(--cyan);text-decoration:none;font-weight:600">Read the Missions FAQ →</a></p>
+  <div class="rules-strip"><div class="rule"><b>01 / DAILY JOIN</b><span>Join daily missions after the midnight reset. Only activity after joining counts.</span></div><div class="rule"><b>02 / WEEKLY JOIN</b><span>Join weekly missions once per week. Progress resets every Monday, using Algeria time.</span></div><div class="rule"><b>03 / WATCH + CHAT</b><span>Watch time is server-verified. Chat goals count only eligible Twitch chat activity after the anti-spam cooldown; bots and spam do not count.</span></div></div>
+  <p class="note">Mission bonuses are separate from normal watch and chat XP. They never change standard earning rates, and the existing global XP/FNC switches and daily FNC cap still apply. Chat missions count only messages accepted by the existing Twitch anti-spam and active-viewer checks. Daily missions reset at midnight; weekly missions reset every Monday, using Algeria time. <a href="/faq/" style="color:var(--cyan);text-decoration:none;font-weight:600">Read the Missions FAQ →</a></p>
 
 
 </main>
@@ -466,12 +466,17 @@ body.mobile-menu-open{overflow:hidden!important}
   const fmtDate=s=>{try{return new Intl.DateTimeFormat('en-GB',{timeZone:'Africa/Algiers',day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}).format(new Date(s));}catch{return '';}};
   function render(missions){
     grid.innerHTML=missions.map(m=>{
-      const goal=Math.max(1,Number(m.goal_minutes)||1), progress=Math.max(0,Number(m.progress_minutes)||0), pct=Math.min(100,Math.round(progress/goal*100));
-      const joined=Boolean(m.joined), done=Boolean(m.completed), period=m.period_type==='daily'?'DAILY MISSION':'WEEKLY MISSION';
-      const rewardXp=done?(Number(m.xp_awarded)||0):(Number(m.xp_reward)||0), rewardFnc=done?(Number(m.fnc_awarded)||0):(Number(m.fnc_reward)||0);
+      const metric=m.metric_type||'watch_minutes';
+      const isMinutes=metric==='watch_minutes';
+      const goal=Math.max(1,isMinutes?Number(m.goal_minutes)||1:Number(m.goal_count)||1);
+      const progress=Math.max(0,isMinutes?Number(m.progress_minutes)||0:Number(m.progress_count)||0);
+      const unit=isMinutes?'MINUTES':metric==='watch_days'?'DAYS':'MESSAGES';
+      const pct=Math.min(100,Math.round(progress/goal*100));
+      const joined=Boolean(m.joined),done=Boolean(m.completed),period=m.period_type==='daily'?'DAILY MISSION':'WEEKLY MISSION';
+      const rewardXp=done?(Number(m.xp_awarded)||0):(Number(m.xp_reward)||0),rewardFnc=done?(Number(m.fnc_awarded)||0):(Number(m.fnc_reward)||0);
       const badge=done?'✓ COMPLETED':(!joined?'JOIN REQUIRED':'IN PROGRESS');
       const note=done?'Rewards delivered automatically.':(!joined?'Join this period to start tracking.':'Resets '+esc(fmtDate(m.period_end)||'at the end of the period')+'.');
-      return '<article class="mission '+(done?'done':'')+'"><div class="mission-head"><span class="tag">'+period+'</span><span class="status">'+badge+'</span></div><h2>'+esc(m.title)+'</h2><p class="desc">'+esc(m.description)+'</p><div class="rewards"><span class="reward xp">+'+rewardXp+' XP</span><span class="reward fnc">+'+rewardFnc+' FNC</span></div><div class="progress-label"><span>'+Math.min(progress,goal)+' / '+goal+' MINUTES</span><span>'+pct+'%</span></div><div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="'+goal+'" aria-valuenow="'+Math.min(progress,goal)+'"><span style="width:'+pct+'%"></span></div><p class="note">'+note+'</p></article>';
+      return '<article class="mission '+(done?'done':'')+'"><div class="mission-head"><span class="tag">'+period+'</span><span class="status">'+badge+'</span></div><h2>'+esc(m.title)+'</h2><p class="desc">'+esc(m.description)+'</p><div class="rewards"><span class="reward xp">+'+rewardXp+' XP</span><span class="reward fnc">+'+rewardFnc+' FNC</span></div><div class="progress-label"><span>'+Math.min(progress,goal)+' / '+goal+' '+unit+'</span><span>'+pct+'%</span></div><div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="'+goal+'" aria-valuenow="'+Math.min(progress,goal)+'"><span style="width:'+pct+'%"></span></div><p class="note">'+note+'</p></article>';
     }).join('');
     grid.hidden=false;
   }
@@ -482,7 +487,7 @@ body.mobile-menu-open{overflow:hidden!important}
       ' <button type="button" data-join-period="daily" '+(daily?'disabled':'')+'>'+(daily?'DAILY JOINED':'JOIN DAILY MISSIONS')+'</button></div>'+
       '<div style="margin-bottom:10px">Weekly missions: '+(weekly?'<strong style="color:#39e58c">JOINED THIS WEEK</strong>':'<strong style="color:#ffca69">JOIN REQUIRED THIS WEEK</strong>')+
       ' <button type="button" data-join-period="weekly" '+(weekly?'disabled':'')+'>'+(weekly?'WEEKLY JOINED':'JOIN WEEKLY MISSIONS')+'</button></div>'+
-      '<div style="font-size:12px;line-height:1.6;color:#91a4aa">Daily enrollment resets at midnight. Weekly enrollment resets every Monday. Both use Algeria time; watch minutes from before joining never count.</div>';
+      '<div style="font-size:12px;line-height:1.6;color:#91a4aa">Daily enrollment resets at midnight and weekly enrollment resets every Monday (Algeria time). Watch minutes and qualifying chat messages from before joining never count.</div>';
     status.querySelectorAll('[data-join-period]').forEach(button=>button.addEventListener('click',async event=>{
       const btn=event.currentTarget, periodType=btn.dataset.joinPeriod;
       btn.disabled=true;btn.textContent='JOINING…';
