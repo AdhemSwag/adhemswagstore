@@ -807,3 +807,6 @@
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',loadAdhemSkinsNav,{once:true});
   else loadAdhemSkinsNav();
 })();
+
+/* Load the site-wide sponsor rotation on pages using the shared language script. */
+(function(){if(document.querySelector('script[data-adhem-sponsor-rotation]'))return;var s=document.createElement('script');s.src='/assets/sponsor-rotation.js?v=1';s.defer=true;s.setAttribute('data-adhem-sponsor-rotation','1');document.head.appendChild(s);})();
