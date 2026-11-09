@@ -1761,17 +1761,17 @@ footer .footer-copy .row{margin:0;}
         });
         if(response.ok){
           const data = await response.json();
-          if(typeof data.live === 'boolean'){
+          if(data.live === true){
             let viewers = null;
-            if(data.live){
-              try{
-                const raw = await fetch('https://decapi.me/twitch/viewercount/' + TWITCH_CHANNEL, {cache:'no-store'}).then(r=>r.text());
-                const n = parseInt(raw,10);
-                if(!Number.isNaN(n)) viewers=n;
-              }catch(_){}
-            }
-            return {live:data.live, viewers};
+            try{
+              const raw = await fetch('https://decapi.me/twitch/viewercount/' + TWITCH_CHANNEL, {cache:'no-store'}).then(r=>r.text());
+              const n = parseInt(raw,10);
+              if(!Number.isNaN(n)) viewers=n;
+            }catch(_){}
+            return {live:true, viewers};
           }
+          // A false Supabase result is checked against Twitch directly before OFFLINE.
+
         }
       }catch(_){}
       // Fallback only if the site's official status endpoint is unavailable.
@@ -1809,8 +1809,8 @@ footer .footer-copy .row{margin:0;}
       new Promise(resolve => window.setTimeout(() => resolve(fallback), ms))
     ]);
     const [twitch, kick] = await Promise.all([
-      withTimeout(getTwitch(), 4500, {live:false, viewers:null, error:true, timeout:true}),
-      withTimeout(getKick(), 4500, {live:false, viewers:null, error:true, timeout:true})
+      withTimeout(getTwitch(), 8000, {live:false, viewers:null, error:true, timeout:true}),
+      withTimeout(getKick(), 6000, {live:false, viewers:null, error:true, timeout:true})
     ]);
     const bothLive = twitch.live && kick.live;
     const selected = twitch.live ? 'TWITCH' : (kick.live ? 'KICK' : 'OFFLINE');
