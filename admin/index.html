@@ -776,27 +776,38 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
           <div class="notice">Press <strong style="color:var(--cyan)">RUN HEALTH CHECK</strong> to diagnose the system.</div>
         </div>
       </div>
-      <div class="section">
-        <h2>Twitch <span style="color:var(--cyan)">WATCH TRACKING</span></h2>
-        <p>Connect your Twitch account once. The backend then checks Twitch chatters while you are live and matches connected viewer accounts. This is chat presence, not a reliable video-player viewer list.</p>
-        <div class="notice">
-          <strong style="color:var(--cyan)">STATUS:</strong> <span id="twitchWatchState">Not connected</span>
+      <div class="section" id="twitchWatchTrackingSection">
+        <h2>TWITCH <span style="color:var(--cyan)">AUTOMATIC WATCH TRACKING</span></h2>
+        <p>One-time authorization, then fully automatic operation. Starting your Twitch stream starts watch synchronization; ending the stream stops it. No manual connection is needed for each live.</p>
+        <div class="notice" id="twitchWatchConnectionCard" aria-live="polite">
+          <strong style="color:var(--cyan)">CONNECTION:</strong>
+          <span id="twitchWatchState">Checking…</span>
+          <p style="margin:8px 0 0">The Twitch authorization is stored securely. Viewer synchronization runs automatically in the background.</p>
         </div>
-        <div class="field" style="margin-top:12px">
-          <label for="twitchWatchClientId">Twitch Developer App Client ID (Watch Tracking)</label>
-          <input id="twitchWatchClientId" type="text" autocomplete="off" placeholder="Client ID from the same Twitch Developer app" />
+        <div class="notice" style="margin-top:10px">
+          <strong style="color:var(--cyan)">AUTOMATION:</strong>
+          <span style="color:var(--ok)">ENABLED</span>
+          <p style="margin:8px 0 0">Automatic checks run every minute. LIVE/OFFLINE detection and viewer tracking are handled by the backend.</p>
         </div>
-        <div class="field" style="margin-top:12px">
-          <label for="twitchWatchClientSecret">Twitch Developer App Client Secret (Watch Tracking)</label>
-          <input id="twitchWatchClientSecret" type="password" autocomplete="new-password" placeholder="Secret from that same Twitch app" />
-          <p style="margin:6px 0 0;color:var(--muted);font-size:12px">Client ID and secret must belong to the same Twitch app. The secret is saved only in the secure server vault; never paste it into chat.</p>
-        </div>
-        <div class="actions">
-          <button class="btn" id="saveTwitchWatchSecret" type="button">SAVE CLIENT SECRET SECURELY</button>
-          <button class="btn primary" id="connectTwitchWatch" type="button">CONNECT TWITCH WATCH TRACKING</button>
-          <button class="btn" id="testTwitchWatch" type="button">TEST WATCH SYNC</button>
-        </div>
-        <div id="twitchWatchStatus" class="notice" style="display:none;margin-top:10px"></div>
+        <div id="twitchWatchStatus" class="notice" style="display:none;margin-top:10px" aria-live="polite"></div>
+        <details id="twitchWatchAdvanced" style="margin-top:14px;border:1px solid rgba(17,217,247,.16);padding:14px;background:rgba(17,217,247,.02)">
+          <summary style="cursor:pointer;color:var(--muted);font:700 10px 'JetBrains Mono',monospace;letter-spacing:.08em">ADVANCED RECOVERY · ONLY IF AUTHORIZATION IS REQUIRED</summary>
+          <p style="margin:10px 0 0">These controls are not part of normal streaming. Use them only if the connection status above reports that Twitch authorization is required.</p>
+          <div class="field" style="margin-top:12px">
+            <label for="twitchWatchClientId">Twitch Watch Tracking App Client ID</label>
+            <input id="twitchWatchClientId" type="text" autocomplete="off" placeholder="Client ID from the Watch Tracking Twitch app" />
+          </div>
+          <div class="field" style="margin-top:12px">
+            <label for="twitchWatchClientSecret">Twitch Watch Tracking App Client Secret</label>
+            <input id="twitchWatchClientSecret" type="password" autocomplete="new-password" placeholder="Stored securely; never displayed again" />
+            <p style="margin:6px 0 0;color:var(--muted);font-size:12px">The secret is sent only to the secure server function. Never paste it into chat.</p>
+          </div>
+          <div class="actions">
+            <button class="btn" id="saveTwitchWatchSecret" type="button">SAVE APP SECRET SECURELY</button>
+            <button class="btn primary" id="connectTwitchWatch" type="button">REAUTHORIZE TWITCH</button>
+            <button class="btn" id="testTwitchWatch" type="button">RUN DIAGNOSTIC TEST</button>
+          </div>
+        </details>
       </div>
       <div class="section" id="storeChatBotSection">
         <h2>STORE <span style="color:var(--cyan)">CHAT BOT</span></h2>
@@ -948,7 +959,7 @@ async function captureTwitchWatchCallbackOnce() {
     if (!session?.user || !accessToken) {
       if (status) {
         status.style.display='block';
-        status.textContent='Twitch returned to Admin, but the provider token was not captured. Please try CONNECT again.';
+        status.textContent='Twitch returned to Admin, but the provider token was not captured. Open Advanced Recovery and retry authorization.';
       }
       return false;
     }
@@ -1070,7 +1081,7 @@ function finishLoader() {
 function setControls(enabled) {
   adminReady = enabled;
   document.querySelectorAll('#rewards input,#rewards textarea,#giveaways input,#giveaways textarea,#giveaways select').forEach(el=>el.disabled=!enabled);
-  ['rewardImage','saveReward','clearReward','createGiveaway','clearGiveaway','connectTwitchWatch','testTwitchWatch','saveFncSettings','reloadFncSettings','saveBonusSettings','searchUsers','clearUsers','addUserFnc','removeUserFnc','addUserXp','removeUserXp','changeUserLevel','viewPublicProfile','toggleUserBlock','loadRedemptions','loadTransactions','loadLeaderboard','loadMedia','findAdminUser','refreshDashboard','systemFnc','systemPoints','systemXp','systemRewards'].forEach(id=>{
+  ['rewardImage','saveReward','clearReward','createGiveaway','clearGiveaway','saveTwitchWatchSecret','connectTwitchWatch','testTwitchWatch','saveFncSettings','reloadFncSettings','saveBonusSettings','searchUsers','clearUsers','addUserFnc','removeUserFnc','addUserXp','removeUserXp','changeUserLevel','viewPublicProfile','toggleUserBlock','loadRedemptions','loadTransactions','loadLeaderboard','loadMedia','findAdminUser','refreshDashboard','systemFnc','systemPoints','systemXp','systemRewards'].forEach(id=>{
     const el=document.getElementById(id);
     if(el) el.disabled=!enabled;
   });
@@ -1792,18 +1803,33 @@ async function updateSystemButtons(){
  states.forEach(([id,label,on,stateId])=>{set(id,label,on);const state=document.getElementById(stateId);if(state){state.textContent=on?'ON':'OFF';state.style.color=on?'var(--ok)':'var(--muted)';}});
  const watchState=document.getElementById('twitchWatchState');
  if(watchState){
+   const advanced=document.getElementById('twitchWatchAdvanced');
+   const status=document.getElementById('twitchWatchStatus');
+   const card=document.getElementById('twitchWatchConnectionCard');
    watchState.textContent='Checking…';
    try{
      const {data,error}=await supabaseClient.functions.invoke('admin-twitch-watch-status',{body:{}});
      if(error) throw error;
      const connected=data?.connected===true;
-     watchState.textContent=connected?'Connected':'Not connected';
+     watchState.textContent=connected?'CONNECTED · AUTOMATIC':'AUTHORIZATION REQUIRED';
      watchState.style.color=connected?'var(--ok)':'var(--danger)';
-     if(connected) localStorage.setItem('adhem_twitch_watch_connected','1');
-     else localStorage.removeItem('adhem_twitch_watch_connected');
+     if(card)card.style.borderLeftColor=connected?'var(--ok)':'var(--danger)';
+     if(advanced)advanced.hidden=connected;
+     if(connected){
+       localStorage.setItem('adhem_twitch_watch_connected','1');
+       if(status){status.style.display='block';status.style.borderLeftColor='var(--ok)';status.textContent='Automatic mode is configured. No manual connection or test is needed for each stream.';}
+     }else{
+       localStorage.removeItem('adhem_twitch_watch_connected');
+       if(status){status.style.display='block';status.style.borderLeftColor='var(--danger)';status.textContent='Twitch authorization is required. Open Advanced Recovery below to restore the one-time connection.';}
+     }
    }catch(error){
      console.warn('[AdhemSwag Admin] Twitch Watch status:',error);
-     watchState.textContent=localStorage.getItem('adhem_twitch_watch_connected')==='1'?'Connected':'Status unavailable';
+     const saved=localStorage.getItem('adhem_twitch_watch_connected')==='1';
+     watchState.textContent=saved?'SAVED CONNECTION · STATUS UNAVAILABLE':'STATUS UNAVAILABLE';
+     watchState.style.color='var(--muted)';
+     if(card)card.style.borderLeftColor='var(--line)';
+     if(advanced)advanced.hidden=saved;
+     if(status){status.style.display='block';status.textContent='The connection status could not be verified. This does not mean tracking is disconnected. Check again shortly.';}
    }
  }
 }
@@ -2290,7 +2316,7 @@ document.getElementById('saveTwitchWatchSecret')?.addEventListener('click', asyn
     if (!data?.ok) throw new Error(data?.error || 'secret_save_failed');
     input.value = '';
     sessionStorage.removeItem('adhem_twitch_watch_client_secret');
-    if (status) status.textContent='Client Secret saved securely. Now click CONNECT TWITCH WATCH TRACKING.';
+    if (status) status.textContent='Client Secret saved securely. Complete the one-time Twitch authorization in Advanced Recovery.';
     await updateSystemButtons();
   } catch (error) {
     if (status) { status.style.display='block'; status.textContent='Could not save Client Secret: '+(error?.message || 'Unknown error'); }
