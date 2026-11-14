@@ -800,6 +800,10 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
           <p style="margin:8px 0 0">Automatic checks run every minute. LIVE/OFFLINE detection and viewer tracking are handled by the backend.</p>
         </div>
         <div id="twitchWatchStatus" class="notice" style="display:none;margin-top:10px" aria-live="polite"></div>
+        <div class="actions" style="margin-top:12px">
+          <button class="btn primary" id="reconnectTwitchWatchNow" type="button">RECONNECT TWITCH MANUALLY</button>
+        </div>
+        <p style="margin:8px 0 0;color:var(--muted);font-size:12px">If watch tracking disconnects during a long stream, press this button and authorize Twitch again. This does not reset viewer balances or FNC/XP settings.</p>
         <div id="twitchWatchAdvanced" style="margin-top:14px;border:1px solid rgba(17,217,247,.16);padding:14px;background:rgba(17,217,247,.02)">
           <h3 style="margin:0;color:var(--cyan);font:700 12px 'JetBrains Mono',monospace;letter-spacing:.08em">TWITCH CREDENTIALS · MANUAL REPAIR</h3>
           <p style="margin:10px 0 0">Use this form to replace the Twitch Watch Tracking app credentials when automatic token refresh fails. Save the Client ID and Client Secret from the same Twitch Developer application. The secret is sent to the secure server function and cleared from this form after saving.</p>
@@ -2372,6 +2376,11 @@ document.getElementById('saveTwitchWatchSecret')?.addEventListener('click', asyn
   } catch (error) {
     if (status) { status.style.display='block'; status.textContent='Could not save Client Secret: '+(error?.message || 'Unknown error'); }
   }
+});
+
+document.getElementById('reconnectTwitchWatchNow')?.addEventListener('click', () => {
+  const existingReconnect = document.getElementById('connectTwitchWatch');
+  if (existingReconnect) existingReconnect.click();
 });
 
 document.getElementById('connectTwitchWatch')?.addEventListener('click', async () => {
