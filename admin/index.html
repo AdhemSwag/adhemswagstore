@@ -482,7 +482,7 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
     <section id="watch-monitor" class="panel">
       <div class="section">
         <h2>FNC <span style="color:var(--cyan)">WATCH MONITORING</span></h2>
-        <p>Read-only production diagnostics. A deployed function or saved browser flag is never treated as proof that Twitch tracking is healthy.</p>
+        <p>Read-only production diagnostics. A deployed function or saved browser flag is never treated as proof that Twitch tracking is healthy. The cron result confirms scheduled dispatch only, not the HTTP result of each Edge Function.</p>
         <div class="cards" style="margin-top:18px">
           <div class="card"><small>TWITCH TOKEN</small><div class="metric" id="wmAuthStatus" style="font-size:18px">NOT CHECKED</div></div>
           <div class="card"><small>WATCH SYNC CRON</small><div class="metric" id="wmCronStatus" style="font-size:18px">NOT CHECKED</div></div>
@@ -499,7 +499,7 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
         </div>
         <div class="actions"><button class="btn primary" id="refreshWatchMonitor" type="button">REFRESH WATCH MONITOR</button><span id="wmUpdated" style="font:10px 'JetBrains Mono',monospace;color:var(--muted);align-self:center"></span></div>
         <div id="wmStatus" class="notice">Waiting for secure Admin access…</div>
-        <p style="margin-top:10px;font-size:11px;color:var(--muted)">Request-level Edge Function logs and exact HTTP error history are not exposed to the browser panel; they must be added through a secured server-side telemetry feed. No token or secret values are displayed here.</p>
+        <p style="margin-top:10px;font-size:11px;color:var(--muted)">Request-level Edge Function HTTP logs, exact 403/500/503 history and token expiry timestamps are not exposed to this browser panel yet. They require a secured server-side telemetry feed. No token or secret values are displayed here.</p>
       </div>
       <div class="section">
         <h2>Active <span style="color:var(--cyan)">VIEWERS</span></h2>
