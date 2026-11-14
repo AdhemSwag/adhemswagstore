@@ -485,8 +485,8 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
         <p>Read-only production diagnostics. A deployed function or saved browser flag is never treated as proof that Twitch tracking is healthy.</p>
         <div class="cards" style="margin-top:18px">
           <div class="card"><small>TWITCH TOKEN</small><div class="metric" id="wmAuthStatus" style="font-size:18px">NOT CHECKED</div></div>
-          <div class="card"><small>CHATTERS SYNC</small><div class="metric" id="wmChattersStatus" style="font-size:18px">NOT CHECKED</div></div>
-          <div class="card"><small>LIVE STATUS</small><div class="metric" id="wmLiveStatus" style="font-size:18px">NOT CHECKED</div></div>
+          <div class="card"><small>WATCH SYNC CRON</small><div class="metric" id="wmCronStatus" style="font-size:18px">NOT CHECKED</div></div>
+          <div class="card"><small>CRON SCHEDULE</small><div class="metric" id="wmCronSchedule" style="font-size:18px">—</div></div>
           <div class="card"><small>LAST AUTOMATION RUN</small><div class="metric" id="wmLastRun" style="font-size:18px">—</div></div>
         </div>
         <div class="notice" id="wmAuthDetail">Twitch authorization has not been checked yet.</div>
@@ -1518,15 +1518,12 @@ async function loadWatchMonitor(){
      authDetail.textContent=detail;
      authDetail.style.borderLeftColor=auth.connected===true&&auth.reason!=='token_refresh_pending'?'var(--ok)':auth.reason==='token_refresh_pending'?'#f0bd58':'var(--danger)';
    }
-   const findJob=(needle)=>ops.find(x=>String(x.job_name||x.jobname||x.name||'').toLowerCase().includes(needle));
-   const chatters=findJob('twitch-chatters-sync');
-   const live=findJob('twitch-live-status');
+   const watchJob=ops.find(x=>String(x.job_name||x.jobname||x.name||'').toLowerCase().includes('twitch-watch-sync'));
    const setText=(id,value,color)=>{const el=document.getElementById(id);if(el){el.textContent=value;el.style.color=color||'var(--muted)';}};
-   const jobLabel=(job)=>!job?'NO JOB DATA':String(job.last_status||'NO RUN').toUpperCase();
-   setText('wmChattersStatus',jobLabel(chatters),chatters?.last_status==='succeeded'?'var(--ok)':'var(--danger)');
-   setText('wmLiveStatus',jobLabel(live),live?.last_status==='succeeded'?'var(--ok)':'var(--danger)');
-   const lastRuns=[chatters?.last_run,live?.last_run].filter(Boolean).sort();
-   setText('wmLastRun',lastRuns.length?new Date(lastRuns[lastRuns.length-1]).toLocaleTimeString():'—');
+   const jobStatus=String(watchJob?.last_status||'').toLowerCase();
+   setText('wmCronStatus',watchJob?(jobStatus||'NO RUN').toUpperCase():'NO JOB DATA',jobStatus==='succeeded'?'var(--ok)':watchJob?'#f0bd58':'var(--danger)');
+   setText('wmCronSchedule',watchJob?.schedule||'—');
+   setText('wmLastRun',watchJob?.last_run?new Date(watchJob.last_run).toLocaleTimeString():'—');
    const rows=sessions.data||[];
    const ids=[...new Set(rows.map(x=>x.user_id))];
    let users=[];
@@ -1553,9 +1550,10 @@ async function loadWatchMonitor(){
    const failedJobs=ops.filter(x=>/twitch-(chatters-sync|live-status)/i.test(String(x.job_name||''))&&String(x.last_status||'').toLowerCase()!=='succeeded');
    const parts=[];
    if(authResponse.error||auth.reason==='token_refresh_pending'||auth.connected!==true)parts.push('Twitch authorization is not fully verified.');
-   if(!chatters)parts.push('No twitch-chatters-sync job row was returned.');
-   if(!live)parts.push('No twitch-live-status job row was returned.');
-   if(failedJobs.length)parts.push('One or more Twitch automation jobs report a non-success status.');
+   if(!watchJob)parts.push('The scheduled Twitch watch-sync job was not returned by the Admin operations snapshot.');
+   else if(jobStatus!=='succeeded')parts.push('The scheduled Twitch watch-sync job reports '+(jobStatus||'no status')+'.');
+   else if(watchJob.last_run&&Date.now()-new Date(watchJob.last_run).getTime()>3*60*1000)parts.push('The last successful Twitch watch-sync run is older than 3 minutes.');
+   if(watchJob&&Number(watchJob.failed_24h||0)>0)parts.push('Twitch watch-sync has failed runs in the last 24 hours: '+Number(watchJob.failed_24h).toLocaleString()+'.');
    status.textContent=parts.length?parts.join(' '):'Twitch authorization, automation job summaries and recent viewer activity loaded. This is not a substitute for request-level Edge Function logs.';
    status.style.borderLeftColor=parts.length?'#f0bd58':'var(--ok)';
    document.getElementById('wmUpdated').textContent='Updated '+new Date().toLocaleTimeString();
@@ -1859,17 +1857,21 @@ async function updateSystemButtons(){
    try{
      const {data,error}=await supabaseClient.functions.invoke('admin-twitch-watch-status',{body:{}});
      if(error) throw error;
-     const connected=data?.connected===true;
-     watchState.textContent=connected?'CONNECTED · AUTOMATIC':'AUTHORIZATION REQUIRED';
-     watchState.style.color=connected?'var(--ok)':'var(--danger)';
-     if(card)card.style.borderLeftColor=connected?'var(--ok)':'var(--danger)';
-     if(advanced)advanced.hidden=connected;
+     const refreshPending=data?.reason==='token_refresh_pending';
+     const connected=data?.connected===true&&!refreshPending;
+     watchState.textContent=refreshPending?'TOKEN REFRESH PENDING · NOT VERIFIED':connected?'CONNECTED · TOKEN VERIFIED':'AUTHORIZATION NOT VERIFIED';
+     watchState.style.color=connected?'var(--ok)':refreshPending?'#f0bd58':'var(--danger)';
+     if(card)card.style.borderLeftColor=connected?'var(--ok)':refreshPending?'#f0bd58':'var(--danger)';
+     if(advanced)advanced.hidden=connected||refreshPending;
      if(connected){
        localStorage.setItem('adhem_twitch_watch_connected','1');
-       if(status){status.style.display='block';status.style.borderLeftColor='var(--ok)';status.textContent='Automatic mode is configured. No manual connection or test is needed for each stream.';}
+       if(status){status.style.display='block';status.style.borderLeftColor='var(--ok)';status.textContent='Twitch access token validated and required scopes confirmed. Viewer tracking still needs live-session verification.';}
+     }else if(refreshPending){
+       localStorage.removeItem('adhem_twitch_watch_connected');
+       if(status){status.style.display='block';status.style.borderLeftColor='#f0bd58';status.textContent='The current access token did not validate. A refresh is available, but connection is not verified yet. Check the Watch Monitoring panel for cron and viewer activity.';}
      }else{
        localStorage.removeItem('adhem_twitch_watch_connected');
-       if(status){status.style.display='block';status.style.borderLeftColor='var(--danger)';status.textContent='Twitch authorization is required. Open Advanced Recovery below to restore the one-time connection.';}
+       if(status){status.style.display='block';status.style.borderLeftColor='var(--danger)';status.textContent='Twitch authorization could not be verified. Open Advanced Recovery only if the automatic refresh cannot restore it.';}
      }
    }catch(error){
      console.warn('[AdhemSwag Admin] Twitch Watch status:',error);
