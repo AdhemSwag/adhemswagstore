@@ -1688,6 +1688,37 @@ footer .footer-copy .row{margin:0;}
 
 
 
+
+<section id="homeRecentActivity" class="home-activity" hidden aria-live="polite">
+  <div class="home-activity-head">
+    <div><span class="eyebrow">YOUR ACCOUNT</span><h2>MY RECENT ACTIVITY</h2><p>Your latest watch rewards and Store redemptions.</p></div>
+    <a href="/profile/" class="home-activity-link">VIEW PROFILE ↗</a>
+  </div>
+  <div id="homeRecentActivityList" class="home-activity-list">
+    <div class="home-activity-empty">Loading your activity…</div>
+  </div>
+</section>
+<style id="adhemswag-home-recent-activity-v1">
+.home-activity{margin:34px 0 12px;padding:24px;background:linear-gradient(145deg,rgba(11,18,22,.96),rgba(6,10,13,.96));border:1px solid var(--line);position:relative;z-index:2}
+.home-activity[hidden]{display:none!important}
+.home-activity-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:18px}
+.home-activity-head h2{font:700 27px 'Rajdhani',sans-serif;letter-spacing:.06em;margin:5px 0 2px;color:var(--white)}
+.home-activity-head p{font-size:12px;line-height:1.6;color:var(--muted)}
+.home-activity-link{font:700 10px 'JetBrains Mono',monospace;color:var(--cyan);text-decoration:none;white-space:nowrap}
+.home-activity-list{display:grid;gap:8px}
+.home-activity-item{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 14px;border:1px solid rgba(17,217,247,.11);background:rgba(17,217,247,.025);min-width:0}
+.home-activity-main{display:flex;align-items:center;gap:11px;min-width:0}
+.home-activity-mark{width:30px;height:30px;flex:0 0 30px;display:grid;place-items:center;border:1px solid rgba(17,217,247,.22);color:var(--cyan);font:700 13px 'JetBrains Mono',monospace}
+.home-activity-copy{min-width:0}
+.home-activity-title{font:700 11px 'JetBrains Mono',monospace;color:var(--white);letter-spacing:.025em}
+.home-activity-date{font-size:10px;color:var(--muted);margin-top:4px}
+.home-activity-value{font:700 11px 'JetBrains Mono',monospace;color:var(--cyan);white-space:nowrap}
+.home-activity-value.is-negative{color:#f1a0a0}
+.home-activity-empty{padding:16px;border:1px dashed rgba(17,217,247,.18);color:var(--muted);font-size:12px;text-align:center}
+@media(max-width:640px){.home-activity{margin:24px 0 8px;padding:17px 13px}.home-activity-head{align-items:flex-start;flex-direction:column;gap:10px}.home-activity-head h2{font-size:24px}.home-activity-item{padding:10px;gap:8px}.home-activity-title{font-size:10px}.home-activity-value{font-size:10px}}
+html.adhem-lang-ar .home-activity-head{direction:rtl;text-align:right}
+html.adhem-lang-ar .home-activity-item{direction:rtl}
+</style>
 </main>
 
 <footer>
@@ -2286,6 +2317,49 @@ footer .footer-inner{width:100%;max-width:1280px;margin-inline:auto;padding-inli
 @media(prefers-reduced-motion:reduce){#home .radar-sweep,#home .radar-dot,#home .live-dot{animation:none!important}}
 </style>
 
+
+<script id="adhemswag-home-recent-activity-runtime-v1">
+(()=> {
+  const panel=document.getElementById('homeRecentActivity');
+  const list=document.getElementById('homeRecentActivityList');
+  const client=window.AdhemAuth;
+  if(!panel||!list||!client)return;
+  const safeDate=value=>{
+    const date=new Date(value);
+    if(!Number.isFinite(date.getTime()))return '';
+    return new Intl.DateTimeFormat('en-GB',{timeZone:'Africa/Algiers',day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}).format(date);
+  };
+  const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+  const labels={watch:'Twitch watch reward',watch_fnc:'Twitch FNC reward',watch_xp:'Watch XP activity',chat:'Twitch chat activity',subscription:'Subscription reward',bits:'Bits reward',kicks:'Kick reward',donation:'Donation reward',raid:'Raid reward',import:'Points import',admin_adjustment:'Account adjustment'};
+  async function load(){
+    try{
+      const {data:{session},error:sessionError}=await client.auth.getSession();
+      if(sessionError||!session?.user)return;
+      const uid=session.user.id;
+      const [txResult,redeemResult]=await Promise.all([
+        client.from('transactions').select('type,amount,created_at').eq('user_id',uid).neq('type','redemption').order('created_at',{ascending:false}).limit(8),
+        client.from('redemptions').select('fnc_spent,status,created_at').eq('user_id',uid).order('created_at',{ascending:false}).limit(8)
+      ]);
+      if(txResult.error)throw txResult.error;
+      if(redeemResult.error)throw redeemResult.error;
+      const events=(txResult.data||[]).map(row=>{
+        const type=String(row.type||'');
+        const value=['watch','watch_fnc','subscription','bits','kicks','donation','raid','import','admin_adjustment'].includes(type)&&Number(row.amount)>0?'+'+Number(row.amount).toLocaleString('en-US')+' FNC':'';
+        return {date:row.created_at,title:labels[type]||'Account activity',value,mark:type==='chat'?'CHAT':type==='watch_xp'?'XP':'FNC',sort:new Date(row.created_at).getTime()};
+      });
+      (redeemResult.data||[]).forEach(row=>{
+        events.push({date:row.created_at,title:'Store redemption · '+String(row.status||'pending').replace(/_/g,' '),value:'−'+Number(row.fnc_spent||0).toLocaleString('en-US')+' FNC',mark:'SHOP',sort:new Date(row.created_at).getTime(),negative:true});
+      });
+      events.sort((a,b)=>b.sort-a.sort);
+      const recent=events.slice(0,6);
+      panel.hidden=false;
+      if(!recent.length){list.innerHTML='<div class="home-activity-empty">No recent activity yet. Watch the Twitch stream or explore the Store to get started.</div>';return;}
+      list.innerHTML=recent.map(event=>'<article class="home-activity-item"><div class="home-activity-main"><span class="home-activity-mark">'+esc(event.mark)+'</span><div class="home-activity-copy"><div class="home-activity-title">'+esc(event.title)+'</div><div class="home-activity-date">'+esc(safeDate(event.date))+'</div></div></div>'+(event.value?'<span class="home-activity-value'+(event.negative?' is-negative':'')+'">'+esc(event.value)+'</span>':'')+'</article>').join('');
+    }catch(error){console.warn('[AdhemSwag] Recent activity unavailable:',error);}
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',load,{once:true});else load();
+})();
+</script>
 </body>
 </html>
 
