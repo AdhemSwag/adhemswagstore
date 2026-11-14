@@ -800,9 +800,9 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
           <p style="margin:8px 0 0">Automatic checks run every minute. LIVE/OFFLINE detection and viewer tracking are handled by the backend.</p>
         </div>
         <div id="twitchWatchStatus" class="notice" style="display:none;margin-top:10px" aria-live="polite"></div>
-        <details id="twitchWatchAdvanced" style="margin-top:14px;border:1px solid rgba(17,217,247,.16);padding:14px;background:rgba(17,217,247,.02)">
-          <summary style="cursor:pointer;color:var(--muted);font:700 10px 'JetBrains Mono',monospace;letter-spacing:.08em">ADVANCED RECOVERY · ONLY IF AUTHORIZATION IS REQUIRED</summary>
-          <p style="margin:10px 0 0">These controls are not part of normal streaming. Use them only if the connection status above reports that Twitch authorization is required.</p>
+        <details id="twitchWatchAdvanced" open style="margin-top:14px;border:1px solid rgba(17,217,247,.16);padding:14px;background:rgba(17,217,247,.02)">
+          <summary style="cursor:pointer;color:var(--cyan);font:700 11px 'JetBrains Mono',monospace;letter-spacing:.08em">TWITCH CREDENTIALS · MANUAL REPAIR</summary>
+          <p style="margin:10px 0 0">Use this form to replace the Twitch Watch Tracking app credentials when automatic token refresh fails. Save the Client ID and Client Secret from the same Twitch Developer application. The secret is sent to the secure server function and cleared from this form after saving.</p>
           <div class="field" style="margin-top:12px">
             <label for="twitchWatchClientId">Twitch Watch Tracking App Client ID</label>
             <input id="twitchWatchClientId" type="text" autocomplete="off" placeholder="Client ID from the Watch Tracking Twitch app" />
