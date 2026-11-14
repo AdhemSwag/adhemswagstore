@@ -797,6 +797,7 @@ body.mobile-menu-open{overflow:hidden!important}
         <button class="lb-tab active" data-board="fnc" type="button">FNC POINTS</button>
         <button class="lb-tab" data-board="xp" type="button">XP</button>
         <button class="lb-tab" data-board="earned" type="button">ALL-TIME FNC EARNED</button>
+        <button class="lb-tab" data-board="watch" type="button">WATCH TIME · ALL TIME</button>
       </div>
       <div class="lb-search lb-search-compact" id="lbProfileSearch">
         <div class="lb-search-field"><input id="lbSearchInput" type="search" autocomplete="off" placeholder="Search player..." aria-label="Search player by Twitch username" aria-controls="lbSearchResults" aria-expanded="false"></div>
@@ -875,16 +876,18 @@ body.mobile-menu-open{overflow:hidden!important}
 
   function renderBoard(){
     const sorted=[...rows].sort((a,b)=>{
-      const av=board==='xp'?Number(a.xp):board==='earned'?Number(a.total_fnc_earned):Number(a.fnc_points);
-      const bv=board==='xp'?Number(b.xp):board==='earned'?Number(b.total_fnc_earned):Number(b.fnc_points);
+      const av=board==='xp'?Number(a.xp):board==='earned'?Number(a.total_fnc_earned):board==='watch'?Number(a.total_watch_minutes):Number(a.fnc_points);
+      const bv=board==='xp'?Number(b.xp):board==='earned'?Number(b.total_fnc_earned):board==='watch'?Number(b.total_watch_minutes):Number(b.fnc_points);
       return bv-av || String(a.twitch_username).localeCompare(String(b.twitch_username));
     });
     const podium=document.getElementById('lbPodium');
-    const label=board==='xp'?'XP':board==='earned'?'ALL-TIME FNC EARNED':'FNC POINTS';
-    const metric=u=>board==='xp'?fmt(u.xp):board==='earned'?fmt(u.total_fnc_earned):fmt(u.fnc_points);
+    const label=board==='xp'?'XP':board==='earned'?'ALL-TIME FNC EARNED':board==='watch'?'WATCH TIME · ALL TIME':'FNC POINTS';
+    const metric=u=>board==='xp'?fmt(u.xp):board==='earned'?fmt(u.total_fnc_earned):board==='watch'?mins(u.total_watch_minutes):fmt(u.fnc_points);
     const metricNote=document.getElementById('lbMetricNote');
     if(metricNote){
-      const copy=board==='earned'
+      const copy=board==='watch'
+        ? ['WATCH TIME · ALL TIME','Total Twitch watch time recorded for each viewer across all tracked streams. Ranked from highest to lowest.']
+        : board==='earned'
         ? ['ALL-TIME FNC EARNED · LIFETIME TOTAL','Total FNC earned over time, including points later spent in the store. Spending does not reduce this number.']
         : board==='xp'
         ? ['XP · TOTAL EXPERIENCE','Experience points earned through progression. XP is separate from FNC and does not represent a spendable balance.']
@@ -920,7 +923,7 @@ body.mobile-menu-open{overflow:hidden!important}
       const profileUrl='/profile/?viewer='+encodeURIComponent(u.twitch_username);
       const initials=esc(String(u.twitch_username||'V').replace(/^@/,'').slice(0,2).toUpperCase()||'V');
       const avatar=avatarMarkup(u,initials);
-      html+='<div class="lb-row"><div class="lb-rank">#'+r+'</div><div class="lb-user"><a class="lb-user-link" href="'+profileUrl+'" style="color:inherit;text-decoration:none" aria-label="View '+esc(u.twitch_username)+' profile"><span class="lb-list-avatar">'+avatar+'</span><span>'+esc(u.twitch_username)+' <span style="color:var(--muted);font-size:10px">LVL '+Number(u.level||1)+'</span></span></a></div><div class="lb-points">'+value+' <span>'+(label==='XP'?'XP':'FNC')+'</span></div></div>';
+      html+='<div class="lb-row"><div class="lb-rank">#'+r+'</div><div class="lb-user"><a class="lb-user-link" href="'+profileUrl+'" style="color:inherit;text-decoration:none" aria-label="View '+esc(u.twitch_username)+' profile"><span class="lb-list-avatar">'+avatar+'</span><span>'+esc(u.twitch_username)+' <span style="color:var(--muted);font-size:10px">LVL '+Number(u.level||1)+'</span></span></a></div><div class="lb-points">'+value+' <span>'+(board==='watch'?'':' '+(label==='XP'?'XP':'FNC'))+'</span></div></div>';
     });
     table.innerHTML=html;
     bindAvatarFallback(podium);bindAvatarFallback(table);
@@ -935,17 +938,17 @@ body.mobile-menu-open{overflow:hidden!important}
     const query=searchInput.value.trim().replace(/^@/,'').toLocaleLowerCase();
     if(!query){searchResults.innerHTML='';searchResults.classList.remove('is-open');searchInput.setAttribute('aria-expanded','false');return;}
     const sorted=[...rows].sort((a,b)=>{
-      const av=board==='xp'?Number(a.xp):board==='earned'?Number(a.total_fnc_earned):Number(a.fnc_points);
-      const bv=board==='xp'?Number(b.xp):board==='earned'?Number(b.total_fnc_earned):Number(b.fnc_points);
+      const av=board==='xp'?Number(a.xp):board==='earned'?Number(a.total_fnc_earned):board==='watch'?Number(a.total_watch_minutes):Number(a.fnc_points);
+      const bv=board==='xp'?Number(b.xp):board==='earned'?Number(b.total_fnc_earned):board==='watch'?Number(b.total_watch_minutes):Number(b.fnc_points);
       return bv-av || String(a.twitch_username).localeCompare(String(b.twitch_username));
     });
-    const label=board==='xp'?'XP':board==='earned'?'ALL-TIME FNC EARNED':'FNC POINTS';
-    const metric=u=>board==='xp'?fmt(u.xp):board==='earned'?fmt(u.total_fnc_earned):fmt(u.fnc_points);
+    const label=board==='xp'?'XP':board==='earned'?'ALL-TIME FNC EARNED':board==='watch'?'WATCH TIME · ALL TIME':'FNC POINTS';
+    const metric=u=>board==='xp'?fmt(u.xp):board==='earned'?fmt(u.total_fnc_earned):board==='watch'?mins(u.total_watch_minutes):fmt(u.fnc_points);
     const matches=sorted.map((u,index)=>({...u,searchRank:index+1})).filter(u=>String(u.twitch_username||'').toLocaleLowerCase().includes(query)).slice(0,8);
     searchResults.innerHTML=matches.length?'<div class="lb-row lb-head lb-search-head"><div>RANK</div><div>VIEWER / LEVEL</div><div style="text-align:right">'+label+'</div></div>'+matches.map(u=>{
       const name=String(u.twitch_username||'Viewer');
       const initials=esc(name.replace(/^@/,'').slice(0,2).toUpperCase()||'V');
-      return '<a class="lb-row lb-search-result" role="option" href="/profile/?viewer='+encodeURIComponent(name)+'"><div class="lb-rank">#'+u.searchRank+'</div><div class="lb-user"><span class="lb-user-link"><span class="lb-list-avatar">'+initials+'</span><span class="lb-search-name-level"><span class="lb-search-result-name">'+esc(name)+'</span><span class="lb-search-level">LVL '+Number(u.level||1)+'</span></span></span></div><div class="lb-points">'+metric(u)+' <span>'+(board==='xp'?'XP':'FNC')+'</span></div></a>';
+      return '<a class="lb-row lb-search-result" role="option" href="/profile/?viewer='+encodeURIComponent(name)+'"><div class="lb-rank">#'+u.searchRank+'</div><div class="lb-user"><span class="lb-user-link"><span class="lb-list-avatar">'+initials+'</span><span class="lb-search-name-level"><span class="lb-search-result-name">'+esc(name)+'</span><span class="lb-search-level">LVL '+Number(u.level||1)+'</span></span></span></div><div class="lb-points">'+metric(u)+' <span>'+(board==='watch'?'':' '+(board==='xp'?'XP':'FNC'))+'</span></div></a>';
     }).join(''):'<div class="lb-search-empty"><span aria-hidden="true">⌕</span><span>No matching viewer found. Try another username.</span></div>';
     searchResults.classList.add('is-open');searchInput.setAttribute('aria-expanded','true');
   }
