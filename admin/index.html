@@ -1862,13 +1862,13 @@ async function updateSystemButtons(){
      watchState.textContent=refreshPending?'TOKEN REFRESH PENDING · NOT VERIFIED':connected?'CONNECTED · TOKEN VERIFIED':'AUTHORIZATION NOT VERIFIED';
      watchState.style.color=connected?'var(--ok)':refreshPending?'#f0bd58':'var(--danger)';
      if(card)card.style.borderLeftColor=connected?'var(--ok)':refreshPending?'#f0bd58':'var(--danger)';
-     if(advanced)advanced.hidden=connected||refreshPending;
+     if(advanced)advanced.hidden=connected;
      if(connected){
        localStorage.setItem('adhem_twitch_watch_connected','1');
        if(status){status.style.display='block';status.style.borderLeftColor='var(--ok)';status.textContent='Twitch access token validated and required scopes confirmed. Viewer tracking still needs live-session verification.';}
      }else if(refreshPending){
        localStorage.removeItem('adhem_twitch_watch_connected');
-       if(status){status.style.display='block';status.style.borderLeftColor='#f0bd58';status.textContent='The current access token did not validate. A refresh is available, but connection is not verified yet. Check the Watch Monitoring panel for cron and viewer activity.';}
+       if(status){status.style.display='block';status.style.borderLeftColor='#f0bd58';status.textContent='The current access token did not validate and automatic refresh is pending. Advanced Recovery is now available below if the refresh worker cannot restore the connection. Check Watch Monitoring for cron and viewer activity.';}
      }else{
        localStorage.removeItem('adhem_twitch_watch_connected');
        if(status){status.style.display='block';status.style.borderLeftColor='var(--danger)';status.textContent='Twitch authorization could not be verified. Open Advanced Recovery only if the automatic refresh cannot restore it.';}
