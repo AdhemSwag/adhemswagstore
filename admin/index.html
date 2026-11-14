@@ -800,8 +800,8 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
           <p style="margin:8px 0 0">Automatic checks run every minute. LIVE/OFFLINE detection and viewer tracking are handled by the backend.</p>
         </div>
         <div id="twitchWatchStatus" class="notice" style="display:none;margin-top:10px" aria-live="polite"></div>
-        <details id="twitchWatchAdvanced" open style="margin-top:14px;border:1px solid rgba(17,217,247,.16);padding:14px;background:rgba(17,217,247,.02)">
-          <summary style="cursor:pointer;color:var(--cyan);font:700 11px 'JetBrains Mono',monospace;letter-spacing:.08em">TWITCH CREDENTIALS · MANUAL REPAIR</summary>
+        <div id="twitchWatchAdvanced" style="margin-top:14px;border:1px solid rgba(17,217,247,.16);padding:14px;background:rgba(17,217,247,.02)">
+          <h3 style="margin:0;color:var(--cyan);font:700 12px 'JetBrains Mono',monospace;letter-spacing:.08em">TWITCH CREDENTIALS · MANUAL REPAIR</h3>
           <p style="margin:10px 0 0">Use this form to replace the Twitch Watch Tracking app credentials when automatic token refresh fails. Save the Client ID and Client Secret from the same Twitch Developer application. The secret is sent to the secure server function and cleared from this form after saving.</p>
           <div class="field" style="margin-top:12px">
             <label for="twitchWatchClientId">Twitch Watch Tracking App Client ID</label>
@@ -817,7 +817,7 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
             <button class="btn primary" id="connectTwitchWatch" type="button">REAUTHORIZE TWITCH</button>
             <button class="btn" id="testTwitchWatch" type="button">RUN DIAGNOSTIC TEST</button>
           </div>
-        </details>
+        </div>
       </div>
       <div class="section" id="storeChatBotSection">
         <h2>STORE <span style="color:var(--cyan)">CHAT BOT</span></h2>
