@@ -1150,6 +1150,61 @@ body.mobile-menu-open{overflow:hidden!important}
 </style>
 
 <link rel="stylesheet" href="/assets/mobile-sidebar.css?v=7" id="adhemswag-mobile-sidebar-final">
+
+<style id="adhemswag-leaderboard-readability-v1">
+/* Leaderboard presentation polish only — no data, ranking, reward or navigation logic changes. */
+.lb-ranking-toolbar{align-items:center;gap:14px;margin-bottom:14px}
+.lb-ranking-toolbar .lb-tabs{flex:1;justify-content:flex-start;gap:8px;min-width:0}
+.lb-tab{min-height:38px;padding:10px 13px;border-radius:8px;font-size:10px;line-height:1.2;white-space:nowrap;transition:background .18s ease,border-color .18s ease,color .18s ease,box-shadow .18s ease}
+.lb-tab.active{background:linear-gradient(135deg,rgba(17,217,247,.17),rgba(17,217,247,.06));border-color:rgba(17,217,247,.72);color:#eafcff;box-shadow:inset 0 0 0 1px rgba(17,217,247,.08),0 0 16px rgba(17,217,247,.08)}
+.lb-tab:focus-visible,.lb-page-btn:focus-visible,.lb-size-btn:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
+.lb-search-compact{flex:0 1 220px;min-width:180px}
+.lb-metric-note{min-height:64px;align-items:center;border-color:rgba(17,217,247,.2);background:linear-gradient(105deg,rgba(17,217,247,.075),rgba(11,15,18,.88) 72%)}
+.lb-podium{gap:16px;margin:20px 0 26px}
+.lb-podium-card{min-height:260px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start}
+.lb-podium-card.champion{min-height:280px}
+.lb-podium-profile{width:100%}
+.lb-podium-points{margin-top:auto;padding-top:12px;line-height:1.15}
+.lb-podium-points-label{line-height:1.5;overflow-wrap:anywhere}
+.lb-table{border-radius:10px}
+.lb-row{min-height:58px;grid-template-columns:64px minmax(0,1fr) minmax(130px,180px);padding:12px 18px;gap:12px}
+.lb-row.lb-head{min-height:42px}
+.lb-user,.lb-user-link{min-width:0}
+.lb-user-link>span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lb-points{font-size:14px;font-variant-numeric:tabular-nums}
+.lb-pagination{gap:14px}
+.lb-page-info{min-width:92px;text-align:center}
+.watcher-card{border-radius:9px;transition:transform .18s ease,border-color .18s ease,background .18s ease}
+.watcher-card:hover{transform:translateY(-2px);border-color:rgba(17,217,247,.38);background:linear-gradient(145deg,rgba(17,217,247,.07),var(--bg-panel))}
+.watcher-minutes{font-variant-numeric:tabular-nums}
+@media(max-width:850px){
+  .lb-ranking-toolbar{align-items:stretch;flex-direction:column}
+  .lb-ranking-toolbar .lb-tabs{width:100%;justify-content:flex-start}
+  .lb-search-compact{width:100%;max-width:none;min-width:0;flex:1 1 auto}
+}
+@media(max-width:640px){
+  .lb-ranking-toolbar{gap:10px}
+  .lb-ranking-toolbar .lb-tabs{display:flex;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;padding:2px 2px 8px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
+  .lb-ranking-toolbar .lb-tab{flex:0 0 auto;scroll-snap-align:start;min-height:40px;padding:10px 12px;font-size:9px}
+  .lb-ranking-toolbar .lb-search-compact{width:100%}
+  .lb-metric-note{align-items:flex-start;margin-bottom:14px}
+  .lb-podium{gap:7px;margin:14px 0 18px}
+  .lb-podium-card,.lb-podium-card.champion{min-height:0}
+  .lb-podium-points{margin-top:0;padding-top:5px;line-height:1.25;overflow-wrap:anywhere}
+  .lb-row{grid-template-columns:38px minmax(0,1fr) minmax(86px,auto);gap:7px;padding:11px 9px;min-height:54px;font-size:11px}
+  .lb-row.lb-head{font-size:9px;letter-spacing:.04em}
+  .lb-list-avatar{width:25px;height:25px;flex-basis:25px}
+  .lb-points{font-size:11px}
+  .lb-points span{font-size:9px}
+  .lb-watch-section .lb-section-head{gap:10px}
+  .lb-watch-section .lb-tabs{width:100%;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}
+  .lb-watch-section .lb-tab{min-width:0;padding:9px 4px;font-size:9px}
+}
+@media(prefers-reduced-motion:reduce){
+  .lb-tab,.lb-podium-card,.watcher-card{transition:none!important}
+}
+</style>
+
 </body>
 </html>
 
