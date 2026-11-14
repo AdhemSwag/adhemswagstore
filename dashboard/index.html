@@ -1174,7 +1174,7 @@ footer .footer-copy .row{margin:0;}
 #asgCurrent[hidden]{display:none}
 #asgCurrent img{width:72px;height:72px;object-fit:contain;border-radius:8px;background:#080d11}
 #asgCurrent h3{margin:4px 0;font:700 18px Rajdhani,sans-serif}
-#asgStats{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;color:#aab9bd;font-size:11px}
+#asgStats,#asgStatsDetails{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;color:#aab9bd;font-size:11px}
 #asgTrack{height:7px;margin:9px 0;border-radius:9px;background:#17242a;overflow:hidden}
 #asgFill{height:100%;width:0;background:#11d9f7;transition:width .25s ease}
 #asgChoose{display:flex;align-items:center;gap:14px;width:100%;padding:12px;text-align:left;border:1px solid rgba(17,217,247,.25);border-radius:10px;background:rgba(0,0,0,.22);color:#eaf6f8;cursor:pointer}
@@ -1505,7 +1505,7 @@ footer .footer-copy .row{margin:0;}
   </button>
   <div id="asgCurrent" hidden>
     <img id="asgCurrentImg" src="" alt="">
-    <div><div class="asg-kicker">YOUR CURRENT GOAL</div><h3 id="asgCurrentName"></h3><div id="asgStats"><span id="asgHave"></span><span id="asgTarget"></span></div><div id="asgTrack" role="progressbar" aria-label="Progress toward skin goal" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="asgFill"></div></div><div id="asgStats"><span id="asgPercent"></span><span id="asgRemaining"></span></div><button id="asgChange" type="button" class="asg-pick" style="margin-top:10px">CHANGE SKIN / CODE</button></div>
+    <div><div class="asg-kicker">YOUR CURRENT GOAL</div><h3 id="asgCurrentName"></h3><div id="asgStats"><span id="asgHave"></span><span id="asgTarget"></span></div><div id="asgTrack" role="progressbar" aria-label="Progress toward skin goal" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="asgFill"></div></div><div id="asgStatsDetails"><span id="asgPercent"></span><span id="asgRemaining"></span></div><button id="asgChange" type="button" class="asg-pick" style="margin-top:10px">CHANGE SKIN / CODE</button></div>
   </div>
   <a id="asgLogin" href="/profile/" hidden>CONNECT WITH TWITCH TO SAVE YOUR GOAL</a>
   <div id="asgModal" hidden>
