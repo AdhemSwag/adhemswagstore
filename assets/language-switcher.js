@@ -85,7 +85,7 @@
       'Visit Tradeit.gg':'Visiter Tradeit.gg','Capture and share your best':'Capturez et partagez vos meilleurs','with Allstar.':'avec Allstar.',
       'ADHEMSWAG AFFILIATE LINK':'LIEN D’AFFILIATION ADHEMSWAG','Join Allstar':'Rejoindre Allstar',
       'Save':'Économisez','instantly + up to':'immédiatement et jusqu’à','40% OFF':'40 % DE RÉDUCTION','for new subscribers':'pour les nouveaux abonnés',
-      'Get NoPing':'Obtenir NoPing','Join ESEA':'Rejoindre ESEA'
+      'Get NoPing':'Obtenir NoPing','Join ESEA':'Rejoindre ESEA',
       'CS2 Config':'Configuration CS2','Support AdhemSwag':'Soutenir AdhemSwag','// choose your region or send skins directly':'// choisissez votre région ou envoyez directement des skins',
       'Donate — EU via Streamlabs':'Faire un don — UE via Streamlabs','Donate — DZ via Da3amni':'Faire un don — DZ via Da3amni',
       'Send Skins — CS2 via Steam Trade Offer':'Envoyer des skins — CS2 via une offre d’échange Steam',
