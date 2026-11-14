@@ -615,19 +615,20 @@
     try { const v = localStorage.getItem(KEY); return ['en','fr','ar'].includes(v) ? v : 'en'; }
     catch (_) { return 'en'; }
   }
+  const textNodeState = new WeakMap();
   function translateTextNode(node, lang) {
     if (!node || !node.parentElement || node.parentElement.closest('script,style,textarea,select,option,[data-no-translate],#adhemswag-language-switcher')) return;
     const raw = node.nodeValue;
-    const trimmed = raw.trim();
-    if (!trimmed) return;
-    node.__adhemOriginal = node.__adhemOriginal || raw;
-    const original = node.__adhemOriginal.trim();
+    if (!raw.trim()) return;
+    const previous = textNodeState.get(node);
+    const originalRaw = !previous || raw !== previous.rendered ? raw : previous.original;
+    const original = originalRaw.trim();
     const translated = lang === 'en' ? original : ((translations[lang] || {})[original] || original);
-    if (translated !== trimmed) {
-      const lead = raw.match(/^\s*/)?.[0] || '';
-      const tail = raw.match(/\s*$/)?.[0] || '';
-      node.nodeValue = lead + translated + tail;
-    } else if (lang === 'en' && node.nodeValue !== node.__adhemOriginal) node.nodeValue = node.__adhemOriginal;
+    const lead = originalRaw.match(/^\\s*/)?.[0] || '';
+    const tail = originalRaw.match(/\\s*$/)?.[0] || '';
+    const rendered = lead + translated + tail;
+    textNodeState.set(node, { original: originalRaw, rendered });
+    if (raw !== rendered) node.nodeValue = rendered;
   }
   function translateAttributes(root, lang) {
     const attrs = ['placeholder','title','aria-label','value'];
@@ -636,11 +637,15 @@
       if (el.id === 'adhemswag-language-switcher' || el.closest?.('#adhemswag-language-switcher')) continue;
       for (const attr of attrs) {
         if (!el.hasAttribute?.(attr)) continue;
-        const key = 'adhemOrig' + attr.replace(/[^a-z0-9]/gi, '');
-        if (!el.dataset[key]) el.dataset[key] = el.getAttribute(attr);
+        const suffix = attr.replace(/[^a-z0-9]/gi, '');
+        const key = 'adhemOrig' + suffix;
+        const renderedKey = 'adhemRendered' + suffix;
+        const current = el.getAttribute(attr);
+        if (!(key in el.dataset) || current !== el.dataset[renderedKey]) el.dataset[key] = current;
         const orig = el.dataset[key];
         const translated = lang === 'en' ? orig : ((translations[lang] || {})[orig] || orig);
-        if (el.getAttribute(attr) !== translated) el.setAttribute(attr, translated);
+        if (current !== translated) el.setAttribute(attr, translated);
+        el.dataset[renderedKey] = translated;
       }
     }
   }
