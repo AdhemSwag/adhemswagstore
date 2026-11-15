@@ -804,19 +804,19 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
           <button class="btn primary" id="reconnectTwitchWatchNow" type="button">RECONNECT TWITCH MANUALLY</button>
         </div>
         <p style="margin:8px 0 0;color:var(--muted);font-size:12px">If watch tracking disconnects during a long stream, press this button and authorize Twitch again. This does not reset viewer balances or FNC/XP settings.</p>
-        <div id="twitchWatchAdvanced" style="margin-top:14px;border:1px solid rgba(17,217,247,.16);padding:14px;background:rgba(17,217,247,.02)">
-          <h3 style="margin:0;color:var(--cyan);font:700 12px 'JetBrains Mono',monospace;letter-spacing:.08em">TWITCH CREDENTIALS · MANUAL REPAIR</h3>
-          <p style="margin:10px 0 0">Use this form to replace the Twitch Watch Tracking app credentials when automatic token refresh fails. Save the Client ID and Client Secret from the same Twitch Developer application. The secret is sent to the secure server function and cleared from this form after saving.</p>
-          <div class="field" style="margin-top:12px">
-            <label for="twitchWatchClientId">Twitch Watch Tracking App Client ID</label>
-            <input id="twitchWatchClientId" type="text" autocomplete="off" placeholder="Client ID from the Watch Tracking Twitch app" />
+        <div id="twitchWatchAdvanced" style="display:block;visibility:visible;position:relative;z-index:2;pointer-events:auto;margin-top:14px;border:1px solid rgba(17,217,247,.45);border-radius:10px;padding:16px;background:rgba(17,217,247,.06)">
+          <h3 style="margin:0;color:var(--cyan);font:700 13px 'JetBrains Mono',monospace;letter-spacing:.08em">WATCH TRACKING · ENTER TWITCH APP CREDENTIALS</h3>
+          <p style="margin:10px 0 14px">Enter the Client ID and Client Secret from the SAME Twitch Developer application used for Watch Tracking. These fields are only for repairing the Watch Tracking connection.</p>
+          <div class="field" style="display:block;position:relative;margin-top:12px">
+            <label for="twitchWatchClientId" style="display:block;margin-bottom:7px">WATCH TRACKING — CLIENT ID</label>
+            <input id="twitchWatchClientId" type="text" autocomplete="off" spellcheck="false" placeholder="Paste Twitch Client ID here" style="display:block;visibility:visible;pointer-events:auto;position:relative;width:100%;min-height:46px;padding:12px;color:var(--text);background:var(--panel);border:1px solid var(--cyan);border-radius:7px;opacity:1" />
           </div>
-          <div class="field" style="margin-top:12px">
-            <label for="twitchWatchClientSecret">Twitch Watch Tracking App Client Secret</label>
-            <input id="twitchWatchClientSecret" type="password" autocomplete="new-password" placeholder="Stored securely; never displayed again" />
+          <div class="field" style="display:block;position:relative;margin-top:14px">
+            <label for="twitchWatchClientSecret" style="display:block;margin-bottom:7px">WATCH TRACKING — CLIENT SECRET</label>
+            <input id="twitchWatchClientSecret" type="password" autocomplete="new-password" placeholder="Paste Twitch Client Secret here" style="display:block;visibility:visible;pointer-events:auto;position:relative;width:100%;min-height:46px;padding:12px;color:var(--text);background:var(--panel);border:1px solid var(--cyan);border-radius:7px;opacity:1" />
             <p style="margin:6px 0 0;color:var(--muted);font-size:12px">The secret is sent only to the secure server function. Never paste it into chat.</p>
           </div>
-          <div class="actions">
+          <div class="actions" style="margin-top:14px">
             <button class="btn" id="saveTwitchWatchSecret" type="button">SAVE APP SECRET SECURELY</button>
             <button class="btn primary" id="connectTwitchWatch" type="button">REAUTHORIZE TWITCH</button>
             <button class="btn" id="testTwitchWatch" type="button">RUN DIAGNOSTIC TEST</button>
