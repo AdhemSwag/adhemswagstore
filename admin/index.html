@@ -1067,7 +1067,7 @@ async function loginAdmin(event) {
     const { data, error } = await supabaseClient.auth.signInWithOAuth({
       provider: 'twitch',
       options: {
-        redirectTo: 'https://adhemswag.com/admin/',
+        redirectTo: window.location.origin + '/admin/',
         skipBrowserRedirect: true,
         queryParams: { force_verify: 'true' }
       }
@@ -2399,7 +2399,7 @@ document.getElementById('connectTwitchWatch')?.addEventListener('click', async (
     const {data,error}=await twitchWatchClient.auth.signInWithOAuth({
       provider:'twitch',
       options:{
-        redirectTo:'https://adhemswag.com/admin/',
+        redirectTo:window.location.origin + '/admin/',
         skipBrowserRedirect:true,
         scopes:'moderator:read:chatters channel:read:subscriptions user:read:chat',
         queryParams:{force_verify:'true'}
