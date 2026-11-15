@@ -30,8 +30,19 @@ const box=document.getElementById('alert');
 const viewer=document.getElementById('viewer');
 const reward=document.getElementById('reward');
 const cost=document.getElementById('cost');
-let since=new Date(Date.now()-30000).toISOString();
+// Start at the current time: never replay purchases that happened before OBS loaded.
+let since=new Date().toISOString();
+const seenKey='adhemswag_stream_alert_seen_v1';
 let seen=new Set();
+try{seen=new Set(JSON.parse(localStorage.getItem(seenKey)||'[]'));}catch(error){seen=new Set();}
+function alertKey(item){
+  return String(item.id??[item.created_at,item.viewer,item.reward,item.fnc].join('|'));
+}
+function rememberAlert(key){
+  seen.add(key);
+  if(seen.size>300)seen=new Set([...seen].slice(-150));
+  try{localStorage.setItem(seenKey,JSON.stringify([...seen]));}catch(error){}
+}
 let busy=false;
 let audioContext=null;
 let alertQueue=[];
@@ -93,13 +104,13 @@ async function poll(){
     if(!response.ok)throw new Error('alert_endpoint_'+response.status);
     const data=await response.json();
     for(const item of (data.alerts||[])){
-      if(!seen.has(item.id)){
-        seen.add(item.id);
+      const key=alertKey(item);
+      if(!seen.has(key)){
+        rememberAlert(key);
         show(item);
       }
-      if(item.created_at>since)since=item.created_at;
+      if(item.created_at&&item.created_at>since)since=item.created_at;
     }
-    if(seen.size>300)seen=new Set([...seen].slice(-150));
   }catch(error){
     // Keep the last successful cursor so a temporary network error does not lose alerts.
   }finally{
