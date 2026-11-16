@@ -2389,8 +2389,12 @@ document.getElementById('connectTwitchWatch')?.addEventListener('click', async (
     const clientSecretInput = document.getElementById('twitchWatchClientSecret');
     const clientSecret = (clientSecretInput?.value || '').trim();
     if (clientSecret) sessionStorage.setItem('adhem_twitch_watch_client_secret', clientSecret);
-    // Discard any cached provider tokens before starting a fresh authorization.
-    // Only the refresh token returned by this OAuth response may be persisted.
+    // Clear the dedicated Watch OAuth session before starting a new authorization.
+    // Otherwise getSession() can immediately return the previous session while the
+    // PKCE callback is still being exchanged, causing the revoked refresh token
+    // to be saved again. This does not sign out the separate Admin session.
+    const { error: watchSignOutError } = await twitchWatchClient.auth.signOut({ scope: 'local' });
+    if (watchSignOutError) throw watchSignOutError;
     localStorage.removeItem('adhem_twitch_provider_token');
     localStorage.removeItem('adhem_twitch_provider_refresh_token');
     localStorage.setItem('adhem_twitch_watch_connect','1');
