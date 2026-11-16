@@ -969,7 +969,7 @@ async function captureTwitchWatchCallbackOnce() {
     }
 
     const accessToken = session?.provider_token || localStorage.getItem('adhem_twitch_provider_token');
-    const refreshToken = session?.provider_refresh_token || localStorage.getItem('adhem_twitch_provider_refresh_token') || '';
+    const refreshToken = session?.provider_refresh_token || ''; // Never reuse a previous refresh token for a new OAuth authorization.
     if (!session?.user || !accessToken) {
       if (status) {
         status.style.display='block';
@@ -1200,19 +1200,7 @@ supabaseClient.auth.onAuthStateChange((event, session) => {
   }
 });
 
-// Twitch Watch uses a dedicated Supabase client so its OAuth session/provider token
-// is captured independently from the normal Admin login session.
-twitchWatchClient.auth.onAuthStateChange((event, session) => {
-  if (session?.provider_token) {
-    localStorage.setItem('adhem_twitch_provider_token', session.provider_token);
-  }
-  if (session?.provider_refresh_token) {
-    localStorage.setItem('adhem_twitch_provider_refresh_token', session.provider_refresh_token);
-  }
-  if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session?.user) {
-    setTimeout(() => captureTwitchWatchCallback(), 0);
-  }
-});
+// The dedicated Twitch Watch auth listener above is the sole owner of provider-token capture.
 
 let selectedAdminUser = null;
 
@@ -2401,9 +2389,10 @@ document.getElementById('connectTwitchWatch')?.addEventListener('click', async (
     const clientSecretInput = document.getElementById('twitchWatchClientSecret');
     const clientSecret = (clientSecretInput?.value || '').trim();
     if (clientSecret) sessionStorage.setItem('adhem_twitch_watch_client_secret', clientSecret);
-    // Always perform a fresh Twitch authorization from this button.
-    // Do not block reconnection on the old backend token: that token may be
-    // exactly what needs to be replaced.
+    // Discard any cached provider tokens before starting a fresh authorization.
+    // Only the refresh token returned by this OAuth response may be persisted.
+    localStorage.removeItem('adhem_twitch_provider_token');
+    localStorage.removeItem('adhem_twitch_provider_refresh_token');
     localStorage.setItem('adhem_twitch_watch_connect','1');
     if(s){s.style.display='block';s.textContent='Opening Twitch Watch authorization…';}
     const {data,error}=await twitchWatchClient.auth.signInWithOAuth({
