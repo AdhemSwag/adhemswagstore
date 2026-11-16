@@ -969,33 +969,43 @@ async function captureTwitchWatchCallbackOnce() {
     }
 
     const accessToken = session?.provider_token || localStorage.getItem('adhem_twitch_provider_token');
-    const refreshToken = session?.provider_refresh_token || localStorage.getItem('adhem_twitch_provider_refresh_token') || null;
+    const refreshToken = session?.provider_refresh_token || localStorage.getItem('adhem_twitch_provider_refresh_token') || '';
     if (!session?.user || !accessToken) {
       if (status) {
         status.style.display='block';
-        status.textContent='Twitch returned to Admin, but the provider token was not captured. Open Advanced Recovery and retry authorization.';
+        status.textContent='Twitch returned to Admin, but the provider access token was not captured. No credentials were changed. Retry authorization.';
+      }
+      return false;
+    }
+    // Never let a reconnect silently retain the previous (possibly revoked) refresh token.
+    if (!refreshToken) {
+      if (status) {
+        status.style.display='block';
+        status.textContent='Twitch did not return a new refresh token. No credentials were changed. Retry authorization; if this repeats, the OAuth provider configuration needs repair.';
       }
       return false;
     }
 
-    // Read Twitch token identity once so the backend can persist the app/user IDs
-    // alongside the fresh OAuth credentials. No client secret is exposed in the browser.
+    // Validate the OAuth token and enforce that it belongs to the exact Twitch
+    // Developer application whose Client ID/Secret are stored for Watch Tracking.
+    // A mismatch must stop the save; swallowing this error would persist a broken pair.
     let twitchClientId = (document.getElementById('twitchWatchClientId')?.value || '').trim() || null;
-    let twitchBroadcasterId = null;
-    try {
-      const validateResponse = await fetch('https://id.twitch.tv/oauth2/validate', {
-        headers: { Authorization: 'OAuth ' + accessToken }
-      });
-      if (validateResponse.ok) {
-        const validation = await validateResponse.json();
-        const oauthClientId = validation?.client_id || null;
-        if (twitchClientId && oauthClientId && twitchClientId !== oauthClientId) {
-          throw new Error('The Watch Tracking Client ID does not match the Twitch app used for this login. Use the same app Client ID and secret.');
-        }
-        twitchClientId = twitchClientId || oauthClientId;
-        twitchBroadcasterId = validation?.user_id || null;
-      }
-    } catch (_) {}
+    const validateResponse = await fetch('https://id.twitch.tv/oauth2/validate', {
+      headers: { Authorization: 'OAuth ' + accessToken }
+    });
+    if (!validateResponse.ok) {
+      throw new Error('Twitch rejected the new access token. No credentials were changed.');
+    }
+    const validation = await validateResponse.json();
+    const oauthClientId = validation?.client_id || null;
+    if (!oauthClientId || !validation?.user_id) {
+      throw new Error('Twitch did not return a valid account identity. No credentials were changed.');
+    }
+    if (twitchClientId && twitchClientId !== oauthClientId) {
+      throw new Error('Client ID mismatch: this Twitch login used a different Developer application. Use the same app Client ID and Secret for Watch Tracking.');
+    }
+    twitchClientId = oauthClientId;
+    const twitchBroadcasterId = validation.user_id;
 
     const { data: storeData, error: storeError } = await twitchWatchClient.functions.invoke(
       'admin-store-twitch-watch-credentials',
