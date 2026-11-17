@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Choose Platform | AdhemSwag</title>
+<title>Sign in with Twitch | AdhemSwag</title>
 <meta name="description" content="Sign in to AdhemSwag with Twitch.">
 <meta name="robots" content="noindex,nofollow">
 <link rel="canonical" href="https://adhemswag.com/login/">
@@ -26,22 +26,19 @@ button:hover{filter:brightness(1.08)}button:disabled{opacity:.6;cursor:wait}
 <body>
 <main class="card">
   <div class="brand">ADHEMSWAG <span>//</span> FNC REWARDS</div>
-  <div class="kicker">CHOOSE YOUR PLATFORM</div>
-  <h1>Connect to AdhemSwag</h1>
-  <p>Choose your streaming platform. Your AdhemSwag account remains unique, with one profile and one rewards balance.</p>
+  <div class="kicker">TWITCH ACCOUNT ACCESS</div>
+  <h1>Sign in with Twitch</h1>
+  <p>Connect your Twitch account to access your AdhemSwag profile, watch rewards, XP and community features.</p>
   <button id="twitchLogin" type="button" data-adhem-login>◉ SIGN IN WITH TWITCH</button>
-  <button id="kickConnect" type="button" style="border-color:#53fc18;background:#53fc18;color:#071006">LINK KICK TO EXISTING ACCOUNT</button>
-  <p style="font-size:12px">Kick linking currently requires an existing AdhemSwag account. Kick FNC rewards remain disabled during testing.</p>
   <div id="loginStatus" class="status" aria-live="polite"></div>
   <a class="back" href="/">← Back to AdhemSwag</a>
 </main>
 <script src="/auth.js"></script>
 <script>
 (function(){
-  const twitch=document.getElementById('twitchLogin');
-  const kick=document.getElementById('kickConnect');
-  if(twitch) twitch.addEventListener('click',()=>{twitch.disabled=true;},{capture:true});
-  if(kick) kick.addEventListener('click',function(){window.location.assign('/settings/#kickConnectionCard');});
+  const button=document.getElementById('twitchLogin');
+  if(!button) return;
+  button.addEventListener('click',()=>{button.disabled=true;}, {capture:true});
 })();
 </script>
 
