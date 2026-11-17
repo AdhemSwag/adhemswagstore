@@ -550,8 +550,35 @@ body.mobile-menu-open{overflow:hidden!important}
     </div>
     <p class="note">Watch at least 10 verified active minutes during each consecutive AdhemSwag Twitch broadcast. Earn +25 XP at 3 lives, +50 XP at 5, +100 XP at 10, +250 XP at 20 and +500 XP at 30. Each milestone pays once; badges remain unlocked permanently if your streak resets. Missing a broadcast resets your current streak.</p>
   </section>
+  <section class="card profile-career-card" id="profileCareerCard" aria-labelledby="profileCareerTitle" hidden>
+    <div class="section-head"><h2 id="profileCareerTitle">CAREER HIGHLIGHTS</h2><span class="section-state">HISTORICAL RECORD</span></div>
+    <p class="profile-career-caption">Your best positions and permanent monthly podium titles across AdhemSwag leaderboards.</p>
+    <div class="profile-career-ranks" id="profileCareerRanks"></div>
+    <div class="profile-career-titles-wrap">
+      <h3>HALL OF FAME TITLES</h3>
+      <div id="profileCareerTitles" class="profile-career-titles"><span class="profile-career-empty">No monthly podium titles yet.</span></div>
+    </div>
+  </section>
 </div>
 
+<style id="profile-career-highlights-css">
+.profile-career-card{margin-top:18px!important;padding:20px!important;border:1px solid rgba(255,215,0,.22)!important;background:radial-gradient(ellipse at 100% 0,rgba(255,215,0,.07),transparent 55%),linear-gradient(145deg,#101419,#080b0e)!important}
+.profile-career-card[hidden]{display:none!important}
+.profile-career-caption{margin:-4px 0 16px;color:var(--muted);font-size:12px;line-height:1.5}
+.profile-career-ranks{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+.profile-career-rank{min-width:0;padding:12px 10px;border:1px solid rgba(17,217,247,.12);border-radius:8px;background:rgba(3,7,10,.55)}
+.profile-career-rank span{display:block;color:var(--muted);font:700 9px 'JetBrains Mono',monospace;letter-spacing:.06em;line-height:1.4}
+.profile-career-rank strong{display:block;margin-top:7px;color:#ffd76a;font:700 24px Rajdhani,sans-serif}
+.profile-career-rank small{display:block;margin-top:1px;color:var(--muted);font:9px 'JetBrains Mono',monospace}
+.profile-career-titles-wrap{margin-top:18px;padding-top:15px;border-top:1px solid rgba(255,215,0,.14)}
+.profile-career-titles-wrap h3{margin:0 0 10px;color:#ffd76a;font:700 10px 'JetBrains Mono',monospace;letter-spacing:.12em}
+.profile-career-titles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.profile-career-title{display:flex;align-items:center;gap:9px;min-width:0;padding:10px;border:1px solid rgba(255,215,0,.15);border-radius:7px;background:rgba(255,215,0,.035)}
+.profile-career-title b{color:var(--white);font-size:11px}
+.profile-career-title span{display:block;color:var(--muted);font-size:10px;margin-top:2px}
+.profile-career-empty{color:var(--muted);font-size:11px}
+@media(max-width:700px){.profile-career-card{padding:15px!important}.profile-career-ranks{grid-template-columns:repeat(2,minmax(0,1fr))}.profile-career-titles{grid-template-columns:1fr}.profile-career-rank strong{font-size:22px}}
+</style>
 <style id="profile-skin-goal-css">
 .profile-skin-goal{margin:18px 0;padding:20px;border:1px solid rgba(17,217,247,.28);border-radius:12px;background:linear-gradient(135deg,rgba(17,217,247,.07),rgba(6,13,18,.94));color:var(--white)}
 .profile-skin-goal[hidden]{display:none!important}
@@ -1440,6 +1467,52 @@ body.admin-public-preview.admin-owner-tools-visible .profile-extra>.live-codes-c
 })();
 </script>
 
+<script id="profile-career-highlights-loader">
+(()=> {
+ const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+ const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+ const metricLabels={fnc:'FNC POINTS',xp:'XP',earned:'ALL-TIME FNC EARNED',watch:'WATCH TIME'};
+ const medals={1:'🥇',2:'🥈',3:'🥉'};
+ async function load(){
+   const card=document.getElementById('profileCareerCard');
+   const ranks=document.getElementById('profileCareerRanks');
+   const titles=document.getElementById('profileCareerTitles');
+   if(!card||!ranks||!titles)return;
+   let client=null;
+   for(let i=0;i<40&&!client;i++){client=window.AdhemAuth||null;if(!client)await wait(150);}
+   if(!client)return;
+   const params=new URLSearchParams(location.search);
+   let username=(params.get('viewer')||params.get('admin_preview')||'').trim();
+   try{
+     if(!username){
+       const {data:{session}}=await client.auth.getSession();
+       if(!session?.user)return;
+       const {data,error}=await client.from('users').select('twitch_username').eq('id',session.user.id).maybeSingle();
+       if(error||!data?.twitch_username)return;
+       username=data.twitch_username;
+     }
+     const {data,error}=await client.rpc('get_public_viewer_career_highlights',{p_twitch_username:username});
+     if(error)throw error;
+     if(!data)return;
+     const best=data.best_ranks||{};
+     const metrics=['fnc','xp','earned','watch'];
+     ranks.innerHTML=metrics.map(metric=>{
+       const rank=Number(best[metric]||0);
+       return '<div class="profile-career-rank"><span>'+metricLabels[metric]+'</span><strong>'+(rank>0?'#'+rank:'—')+'</strong><small>'+(rank>0?'BEST HISTORICAL RANK':'NO HISTORY YET')+'</small></div>';
+     }).join('');
+     const history=Array.isArray(data.titles)?data.titles:[];
+     titles.innerHTML=history.length?history.map(item=>{
+       const date=new Date(String(item.month)+'T00:00:00Z');
+       const month=Number.isNaN(date.getTime())?String(item.month):date.toLocaleDateString('en-US',{month:'long',year:'numeric',timeZone:'UTC'});
+       const rank=Number(item.rank)||0;
+       return '<div class="profile-career-title"><span aria-hidden="true">'+(medals[rank]||'🏅')+'</span><div><b>'+esc(metricLabels[item.metric]||item.metric)+' · '+esc(month)+'</b><span>'+(rank===1?'MONTHLY CHAMPION':rank===2?'MONTHLY RUNNER-UP':'MONTHLY TOP 3')+'</span></div></div>';
+     }).join(''):'<span class="profile-career-empty">No monthly podium titles yet. Keep climbing the Leaderboard!</span>';
+     card.hidden=false;
+   }catch(error){console.warn('[AdhemSwag] Career highlights unavailable',error);}
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',load,{once:true});else load();
+})();
+</script>
 <style id="profile-viewer-layout-v2">
 /* Consistent viewer profile layout: same card spacing and predictable order. */
 body.public-viewer-profile .profile-extra{
