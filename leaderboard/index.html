@@ -175,6 +175,8 @@
   @media(max-width:640px){.lb-podium{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;align-items:stretch}.lb-podium-card,.lb-podium-card.champion{padding:15px 7px;border-radius:8px}.lb-podium-card.champion{padding-top:19px;padding-bottom:20px;order:0}.lb-podium-badge,.lb-podium-card.rank1 .lb-podium-badge{width:34px;height:34px;font-size:14px;margin-bottom:9px}.lb-podium-avatar,.lb-podium-card.rank1 .lb-podium-avatar{width:46px;height:46px;font-size:16px;margin-bottom:10px}.lb-podium-label{font-size:8px;letter-spacing:.08em;margin-bottom:9px}.lb-podium-name,.lb-podium-card.rank1 .lb-podium-name{font-size:12px}.lb-podium-handle{font-size:8px;margin-bottom:8px;overflow:hidden;text-overflow:ellipsis}.lb-podium-points,.lb-podium-card.rank1 .lb-podium-points{font-size:13px}.lb-podium-points-label{font-size:7px;letter-spacing:.05em}.lb-podium-card.champion{transform:translateY(-5px)}}
 
 
+  .lb-rank-movement{display:inline-flex;align-items:center;margin-left:6px;font:700 9px 'JetBrains Mono',monospace;white-space:nowrap;color:var(--muted)}
+  .lb-rank-movement.up{color:#35d49a}.lb-rank-movement.down{color:#ff7272}
   .lb-pagination{
     display:flex; align-items:center; justify-content:center; gap:18px; margin-top:20px;
   }
@@ -883,6 +885,28 @@ body.mobile-menu-open{overflow:hidden!important}
       const bv=board==='xp'?Number(b.xp):board==='earned'?Number(b.total_fnc_earned):board==='watch'?Number(b.total_watch_minutes):Number(b.fnc_points);
       return bv-av || String(a.twitch_username).localeCompare(String(b.twitch_username));
     });
+    const rankPositions=Object.fromEntries(sorted.map((u,i)=>[String(u.twitch_username||'').toLocaleLowerCase(),i+1]));
+    let rankBaseline={};
+    try{
+      const historyKey='adhemswag_leaderboard_rank_history_v1';
+      const history=JSON.parse(localStorage.getItem(historyKey)||'{}');
+      const today=new Date().toISOString().slice(0,10);
+      const previous=history[board];
+      if(previous&&previous.date===today){rankBaseline=previous.baseline||{};}
+      else{
+        rankBaseline=previous?.current||{};
+        history[board]={date:today,baseline:rankBaseline,current:rankPositions};
+        localStorage.setItem(historyKey,JSON.stringify(history));
+      }
+      if(previous&&previous.date===today){history[board].current=rankPositions;localStorage.setItem(historyKey,JSON.stringify(history));}
+    }catch(e){console.warn('[AdhemSwag] Rank history unavailable in this browser:',e);}
+    const movementMarkup=u=>{
+      const name=String(u.twitch_username||'').toLocaleLowerCase(),oldRank=Number(rankBaseline[name]),newRank=rankPositions[name];
+      if(!oldRank)return '';
+      const diff=oldRank-newRank;
+      if(!diff)return '<span class="lb-rank-movement">—</span>';
+      return '<span class="lb-rank-movement '+(diff>0?'up':'down')+'" title="'+(diff>0?'Moved up ':'Moved down ')+Math.abs(diff)+' places">'+(diff>0?'▲':'▼')+Math.abs(diff)+'</span>';
+    };
     const podium=document.getElementById('lbPodium');
     const label=board==='xp'?'XP':board==='earned'?'ALL-TIME FNC EARNED':board==='watch'?'WATCH TIME · ALL TIME':'FNC POINTS';
     const metric=u=>board==='xp'?fmt(u.xp):board==='earned'?fmt(u.total_fnc_earned):board==='watch'?mins(u.total_watch_minutes):fmt(u.fnc_points);
@@ -910,7 +934,7 @@ body.mobile-menu-open{overflow:hidden!important}
       const tone=rank===1?'rank1':rank===2?'rank2':'rank3';
       const initials=esc(username.replace(/^@/,'').slice(0,2).toUpperCase()||'V');
       const avatar=avatarMarkup(u,initials);
-      return '<article class="lb-podium-card '+tone+(rank===1?' champion':'')+'"><div class="lb-podium-label">'+(rank===1?'CHAMPION':rank===2?'RUNNER-UP':'THIRD PLACE')+'</div><div class="lb-podium-badge" aria-label="Rank '+rank+'">'+medals[rank]+'</div><a class="lb-podium-profile" href="'+profileUrl+'" aria-label="View '+esc(username)+' profile"><div class="lb-podium-avatar">'+avatar+'</div><div class="lb-podium-name-line"><div class="lb-podium-name">'+esc(username)+'</div></div></a><div class="lb-podium-handle">LEVEL '+fmt(u.level||1)+'</div><div class="lb-podium-points">'+metric(u)+'</div><div class="lb-podium-points-label">'+label+'</div></article>';
+      return '<article class="lb-podium-card '+tone+(rank===1?' champion':'')+'"><div class="lb-podium-label">'+(rank===1?'CHAMPION':rank===2?'RUNNER-UP':'THIRD PLACE')+'</div><div class="lb-podium-badge" aria-label="Rank '+rank+'">'+medals[rank]+'</div><a class="lb-podium-profile" href="'+profileUrl+'" aria-label="View '+esc(username)+' profile"><div class="lb-podium-avatar">'+avatar+'</div><div class="lb-podium-name-line"><div class="lb-podium-name">'+esc(username)+'</div></div></a><div class="lb-podium-handle">LEVEL '+fmt(u.level||1)+movementMarkup(u)+'</div><div class="lb-podium-points">'+metric(u)+'</div><div class="lb-podium-points-label">'+label+'</div></article>';
     };
     if(!sorted.length){
       podium.innerHTML='';
@@ -927,7 +951,7 @@ body.mobile-menu-open{overflow:hidden!important}
       const initials=esc(String(u.twitch_username||'V').replace(/^@/,'').slice(0,2).toUpperCase()||'V');
       const avatar=avatarMarkup(u,initials);
       const isMe=!!currentViewerUsername&&String(u.twitch_username||'').toLocaleLowerCase()===currentViewerUsername.toLocaleLowerCase();
-      html+='<div class="lb-row'+(isMe?' lb-self':'')+'"><div class="lb-rank">#'+r+'</div><div class="lb-user"><a class="lb-user-link" href="'+profileUrl+'" style="color:inherit;text-decoration:none" aria-label="View '+esc(u.twitch_username)+' profile"><span class="lb-list-avatar">'+avatar+'</span><span>'+esc(u.twitch_username)+(isMe?' <span class="lb-you-tag">YOU</span>':'')+' <span style="color:var(--muted);font-size:10px">LVL '+Number(u.level||1)+'</span></span></a></div><div class="lb-points">'+value+' <span>'+(board==='watch'?'':' '+(label==='XP'?'XP':'FNC'))+'</span></div></div>';
+      html+='<div class="lb-row'+(isMe?' lb-self':'')+'"><div class="lb-rank">#'+r+movementMarkup(u)+'</div><div class="lb-user"><a class="lb-user-link" href="'+profileUrl+'" style="color:inherit;text-decoration:none" aria-label="View '+esc(u.twitch_username)+' profile"><span class="lb-list-avatar">'+avatar+'</span><span>'+esc(u.twitch_username)+(isMe?' <span class="lb-you-tag">YOU</span>':'')+' <span style="color:var(--muted);font-size:10px">LVL '+Number(u.level||1)+'</span></span></a></div><div class="lb-points">'+value+' <span>'+(board==='watch'?'':' '+(label==='XP'?'XP':'FNC'))+'</span></div></div>';
     });
     table.innerHTML=html;
     bindAvatarFallback(podium);bindAvatarFallback(table);
@@ -952,7 +976,7 @@ body.mobile-menu-open{overflow:hidden!important}
     searchResults.innerHTML=matches.length?'<div class="lb-row lb-head lb-search-head"><div>RANK</div><div>VIEWER / LEVEL</div><div style="text-align:right">'+label+'</div></div>'+matches.map(u=>{
       const name=String(u.twitch_username||'Viewer');
       const initials=esc(name.replace(/^@/,'').slice(0,2).toUpperCase()||'V');
-      return '<a class="lb-row lb-search-result" role="option" href="/profile/?viewer='+encodeURIComponent(name)+'"><div class="lb-rank">#'+u.searchRank+'</div><div class="lb-user"><span class="lb-user-link"><span class="lb-list-avatar">'+initials+'</span><span class="lb-search-name-level"><span class="lb-search-result-name">'+esc(name)+'</span><span class="lb-search-level">LVL '+Number(u.level||1)+'</span></span></span></div><div class="lb-points">'+metric(u)+' <span>'+(board==='watch'?'':' '+(board==='xp'?'XP':'FNC'))+'</span></div></a>';
+      return '<a class="lb-row lb-search-result" role="option" href="/profile/?viewer='+encodeURIComponent(name)+'"><div class="lb-rank">#'+u.searchRank+movementMarkup(u)+'</div><div class="lb-user"><span class="lb-user-link"><span class="lb-list-avatar">'+initials+'</span><span class="lb-search-name-level"><span class="lb-search-result-name">'+esc(name)+'</span><span class="lb-search-level">LVL '+Number(u.level||1)+'</span></span></span></div><div class="lb-points">'+metric(u)+' <span>'+(board==='watch'?'':' '+(board==='xp'?'XP':'FNC'))+'</span></div></a>';
     }).join(''):'<div class="lb-search-empty"><span aria-hidden="true">⌕</span><span>No matching viewer found. Try another username.</span></div>';
     searchResults.classList.add('is-open');searchInput.setAttribute('aria-expanded','true');
   }
