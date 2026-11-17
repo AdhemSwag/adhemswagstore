@@ -1055,7 +1055,7 @@ body.mobile-menu-open{overflow:hidden!important}
     const {data,error}=await client.rpc('get_public_leaderboard_hall_of_fame');
     if(error){console.warn('[AdhemSwag] Hall of Fame:',error);grid.innerHTML='<div class="lb-loading">Champions archive temporarily unavailable.</div>';return;}
     const items=Array.isArray(data)?data:[];
-    if(!items.length){grid.innerHTML='<div class="lb-loading">The first champions will be archived on December 1, 2026.</div>';return;}
+    if(!items.length){grid.innerHTML='<div class="lb-loading">The first champions will be archived after the November 30, 2026 monthly ranking closes.</div>';return;}
     const groups=new Map();
     items.forEach(item=>{const key=String(item.month||'').slice(0,7);if(!groups.has(key))groups.set(key,[]);groups.get(key).push(item);});
     const metricLabels={fnc:'FNC POINTS',xp:'XP',earned:'ALL-TIME FNC EARNED',watch:'WATCH TIME'};
