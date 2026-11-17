@@ -409,16 +409,6 @@ body.mobile-menu-open{overflow:hidden!important}
     </div>
   </section>
 
-  <section class="settings-card" id="kickConnectionCard">
-    <div class="settings-card-head"><h2>PLATFORM CONNECTIONS</h2><small>Kick test phase</small></div>
-    <div class="settings-card-body">
-      <div class="settings-status-row"><span class="settings-status-label">Kick account</span><span class="settings-status-value" id="settingsKickStatus">Not connected</span></div>
-      <p class="settings-note" style="margin:12px 0">Link your Kick account to this AdhemSwag profile. Kick FNC rewards are disabled during testing. Keep one AdhemSwag profile and one rewards balance.</p>
-      <button type="button" class="settings-save" id="connectKickBtn" style="width:100%">CONNECT KICK</button>
-      <div class="settings-save-status" id="kickConnectStatus" aria-live="polite" style="margin-top:10px"></div>
-    </div>
-  </section>
-
   <section class="settings-card">
     <div class="settings-card-head"><h2>EDIT PROFILE</h2><small>Editable fields</small></div>
     <div class="settings-card-body">
@@ -458,29 +448,6 @@ body.mobile-menu-open{overflow:hidden!important}
 <script src="/auth.js"></script>
 <script>
 (function(){
-  const kickButton=document.getElementById('connectKickBtn');
-  const kickStatus=document.getElementById('kickConnectStatus');
-  if(kickButton) kickButton.addEventListener('click',async function(){
-    kickButton.disabled=true;
-    if(kickStatus) kickStatus.textContent='Starting secure Kick connection…';
-    try{
-      const client=window.AdhemSwagAuth&&window.AdhemSwagAuth.client;
-      if(!client) throw new Error('AdhemSwag authentication is not ready. Reload the page.');
-      const sessionResult=await client.auth.getSession();
-      const session=sessionResult.data&&sessionResult.data.session;
-      if(!session) throw new Error('Sign in to your AdhemSwag account first, then connect Kick.');
-      const response=await fetch('https://lpmocfdfpebcaseffugg.supabase.co/functions/v1/kick-oauth-start',{
-        method:'GET',
-        headers:{'Authorization':'Bearer '+session.access_token,'apikey':'sb_publishable_vNkDqYd81b2krZAisUhb2g_c_uwyvRp'}
-      });
-      const result=await response.json().catch(()=>({}));
-      if(!response.ok||!result.ok||!result.auth_url) throw new Error(result.message||result.error||'Kick connection could not be started.');
-      window.location.assign(result.auth_url);
-    }catch(error){
-      if(kickStatus) kickStatus.textContent=error.message||'Unable to connect Kick.';
-      kickButton.disabled=false;
-    }
-  });
   const form=document.getElementById('profileForm');
   const status=document.getElementById('profileSaveStatus');
   function fill(p,viewer){
@@ -490,18 +457,6 @@ body.mobile-menu-open{overflow:hidden!important}
     document.getElementById('steamTradeUrl').value=p.steam_trade_url||'';
     document.getElementById('discordUsername').value=p.discord_username||'';
     const twitch=p.twitch_username?'Connected as '+p.twitch_username:'Not connected';
-    const kickConnected=!!(p.kick_connected&&p.kick_username);
-    const kickStatusEl=document.getElementById('settingsKickStatus');
-    if(kickStatusEl) kickStatusEl.textContent=kickConnected?'Connected as '+p.kick_username:'Not connected';
-    if(kickButton){
-      kickButton.textContent=kickConnected?'KICK CONNECTED':'CONNECT KICK';
-      kickButton.disabled=kickConnected;
-      kickButton.setAttribute('aria-disabled',String(kickConnected));
-    }
-    if(kickConnected&&new URLSearchParams(window.location.search).get('kick')==='connected'){
-      if(kickStatus) kickStatus.textContent='KICK CONNECTED SUCCESSFULLY';
-      window.history.replaceState({},document.title,window.location.pathname);
-    }
     document.getElementById('settingsTwitchStatus').textContent=twitch;
     const accountName=p.twitch_username||'Connected account';
     document.getElementById('settingsAccountName').textContent=accountName;
