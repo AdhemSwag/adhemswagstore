@@ -490,8 +490,18 @@ body.mobile-menu-open{overflow:hidden!important}
     document.getElementById('steamTradeUrl').value=p.steam_trade_url||'';
     document.getElementById('discordUsername').value=p.discord_username||'';
     const twitch=p.twitch_username?'Connected as '+p.twitch_username:'Not connected';
+    const kickConnected=!!(p.kick_connected&&p.kick_username);
     const kickStatusEl=document.getElementById('settingsKickStatus');
-    if(kickStatusEl) kickStatusEl.textContent=p.kick_connected&&p.kick_username?'Connected as '+p.kick_username:'Not connected';
+    if(kickStatusEl) kickStatusEl.textContent=kickConnected?'Connected as '+p.kick_username:'Not connected';
+    if(kickButton){
+      kickButton.textContent=kickConnected?'KICK CONNECTED':'CONNECT KICK';
+      kickButton.disabled=kickConnected;
+      kickButton.setAttribute('aria-disabled',String(kickConnected));
+    }
+    if(kickConnected&&new URLSearchParams(window.location.search).get('kick')==='connected'){
+      if(kickStatus) kickStatus.textContent='KICK CONNECTED SUCCESSFULLY';
+      window.history.replaceState({},document.title,window.location.pathname);
+    }
     document.getElementById('settingsTwitchStatus').textContent=twitch;
     const accountName=p.twitch_username||'Connected account';
     document.getElementById('settingsAccountName').textContent=accountName;
