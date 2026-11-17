@@ -456,23 +456,7 @@
       localStorage.removeItem('adhem_twitch_watch_connect');
     }
 
-    // Keep OAuth callbacks intact, then route signed-in members to the dashboard
-    // and new visitors to the platform chooser instead of silently bypassing it.
-    (async function(){
-      try {
-        const auth = window.AdhemSwagAuth;
-        const result = auth && auth.client ? await auth.client.auth.getSession() : null;
-        const session = result && result.data && result.data.session;
-        if (session) {
-          window.location.replace('/dashboard/' + window.location.search + window.location.hash);
-        } else {
-          window.location.replace('/login/');
-        }
-      } catch (error) {
-        console.warn('[AdhemSwag] Could not read session on landing route:', error);
-        window.location.replace('/login/');
-      }
-    })();
+    window.location.replace('/dashboard/' + window.location.search + window.location.hash);
   })();
 </script>
 <script>
