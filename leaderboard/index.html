@@ -678,6 +678,21 @@ body.mobile-menu-open{overflow:hidden!important}
 
 
 <link rel="stylesheet" href="/assets/mobile-sidebar.css?v=6" id="adhemswag-shared-mobile-sidebar">
+<style id="lb-history-ui">
+.lb-best-rank{display:inline-flex;align-items:center;margin-left:7px;padding:2px 6px;border:1px solid rgba(255,215,0,.35);border-radius:4px;color:#ffd76a;background:rgba(255,215,0,.07);font:700 8px 'JetBrains Mono',monospace;white-space:nowrap;vertical-align:middle}
+.lb-hall-section{margin-top:48px}
+.lb-hall-grid{display:grid;gap:16px}
+.lb-hall-month{padding:18px;border:1px solid var(--line);border-radius:10px;background:linear-gradient(145deg,rgba(17,217,247,.045),var(--bg-panel))}
+.lb-hall-month h3{margin:0 0 14px;color:var(--cyan);font:700 16px 'Rajdhani',sans-serif;letter-spacing:.08em;text-transform:uppercase}
+.lb-hall-month-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.lb-hall-metric{min-width:0;padding:12px;border:1px solid rgba(17,217,247,.1);border-radius:7px;background:rgba(3,7,10,.42)}
+.lb-hall-metric-title{margin-bottom:9px;color:var(--muted);font:700 9px 'JetBrains Mono',monospace;letter-spacing:.1em}
+.lb-hall-winner{display:flex;align-items:center;gap:8px;padding:7px 0;color:var(--white);text-decoration:none;border-top:1px solid rgba(17,217,247,.07);min-width:0}
+.lb-hall-medal{flex:0 0 22px}
+.lb-hall-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;font-weight:600}
+.lb-hall-score{margin-left:auto;color:var(--cyan);font:600 10px 'JetBrains Mono',monospace;white-space:nowrap}
+@media(max-width:640px){.lb-hall-month{padding:12px}.lb-hall-month-grid{grid-template-columns:1fr}.lb-best-rank{font-size:7px;padding:2px 4px;margin-left:4px}}
+</style>
 </head>
 <body>
 
@@ -815,6 +830,11 @@ body.mobile-menu-open{overflow:hidden!important}
     <div class="lb-pagination" id="lbPagination" hidden></div>
   </section>
 
+  <section class="lb-section lb-hall-section" id="lbHallOfFame">
+    <div class="lb-section-head"><div><div class="lb-kicker">// LEGENDS</div><h2>Hall of <span>Fame</span></h2><p class="page-sub" style="margin:6px 0 0">Monthly champions archived permanently — Top 3 across all four rankings.</p></div></div>
+    <div id="lbHallGrid" class="lb-hall-grid"><div class="lb-loading">Loading champions archive…</div></div>
+  </section>
+
   <section class="lb-section lb-watch-section">
     <div class="lb-section-head">
       <div>
@@ -910,6 +930,11 @@ body.mobile-menu-open{overflow:hidden!important}
     const podium=document.getElementById('lbPodium');
     const label=board==='xp'?'XP':board==='earned'?'ALL-TIME FNC EARNED':board==='watch'?'WATCH TIME · ALL TIME':'FNC POINTS';
     const metric=u=>board==='xp'?fmt(u.xp):board==='earned'?fmt(u.total_fnc_earned):board==='watch'?mins(u.total_watch_minutes):fmt(u.fnc_points);
+    const bestRankMarkup=u=>{
+      const key=board==='xp'?'best_rank_xp':board==='earned'?'best_rank_earned':board==='watch'?'best_rank_watch':'best_rank_fnc';
+      const best=Number(u[key]||0);
+      return best>0?'<span class="lb-best-rank" title="Best historical rank on this leaderboard">BEST #'+best+'</span>':'';
+    };
     const metricNote=document.getElementById('lbMetricNote');
     if(metricNote){
       const copy=board==='watch'
@@ -934,7 +959,7 @@ body.mobile-menu-open{overflow:hidden!important}
       const tone=rank===1?'rank1':rank===2?'rank2':'rank3';
       const initials=esc(username.replace(/^@/,'').slice(0,2).toUpperCase()||'V');
       const avatar=avatarMarkup(u,initials);
-      return '<article class="lb-podium-card '+tone+(rank===1?' champion':'')+'"><div class="lb-podium-label">'+(rank===1?'CHAMPION':rank===2?'RUNNER-UP':'THIRD PLACE')+'</div><div class="lb-podium-badge" aria-label="Rank '+rank+'">'+medals[rank]+'</div><a class="lb-podium-profile" href="'+profileUrl+'" aria-label="View '+esc(username)+' profile"><div class="lb-podium-avatar">'+avatar+'</div><div class="lb-podium-name-line"><div class="lb-podium-name">'+esc(username)+'</div></div></a><div class="lb-podium-handle">LEVEL '+fmt(u.level||1)+movementMarkup(u)+'</div><div class="lb-podium-points">'+metric(u)+'</div><div class="lb-podium-points-label">'+label+'</div></article>';
+      return '<article class="lb-podium-card '+tone+(rank===1?' champion':'')+'"><div class="lb-podium-label">'+(rank===1?'CHAMPION':rank===2?'RUNNER-UP':'THIRD PLACE')+'</div><div class="lb-podium-badge" aria-label="Rank '+rank+'">'+medals[rank]+'</div><a class="lb-podium-profile" href="'+profileUrl+'" aria-label="View '+esc(username)+' profile"><div class="lb-podium-avatar">'+avatar+'</div><div class="lb-podium-name-line"><div class="lb-podium-name">'+esc(username)+'</div></div></a><div class="lb-podium-handle">LEVEL '+fmt(u.level||1)+movementMarkup(u)+bestRankMarkup(u)+'</div><div class="lb-podium-points">'+metric(u)+'</div><div class="lb-podium-points-label">'+label+'</div></article>';
     };
     if(!sorted.length){
       podium.innerHTML='';
@@ -951,7 +976,7 @@ body.mobile-menu-open{overflow:hidden!important}
       const initials=esc(String(u.twitch_username||'V').replace(/^@/,'').slice(0,2).toUpperCase()||'V');
       const avatar=avatarMarkup(u,initials);
       const isMe=!!currentViewerUsername&&String(u.twitch_username||'').toLocaleLowerCase()===currentViewerUsername.toLocaleLowerCase();
-      html+='<div class="lb-row'+(isMe?' lb-self':'')+'"><div class="lb-rank">#'+r+movementMarkup(u)+'</div><div class="lb-user"><a class="lb-user-link" href="'+profileUrl+'" style="color:inherit;text-decoration:none" aria-label="View '+esc(u.twitch_username)+' profile"><span class="lb-list-avatar">'+avatar+'</span><span>'+esc(u.twitch_username)+(isMe?' <span class="lb-you-tag">YOU</span>':'')+' <span style="color:var(--muted);font-size:10px">LVL '+Number(u.level||1)+'</span></span></a></div><div class="lb-points">'+value+' <span>'+(board==='watch'?'':' '+(label==='XP'?'XP':'FNC'))+'</span></div></div>';
+      html+='<div class="lb-row'+(isMe?' lb-self':'')+'"><div class="lb-rank">#'+r+movementMarkup(u)+'</div><div class="lb-user"><a class="lb-user-link" href="'+profileUrl+'" style="color:inherit;text-decoration:none" aria-label="View '+esc(u.twitch_username)+' profile"><span class="lb-list-avatar">'+avatar+'</span><span>'+esc(u.twitch_username)+(isMe?' <span class="lb-you-tag">YOU</span>':'')+' <span style="color:var(--muted);font-size:10px">LVL '+Number(u.level||1)+'</span> '+bestRankMarkup(u)+'</span></a></div><div class="lb-points">'+value+' <span>'+(board==='watch'?'':' '+(label==='XP'?'XP':'FNC'))+'</span></div></div>';
     });
     table.innerHTML=html;
     bindAvatarFallback(podium);bindAvatarFallback(table);
@@ -1024,6 +1049,31 @@ body.mobile-menu-open{overflow:hidden!important}
     document.getElementById('viewerProgressText').textContent=prog.text;
   }
 
+  async function loadHallOfFame(){
+    const grid=document.getElementById('lbHallGrid');
+    if(!grid)return;
+    const {data,error}=await client.rpc('get_public_leaderboard_hall_of_fame');
+    if(error){console.warn('[AdhemSwag] Hall of Fame:',error);grid.innerHTML='<div class="lb-loading">Champions archive temporarily unavailable.</div>';return;}
+    const items=Array.isArray(data)?data:[];
+    if(!items.length){grid.innerHTML='<div class="lb-loading">The first champions will be archived on December 1, 2026.</div>';return;}
+    const groups=new Map();
+    items.forEach(item=>{const key=String(item.month||'').slice(0,7);if(!groups.has(key))groups.set(key,[]);groups.get(key).push(item);});
+    const metricLabels={fnc:'FNC POINTS',xp:'XP',earned:'ALL-TIME FNC EARNED',watch:'WATCH TIME'};
+    grid.innerHTML=[...groups.entries()].map(([month,entries])=>{
+      const title=new Date(month+'-01T00:00:00Z').toLocaleDateString('en-US',{month:'long',year:'numeric',timeZone:'UTC'});
+      const panels=['fnc','xp','earned','watch'].map(metric=>{
+        const winners=entries.filter(x=>x.metric===metric).sort((a,b)=>Number(a.rank)-Number(b.rank));
+        if(!winners.length)return '';
+        return '<div class="lb-hall-metric"><div class="lb-hall-metric-title">'+metricLabels[metric]+'</div>'+winners.map(w=>{
+          const medal=Number(w.rank)===1?'🥇':Number(w.rank)===2?'🥈':'🥉';
+          const score=metric==='watch'?mins(w.score):fmt(w.score);
+          return '<a class="lb-hall-winner" href="/profile/?viewer='+encodeURIComponent(w.twitch_username)+'"><span class="lb-hall-medal">'+medal+'</span><span class="lb-hall-name">'+esc(w.twitch_username)+'</span><span class="lb-hall-score">'+score+'</span></a>';
+        }).join('')+'</div>';
+      }).join('');
+      return '<article class="lb-hall-month"><h3>'+esc(title)+'</h3><div class="lb-hall-month-grid">'+panels+'</div></article>';
+    }).join('');
+  }
+
   async function loadWatchers(period='today'){
     const grid=document.getElementById('watcherGrid');
     const {data,error}=await client.rpc('get_public_watcher_leaderboard',{p_period:period});
@@ -1037,8 +1087,8 @@ body.mobile-menu-open{overflow:hidden!important}
   document.querySelectorAll('[data-board]').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('[data-board]').forEach(x=>x.classList.remove('active'));b.classList.add('active');board=b.dataset.board;page=1;renderBoard();}));
   document.querySelectorAll('[data-period]').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('[data-period]').forEach(x=>x.classList.remove('active'));b.classList.add('active');loadWatchers(b.dataset.period);}));
 
-  loadBoard();loadDashboard();loadWatchers('today');
-  setInterval(loadBoard,60000);setInterval(loadDashboard,30000);setInterval(()=>loadWatchers(document.querySelector('[data-period].active')?.dataset.period||'today'),60000);
+  loadBoard();loadDashboard();loadWatchers('today');loadHallOfFame();
+  setInterval(loadBoard,60000);setInterval(loadDashboard,30000);setInterval(()=>loadWatchers(document.querySelector('[data-period].active')?.dataset.period||'today'),60000);setInterval(loadHallOfFame,300000);
 })();
 </script>
 <script>
