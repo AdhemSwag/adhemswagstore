@@ -2395,7 +2395,17 @@ document.getElementById('verifyExistingTwitchRefresh')?.addEventListener('click'
       : 'SUCCESS: saved Twitch refresh token verified and rotated securely. Automatic refresh credentials are now current.';
     await updateSystemButtons();
   } catch (error) {
-    if (status) { status.style.display='block'; status.textContent='Saved token check failed: '+(error?.message || 'Unknown error'); }
+    let detail = error?.message || 'Unknown error';
+    const response = error?.context;
+    if (response && typeof response.clone === 'function') {
+      try {
+        const payload = await response.clone().json();
+        const reason = payload?.detail || payload?.error || payload?.message;
+        if (reason) detail += ' — ' + reason;
+        if (payload?.twitch_status) detail += ' (Twitch HTTP ' + payload.twitch_status + ')';
+      } catch (_) {}
+    }
+    if (status) { status.style.display='block'; status.textContent='Saved token check failed: '+detail; }
   }
 });
 
