@@ -818,6 +818,7 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
           </div>
           <div class="actions" style="margin-top:14px">
             <button class="btn" id="saveTwitchWatchSecret" type="button">SAVE APP SECRET SECURELY</button>
+            <button class="btn" id="verifyExistingTwitchRefresh" type="button">VERIFY SAVED TOKENS</button>
             <button class="btn primary" id="connectTwitchWatch" type="button">REAUTHORIZE TWITCH</button>
             <button class="btn" id="testTwitchWatch" type="button">RUN DIAGNOSTIC TEST</button>
           </div>
@@ -2373,6 +2374,28 @@ document.getElementById('saveTwitchWatchSecret')?.addEventListener('click', asyn
     await updateSystemButtons();
   } catch (error) {
     if (status) { status.style.display='block'; status.textContent='Could not save Client Secret: '+(error?.message || 'Unknown error'); }
+  }
+});
+
+document.getElementById('verifyExistingTwitchRefresh')?.addEventListener('click', async () => {
+  if (!adminReady) return;
+  const status = document.getElementById('twitchWatchStatus');
+  try {
+    if (status) { status.style.display='block'; status.textContent='Checking the saved Twitch refresh token securely…'; }
+    const { data: sessionData, error: sessionError } = await supabaseClient.auth.getSession();
+    if (sessionError || !sessionData?.session?.access_token) throw new Error('Admin session expired. Sign in again.');
+    const { data, error } = await supabaseClient.functions.invoke('admin-store-twitch-watch-credentials', {
+      body: { action: 'verify_existing_refresh' },
+      headers: { Authorization: 'Bearer ' + sessionData.session.access_token }
+    });
+    if (error) throw error;
+    if (!data?.ok) throw new Error(data?.error || 'saved_token_verification_failed');
+    if (status) status.textContent = data.warning
+      ? 'Twitch token refreshed, but expiry state needs a follow-up check.'
+      : 'SUCCESS: saved Twitch refresh token verified and rotated securely. Automatic refresh credentials are now current.';
+    await updateSystemButtons();
+  } catch (error) {
+    if (status) { status.style.display='block'; status.textContent='Saved token check failed: '+(error?.message || 'Unknown error'); }
   }
 });
 
