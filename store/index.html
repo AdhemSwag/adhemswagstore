@@ -555,6 +555,7 @@ body.mobile-menu-open{overflow:hidden!important}
   const resultText = document.getElementById('redeemResultText');
   const resultClose = document.getElementById('redeemResultClose');
   let viewer = null, selectedReward = null, monthlyCodeRewardIds = new Set();
+  let storePromoSettings = { exitlag:false, flexy:false };
 
   const esc = (v) => String(v ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
   const say = (text, type='') => { message.textContent=text; message.className='store-message '+type; message.style.display='block'; };
@@ -564,7 +565,7 @@ body.mobile-menu-open{overflow:hidden!important}
   async function init() {
     if (!client) return;
     const [{data: cfg}, {data: sessionData}] = await Promise.all([
-      client.from('system_config').select('points_enabled,rewards_enabled').maybeSingle(),
+      client.from('system_config').select('points_enabled,rewards_enabled,store_exitlag_promo_enabled,store_flexy_promo_enabled').maybeSingle(),
       client.auth.getSession()
     ]);
     let profile = null;
@@ -583,6 +584,7 @@ body.mobile-menu-open{overflow:hidden!important}
     }
     viewer = profile;
     const active = !!cfg?.points_enabled && !!cfg?.rewards_enabled;
+    storePromoSettings = { exitlag:!!cfg?.store_exitlag_promo_enabled, flexy:!!cfg?.store_flexy_promo_enabled };
     statusTitle.textContent = active ? 'REWARDS SYSTEM: ACTIVE' : 'REWARDS SYSTEM: STOPPED';
     statusText.textContent = active ? 'FNC redemptions are available when you meet each reward requirement.' : 'FNC Points & XP are not being awarded or spent yet.';
     statusDot.style.background = active ? '#36d58a' : '#ff3b3b';
@@ -629,7 +631,7 @@ body.mobile-menu-open{overflow:hidden!important}
     };
     const promos = [];
     const exitlagPromoExpiry = Date.parse('2026-11-23T23:59:59+01:00');
-    const exitlag = Date.now() <= exitlagPromoExpiry ? (rewards || []).find(r => /exitlag/i.test(r.name || '') && Number(r.fnc_cost) === 1050) : null;
+    const exitlag = storePromoSettings.exitlag && Date.now() <= exitlagPromoExpiry ? (rewards || []).find(r => /exitlag/i.test(r.name || '') && Number(r.fnc_cost) === 1050) : null;
     if (exitlag) promos.push({
       type:'discount', id:exitlag.id, name:'The ExitLag Black Friday Warm-Up 2026',
       desc:'Get your 7-day access code with automatic delivery after a successful redemption.',
@@ -639,7 +641,7 @@ body.mobile-menu-open{overflow:hidden!important}
     });
     const flexy100 = (rewards || []).find(r => /flexy/i.test(r.name || '') && /100\s*da/i.test(r.name || ''));
     const flexy200 = (rewards || []).find(r => /flexy/i.test(r.name || '') && /200\s*da/i.test(r.name || ''));
-    if (flexy100 || flexy200) promos.push({
+    if (storePromoSettings.flexy && (flexy100 || flexy200)) promos.push({
       type:'flexy', id:(flexy100 || flexy200).id, name:'FLEXY — MOBILE RECHARGE',
       desc:'Recharge your Algerian mobile line. Choose your amount and operator before redeeming.',
       heading:'FLEXY RECHARGE • ALGERIA', end:'DJEZZY • OOREDOO • MOBILIS'
@@ -698,7 +700,8 @@ body.mobile-menu-open{overflow:hidden!important}
       client.from('rewards').select('id,name,description,fnc_cost,level_required,stock,active,image_url,display_order,uses_access_codes,subscriber_only,created_at').eq('active',true).order('display_order',{ascending:true}).order('created_at',{ascending:false}),
       client.from('flexy_inventory').select('reward_id,operator,quantity')
     ]);
-    if (error || flexyInventoryError) { grid.innerHTML='<div class="empty-rewards">UNABLE TO LOAD REWARDS OR FLEXY STOCK.</div>'; return; }
+    if (error || flexyInventoryError) { renderStorePromotions([]); grid.innerHTML='<div class="empty-rewards">UNABLE TO LOAD REWARDS OR FLEXY STOCK.</div>'; return; }
+    renderStorePromotions(data || []);
     if (!data?.length) { grid.innerHTML='<div class="empty-rewards">NO ACTIVE REWARDS YET — CHECK BACK SOON.</div>'; return; }
     const typeFilter=document.getElementById('storeTypeFilter')?.value||'all';
     const sortMode=document.getElementById('storeSort')?.value||'featured';
