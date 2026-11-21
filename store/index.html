@@ -630,15 +630,18 @@ body.mobile-menu-open{overflow:hidden!important}
       }
     };
     const promos = [];
-    const exitlagPromoExpiry = Date.parse('2026-11-23T23:59:59+01:00');
-    const exitlag = storePromoSettings.exitlag && Date.now() <= exitlagPromoExpiry ? (rewards || []).find(r => /exitlag/i.test(r.name || '') && Number(r.fnc_cost) === 1050) : null;
-    if (exitlag) promos.push({
-      type:'discount', id:exitlag.id, name:'The ExitLag Black Friday Warm-Up 2026',
-      desc:'Get your 7-day access code with automatic delivery after a successful redemption.',
-      price:1050, was:1500, discount:30, end:'ENDS 23 NOV 2026',
-      kicker:'BLACK FRIDAY WARM-UP 2026', stamp:'BLACK FRIDAY',
-      heading:'THE EXITLAG BLACK FRIDAY WARM-UP 2026'
-    });
+    const exitlag = storePromoSettings.exitlag ? (rewards || []).find(r => /exitlag/i.test(r.name || '')) : null;
+    if (exitlag) {
+      const currentPrice = Number(exitlag.fnc_cost || 0);
+      const discount = currentPrice > 0 && currentPrice < 1500 ? Math.round((1 - currentPrice / 1500) * 100) : 0;
+      promos.push({
+        type:'discount', id:exitlag.id, name:'ExitLag — 7-Day Access',
+        desc:'Get your 7-day ExitLag access code with automatic delivery after a successful redemption.',
+        price:currentPrice, was:discount ? 1500 : null, discount, end:'7-DAY ACCESS',
+        kicker:'ADHEMSWAG STORE OFFER', stamp:'EXITLAG',
+        heading:'EXITLAG STORE OFFER'
+      });
+    }
     const flexy100 = (rewards || []).find(r => /flexy/i.test(r.name || '') && /100\s*da/i.test(r.name || ''));
     const flexy200 = (rewards || []).find(r => /flexy/i.test(r.name || '') && /200\s*da/i.test(r.name || ''));
     if (storePromoSettings.flexy && (flexy100 || flexy200)) promos.push({
@@ -647,7 +650,7 @@ body.mobile-menu-open{overflow:hidden!important}
       heading:'FLEXY RECHARGE • ALGERIA', end:'DJEZZY • OOREDOO • MOBILIS'
     });
     (rewards || []).forEach(r => {
-      if (!r || (exitlag && r.id === exitlag.id) || /flexy/i.test(r.name || '')) return;
+      if (!r || /exitlag/i.test(r.name || '') || /flexy/i.test(r.name || '')) return;
       const desc = String(r.description || '');
       if (!/\bPROMO\b/i.test(desc)) return;
       const wasMatch = desc.match(/\bWAS\s*:\s*([\d,]+)\s*FNC\b/i);
@@ -677,8 +680,10 @@ body.mobile-menu-open{overflow:hidden!important}
         content.innerHTML = '<div class="exitlag-promo-copy flexy-promo-copy"><div class="exitlag-promo-kicker">FLEXY • RECHARGE MOBILE ALGÉRIE</div><h2>FLEXY — Recharge ton mobile</h2><p>' + esc(p.desc) + '</p><div class="flexy-promo-prices"><div class="flexy-promo-price">100 DA <strong>1,500 FNC</strong></div><div class="flexy-promo-price">200 DA <strong>3,000 FNC</strong></div></div><div class="flexy-promo-logos" aria-label="Available mobile operators"><span class="flexy-promo-logo flexy">FLEXY</span><span class="flexy-promo-logo djezzy">DJEZZY</span><span class="flexy-promo-logo ooredoo">OOREDOO</span><span class="flexy-promo-logo mobilis">MOBILIS</span></div><a class="exitlag-promo-cta" href="#rewardGrid" data-promo-target="' + esc(p.id) + '">CHOISIR MA RECHARGE <span>↗</span></a></div><div class="exitlag-promo-stamp flexy-promo-stamp"><span>RECHARGE</span><strong>FLEXY</strong><span>ALGÉRIE</span></div>';
       } else {
         banner.classList.remove('flexy-promo-banner');
-        pill.textContent = '−' + p.discount + '% • ' + p.end;
-        content.innerHTML = '<div class="exitlag-promo-copy"><div class="exitlag-promo-kicker">' + esc(p.kicker) + '</div><h2>' + esc(p.name) + '</h2><p>' + esc(p.desc) + '</p><div class="exitlag-promo-price-row"><span class="exitlag-promo-was">' + money(p.was) + ' FNC</span><strong>' + money(p.price) + ' FNC</strong><span class="exitlag-promo-off">−' + p.discount + '%</span></div><a class="exitlag-promo-cta" href="#rewardGrid" data-promo-target="' + esc(p.id) + '">CLAIM PROMOTION <span>↗</span></a></div><div class="exitlag-promo-stamp"><span>EXCLUSIVE</span><strong>−' + p.discount + '%</strong><span>' + esc(p.stamp) + '</span></div>';
+        pill.textContent = p.discount ? '−' + p.discount + '% • ' + p.end : p.end;
+        const priceHtml = p.discount ? '<span class="exitlag-promo-was">' + money(p.was) + ' FNC</span><strong>' + money(p.price) + ' FNC</strong><span class="exitlag-promo-off">−' + p.discount + '%</span>' : '<strong>' + money(p.price) + ' FNC</strong>';
+        const stampHtml = p.discount ? '<strong>−' + p.discount + '%</strong>' : '<strong>EXITLAG</strong>';
+        content.innerHTML = '<div class="exitlag-promo-copy"><div class="exitlag-promo-kicker">' + esc(p.kicker) + '</div><h2>' + esc(p.name) + '</h2><p>' + esc(p.desc) + '</p><div class="exitlag-promo-price-row">' + priceHtml + '</div><a class="exitlag-promo-cta" href="#rewardGrid" data-promo-target="' + esc(p.id) + '">CLAIM PROMOTION <span>↗</span></a></div><div class="exitlag-promo-stamp"><span>EXCLUSIVE</span>' + stampHtml + '<span>' + esc(p.stamp) + '</span></div>';
       }
       dots.hidden = promos.length < 2;
       dots.innerHTML = promos.map((item,i) => '<button type="button" class="store-promo-dot' + (i===index?' active':'') + '" aria-label="Show promotion ' + (i+1) + '" data-promo-index="' + i + '"></button>').join('');
