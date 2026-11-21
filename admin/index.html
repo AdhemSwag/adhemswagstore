@@ -775,6 +775,16 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
     <div class="actions"><button class="btn primary" id="saveSponsor">SAVE SPONSOR</button><button class="btn" id="clearSponsor">CLEAR</button></div>
     <div id="sponsorSaveStatus" class="notice" style="display:none"></div>
   </div>
+  <div class="section" id="store-promo-controls">
+    <h2>Store <span style="color:var(--cyan)">PROMOTIONS</span></h2>
+    <p>Control the promotional banners shown on /store/. These switches do not change reward availability, FNC prices, stock, or redemption rules.</p>
+    <div class="form-grid">
+      <div class="field"><label>ExitLag promotion</label><select id="storePromoExitLag"><option value="false">OFF — Hidden</option><option value="true">ON — Visible</option></select></div>
+      <div class="field"><label>Flexy promotion</label><select id="storePromoFlexy"><option value="false">OFF — Hidden</option><option value="true">ON — Visible</option></select></div>
+    </div>
+    <div class="actions"><button class="btn primary" id="saveStorePromoFlags">SAVE PROMOTION SETTINGS</button></div>
+    <div id="storePromoFlagsStatus" class="notice" style="display:none"></div>
+  </div>
   <div class="section">
     <h2>Active <span style="color:var(--cyan)">SPONSORS</span></h2>
     <p>Click EDIT to update a campaign. Delete removes only the sponsor configuration; it does not affect any reward or FNC data.</p>
@@ -2733,8 +2743,27 @@ const adminIcons={"dashboard":"<path d='M4 13h6V4H4v9Zm10 7h6V4h-6v16ZM4 20h6v-3
   const status=(m,bad)=>{const x=el('sponsorSaveStatus');if(x){x.style.display='block';x.style.borderLeftColor=bad?'var(--danger)':'var(--cyan)';x.textContent=m}};
   const localIso=v=>v?new Date(v).toISOString():null;
   const toLocal=v=>{if(!v)return '';const d=new Date(v);if(isNaN(d))return '';const p=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+'T'+p(d.getHours())+':'+p(d.getMinutes())};
+  async function loadStorePromoFlags(){
+    if(!adminReady)return;
+    const statusEl=el('storePromoFlagsStatus');
+    const {data,error}=await supabaseClient.from('system_config').select('store_exitlag_promo_enabled,store_flexy_promo_enabled').eq('id',true).single();
+    if(error){if(statusEl){statusEl.style.display='block';statusEl.textContent='Unable to load promotion settings: '+error.message;}return;}
+    if(el('storePromoExitLag'))el('storePromoExitLag').value=String(!!data.store_exitlag_promo_enabled);
+    if(el('storePromoFlexy'))el('storePromoFlexy').value=String(!!data.store_flexy_promo_enabled);
+    if(statusEl){statusEl.style.display='block';statusEl.textContent='Settings loaded. Both promotions are OFF by default.';}
+  }
+  async function saveStorePromoFlags(){
+    if(!adminReady)return;
+    const btn=el('saveStorePromoFlags'),statusEl=el('storePromoFlagsStatus');
+    if(btn){btn.disabled=true;btn.textContent='SAVING…';}
+    const payload={store_exitlag_promo_enabled:el('storePromoExitLag')?.value==='true',store_flexy_promo_enabled:el('storePromoFlexy')?.value==='true',updated_at:new Date().toISOString()};
+    const {error}=await supabaseClient.from('system_config').update(payload).eq('id',true);
+    if(btn){btn.disabled=false;btn.textContent='SAVE PROMOTION SETTINGS';}
+    if(statusEl){statusEl.style.display='block';statusEl.textContent=error?'Save failed: '+error.message:'Store promotion settings saved. Refresh /store/ to see the changes.';statusEl.style.borderLeftColor=error?'var(--danger)':'var(--cyan)';}
+  }
   async function loadSponsors(){
     const body=el('sponsorList');if(!body)return;body.innerHTML='<tr><td colspan="8">Loading…</td></tr>';
+    await loadStorePromoFlags();
     const {data,error}=await supabaseClient.from('sponsors').select('*').order('created_at',{ascending:false});
     if(error){body.innerHTML='<tr><td colspan="8">'+esc(error.message)+'</td></tr>';return}
     if(!data?.length){body.innerHTML='<tr><td colspan="8">No sponsors configured.</td></tr>';return}
@@ -2754,6 +2783,7 @@ const adminIcons={"dashboard":"<path d='M4 13h6V4H4v9Zm10 7h6V4h-6v16ZM4 20h6v-3
   async function deleteSponsor(id){if(!confirm('Delete this sponsor configuration?'))return;const {error}=await supabaseClient.from('sponsors').delete().eq('id',id);if(error){status(error.message,true);return}status('Sponsor deleted.');await loadSponsors()}
   document.addEventListener('click',e=>{const a=e.target.closest('[data-sponsor-edit]');if(a)editSponsor(a.dataset.sponsorEdit);const d=e.target.closest('[data-sponsor-delete]');if(d)deleteSponsor(d.dataset.sponsorDelete)});
   el('saveSponsor')?.addEventListener('click',saveSponsor);el('clearSponsor')?.addEventListener('click',clearSponsor);
+  el('saveStorePromoFlags')?.addEventListener('click',saveStorePromoFlags);
   document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',()=>{if(b.dataset.panel==='sponsors')loadSponsors()}));
   setTimeout(loadSponsors,800);
 })();
