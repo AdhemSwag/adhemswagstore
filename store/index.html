@@ -460,15 +460,6 @@ body.mobile-menu-open{overflow:hidden!important}
   <div class="eyebrow">// ADHEMSWAG REWARDS</div>
   <h1>FNC <span>STORE</span></h1>
   <p class="lede">Use your FNC Points to redeem available AdhemSwag rewards. Every redemption is checked securely on the server before FNC or stock is changed.</p>
-  <section class="exitlag-promo-banner" id="storePromoBanner" aria-label="Store promotions">
-    <div class="exitlag-promo-top"><span class="exitlag-promo-fire">🔥</span><span id="storePromoHeading">THE EXITLAG BLACK FRIDAY WARM-UP 2026</span><span class="exitlag-promo-pill" id="storePromoPill">−30% • ENDS 23 NOV 2026</span></div>
-    <div class="exitlag-promo-content" id="storePromoContent">
-      <div class="exitlag-promo-copy"><div class="exitlag-promo-kicker">BLACK FRIDAY WARM-UP 2026</div><h2>The ExitLag Black Friday Warm-Up 2026</h2><p>Get your 7-day access code with automatic delivery after a successful redemption.</p><div class="exitlag-promo-price-row"><span class="exitlag-promo-was">1,500 FNC</span><strong>1,050 FNC</strong><span class="exitlag-promo-off">−30%</span></div><a class="exitlag-promo-cta" href="#rewardGrid">CLAIM PROMOTION <span>↗</span></a></div>
-      <div class="exitlag-promo-stamp"><span>EXCLUSIVE</span><strong>−30%</strong><span>EXITLAG DEAL</span></div>
-    </div>
-    <div class="store-promo-dots" id="storePromoDots" aria-label="Promotion slides" hidden></div>
-  </section>
-
   <div class="status" id="storeStatus">
     <span class="status-dot" id="storeStatusDot"></span>
     <strong id="storeStatusTitle">REWARDS SYSTEM: STOPPED</strong>
@@ -708,7 +699,6 @@ body.mobile-menu-open{overflow:hidden!important}
       client.from('flexy_inventory').select('reward_id,operator,quantity')
     ]);
     if (error || flexyInventoryError) { grid.innerHTML='<div class="empty-rewards">UNABLE TO LOAD REWARDS OR FLEXY STOCK.</div>'; return; }
-    renderStorePromotions(data || []);
     if (!data?.length) { grid.innerHTML='<div class="empty-rewards">NO ACTIVE REWARDS YET — CHECK BACK SOON.</div>'; return; }
     const typeFilter=document.getElementById('storeTypeFilter')?.value||'all';
     const sortMode=document.getElementById('storeSort')?.value||'featured';
