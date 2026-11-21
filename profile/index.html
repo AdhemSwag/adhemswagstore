@@ -902,7 +902,7 @@ async function renderAdminPublicPreview(username){
    }
  }
  set('profileTwitchStatus',p.twitch_username||'—');
- const profileIsComplete=p.profile_complete===true;
+ const profileIsComplete=isPublicViewer||p.profile_complete===true;
  set('profileCompleteStatus',profileIsComplete?'🟢 PROFILE ACTIVE':'🟠 PROFILE INCOMPLETE');
  set('profileHeroStatus',profileIsComplete?'PROFILE ACTIVE':'PROFILE INCOMPLETE');
  const statusNote=document.getElementById('profileStatusNote');
