@@ -611,7 +611,7 @@ body.mobile-menu-open{overflow:hidden!important}
 <script src="/auth.js"></script>
 <script>
 (() => {
-  const API = 'https://raw.githubusercontent.com/steamdashboard/cs2-items-api/main/data/api';
+  const API = 'https://raw.githubusercontent.com/ByMykel/CSGO-API/main/public/api/en';
   const grid=document.getElementById('skinGrid'),search=document.getElementById('skinSearch'),category=document.getElementById('categoryFilter'),weapon=document.getElementById('weaponFilter'),rarity=document.getElementById('rarityFilter'),stattrak=document.getElementById('stattrakFilter'),sort=document.getElementById('sortFilter'),count=document.getElementById('resultCount'),loadWrap=document.getElementById('loadMoreWrap'),loadButton=document.getElementById('loadMore'),recentPanel=document.getElementById('skinRecentPanel'),recentList=document.getElementById('skinRecentList');
   const PAGE_SIZE=48;let allSkins=[],visibleCount=PAGE_SIZE,showFavorites=false;
   const FAVORITES_KEY='adhemswag_cs2_skin_favorites_v1';
@@ -632,7 +632,7 @@ body.mobile-menu-open{overflow:hidden!important}
   const labelFor=key=>({knife:'KNIFE',glove:'GLOVES',weapon:'WEAPON',agent:'AGENT',sticker:'STICKER',collection:'COLLECTION',case:'CASE'}[key]||key.toUpperCase());
   const groups={weapon:'skins',agent:'agents',sticker:'stickers',collection:'collections',case:'cases'};
   const mediaGroups={weapon:'skins',agent:'agents',sticker:'stickers',collection:'collections',case:'containers'};
-  const itemImage=item=>{const mediaPath=item.media?.primary_image_png||item.media?.images_png?.[0]||item.media?.image||item.image||item.image_url;if(mediaPath)return /^https?:\/\//i.test(mediaPath)?mediaPath:API+'/'+String(mediaPath).replace(/^\/+|^(?:\.\.\/)+/,'').replace(/^data\/api\//,'');return(item.id&&mediaGroups[item._type])?API+'/media/rendered/files/'+mediaGroups[item._type]+'/'+encodeURIComponent(item.id)+'/'+(item._type==='weapon'?'light':'primary')+'.png':'';};
+  const itemImage=item=>{const mediaPath=item.image||item.image_url||item.media?.primary_image_png||item.media?.images_png?.[0]||item.media?.image;if(mediaPath)return /^https?:\/\//i.test(mediaPath)?mediaPath:API+'/'+String(mediaPath).replace(/^\/+/, '');return '';};
 
   function populateWeapons(items){weapon.replaceChildren(new Option('All weapons','all'));const names=[...new Set(items.filter(x=>x._type==='weapon').map(x=>String(x.name).split('|')[0].trim()))].sort((a,b)=>a.localeCompare(b));names.forEach(n=>weapon.add(new Option(n,n)));}
   function populateRarities(items){if(!rarity)return;rarity.replaceChildren(new Option('All rarities','all'));const names=[...new Set(items.map(x=>typeof x.rarity==='string'?x.rarity:x.rarity?.name).filter(Boolean))].sort((a,b)=>a.localeCompare(b));names.forEach(n=>rarity.add(new Option(n,n)));}
@@ -640,21 +640,30 @@ body.mobile-menu-open{overflow:hidden!important}
   function render(){const items=currentItems(),shown=items.slice(0,visibleCount);count.innerHTML='<strong>'+items.length.toLocaleString('en-US')+'</strong> items found · '+shown.length.toLocaleString('en-US')+' shown';grid.replaceChildren();if(!shown.length){const empty=document.createElement('div');empty.className='empty';empty.textContent='No items match this search. Try another name or filter.';grid.appendChild(empty);}else{const fragment=document.createDocumentFragment();shown.forEach(item=>{const cat=item._type==='weapon'?categoryFor(item.name):item._type;const card=document.createElement('article');card.className='skin-card';card.dataset.skinName=item.name;const favorite=document.createElement('button');favorite.type='button';favorite.className='skin-favorite';const favoriteId=String(item.id||item.market_hash_name||item.name);favorite.dataset.favoriteId=favoriteId;favorite.setAttribute('aria-label',favoriteIds.has(favoriteId)?'Remove from favorites':'Add to favorites');favorite.setAttribute('aria-pressed',String(favoriteIds.has(favoriteId)));favorite.textContent=favoriteIds.has(favoriteId)?'★':'☆';card.dataset.skinId=String(item.id||'');card.dataset.itemType=item._type;card.dataset.marketHashName=item.market_hash_name||item.name;const imageBox=document.createElement('div');imageBox.className='skin-image';const img=document.createElement('img');img.loading='lazy';img.decoding='async';img.alt=item.name;img.src=itemImage(item);img.onerror=()=>{img.onerror=null;img.remove();const f=document.createElement('span');f.className='skin-placeholder';f.textContent=cat==='collection'?'COLLECTION ARTWORK UNAVAILABLE':'PREVIEW UNAVAILABLE';f.setAttribute('aria-label','Image unavailable for '+item.name);imageBox.appendChild(f);};if(img.src)imageBox.appendChild(img);else{const f=document.createElement('span');f.className='skin-placeholder';f.textContent='PREVIEW UNAVAILABLE';imageBox.appendChild(f);}const info=document.createElement('div');info.className='skin-info';const type=document.createElement('div');type.className='skin-type';type.textContent=labelFor(cat);const title=document.createElement('div');title.className='skin-name';title.textContent=item.name;const subtitle=document.createElement('div');subtitle.className='skin-weapon';subtitle.textContent=item.team?.name||item.collections?.[0]?.name||item.rarity?.name||labelFor(cat);info.append(type,title,subtitle);card.setAttribute('role','button');card.setAttribute('tabindex','0');card.setAttribute('aria-label','Open details for '+item.name);card.append(imageBox,info,favorite);fragment.appendChild(card);});grid.appendChild(fragment);}loadWrap.hidden=shown.length>=items.length;updateFavoritesUI();}
   async function init(){
     const types=['weapon','agent','sticker','collection','case'];
-    const timeoutFetch=async(url,ms=15000)=>{
+    const endpoint={weapon:'skins',agent:'agents',sticker:'stickers',collection:'collections',case:'crates'};
+    const timeoutFetch=async(url,ms=45000)=>{
       const controller=new AbortController();
       const timer=setTimeout(()=>controller.abort(),ms);
-      try{return await fetch(url,{cache:'no-store',signal:controller.signal});}
+      try{return await fetch(url,{cache:'force-cache',signal:controller.signal,headers:{Accept:'application/json'}});}
       finally{clearTimeout(timer);}
     };
     try{
       grid.innerHTML='<div class="status">Loading CS2 catalogue…</div>';
       const settled=await Promise.allSettled(types.map(async type=>{
-        const endpoint={weapon:'skins',agent:'agents',sticker:'stickers',collection:'collections',case:'cases'}[type];
-        const response=await timeoutFetch(API+'/consumer/browse/'+endpoint+'.json');
-        if(!response.ok)throw new Error(endpoint+' HTTP '+response.status);
+        const response=await timeoutFetch(API+'/'+endpoint[type]+'.json');
+        if(!response.ok)throw new Error(endpoint[type]+' HTTP '+response.status);
         const data=await response.json();
-        if(!Array.isArray(data.items))throw new Error(endpoint+' invalid data format');
-        return data.items.filter(x=>x&&x.name).map(x=>({...x,_type:type}));
+        const rows=Array.isArray(data)?data:(Array.isArray(data.items)?data.items:Object.values(data));
+        if(!Array.isArray(rows)||!rows.length)throw new Error(endpoint[type]+' returned no items');
+        return rows.filter(x=>x&&x.name).map(x=>({
+          ...x,
+          id:String(x.id||x.def_index||x.name),
+          name:String(x.name),
+          market_hash_name:String(x.market_hash_name||x.name),
+          image:x.image||x.image_url||x.media?.primary_image_png||'',
+          search_slug:slug(x.name),
+          _type:type
+        }));
       }));
       const failed=[];
       allSkins=settled.flatMap((result,index)=>{
@@ -663,7 +672,7 @@ body.mobile-menu-open{overflow:hidden!important}
         console.warn('CS2 catalogue category failed:',types[index],result.reason);
         return [];
       });
-      if(!allSkins.length)throw new Error('No catalogue categories responded successfully');
+      if(!allSkins.some(x=>x._type==='weapon'))throw new Error('CS2 skins dataset could not be loaded');
       populateWeapons(allSkins);
       populateRarities(allSkins);
       renderRecent();
