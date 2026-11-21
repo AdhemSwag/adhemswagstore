@@ -2513,7 +2513,7 @@ document.getElementById('testTwitchWatch')?.addEventListener('click', async () =
       body: accessToken ? { access_token: accessToken, refresh_token: refreshToken || null } : {}
     });
     if(error) throw error;
-    if(s){s.textContent=data?.ok ? ('OK — live: '+data.live+', matched viewers: '+(data.matched_viewers||0)) : ('Sync: '+JSON.stringify(data));}
+    if(s){s.textContent=data?.ok ? ('OK — live: '+data.live+' | matched viewers: '+(data.matched_viewers||0)+' | subscribers matched: '+(data.subscribers_matched??'not reported')+' | subscription scope: '+(data.subscription_scope_available===true?'AVAILABLE':data.subscription_scope_available===false?'MISSING':'NOT REPORTED')+' | missing scopes: '+((data.missing_scopes||[]).join(', ')||'none')+' | T1: '+(data.tier_1??'not reported')+' | T2: '+(data.tier_2??'not reported')+' | T3: '+(data.tier_3??'not reported')+' | admin excluded: '+(data.admin_excluded??'not reported')) : ('Sync: '+JSON.stringify(data));}
   } catch(error) {
     if(s){s.textContent='Sync failed: '+(error?.message||'Unknown error');}
   }
