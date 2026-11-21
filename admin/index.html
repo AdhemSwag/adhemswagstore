@@ -491,6 +491,25 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
         </div>
         <div class="notice" id="wmAuthDetail">Twitch authorization has not been checked yet.</div>
         <div class="cards" style="margin-top:14px">
+          <div class="card"><small>OVERALL WATCH HEALTH</small><div class="metric" id="wmOverall" style="font-size:18px">NOT CHECKED</div></div>
+          <div class="card"><small>TWITCH STREAM</small><div class="metric" id="wmLiveState" style="font-size:18px">—</div></div>
+          <div class="card"><small>TRACKING SYNC</small><div class="metric" id="wmSyncState" style="font-size:18px">—</div></div>
+          <div class="card"><small>REWARD ENGINE</small><div class="metric" id="wmRewardState" style="font-size:18px">—</div></div>
+          <div class="card"><small>TWITCH VIEWERS</small><div class="metric" id="wmTwitchViewers">—</div></div>
+          <div class="card"><small>CHATTERS DETECTED</small><div class="metric" id="wmChatters">—</div></div>
+          <div class="card"><small>MATCHED SITE ACCOUNTS</small><div class="metric" id="wmMatched">—</div></div>
+          <div class="card"><small>BACKEND ACTIVE SESSIONS</small><div class="metric" id="wmBackendSessions">—</div></div>
+          <div class="card"><small>FNC CREDITED · 1H</small><div class="metric" id="wmFnc1h">—</div></div>
+          <div class="card"><small>FNC CREDITED · 24H</small><div class="metric" id="wmFnc24Actual">—</div></div>
+          <div class="card"><small>XP CREDITED · 1H</small><div class="metric" id="wmXp1h">—</div></div>
+          <div class="card"><small>CRON FAILURES · 24H</small><div class="metric" id="wmCronFailures">—</div></div>
+        </div>
+        <div class="section" style="margin-top:14px;padding:16px">
+          <h2 style="font-size:20px">AUTOMATIC <span style="color:var(--cyan)">DIAGNOSTICS</span></h2>
+          <p>Independent checks for Twitch detection, viewer sync, reward credits and scheduled jobs. This panel is read-only and never reconnects Twitch or changes balances.</p>
+          <div class="table-wrap"><table><thead><tr><th>Check</th><th>Status</th><th>Details</th></tr></thead><tbody id="wmChecksList"><tr><td colspan="3">Waiting for monitoring data…</td></tr></tbody></table></div>
+        </div>
+        <div class="cards" style="margin-top:14px">
           <div class="card"><small>ACTIVE VIEWERS · 5 MIN</small><div class="metric" id="wmActiveViewers">—</div></div>
           <div class="card"><small>ACTIVE SESSIONS · 5 MIN</small><div class="metric" id="wmActiveSessions">—</div></div>
           <div class="card"><small>FNC · 24H</small><div class="metric" id="wmFnc24">—</div></div>
@@ -1503,6 +1522,26 @@ async function loadWatchMonitor(){
    if(ticks.error)throw ticks.error;
    if(opsResponse.error)throw opsResponse.error;
    const ops=Array.isArray(opsResponse.data?.data)?opsResponse.data.data:[];
+   const monitoring=opsResponse.data?.monitoring||null;
+   if(monitoring){
+     const colorFor=v=>v==='healthy'?'var(--ok)':v==='warning'?'var(--danger)':v==='partial'||v==='inactive'||v==='disabled'?'#f0bd58':'var(--muted)';
+     const put=(id,value,color)=>{const el=document.getElementById(id);if(el){el.textContent=value; if(color)el.style.color=color;}};
+     const tw=monitoring.twitch||{},rw=monitoring.rewards||{},checks=Array.isArray(monitoring.checks)?monitoring.checks:[];
+     put('wmOverall',String(monitoring.overall_status||'unknown').toUpperCase(),colorFor(monitoring.overall_status));
+     put('wmLiveState',tw.live?'LIVE':'OFFLINE / UNKNOWN',tw.live?'var(--ok)':'#f0bd58');
+     put('wmSyncState',tw.sync_ok?'SYNC OK':'SYNC WARNING',tw.sync_ok?'var(--ok)':'var(--danger)');
+     put('wmRewardState',rw.enabled?'ENGINE ENABLED':'ENGINE DISABLED',rw.enabled?'var(--ok)':'#f0bd58');
+     put('wmTwitchViewers',Number(tw.viewer_count||0).toLocaleString());
+     put('wmChatters',Number(tw.chatters_count||0).toLocaleString());
+     put('wmMatched',Number(tw.matched_accounts_count||0).toLocaleString());
+     put('wmBackendSessions',Number(monitoring.sessions?.currently_active||0).toLocaleString());
+     put('wmFnc1h',Number(rw.fnc_1h||0).toLocaleString());
+     put('wmFnc24Actual',Number(rw.fnc_24h||0).toLocaleString());
+     put('wmXp1h',Number(rw.xp_1h||0).toLocaleString());
+     put('wmCronFailures',Number(monitoring.cron?.failed_jobs_24h||0).toLocaleString(),Number(monitoring.cron?.failed_jobs_24h||0)>0?'var(--danger)':'var(--ok)');
+     const checksBody=document.getElementById('wmChecksList');
+     if(checksBody)checksBody.innerHTML=checks.map(c=>'<tr><td>'+escapeHtml(c.label||c.key)+'</td><td style="font-weight:700;color:'+colorFor(c.status)+'">'+escapeHtml(String(c.status||'unknown').toUpperCase())+'</td><td>'+escapeHtml(c.detail||'')+'</td></tr>').join('')||'<tr><td colspan="3">No checks returned.</td></tr>';
+   }
    const auth=authResponse.data||{};
    const authLabel=authResponse.error?'STATUS UNAVAILABLE':
      auth.reason==='token_refresh_pending'?'REFRESH PENDING · NOT VERIFIED':
@@ -1552,6 +1591,12 @@ async function loadWatchMonitor(){
    setText('wmTickCount24',tickCount.toLocaleString());
    const failedJobs=ops.filter(x=>/twitch-(chatters-sync|live-status)/i.test(String(x.job_name||''))&&String(x.last_status||'').toLowerCase()!=='succeeded');
    const parts=[];
+   if(monitoring){
+     if(monitoring.overall_status==='warning')parts.push('One or more automated watch/reward checks need attention. See Automatic Diagnostics below.');
+     if(monitoring.twitch?.live&&monitoring.twitch?.sync_ok!==true)parts.push('Twitch is detected LIVE but the latest viewer synchronization is not confirmed healthy.');
+     if(monitoring.twitch?.live&&Number(monitoring.twitch?.matched_accounts_count||0)===0)parts.push('Twitch is LIVE but no site accounts were matched in the latest observation.');
+     if(monitoring.rewards?.enabled&&Number(monitoring.rewards?.fnc_1h||0)===0)parts.push('FNC is enabled but no FNC reward ticks were recorded in the last hour.');
+   }
    if(authResponse.error||auth.reason==='token_refresh_pending'||auth.connected!==true)parts.push('Twitch authorization is not fully verified.');
    if(!watchJob)parts.push('The scheduled Twitch watch-sync job was not returned by the Admin operations snapshot.');
    else if(jobStatus!=='succeeded')parts.push('The scheduled Twitch watch-sync job reports '+(jobStatus||'no status')+'.');
@@ -2555,7 +2600,7 @@ document.querySelectorAll('.nav-btn').forEach(btn=>{
 document.getElementById('refreshDashboard')?.addEventListener('click',refreshDashboard);
 document.getElementById('refreshWatchMonitor')?.addEventListener('click',loadWatchMonitor);
 document.getElementById('refreshOperations')?.addEventListener('click',loadOperations);
-setInterval(()=>{const panel=document.getElementById('watch-monitor');if(adminReady&&panel?.classList.contains('active')&&document.visibilityState==='visible')loadWatchMonitor();},60000);
+setInterval(()=>{const panel=document.getElementById('watch-monitor');if(adminReady&&panel?.classList.contains('active')&&document.visibilityState==='visible')loadWatchMonitor();},30000);
 
 async function loadFlexyInventory(){
  const body=document.getElementById('flexyInventoryRows');if(!body||!adminReady)return;
