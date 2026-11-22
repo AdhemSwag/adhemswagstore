@@ -1003,14 +1003,19 @@ body.mobile-menu-open{overflow:hidden!important}
 
   async function loadBoard(){
     const {data,error}=await client.rpc('get_public_leaderboard_full');
-    if(error){console.error(error);table.innerHTML='<div class="lb-loading">Leaderboard temporarily unavailable.</div>';return;}
+    if(error){console.error(error);if(!rows.length)table.innerHTML='<div class="lb-loading">Leaderboard temporarily unavailable.</div>';return;}
     rows=Array.isArray(data)?data:[];
-    const {data:historyData,error:historyError}=await client.rpc('get_public_leaderboard_rank_movement');
-    if(!historyError&&historyData&&typeof historyData==='object')rankHistory=historyData;
-    else if(historyError)console.warn('[AdhemSwag] Shared rank history unavailable:',historyError);
-    page=1;renderBoard();renderProfileSearch();
+    // Paint the actual ranking immediately; historical movement is supplemental.
+    renderBoard();renderProfileSearch();
     const note=document.getElementById('lbNote');
     if(note)note.textContent=rows.length?rows.length+' completed viewer profiles • live site data':'No completed viewer profiles yet.';
+    // Fetch movement independently so a slower history RPC never delays the leaderboard.
+    client.rpc('get_public_leaderboard_rank_movement').then(({data:historyData,error:historyError})=>{
+      if(!historyError&&historyData&&typeof historyData==='object'){
+        rankHistory=historyData;
+        renderBoard();renderProfileSearch();
+      }else if(historyError)console.warn('[AdhemSwag] Shared rank history unavailable:',historyError);
+    }).catch(error=>console.warn('[AdhemSwag] Shared rank history unavailable:',error));
   }
 
   async function loadDashboard(){
@@ -1079,7 +1084,12 @@ body.mobile-menu-open{overflow:hidden!important}
   document.querySelectorAll('[data-board]').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('[data-board]').forEach(x=>x.classList.remove('active'));b.classList.add('active');board=b.dataset.board;page=1;renderBoard();}));
   document.querySelectorAll('[data-period]').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('[data-period]').forEach(x=>x.classList.remove('active'));b.classList.add('active');loadWatchers(b.dataset.period);}));
 
-  loadBoard();loadDashboard();loadWatchers('today');loadHallOfFame();
+  // Prioritize the main ranking; load secondary panels after the first paint.
+  loadBoard();
+  const deferWork=window.requestIdleCallback||((fn)=>setTimeout(fn,900));
+  deferWork(()=>loadDashboard());
+  deferWork(()=>loadWatchers('today'));
+  deferWork(()=>loadHallOfFame());
   setInterval(loadBoard,60000);setInterval(loadDashboard,30000);setInterval(()=>loadWatchers(document.querySelector('[data-period].active')?.dataset.period||'today'),60000);setInterval(loadHallOfFame,300000);
 })();
 </script>
