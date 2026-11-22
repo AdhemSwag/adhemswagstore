@@ -572,7 +572,7 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
           <p>Add digital access codes to <strong style="color:var(--cyan)">ACCESS CODE</strong> rewards, including FLEXY. Codes are assigned automatically after a successful Store redemption and appear in the viewer’s MY PROFILE. FLEXY stock syncs automatically by operator.</p>
           <div class="form-grid">
             <div class="field"><label>Reward</label><select id="accessCodeReward"></select></div>
-            <div class="field" id="accessCodeOperatorWrap"><label>FLEXY operator</label><select id="accessCodeOperator"><option value="">Choose operator</option><option value="DJEZZY">Djezzy</option><option value="OOREDOO">Ooredoo</option><option value="MOBILIS">Mobilis</option></select></div>
+            <div class="field" id="accessCodeOperatorWrap" style="display:none"><label>FLEXY operator</label><select id="accessCodeOperator" disabled><option value="">Choose operator</option><option value="DJEZZY">Djezzy</option><option value="OOREDOO">Ooredoo</option><option value="MOBILIS">Mobilis</option></select><small class="muted">Required only for FLEXY rewards.</small></div>
             <div class="field"><label>Product access code</label><input id="accessCodeInput" type="text" maxlength="200" placeholder="PROMO-XXXX-XXXX"></div>
           </div>
           <div class="actions"><button class="btn primary" id="addAccessCode">ADD ACCESS CODE</button><button class="btn" id="refreshAccessCodes">REFRESH</button></div>
@@ -1448,12 +1448,26 @@ async function loadRewards() {
 }
 
 
+function updateAccessCodeOperatorVisibility(){
+  const rewardSelect=document.getElementById('accessCodeReward');
+  const wrapper=document.getElementById('accessCodeOperatorWrap');
+  const operatorSelect=document.getElementById('accessCodeOperator');
+  if(!rewardSelect||!wrapper||!operatorSelect)return;
+  const rewardName=rewardSelect.selectedOptions?.[0]?.textContent||'';
+  const isFlexy=/flexy/i.test(rewardName);
+  wrapper.style.display=isFlexy?'':'none';
+  operatorSelect.disabled=!isFlexy;
+  operatorSelect.required=isFlexy;
+  if(!isFlexy)operatorSelect.value='';
+}
+
 async function loadAccessCodeRewards(){
   const select=document.getElementById('accessCodeReward');
   if(!select||!adminReady)return;
   const {data,error}=await supabaseClient.from('rewards').select('id,name,uses_access_codes').eq('uses_access_codes',true).order('name',{ascending:true});
   if(error){select.innerHTML='<option value="">Unable to load rewards</option>';return;}
   select.innerHTML=(data||[]).map(r=>'<option value="'+r.id+'">'+escapeHtml(r.name)+'</option>').join('');
+  updateAccessCodeOperatorVisibility();
   await loadAccessCodes();
 }
 
@@ -2102,7 +2116,7 @@ document.getElementById('addAccessCode')?.addEventListener('click',async()=>{
   await loadFlexyInventory();
 });
 document.getElementById('refreshAccessCodes')?.addEventListener('click',loadAccessCodes);
-document.getElementById('accessCodeReward')?.addEventListener('change',loadAccessCodes);
+document.getElementById('accessCodeReward')?.addEventListener('change',()=>{updateAccessCodeOperatorVisibility();loadAccessCodes();});
 
 async function writeAdminLog(action,targetType,targetId,details={}){
   if(!adminReady)return;
