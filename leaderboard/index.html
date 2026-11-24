@@ -935,10 +935,11 @@ body.mobile-menu-open{overflow:hidden!important}
       metricNote.innerHTML='<span class="lb-metric-icon" aria-hidden="true">↗</span><div><strong>'+copy[0]+'</strong><p>'+copy[1]+'</p></div>';
     }
     const medals={1:'♛',2:'2',3:'3'};
-    const avatarMarkup=(u,initials)=>{
+    const avatarMarkup=(u,initials,prioritize=false)=>{
       const raw=String(u.avatar_url||'').trim();
       const safe=/^https:\/\/[^\s"'<>]+$/i.test(raw)?raw:'';
-      return safe?'<img data-avatar src="'+esc(safe)+'" alt="" loading="lazy" referrerpolicy="no-referrer"><span class="avatar-fallback" hidden>'+initials+'</span>':initials;
+      const imageAttrs=prioritize?'loading="eager" fetchpriority="high"':'loading="lazy"';
+      return safe?'<img data-avatar src="'+esc(safe)+'" alt="" decoding="async" '+imageAttrs+' referrerpolicy="no-referrer"><span class="avatar-fallback" hidden>'+initials+'</span>':initials;
     };
     const bindAvatarFallback=root=>root.querySelectorAll('img[data-avatar]').forEach(img=>img.addEventListener('error',()=>{img.hidden=true;const fallback=img.nextElementSibling;if(fallback)fallback.hidden=false;},{once:true}));
     const card=(u,rank)=>{
@@ -946,7 +947,7 @@ body.mobile-menu-open{overflow:hidden!important}
       const username=String(u.twitch_username||'Viewer'), profileUrl='/profile/?viewer='+encodeURIComponent(username);
       const tone=rank===1?'rank1':rank===2?'rank2':'rank3';
       const initials=esc(username.replace(/^@/,'').slice(0,2).toUpperCase()||'V');
-      const avatar=avatarMarkup(u,initials);
+      const avatar=avatarMarkup(u,initials,true);
       return '<article class="lb-podium-card '+tone+(rank===1?' champion':'')+'"><div class="lb-podium-label">'+(rank===1?'CHAMPION':rank===2?'RUNNER-UP':'THIRD PLACE')+'</div><div class="lb-podium-badge" aria-label="Rank '+rank+'">'+medals[rank]+'</div><a class="lb-podium-profile" href="'+profileUrl+'" aria-label="View '+esc(username)+' profile"><div class="lb-podium-avatar">'+avatar+'</div><div class="lb-podium-name-line"><div class="lb-podium-name">'+esc(username)+'</div></div></a><div class="lb-podium-handle">LEVEL '+fmt(u.level||1)+movementMarkup(u)+bestRankMarkup(u)+'</div><div class="lb-podium-points">'+metric(u)+'</div><div class="lb-podium-points-label">'+label+'</div></article>';
     };
     if(!sorted.length){
