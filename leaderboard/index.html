@@ -984,13 +984,25 @@ body.mobile-menu-open{overflow:hidden!important}
       const bv=board==='xp'?Number(b.xp):board==='earned'?Number(b.total_fnc_earned):board==='watch'?Number(b.total_watch_minutes):Number(b.fnc_points);
       return bv-av || String(a.twitch_username).localeCompare(String(b.twitch_username));
     });
+    // Search is outside renderBoard(); calculate rank movement locally.
+    const searchRanks=Object.fromEntries(sorted.map((u,i)=>[String(u.twitch_username||'').toLocaleLowerCase(),i+1]));
+    const searchBaseline=rankHistory[board]||{};
+    const searchMovementMarkup=u=>{
+      const name=String(u.twitch_username||'').toLocaleLowerCase();
+      const oldRank=Number(searchBaseline[name]),newRank=searchRanks[name];
+      if(!oldRank||!newRank)return '';
+      const diff=oldRank-newRank;
+      if(!diff)return '<span class="lb-rank-movement" aria-label="Rank unchanged">—</span>';
+      const direction=diff>0?'up':'down';
+      return '<span class="lb-rank-movement '+direction+'" title="'+(diff>0?'Moved up ':'Moved down ')+Math.abs(diff)+' places" aria-label="'+(diff>0?'Moved up ':'Moved down ')+Math.abs(diff)+' places">'+(diff>0?'▲':'▼')+Math.abs(diff)+'</span>';
+    };
     const label=board==='xp'?'XP':board==='earned'?'ALL-TIME FNC EARNED':board==='watch'?'WATCH TIME · ALL TIME':'FNC POINTS';
     const metric=u=>board==='xp'?fmt(u.xp):board==='earned'?fmt(u.total_fnc_earned):board==='watch'?mins(u.total_watch_minutes):fmt(u.fnc_points);
     const matches=sorted.map((u,index)=>({...u,searchRank:index+1})).filter(u=>String(u.twitch_username||'').toLocaleLowerCase().includes(query)).slice(0,8);
     searchResults.innerHTML=matches.length?'<div class="lb-row lb-head lb-search-head"><div>RANK</div><div>VIEWER / LEVEL</div><div style="text-align:right">'+label+'</div></div>'+matches.map(u=>{
       const name=String(u.twitch_username||'Viewer');
       const initials=esc(name.replace(/^@/,'').slice(0,2).toUpperCase()||'V');
-      return '<a class="lb-row lb-search-result" role="option" href="/profile/?viewer='+encodeURIComponent(name)+'"><div class="lb-rank">#'+u.searchRank+movementMarkup(u)+'</div><div class="lb-user"><span class="lb-user-link"><span class="lb-list-avatar">'+initials+'</span><span class="lb-search-name-level"><span class="lb-search-result-name">'+esc(name)+'</span><span class="lb-search-level">LVL '+Number(u.level||1)+'</span></span></span></div><div class="lb-points">'+metric(u)+' <span>'+(board==='watch'?'':' '+(board==='xp'?'XP':'FNC'))+'</span></div></a>';
+      return '<a class="lb-row lb-search-result" role="option" href="/profile/?viewer='+encodeURIComponent(name)+'"><div class="lb-rank">#'+u.searchRank+searchMovementMarkup(u)+'</div><div class="lb-user"><span class="lb-user-link"><span class="lb-list-avatar">'+initials+'</span><span class="lb-search-name-level"><span class="lb-search-result-name">'+esc(name)+'</span><span class="lb-search-level">LVL '+Number(u.level||1)+'</span></span></span></div><div class="lb-points">'+metric(u)+' <span>'+(board==='watch'?'':' '+(board==='xp'?'XP':'FNC'))+'</span></div></a>';
     }).join(''):'<div class="lb-search-empty"><span aria-hidden="true">⌕</span><span>No matching viewer found. Try another username.</span></div>';
     searchResults.classList.add('is-open');searchInput.setAttribute('aria-expanded','true');
   }
