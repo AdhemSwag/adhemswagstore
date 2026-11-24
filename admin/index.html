@@ -1539,17 +1539,18 @@ async function loadWatchMonitor(){
  status.style.borderLeftColor='var(--line)';
  try{
    const cutoff=new Date(Date.now()-5*60*1000).toISOString();
-   const [sessions,ticks,opsResponse,authResponse]=await Promise.all([
+   const [sessions,opsResponse,authResponse]=await Promise.all([
      supabaseClient.from('watch_sessions').select('user_id,joined_at,last_seen_at,last_activity_at,active_minutes,subscription_tier').is('ended_at',null).gte('last_seen_at',cutoff).order('last_seen_at',{ascending:false}).limit(100),
-     supabaseClient.from('fnc_reward_ticks').select('fnc_awarded,xp_awarded,created_at').gte('created_at',new Date(Date.now()-86400000).toISOString()),
      supabaseClient.functions.invoke('admin-operations-snapshot',{body:{}}),
      supabaseClient.functions.invoke('admin-twitch-watch-status',{body:{}})
    ]);
    if(sessions.error)throw sessions.error;
-   if(ticks.error)throw ticks.error;
    if(opsResponse.error)throw opsResponse.error;
-   const ops=Array.isArray(opsResponse.data?.data)?opsResponse.data.data:[];
    const monitoring=opsResponse.data?.monitoring||null;
+   if(!monitoring?.rewards||!Number.isFinite(Number(monitoring.rewards.fnc_24h))||!Number.isFinite(Number(monitoring.rewards.xp_24h))||!Number.isFinite(Number(monitoring.rewards.reward_ticks_24h))) {
+     throw new Error('Secure reward telemetry unavailable; no healthy state can be inferred.');
+   }
+   const ops=Array.isArray(opsResponse.data?.data)?opsResponse.data.data:[];
    if(monitoring){
      const colorFor=v=>v==='healthy'?'var(--ok)':v==='warning'?'var(--danger)':v==='partial'||v==='inactive'||v==='disabled'?'#f0bd58':'var(--muted)';
      const put=(id,value,color)=>{const el=document.getElementById(id);if(el){el.textContent=value; if(color)el.style.color=color;}};
@@ -1608,9 +1609,9 @@ async function loadWatchMonitor(){
      const age=(ts)=>ts?Math.max(0,Math.floor((Date.now()-new Date(ts).getTime())/60000))+'m ago':'—';
      return '<tr><td>'+escapeHtml(name)+'</td><td>'+age(s.joined_at)+'</td><td>'+age(s.last_seen_at)+'</td><td>'+age(s.last_activity_at)+'</td><td>'+Number(s.active_minutes||0).toLocaleString()+'</td><td>'+Number(s.subscription_tier||0)+'</td></tr>';
    }).join('')||'<tr><td colspan="6">No sessions with Twitch presence in the last 5 minutes.</td></tr>';
-   const fnc=(ticks.data||[]).reduce((n,x)=>n+Number(x.fnc_awarded||0),0);
-   const xp=(ticks.data||[]).reduce((n,x)=>n+Number(x.xp_awarded||0),0);
-   const tickCount=(ticks.data||[]).length;
+   const fnc=Number(monitoring.rewards.fnc_24h);
+   const xp=Number(monitoring.rewards.xp_24h);
+   const tickCount=Number(monitoring.rewards.reward_ticks_24h);
    setText('wmActiveViewers',new Set(rows.map(x=>x.user_id)).size.toLocaleString());
    setText('wmActiveSessions',rows.length.toLocaleString());
    setText('wmFnc24',fnc.toLocaleString());
