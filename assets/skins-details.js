@@ -21,47 +21,50 @@
   const marketMenu=document.getElementById('skinMarketMenu');
   const marketChecks=[...(marketMenu?.querySelectorAll('input[type="checkbox"]')||[])];
   const marketStatus=document.getElementById('skinMarketStatus');
-  // In-page diagnostics make API, fallback, parsing, marketplace and history states distinguishable.
-  const diagnostics={prices:new Map(),history:'Not checked',runtime:[],marketConfig:'Steam default configured'};
-  const diagnosticsPanel=document.createElement('details');
-  diagnosticsPanel.className='skin-detail-note';
-  diagnosticsPanel.style.cssText='margin-top:10px;padding:10px;border:1px solid rgba(17,217,247,.18);border-radius:8px;background:rgba(8,13,17,.55)';
-  const diagnosticsSummary=document.createElement('summary');
-  diagnosticsSummary.textContent='PRICE DATA DIAGNOSTICS';
-  diagnosticsSummary.style.cssText='cursor:pointer;font-weight:700;letter-spacing:.06em';
-  const diagnosticsBody=document.createElement('pre');
-  diagnosticsBody.style.cssText='white-space:pre-wrap;overflow-wrap:anywhere;font:11px/1.55 ui-monospace,monospace;color:#9fb5c0;margin:9px 0 0';
-  diagnosticsPanel.append(diagnosticsSummary,diagnosticsBody);
-  marketStatus?.insertAdjacentElement('afterend',diagnosticsPanel);
-  const updateDiagnostics=()=>{
-    const rows=[...diagnostics.prices.entries()].slice(-5).map(([item,state])=>item+'\n  OpenSkin: '+state.openSkin+'\n  Result: '+state.result);
-    diagnosticsBody.textContent=[
-      'Marketplace selected: '+(selectedMarkets().join(', ')||'none'),
-      'Default configuration: '+diagnostics.marketConfig,
-      'JavaScript: '+(diagnostics.runtime.length?'ERROR — '+diagnostics.runtime.slice(-2).join(' | '):'loaded; no captured runtime errors'),
-      'Price checks:',
-      ...(rows.length?rows:['No item checked yet']),
-      'History: '+diagnostics.history
-    ].join('\n');
-  };
+  // Diagnostics stay internal: never expose developer logs in public skin details.
+  const diagnostics={prices:new Map(),history:'Not checked',runtime:[],marketConfig:'Steam only by default'};
+  const updateDiagnostics=()=>{};
   const setPriceDiagnostic=(item,patch)=>{
     const current=diagnostics.prices.get(item)||{openSkin:'Not checked',result:'Pending'};
     diagnostics.prices.set(item,{...current,...patch});
-    updateDiagnostics();
   };
-  window.addEventListener('error',event=>{diagnostics.runtime.push(event.message||'Uncaught JavaScript error');updateDiagnostics();});
-  window.addEventListener('unhandledrejection',event=>{diagnostics.runtime.push(String(event.reason?.message||event.reason||'Unhandled promise rejection'));updateDiagnostics();});
+  window.addEventListener('error',event=>{diagnostics.runtime.push(event.message||'Uncaught JavaScript error');});
+  window.addEventListener('unhandledrejection',event=>{diagnostics.runtime.push(String(event.reason?.message||event.reason||'Unhandled promise rejection'));});
   const historyChart=document.getElementById('skinPriceChart'),historySource=document.getElementById('skinHistorySource'),currencySelect=document.getElementById('skinCurrencySelect');
   const rangeButtons=[...document.querySelectorAll('#skinHistoryRanges button')],wears=['Factory New','Minimal Wear','Field-Tested','Well-Worn','Battle-Scarred'];
   const labels={steam:'Steam',skinport:'Skinport',buff:'BUFF163',youpin:'YouPin',csfloat:'CSFloat'};
-  let activeSkinName='',activeMarketHashName='',activeItemType='weapon',activeWear='Factory New',priceRequest=0,historyRange=30,variantPrices={},displayCurrency='USD',eurUsdRate=null;
+  let activeSkinName='',activeMarketHashName='',activeItemType='weapon',activeWear='Factory New',priceRequest=0,historyRequest=0,historyRange=30,variantPrices={},variantSources={},displayCurrency='USD',eurUsdRate=null;
   try{const v=localStorage.getItem('adhem_skins_currency');if(v==='USD'||v==='EUR')displayCurrency=v;}catch(_){}
   if(currencySelect)currencySelect.value=displayCurrency;
   const selectedMarkets=()=>marketChecks.filter(x=>x.checked).map(x=>x.value).filter(x=>labels[x]);
   const refreshMarketButton=()=>{const n=marketChecks.filter(x=>x.checked).map(x=>x.parentElement.textContent.trim());if(marketPickerButton)marketPickerButton.innerHTML=(n.length?n.join(', '):'No market selected')+' <span>⌃</span>';};
   const getRate=async()=>{if(eurUsdRate)return eurUsdRate;const r=await fetch('https://api.frankfurter.app/latest?from=EUR&to=USD');if(!r.ok)throw Error('FX unavailable');const d=await r.json();eurUsdRate=Number(d?.rates?.USD);if(!Number.isFinite(eurUsdRate)||eurUsdRate<=0)throw Error('FX unavailable');return eurUsdRate;};
   const money=n=>new Intl.NumberFormat(undefined,{style:'currency',currency:displayCurrency,maximumFractionDigits:2}).format(displayCurrency==='EUR'?Number(n)/(eurUsdRate||1):Number(n));
-  const fetchJson=async(url,options={})=>{const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),12000);try{const r=await fetch(url,{...options,cache:'no-store',signal:controller.signal,headers:{Accept:'application/json',...(options.headers||{})}});let d;try{d=await r.json();}catch(_){throw Error('Invalid JSON response (HTTP '+r.status+')');}if(!r.ok)throw Error((d?.error||d?.message||'HTTP '+r.status));return d;}finally{clearTimeout(timer);}};
+  class PriceRequestError extends Error {
+    constructor(message,status=0,code='request_failed'){super(message);this.name='PriceRequestError';this.status=status;this.code=code;}
+  }
+  const fetchJson=async(url,options={})=>{
+    const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),10000);
+    try{
+      let response;
+      try{response=await fetch(url,{...options,cache:'no-store',signal:controller.signal,headers:{Accept:'application/json',...(options.headers||{})}});}
+      catch(error){throw new PriceRequestError(error?.name==='AbortError'?'Request timed out':'Network request failed',0,error?.name==='AbortError'?'timeout':'network_error');}
+      const raw=await response.text();
+      let data=null;
+      try{data=raw?JSON.parse(raw):null;}catch(_){throw new PriceRequestError('Provider returned invalid JSON (HTTP '+response.status+')',response.status,'invalid_json');}
+      if(!response.ok){
+        const code=data?.error==='openskin_network_error'?'network_error'
+          :data?.error==='openskin_timeout'?'timeout'
+          :data?.error==='openskin_invalid_json'?'invalid_json'
+          :data?.error==='openskin_invalid_schema'?'invalid_schema'
+          :response.status===404?'item_not_found'
+          :response.status===429?'rate_limited'
+          :response.status>=500?'provider_unavailable':'provider_rejected';
+        throw new PriceRequestError(data?.message||data?.details||data?.error||('HTTP '+response.status),response.status,code);
+      }
+      return data;
+    }finally{clearTimeout(timer);}
+  };
   const steamFallbackCache=new Map();
   const fetchSteamFallback=async(name,req)=>{
     const cached=steamFallbackCache.get(name);
@@ -79,93 +82,145 @@
     if(!prices.steam.ask&&!prices.steam.median)throw Error('Steam has no current price for this item');
     return {item:name,prices};
   };
+  const hasPositiveQuote=value=>['ask','median','bid'].some(key=>typeof value?.[key]==='number'&&Number.isFinite(value[key])&&value[key]>0);
   const fetchPrices=async(name,req)=>{
-    let combinedError=null;
-    setPriceDiagnostic(name,{openSkin:'Checking OpenSkin V1…',result:'Pending'});
+    setPriceDiagnostic(name,{openSkin:'Checking OpenSkin V1',result:'Pending'});
+    let openSkinData=null,openSkinError=null;
     try{
-      const d=await fetchJson('https://api.openskin.dev/v1/prices?item='+encodeURIComponent(name));
+      openSkinData=await fetchJson('/api/cs2-skins-market?kind=prices&item='+encodeURIComponent(name));
       if(req!==priceRequest)return null;
-      if(!d||typeof d!=='object'||!d.prices||typeof d.prices!=='object'||Array.isArray(d.prices)){
-        setPriceDiagnostic(name,{openSkin:'Response schema/parsing error',result:'OpenSkin response has no valid prices object'});
-        throw Error('OpenSkin response schema is invalid');
+      if(!openSkinData||typeof openSkinData!=='object'||!openSkinData.prices||typeof openSkinData.prices!=='object'||Array.isArray(openSkinData.prices)){
+        throw new PriceRequestError('OpenSkin response has an invalid prices object',200,'invalid_schema');
       }
-      const markets=selectedMarkets();
-      const hasQuote=markets.some(m=>[d.prices[m]?.ask,d.prices[m]?.median,d.prices[m]?.bid].some(v=>v!==null&&v!==''&&Number.isFinite(Number(v))&&Number(v)>0));
-      if(hasQuote){
-        setPriceDiagnostic(name,{openSkin:'HTTP OK · valid price data',result:'OpenSkin V1'});
-        return d;
-      }
-      setPriceDiagnostic(name,{openSkin:'HTTP OK · no positive quote for selected market',result:'Item/market not listed or no current quote'});
-      throw Error('OpenSkin returned no positive selected-market price');
-    }catch(e){
-      combinedError=e;
-      if(!String(e?.message||'').includes('OpenSkin returned')&&!String(e?.message||'').includes('schema')){
-        setPriceDiagnostic(name,{openSkin:'API/network failure: '+(e?.message||'request failed'),result:'Trying Steam fallback if selected'});
-      }
+      setPriceDiagnostic(name,{openSkin:'OpenSkin V1 response received',result:'Validating selected marketplace quotes'});
+    }catch(error){
+      openSkinError=error;
+      const message=error.code==='item_not_found'?'Item not listed by OpenSkin'
+        :error.code==='invalid_schema'||error.code==='invalid_json'?'OpenSkin response parsing error'
+        :error.code==='rate_limited'?'OpenSkin rate limited'
+        :error.code==='provider_unavailable'?'OpenSkin temporarily unavailable'
+        :error.code==='network_error'?'Server could not reach OpenSkin'
+        :error.code==='timeout'?'OpenSkin request timed out':'OpenSkin request failed';
+      setPriceDiagnostic(name,{openSkin:message,result:error.message||message});
     }
-    const markets=selectedMarkets();
-    const entries=await Promise.all(markets.map(async market=>{
-      try{
-        if(market==='steam')return ['steam',(await fetchSteamFallback(name,req))?.prices?.steam||null];
-        const d=await fetchJson('https://api.openskin.dev/v1/prices/'+market+'?item='+encodeURIComponent(name));
-        return [market,d?.prices?.[market]||d?.[market]||d];
-      }catch(_){return [market,null];}
-    }));
     if(req!==priceRequest)return null;
-    const prices=Object.fromEntries(entries.filter(([,v])=>v&&typeof v==='object'));
-    if(Object.keys(prices).length){
-      const steamFallback=Boolean(prices.steam);
-      setPriceDiagnostic(name,{result:steamFallback?'Supabase Steam fallback (not an OpenSkin quote)':'Marketplace fallback endpoint'});
-      return {item:name,prices};
+    const markets=selectedMarkets();
+    const prices={...(openSkinData?.prices||{})};
+    const openSkinHasQuote=markets.some(m=>hasPositiveQuote(prices[m]));
+    let fallbackUsed=false;
+    if(markets.includes('steam')&&!hasPositiveQuote(prices.steam)){
+      try{
+        const fallback=await fetchSteamFallback(name,req);
+        if(req!==priceRequest)return null;
+        if(hasPositiveQuote(fallback?.prices?.steam)){
+          prices.steam=fallback.prices.steam;
+          fallbackUsed=true;
+        }
+      }catch(_){}
     }
-    setPriceDiagnostic(name,{result:'No price returned by OpenSkin or fallback'});
-    throw combinedError||Error('No marketplace price data for '+name);
+    const anyQuote=markets.some(m=>hasPositiveQuote(prices[m]));
+    if(anyQuote){
+      const source=fallbackUsed?(openSkinHasQuote?'mixed':'supabase'):'openskin';
+      setPriceDiagnostic(name,{result:source==='supabase'?'Steam backup quote':source==='mixed'?'OpenSkin plus Steam backup':'OpenSkin V1 quote'});
+      return {item:name,prices,source};
+    }
+    if(openSkinData){
+      setPriceDiagnostic(name,{result:'OpenSkin responded successfully but no positive quote exists for the selected marketplace'});
+      throw new PriceRequestError('No current quote is listed for this item on the selected marketplace',200,'item_unpriced');
+    }
+    if(openSkinError?.code==='item_not_found')throw new PriceRequestError('This item is not listed by OpenSkin',404,'item_not_found');
+    throw openSkinError||new PriceRequestError('No current market data is available',0,'no_data');
+  };
+  const normalizeHistoryPoint=point=>{
+    if(!point||typeof point!=='object')return null;
+    const rawDate=point.timestamp??point.observed_at??point.date??point.time;
+    const rawPrice=point.price??point.price_value??point.median_price;
+    const date=typeof rawDate==='number'||(typeof rawDate==='string'&&/^\\d+$/.test(rawDate))
+      ?new Date(Number(rawDate)<1e12?Number(rawDate)*1000:Number(rawDate))
+      :new Date(rawDate);
+    const price=Number(rawPrice);
+    return Number.isFinite(date.getTime())&&Number.isFinite(price)&&price>0?{timestamp:date.toISOString(),price}:null;
   };
   const fetchHistory=async(name,market,req)=>{
     const to=new Date(),from=new Date(Date.now()-historyRange*86400000),fmt=d=>d.toISOString().slice(0,10);
+    let points=[],openSkinHistoryError=null;
     try{
-      const r=await fetch('https://api.openskin.dev/v1/history',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({item:name,marketplace:market,from:fmt(from),to:fmt(to),interval:'daily'})});
-      const d=await r.json();
+      const data=await fetchJson('/api/cs2-skins-market?kind=history',{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({item:name,marketplace:market,from:fmt(from),to:fmt(to),interval:'daily'})
+      });
       if(req!==priceRequest)return [];
-      if(!r.ok){
-        diagnostics.history='OpenSkin history API failure: HTTP '+r.status;
-        updateDiagnostics();
-      }else if(!Array.isArray(d.data)){
-        diagnostics.history='OpenSkin history response parsing/schema error';
-        updateDiagnostics();
-      }else if(d.data.length){
-        diagnostics.history='OpenSkin V1 · '+d.data.length+' raw points returned';
-        updateDiagnostics();
-        return d.data;
-      }else{
-        diagnostics.history='OpenSkin responded successfully but returned no history points';
-        updateDiagnostics();
-      }
+      if(!Array.isArray(data?.data))throw new PriceRequestError('History response does not contain a data array',200,'invalid_schema');
+      points=data.data.map(normalizeHistoryPoint).filter(Boolean);
+      diagnostics.history=points.length?'OpenSkin V1 · '+points.length+' usable points':'OpenSkin V1 · no history points for this range';
+      updateDiagnostics();
     }catch(error){
-      diagnostics.history='OpenSkin history network/JSON error: '+(error?.message||'request failed');
+      openSkinHistoryError=error;
+      diagnostics.history='OpenSkin history unavailable: '+(error.message||error.code||'request failed');
       updateDiagnostics();
     }
+    if(req!==priceRequest)return [];
+    if(points.length)return points;
     if(market==='steam'){
       let cached=steamFallbackCache.get(name);
-      if(!cached){await fetchSteamFallback(name,req);cached=steamFallbackCache.get(name);}
+      if(!cached){try{await fetchSteamFallback(name,req);}catch(_){}cached=steamFallbackCache.get(name);}
       if(req!==priceRequest)return [];
       const cutoff=Date.now()-historyRange*86400000;
-      const fallbackPoints=(cached?.history||[]).filter(x=>new Date(x.observed_at).getTime()>=cutoff).map(x=>({timestamp:x.observed_at,price:Number(x.price)})).filter(x=>Number.isFinite(new Date(x.timestamp).getTime())&&Number.isFinite(x.price)&&x.price>0);
-      if(fallbackPoints.length){diagnostics.history='Supabase fallback history · '+fallbackPoints.length+' valid positive points (not OpenSkin)';updateDiagnostics();}
+      const fallbackPoints=(cached?.history||[]).map(normalizeHistoryPoint).filter(point=>point&&new Date(point.timestamp).getTime()>=cutoff);
+      if(fallbackPoints.length){
+        diagnostics.history='Supabase backup · '+fallbackPoints.length+' usable points (not an OpenSkin quote)';
+        updateDiagnostics();
+      }else if(openSkinHistoryError){
+        diagnostics.history='OpenSkin unavailable; no usable Supabase backup history';
+        updateDiagnostics();
+      }
       return fallbackPoints;
     }
     return [];
   };
-  const renderHistory=async()=>{if(!historyChart)return;const req=priceRequest,markets=selectedMarkets(),market=markets.includes('steam')?'steam':markets[0];if(!market){historyChart.textContent='Select a marketplace to view history.';return;}historyChart.textContent='Loading '+labels[market]+' history…';try{const name=activeMarketHashName+(activeItemType==='weapon'?' ('+activeWear+')':'');const pts=await fetchHistory(name,market,req);if(req!==priceRequest)return;if(displayCurrency==='EUR')await getRate();if(req!==priceRequest)return;const toDate=value=>{const numeric=typeof value==='number'||(typeof value==='string'&&/^\d+$/.test(value));const n=Number(value);return numeric?new Date(n<1e12?n*1000:n):new Date(value);};const p=pts.filter(x=>x.timestamp&&Number.isFinite(toDate(x.timestamp).getTime())&&Number.isFinite(Number(x.price))&&Number(x.price)>0).sort((a,b)=>toDate(a.timestamp)-toDate(b.timestamp));diagnostics.history+=' · '+p.length+' valid positive points used';updateDiagnostics();if(!p.length){historyChart.textContent='No historical records found for this item on '+labels[market]+' in this date range. Try another marketplace or a longer period.';return;}if(p.length<2){historyChart.textContent='Only one recorded price is available for this period. A trend needs at least two daily records.';return;}const vals=p.map(x=>Number(x.price)),min=Math.min(...vals),max=Math.max(...vals),span=max-min||1,w=760,h=170,pad=18,xy=vals.map((v,i)=>[pad+i*(w-2*pad)/(vals.length-1),h-pad-(v-min)/span*(h-2*pad)]),poly=xy.map(v=>v.join(',')).join(' '),fmt=n=>money(n),first=toDate(p[0].timestamp),last=toDate(p[p.length-1].timestamp),dateFmt=d=>d.toLocaleDateString(undefined,{month:'short',day:'numeric'});historyChart.innerHTML='<svg viewBox="0 0 '+w+' '+h+'" role="img" aria-label="'+labels[market]+' daily price history"><line x1="0" y1="'+h/2+'" x2="'+w+'" y2="'+h/2+'" stroke="#30363b" stroke-dasharray="3 5"/><polyline points="'+poly+'" fill="none" stroke="#55c8f4" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><text x="4" y="12" fill="#9da6ad" font-size="10">'+fmt(max)+'</text><text x="4" y="'+(h-17)+'" fill="#9da6ad" font-size="10">'+fmt(min)+'</text><text x="'+pad+'" y="'+(h-2)+'" fill="#718994" font-size="10">'+dateFmt(first)+'</text><text x="'+(w-pad)+'" y="'+(h-2)+'" text-anchor="end" fill="#718994" font-size="10">'+dateFmt(last)+'</text></svg>';historySource.textContent=(diagnostics.history.includes('Supabase fallback')?'Supabase fallback':'OpenSkin V1')+' · '+labels[market]+' · '+p.length+' daily data points · '+dateFmt(first)+' – '+dateFmt(last)+' · '+displayCurrency;}catch(e){if(req===priceRequest)historyChart.textContent='Price history could not load right now. Please try again shortly or select another marketplace.';}};
-  const formatPrices=p=>selectedMarkets().map(m=>{const v=p?.[m],n=[v?.ask,v?.median,v?.bid].map(Number).find(x=>Number.isFinite(x)&&x>0);return n?labels[m]+' '+money(n):null;}).filter(Boolean).join(' · ')||'Not listed on selected markets';
-  const loadVariantPrices=async()=>{if(!activeSkinName||!variantList)return;const req=++priceRequest;variantPrices={};const skin=activeItemType==='weapon';if(!skin){const label=activeItemType==='agent'?'Agent':activeItemType==='sticker'?'Sticker':activeItemType==='case'?'Case':'Collection';if(activeItemType==='collection'){variantList.innerHTML='<div class="skin-variant-row"><span>Collection</span><strong>—</strong></div>';marketStatus.textContent='Collections are not individually tradable.';historyChart.textContent='No direct market history for a collection.';return;}variantList.innerHTML='<div class="skin-variant-row selected" data-wear="base"><span>'+label+'</span><strong>Loading…</strong></div>';}else variantList.innerHTML=wears.map(w=>'<button type="button" class="skin-variant-row" data-wear="'+w+'"><span>'+w+'</span><strong>Loading…</strong></button>').join('');marketStatus.textContent='Loading marketplace prices…';if(!selectedMarkets().length){marketStatus.textContent='Select a supported marketplace.';return;}if(displayCurrency==='EUR'){try{await getRate();}catch(_){marketStatus.textContent='EUR conversion is temporarily unavailable. USD prices can still be viewed; switch to USD and try again later.';return;}}const list=skin?wears:['base'];await Promise.all(list.map(async wear=>{try{const name=skin?activeMarketHashName+' ('+wear+')':activeMarketHashName,d=await fetchPrices(name,req);if(req!==priceRequest||!d)return;variantPrices[wear]=d.prices;const el=variantList.querySelector('[data-wear="'+wear+'"] strong');if(el)el.textContent=formatPrices(d.prices);}catch(_){if(req!==priceRequest)return;variantPrices[wear]={};const el=variantList.querySelector('[data-wear="'+wear+'"] strong');if(el)el.textContent='Unavailable';}}));if(req!==priceRequest)return;const requestedMarkets=selectedMarkets();const hasAnyPrice=Object.values(variantPrices).some(prices=>requestedMarkets.some(m=>{const v=prices?.[m];return [v?.ask,v?.median,v?.bid].some(value=>Number.isFinite(Number(value))&&Number(value)>0);}));const failedCount=list.filter(w=>!variantPrices[w]).length;marketStatus.textContent=hasAnyPrice?'Marketplace prices loaded. Values are indicative and are not guaranteed trade quotes.':failedCount===list.length?'No marketplace provider returned price data right now. Please try again later.':'No prices are currently listed for this item on the selected marketplaces.';renderHistory();};
-  const renderMarketRows=()=>{if(!variantList)return;variantList.querySelectorAll('[data-wear]').forEach(row=>{const el=row.querySelector('strong');if(el)el.textContent=variantPrices[row.dataset.wear]?formatPrices(variantPrices[row.dataset.wear]):'—';});marketStatus.textContent=selectedMarkets().length?'Showing available prices. Check PRICE DATA DIAGNOSTICS for the source.':'Select at least one supported marketplace.';};
+  const renderHistory=async()=>{
+    if(!historyChart)return;
+    const req=priceRequest,historyReq=++historyRequest,markets=selectedMarkets(),market=markets.includes('steam')?'steam':markets[0];
+    if(!market){historyChart.textContent='Select a marketplace to view history.';if(historySource)historySource.textContent='';return;}
+    historyChart.textContent='Loading '+labels[market]+' history…';
+    try{
+      const name=activeMarketHashName+(activeItemType==='weapon'?' ('+activeWear+')':'');
+      const pts=await fetchHistory(name,market,req);
+      if(req!==priceRequest||historyReq!==historyRequest)return;
+      if(displayCurrency==='EUR')await getRate();
+      if(req!==priceRequest||historyReq!==historyRequest)return;
+      const p=pts.map(normalizeHistoryPoint).filter(Boolean).sort((a,b)=>new Date(a.timestamp)-new Date(b.timestamp));
+      const source=diagnostics.history.includes('Supabase backup')?'Supabase backup':'OpenSkin V1';
+      if(historySource)historySource.textContent=source+' · '+labels[market]+' · '+p.length+' usable data points · '+displayCurrency;
+      if(!p.length){historyChart.textContent='No historical records are available for this item and marketplace in the selected period.';return;}
+      if(p.length<2){historyChart.textContent='Only one valid historical price is available. A price trend needs at least two points.';return;}
+      const vals=p.map(x=>x.price),min=Math.min(...vals),max=Math.max(...vals),span=max-min||1,w=760,h=170,pad=18;
+      const xy=vals.map((v,i)=>[pad+i*(w-2*pad)/(vals.length-1),h-pad-(v-min)/span*(h-2*pad)]);
+      const poly=xy.map(v=>v.join(',')).join(' '),fmt=n=>money(n),first=new Date(p[0].timestamp),last=new Date(p[p.length-1].timestamp);
+      const dateFmt=d=>d.toLocaleDateString(undefined,{month:'short',day:'numeric'});
+      historyChart.innerHTML='<svg viewBox="0 0 '+w+' '+h+'" role="img" aria-label="'+labels[market]+' daily price history"><line x1="0" y1="'+h/2+'" x2="'+w+'" y2="'+h/2+'" stroke="#30363b" stroke-dasharray="3 5"/><polyline points="'+poly+'" fill="none" stroke="#55c8f4" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><text x="4" y="12" fill="#9da6ad" font-size="10">'+fmt(max)+'</text><text x="4" y="'+(h-17)+'" fill="#9da6ad" font-size="10">'+fmt(min)+'</text><text x="'+pad+'" y="'+(h-2)+'" fill="#718994" font-size="10">'+dateFmt(first)+'</text><text x="'+(w-pad)+'" y="'+(h-2)+'" text-anchor="end" fill="#718994" font-size="10">'+dateFmt(last)+'</text></svg>';
+      if(historySource)historySource.textContent=source+' · '+labels[market]+' · '+p.length+' daily data points · '+dateFmt(first)+' – '+dateFmt(last)+' · '+displayCurrency;
+    }catch(_){
+      if(req===priceRequest&&historyReq===historyRequest){historyChart.textContent='Price history is temporarily unavailable. Please try again shortly.';if(historySource)historySource.textContent='History provider unavailable';}
+    }
+  };
+  const formatPrices=(p,source='openskin')=>selectedMarkets().map(m=>{
+    const v=p?.[m],n=[v?.ask,v?.median,v?.bid].find(x=>typeof x==='number'&&Number.isFinite(x)&&x>0);
+    return n?labels[m]+' '+money(n)+(m==='steam'&&source==='supabase'?' · backup':''):null;
+  }).filter(Boolean).join(' · ')||'Not listed on selected markets';
+  const loadVariantPrices=async()=>{if(!activeSkinName||!variantList)return;const req=++priceRequest;variantPrices={};variantSources={};const skin=activeItemType==='weapon';if(!skin){const label=activeItemType==='agent'?'Agent':activeItemType==='sticker'?'Sticker':activeItemType==='case'?'Case':'Collection';if(activeItemType==='collection'){variantList.innerHTML='<div class="skin-variant-row"><span>Collection</span><strong>—</strong></div>';marketStatus.textContent='Collections are not individually tradable.';historyChart.textContent='No direct market history for a collection.';return;}variantList.innerHTML='<div class="skin-variant-row selected" data-wear="base"><span>'+label+'</span><strong>Loading…</strong></div>';}else variantList.innerHTML=wears.map(w=>'<button type="button" class="skin-variant-row" data-wear="'+w+'"><span>'+w+'</span><strong>Loading…</strong></button>').join('');marketStatus.textContent='Loading marketplace prices…';if(!selectedMarkets().length){marketStatus.textContent='Select a supported marketplace.';return;}if(displayCurrency==='EUR'){try{await getRate();}catch(_){marketStatus.textContent='EUR conversion is temporarily unavailable. USD prices can still be viewed; switch to USD and try again later.';return;}}const list=skin?wears:['base'];await Promise.all(list.map(async wear=>{try{const name=skin?activeMarketHashName+' ('+wear+')':activeMarketHashName,d=await fetchPrices(name,req);if(req!==priceRequest||!d)return;variantPrices[wear]=d.prices;variantSources[wear]=d.source||'openskin';const el=variantList.querySelector('[data-wear="'+wear+'"] strong');if(el)el.textContent=formatPrices(d.prices,d.source);}catch(_){if(req!==priceRequest)return;variantPrices[wear]={};const el=variantList.querySelector('[data-wear="'+wear+'"] strong');if(el)el.textContent='Unavailable';}}));if(req!==priceRequest)return;const requestedMarkets=selectedMarkets();const hasAnyPrice=Object.values(variantPrices).some(prices=>requestedMarkets.some(m=>{const v=prices?.[m];return [v?.ask,v?.median,v?.bid].some(value=>Number.isFinite(Number(value))&&Number(value)>0);}));const failedCount=list.filter(w=>!variantPrices[w]||!Object.keys(variantPrices[w]).length).length;
+    const usedBackup=Object.values(variantSources).some(source=>source==='supabase'||source==='mixed');
+    marketStatus.textContent=hasAnyPrice
+      ?(usedBackup?'Steam backup data is being used where OpenSkin has no quote. ':'OpenSkin market data loaded. ')+'Prices are indicative and are not guaranteed trade quotes.'
+      :failedCount===list.length?'Market data is temporarily unavailable or this item has no current quote. Please try again shortly.':'Some marketplace prices are unavailable for this item.';renderHistory();};
+  const renderMarketRows=()=>{if(!variantList)return;variantList.querySelectorAll('[data-wear]').forEach(row=>{const el=row.querySelector('strong');if(el)el.textContent=variantPrices[row.dataset.wear]?formatPrices(variantPrices[row.dataset.wear],variantSources[row.dataset.wear]):'—';});marketStatus.textContent=selectedMarkets().length?'Showing available prices for the selected marketplace.':'Select at least one supported marketplace.';};
   marketPickerButton?.addEventListener('click',()=>{marketMenu.hidden=!marketMenu.hidden;marketPickerButton.setAttribute('aria-expanded',String(!marketMenu.hidden));});
   document.addEventListener('click',e=>{if(marketMenu&&!e.target.closest('#skinMarketPicker')){marketMenu.hidden=true;marketPickerButton?.setAttribute('aria-expanded','false');}});
   marketChecks.forEach(x=>x.addEventListener('change',()=>{refreshMarketButton();loadVariantPrices();}));
   currencySelect?.addEventListener('change',async()=>{displayCurrency=currencySelect.value==='USD'?'USD':'EUR';try{localStorage.setItem('adhem_skins_currency',displayCurrency);}catch(_){}if(displayCurrency==='EUR'){try{await getRate();}catch(_){marketStatus.textContent='EUR conversion is temporarily unavailable. Prices are available in USD; switch currency to continue.';return;}}renderMarketRows();renderHistory();});
   variantList?.addEventListener('click',e=>{const row=e.target.closest('[data-wear]');if(!row)return;activeWear=row.dataset.wear;variantList.querySelectorAll('[data-wear]').forEach(x=>x.classList.toggle('selected',x===row));renderHistory();});
   rangeButtons.forEach(b=>b.addEventListener('click',()=>{historyRange=Number(b.dataset.range)||30;rangeButtons.forEach(x=>x.classList.toggle('active',x===b));const h=document.querySelector('.skin-history-head strong');if(h)h.textContent='PRICE HISTORY · '+(historyRange===180?'6 MONTHS':historyRange===365?'1 YEAR':historyRange+' DAYS');renderHistory();}));
+  marketChecks.forEach(check=>{check.checked=check.value==='steam';});
   refreshMarketButton();
   updateDiagnostics();
   const showViewer=()=>{
