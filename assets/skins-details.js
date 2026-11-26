@@ -35,7 +35,7 @@
   retryPriceButton.type='button';
   retryPriceButton.textContent='RETRY PRICE DATA';
   retryPriceButton.hidden=true;
-  retryPriceButton.style.cssText='display:block;margin:8px 0 0;padding:9px 13px;border:1px solid rgba(17,217,247,.35);border-radius:7px;background:rgba(17,217,247,.07);color:#11d9f7;font:700 10px Inter,Arial,sans-serif;letter-spacing:.06em;cursor:pointer';
+  retryPriceButton.style.cssText='margin:8px 0 0;padding:9px 13px;border:1px solid rgba(17,217,247,.35);border-radius:7px;background:rgba(17,217,247,.07);color:#11d9f7;font:700 10px Inter,Arial,sans-serif;letter-spacing:.06em;cursor:pointer';
   marketStatus?.insertAdjacentElement('afterend',retryPriceButton);
   retryPriceButton.addEventListener('click',()=>loadVariantPrices());
 
