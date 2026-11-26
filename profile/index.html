@@ -759,7 +759,7 @@ function setProfileBadgeState(cardId,stateId,unlocked,label){
  if(card){card.classList.toggle('unlocked',!!unlocked);card.classList.toggle('locked',!unlocked)}
  if(state)state.textContent=label;
 }
-function renderProfileBadges(level,profile,streakBadgeIds){
+function renderProfileBadges(level,profile,streakBadgeIds,currentStreak){
  const b=getLevelBadge(level);
  const icon=document.getElementById('badgeLevelIcon'),name=document.getElementById('badgeLevelName');
  if(icon)icon.innerHTML='<img src="'+b.icon+'" alt="'+b.name+' badge" width="38" height="38" loading="lazy">';
@@ -780,7 +780,9 @@ function renderProfileBadges(level,profile,streakBadgeIds){
   {id:'streak_20',name:'STREAK GOLD',icon:'🥇',xp:250,streams:20},
   {id:'streak_30',name:'STREAK LEGEND',icon:'👑',xp:500,streams:30}
  ];
- const current=[...streakLevels].reverse().find(item=>earned.has(item.id));
+ const liveStreak=Math.max(0,Number(currentStreak)||0);
+ const earnedCurrent=[...streakLevels].reverse().find(item=>earned.has(item.id));
+ const current=earnedCurrent||[...streakLevels].reverse().find(item=>liveStreak>=item.streams);
  const streakCard=document.getElementById('badgeTwitchStreakCard');
  const streakIcon=document.getElementById('badgeTwitchStreakIcon');
  const streakName=document.getElementById('badgeTwitchStreakName');
@@ -788,7 +790,7 @@ function renderProfileBadges(level,profile,streakBadgeIds){
  if(streakCard){streakCard.classList.toggle('unlocked',!!current);streakCard.classList.toggle('locked',!current);}
  if(streakIcon)streakIcon.textContent=current?current.icon:'🔥';
  if(streakName)streakName.textContent=current?current.name:'STREAM WATCH STREAK';
- if(streakState)streakState.textContent=current?'LEVEL '+current.streams+' · +'+current.xp+' XP EARNED':'REACH 3 CONSECUTIVE LIVES';
+ if(streakState)streakState.textContent=earnedCurrent?'LEVEL '+earnedCurrent.streams+' · +'+earnedCurrent.xp+' XP EARNED':current?'LEVEL '+current.streams+' · CURRENT STREAK':'CURRENT: '+liveStreak+'/3 · REACH 3 CONSECUTIVE LIVES';
 }
 
 const adminPreviewUsername = new URLSearchParams(window.location.search).get('admin_preview');
@@ -947,7 +949,7 @@ async function renderAdminPublicPreview(username){
    const {data:earnedStreakBadges,error:streakBadgeError}=await client.rpc('get_twitch_watch_streak_badges',{p_twitch_username:username});
    if(!streakBadgeError&&Array.isArray(earnedStreakBadges))streakBadgeIds=earnedStreakBadges;
  }catch(streakBadgeLoadError){console.warn('Twitch streak badges unavailable',streakBadgeLoadError);}
- renderProfileBadges(level,p,streakBadgeIds);
+ renderProfileBadges(level,p,streakBadgeIds,Number(p.twitch_watch_streak||0));
  if(badgeEl)badgeEl.innerHTML='<span class="profile-badge-icon"><img src="'+badge.icon+'" alt="" width="24" height="24" loading="lazy"></span><span>'+badge.name+'</span>';
  set('profileLevelPercent',Math.round(pct)+'%');
  const bar=document.getElementById('profileProgressBar');if(bar)bar.style.width=pct+'%';
@@ -1015,13 +1017,19 @@ window.addEventListener('adhem:viewer', async function(e){
  if(activeTitle){activeTitle.textContent='FNC PROGRESSION';activeTitle.classList.remove('profile-active-offline');}
  set('profileFncPoints',Number(p&&p.fnc_points||0).toLocaleString());
  const xp=Number(p&&p.xp||0),level=Number(p&&p.level||1);
- set('profileXp',xp.toLocaleString()+' XP');set('profileLevel',level);set('profileWatchMinutes',formatWatchTime(Number(p&&p.total_watch_minutes||0)));set('profileStreak',Number(p&&p.twitch_watch_streak||0)+' STREAMS');
+ set('profileXp',xp.toLocaleString()+' XP');set('profileLevel',level);set('profileWatchMinutes',formatWatchTime(Number(p&&p.total_watch_minutes||0)));
+ let ownTwitchWatchStreak=Number(p&&p.twitch_watch_streak||0);
+ try{
+   const {data:myStreak,error:myStreakError}=await client.rpc('get_my_twitch_watch_streak');
+   if(!myStreakError&&myStreak!==null&&Number.isFinite(Number(myStreak)))ownTwitchWatchStreak=Number(myStreak);
+ }catch(myStreakLoadError){console.warn('Own Twitch watch streak unavailable',myStreakLoadError);}
+ set('profileStreak',ownTwitchWatchStreak+' STREAMS');
  let ownStreakBadgeIds=[];
  try{
    const {data:earnedStreakBadges,error:streakBadgeError}=await client.rpc('get_twitch_watch_streak_badges',{p_twitch_username:p.twitch_username});
    if(!streakBadgeError&&Array.isArray(earnedStreakBadges))ownStreakBadgeIds=earnedStreakBadges;
  }catch(streakBadgeLoadError){console.warn('Own Twitch streak badges unavailable',streakBadgeLoadError);}
- renderProfileBadges(level,p,ownStreakBadgeIds);
+ renderProfileBadges(level,p,ownStreakBadgeIds,ownTwitchWatchStreak);
  const thresholds={1:0,2:750,3:1750,4:3000,5:4500,6:6250,7:8250,8:10500,9:13000,10:15750};
  const cur=thresholds[level]??0,next=Object.keys(thresholds).map(Number).sort((a,b)=>a-b).find(x=>x>level);
  const pct=next?Math.max(0,Math.min(100,(xp-cur)/(thresholds[next]-cur)*100)):100;
