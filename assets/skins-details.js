@@ -41,6 +41,7 @@
 
   const rangeButtons=[...document.querySelectorAll('#skinHistoryRanges button')],wears=['Factory New','Minimal Wear','Field-Tested','Well-Worn','Battle-Scarred'];
   const labels={steam:'Steam',skinport:'Skinport',buff:'BUFF163',youpin:'YouPin',csfloat:'CSFloat'};
+  const OPEN_SKIN_API='https://lpmocfdfpebcaseffugg.supabase.co/functions/v1/cs2-open-skin-market';
   let activeSkinName='',activeMarketHashName='',activeItemType='weapon',activeWear='Factory New',priceRequest=0,historyRequest=0,historyRange=30,variantPrices={},variantSources={},variantErrors={},displayCurrency='USD',eurUsdRate=null;
   try{const v=localStorage.getItem('adhem_skins_currency');if(v==='USD'||v==='EUR')displayCurrency=v;}catch(_){}
   if(currencySelect)currencySelect.value=displayCurrency;
@@ -90,12 +91,12 @@
     if(!prices.steam.ask&&!prices.steam.median)throw Error('Steam has no current price for this item');
     return {item:name,prices};
   };
-  const hasPositiveQuote=value=>['ask','median','bid'].some(key=>typeof value?.[key]==='number'&&Number.isFinite(value[key])&&value[key]>0);
+  const hasPositiveQuote=value=>['ask','median','bid','highest_bid'].some(key=>typeof value?.[key]==='number'&&Number.isFinite(value[key])&&value[key]>0);
   const fetchPrices=async(name,req)=>{
     setPriceDiagnostic(name,{openSkin:'Checking OpenSkin V1',result:'Pending'});
     let openSkinData=null,openSkinError=null;
     try{
-      openSkinData=await fetchJson('/api/cs2-skins-market?kind=prices&item='+encodeURIComponent(name));
+      openSkinData=await fetchJson(OPEN_SKIN_API+'?kind=prices&item='+encodeURIComponent(name));
       if(req!==priceRequest)return null;
       if(!openSkinData||typeof openSkinData!=='object'||!openSkinData.prices||typeof openSkinData.prices!=='object'||Array.isArray(openSkinData.prices)){
         throw new PriceRequestError('OpenSkin response has an invalid prices object',200,'invalid_schema');
@@ -153,9 +154,9 @@
     const to=new Date(),from=new Date(Date.now()-historyRange*86400000),fmt=d=>d.toISOString().slice(0,10);
     let points=[],openSkinHistoryError=null;
     try{
-      const data=await fetchJson('/api/cs2-skins-market?kind=history',{
+      const data=await fetchJson(OPEN_SKIN_API,{
         method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({item:name,marketplace:market,from:fmt(from),to:fmt(to),interval:'daily'})
+        body:JSON.stringify({kind:'history',item:name,marketplace:market,from:fmt(from),to:fmt(to),interval:'daily'})
       });
       if(req!==priceRequest)return [];
       if(!Array.isArray(data?.data))throw new PriceRequestError('History response does not contain a data array',200,'invalid_schema');
@@ -213,8 +214,17 @@
     }
   };
   const formatPrices=(p,source='openskin')=>selectedMarkets().map(m=>{
-    const v=p?.[m],n=[v?.ask,v?.median,v?.bid].find(x=>typeof x==='number'&&Number.isFinite(x)&&x>0);
-    return n?labels[m]+' '+money(n)+(m==='steam'&&(source==='supabase'||source==='mixed')?' · backup':''):null;
+    const v=p?.[m];
+    const ask=typeof v?.ask==='number'&&Number.isFinite(v.ask)&&v.ask>0?v.ask:null;
+    const bidValue=v?.bid??v?.highest_bid;
+    const bid=typeof bidValue==='number'&&Number.isFinite(bidValue)&&bidValue>0?bidValue:null;
+    const median=typeof v?.median==='number'&&Number.isFinite(v.median)&&v.median>0?v.median:null;
+    if(!ask&&!bid&&!median)return null;
+    const quote=ask?money(ask)+' ask':median?money(median)+' median':money(bid)+' bid';
+    const updated=v?.updated_at?new Date(v.updated_at):null;
+    const date=updated&&Number.isFinite(updated.getTime())?' · '+updated.toLocaleDateString(undefined,{day:'numeric',month:'short'}):'';
+    const backup=m==='steam'&&(source==='supabase'||source==='mixed')?' · backup':'';
+    return labels[m]+' '+quote+(ask&&bid?' · '+money(bid)+' bid':'')+date+backup;
   }).filter(Boolean).join(' · ')||'Not listed on selected markets';
   const loadVariantPrices=async()=>{if(!activeSkinName||!variantList)return;const req=++priceRequest;variantPrices={};variantSources={};variantErrors={};retryPriceButton.hidden=true;const skin=activeItemType==='weapon';if(!skin){const label=activeItemType==='agent'?'Agent':activeItemType==='sticker'?'Sticker':activeItemType==='case'?'Case':'Collection';if(activeItemType==='collection'){variantList.innerHTML='<div class="skin-variant-row"><span>Collection</span><strong>—</strong></div>';marketStatus.textContent='Collections are not individually tradable.';historyChart.textContent='No direct market history for a collection.';retryPriceButton.hidden=true;return;}variantList.innerHTML='<div class="skin-variant-row selected" data-wear="base"><span>'+label+'</span><strong>Loading…</strong></div>';}else variantList.innerHTML=wears.map(w=>'<button type="button" class="skin-variant-row" data-wear="'+w+'"><span>'+w+'</span><strong>Loading…</strong></button>').join('');marketStatus.textContent='Loading marketplace prices…';if(!selectedMarkets().length){marketStatus.textContent='Select a supported marketplace.';retryPriceButton.hidden=true;return;}if(displayCurrency==='EUR'){try{await getRate();}catch(_){marketStatus.textContent='EUR conversion is temporarily unavailable. USD prices can still be viewed; switch to USD and try again later.';return;}}const list=skin?wears:['base'];await Promise.all(list.map(async wear=>{try{const name=skin?activeMarketHashName+' ('+wear+')':activeMarketHashName,d=await fetchPrices(name,req);if(req!==priceRequest||!d)return;variantPrices[wear]=d.prices;variantSources[wear]=d.source||'openskin';const el=variantList.querySelector('[data-wear="'+wear+'"] strong');if(el)el.textContent=formatPrices(d.prices,d.source);}catch(error){if(req!==priceRequest)return;variantPrices[wear]={};variantErrors[wear]=error?.code||'request_failed';const el=variantList.querySelector('[data-wear="'+wear+'"] strong');if(el)el.textContent='Unavailable';}}));if(req!==priceRequest)return;const requestedMarkets=selectedMarkets();const hasAnyPrice=Object.values(variantPrices).some(prices=>requestedMarkets.some(m=>hasPositiveQuote(prices?.[m])));const allUnlisted=list.every(w=>['item_unpriced','item_not_found'].includes(variantErrors[w]));const failedCount=list.filter(w=>variantErrors[w]).length;
     const usedBackup=Object.values(variantSources).some(source=>source==='supabase'||source==='mixed');
