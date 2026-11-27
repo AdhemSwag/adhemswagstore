@@ -1632,7 +1632,7 @@ async function loadWatchMonitor(){
      if(monitoring.overall_status==='warning')parts.push('One or more automated watch/reward checks need attention. See Automatic Diagnostics below.');
      if(monitoring.twitch?.live&&monitoring.twitch?.sync_ok!==true)parts.push('Twitch is detected LIVE but the latest viewer synchronization is not confirmed healthy.');
      if(monitoring.twitch?.live&&Number(monitoring.twitch?.matched_accounts_count||0)===0)parts.push('Twitch is LIVE but no site accounts were matched in the latest observation.');
-     if(monitoring.rewards?.enabled&&Number(monitoring.rewards?.fnc_1h||0)===0)parts.push('FNC is enabled but no FNC reward ticks were recorded in the last hour.');
+     if(monitoring.rewards?.enabled&&monitoring.twitch?.live&&Number(monitoring.twitch?.matched_accounts_count||0)>0&&Number(monitoring.rewards?.fnc_1h||0)===0)parts.push('FNC is enabled and viewers are matched, but no FNC reward ticks were recorded in the last hour.');
    }
    if(authResponse.error||auth.reason==='token_refresh_pending'||auth.connected!==true)parts.push('Twitch authorization is not fully verified.');
    if(!watchJob)parts.push('The scheduled Twitch watch-sync job was not returned by the Admin operations snapshot.');
