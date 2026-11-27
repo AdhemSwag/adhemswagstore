@@ -485,7 +485,7 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
     <section id="watch-monitor" class="panel">
       <div class="section">
         <h2>FNC <span style="color:var(--cyan)">WATCH MONITORING</span></h2>
-        <p>Read-only production diagnostics. A deployed function or saved browser flag is never treated as proof that Twitch tracking is healthy. The cron result confirms scheduled dispatch only, not the HTTP result of each Edge Function.</p>
+        <p>Read-only production diagnostics. Health is based on fresh database observations, actual reward ticks, verified Twitch authorization and cron results — never on deployment status alone. Auto-refreshes every 30 seconds while this panel is open.</p>
         <div class="cards" style="margin-top:18px">
           <div class="card"><small>TWITCH TOKEN</small><div class="metric" id="wmAuthStatus" style="font-size:18px">NOT CHECKED</div></div>
           <div class="card"><small>WATCH SYNC CRON</small><div class="metric" id="wmCronStatus" style="font-size:18px">NOT CHECKED</div></div>
@@ -506,6 +506,9 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
           <div class="card"><small>FNC CREDITED · 24H</small><div class="metric" id="wmFnc24Actual">—</div></div>
           <div class="card"><small>XP CREDITED · 1H</small><div class="metric" id="wmXp1h">—</div></div>
           <div class="card"><small>CRON FAILURES · 24H</small><div class="metric" id="wmCronFailures">—</div></div>
+          <div class="card"><small>LAST OBSERVATION</small><div class="metric" id="wmObservationAge" style="font-size:18px">—</div></div>
+          <div class="card"><small>LAST REWARD TICK</small><div class="metric" id="wmRewardAge" style="font-size:18px">—</div></div>
+          <div class="card"><small>STREAM STARTED</small><div class="metric" id="wmStreamStarted" style="font-size:18px">—</div></div>
         </div>
         <div class="section" style="margin-top:14px;padding:16px">
           <h2 style="font-size:20px">AUTOMATIC <span style="color:var(--cyan)">DIAGNOSTICS</span></h2>
@@ -521,7 +524,7 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
         </div>
         <div class="actions"><button class="btn primary" id="refreshWatchMonitor" type="button">REFRESH WATCH MONITOR</button><span id="wmUpdated" style="font:10px 'JetBrains Mono',monospace;color:var(--muted);align-self:center"></span></div>
         <div id="wmStatus" class="notice">Waiting for secure Admin access…</div>
-        <p style="margin-top:10px;font-size:11px;color:var(--muted)">Request-level Edge Function HTTP logs, exact 403/500/503 history and token expiry timestamps are not exposed to this browser panel yet. They require a secured server-side telemetry feed. No token or secret values are displayed here.</p>
+        <p style="margin-top:10px;font-size:11px;color:var(--muted)">This panel never displays Twitch tokens, Client Secrets or private credentials. Edge Function request-level HTTP errors remain available in Supabase Logs; the summary below shows only verified monitoring data.</p>
       </div>
       <div class="section">
         <h2>Active <span style="color:var(--cyan)">VIEWERS</span></h2>
@@ -1532,9 +1535,10 @@ async function loadFncAnalytics(){
  const u=document.getElementById('faUpdated');if(u)u.textContent='Updated '+new Date().toLocaleTimeString();
 }
 async function loadWatchMonitor(){
- if(!adminReady)return;
+ if(!adminReady||window.__wmLoading)return;
+ window.__wmLoading=true;
  const status=document.getElementById('wmStatus'),tbody=document.getElementById('watchMonitorList');
- if(!status||!tbody)return;
+ if(!status||!tbody){window.__wmLoading=false;return;}
  status.textContent='Checking Twitch authorization, automation and viewer activity…';
  status.style.borderLeftColor='var(--line)';
  try{
@@ -1555,6 +1559,11 @@ async function loadWatchMonitor(){
      const colorFor=v=>v==='healthy'?'var(--ok)':v==='warning'?'var(--danger)':v==='partial'||v==='inactive'||v==='disabled'?'#f0bd58':'var(--muted)';
      const put=(id,value,color)=>{const el=document.getElementById(id);if(el){el.textContent=value; if(color)el.style.color=color;}};
      const tw=monitoring.twitch||{},rw=monitoring.rewards||{},checks=Array.isArray(monitoring.checks)?monitoring.checks:[];
+     const ageLabel=seconds=>seconds===null||seconds===undefined?'Not recorded':seconds<60?seconds+'s ago':Math.floor(seconds/60)+'m ago';
+     put('wmObservationAge',ageLabel(tw.observation_age_seconds),Number(tw.observation_age_seconds)>180?'var(--danger)':'var(--ok)');
+     const rewardAge=rw.latest_tick_at?Math.max(0,Math.floor((Date.now()-new Date(rw.latest_tick_at).getTime())/1000)):null;
+     put('wmRewardAge',ageLabel(rewardAge),rewardAge!==null&&rewardAge>180&&tw.live&&Number(tw.matched_accounts_count||0)>0?'var(--danger)':'var(--ok)');
+     put('wmStreamStarted',tw.stream_started_at?new Date(tw.stream_started_at).toLocaleTimeString():'Not live',tw.live?'var(--ok)':'var(--muted)');
      put('wmOverall',String(monitoring.overall_status||'unknown').toUpperCase(),colorFor(monitoring.overall_status));
      put('wmLiveState',tw.live?'LIVE':'OFFLINE / UNKNOWN',tw.live?'var(--ok)':'#f0bd58');
      put('wmSyncState',tw.sync_ok?'SYNC OK':'SYNC WARNING',tw.sync_ok?'var(--ok)':'var(--danger)');
@@ -1630,14 +1639,16 @@ async function loadWatchMonitor(){
    else if(jobStatus!=='succeeded')parts.push('The scheduled Twitch watch-sync job reports '+(jobStatus||'no status')+'.');
    else if(watchJob.last_run&&Date.now()-new Date(watchJob.last_run).getTime()>3*60*1000)parts.push('The last successful Twitch watch-sync run is older than 3 minutes.');
    if(watchJob&&Number(watchJob.failed_24h||0)>0)parts.push('Twitch watch-sync has failed runs in the last 24 hours: '+Number(watchJob.failed_24h).toLocaleString()+'.');
-   status.textContent=parts.length?parts.join(' '):'Twitch authorization, automation job summaries and recent viewer activity loaded. This is not a substitute for request-level Edge Function logs.';
+   status.textContent=parts.length?('ATTENTION · '+parts.join(' ')):'ALL CHECKS PASSED · Twitch authorization, recent sync, cron summary and viewer activity verified.';
    status.style.borderLeftColor=parts.length?'#f0bd58':'var(--ok)';
-   document.getElementById('wmUpdated').textContent='Updated '+new Date().toLocaleTimeString();
+   document.getElementById('wmUpdated').textContent='Updated '+new Date().toLocaleTimeString()+' · Auto-refresh 30s';
  }catch(error){
-   status.textContent='Monitoring data unavailable: '+(error?.message||'Unknown error')+'. No healthy state can be inferred.';
+   status.textContent='MONITORING UNAVAILABLE · '+(error?.message||'Unknown error')+'. Previous values must not be treated as current health.';
    status.style.borderLeftColor='var(--danger)';
+   ['wmOverall','wmLiveState','wmSyncState','wmRewardState','wmAuthStatus','wmCronStatus','wmObservationAge','wmRewardAge','wmStreamStarted'].forEach(id=>{const el=document.getElementById(id);if(el){el.textContent='NOT VERIFIED';el.style.color='var(--danger)';}});
+   const checksBody=document.getElementById('wmChecksList');if(checksBody)checksBody.innerHTML='<tr><td colspan="3">Monitoring request failed. Refresh to retry.</td></tr>';
    document.getElementById('wmUpdated').textContent='Check failed '+new Date().toLocaleTimeString();
- }
+ }finally{window.__wmLoading=false;}
 }
 async function loadOperations(){
  if(!adminReady)return; const tbody=document.getElementById('operationsList'); if(!tbody)return;
