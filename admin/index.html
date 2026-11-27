@@ -527,6 +527,11 @@ h1{font:700 clamp(38px,5vw,62px) Rajdhani,sans-serif;line-height:1;text-transfor
         <p style="margin-top:10px;font-size:11px;color:var(--muted)">This panel never displays Twitch tokens, Client Secrets or private credentials. Edge Function request-level HTTP errors remain available in Supabase Logs; the summary below shows only verified monitoring data.</p>
       </div>
       <div class="section">
+        <h2>Recent <span style="color:var(--cyan)">WATCH HISTORY</span></h2>
+        <p>Last 12 real monitoring observations from the database. Sync warnings are shown separately from normal offline periods.</p>
+        <div class="table-wrap"><table><thead><tr><th>Time</th><th>Stream</th><th>Sync</th><th>Twitch Viewers</th><th>Chatters</th><th>Matched Accounts</th><th>Sessions</th></tr></thead><tbody id="wmHistoryList"><tr><td colspan="7">Waiting for monitoring data…</td></tr></tbody></table></div>
+      </div>
+      <div class="section">
         <h2>Active <span style="color:var(--cyan)">VIEWERS</span></h2>
         <div class="table-wrap"><table><thead><tr><th>Viewer</th><th>Joined</th><th>Last Seen</th><th>Last Activity</th><th>Minutes</th><th>Tier</th></tr></thead><tbody id="watchMonitorList"><tr><td colspan="6">Waiting for Admin access…</td></tr></tbody></table></div>
       </div>
@@ -1543,12 +1548,14 @@ async function loadWatchMonitor(){
  status.style.borderLeftColor='var(--line)';
  try{
    const cutoff=new Date(Date.now()-5*60*1000).toISOString();
-   const [sessions,opsResponse,authResponse]=await Promise.all([
+   const [sessions,opsResponse,authResponse,historyResponse]=await Promise.all([
      supabaseClient.from('watch_sessions').select('user_id,joined_at,last_seen_at,last_activity_at,active_minutes,subscription_tier').is('ended_at',null).gte('last_seen_at',cutoff).order('last_seen_at',{ascending:false}).limit(100),
      supabaseClient.functions.invoke('admin-operations-snapshot',{body:{}}),
-     supabaseClient.functions.invoke('admin-twitch-watch-status',{body:{}})
+     supabaseClient.functions.invoke('admin-twitch-watch-status',{body:{}}),
+     supabaseClient.from('twitch_watch_observations').select('observed_at,twitch_stream_id,sync_ok,twitch_viewer_count,chatters_count,matched_accounts_count,active_sessions_count').order('observed_at',{ascending:false}).limit(12)
    ]);
    if(sessions.error)throw sessions.error;
+   if(historyResponse.error)throw historyResponse.error;
    if(opsResponse.error)throw opsResponse.error;
    const monitoring=opsResponse.data?.monitoring||null;
    if(!monitoring?.rewards||!Number.isFinite(Number(monitoring.rewards.fnc_24h))||!Number.isFinite(Number(monitoring.rewards.xp_24h))||!Number.isFinite(Number(monitoring.rewards.reward_ticks_24h))) {
@@ -1603,6 +1610,15 @@ async function loadWatchMonitor(){
    setText('wmCronStatus',watchJob?(jobStatus||'NO RUN').toUpperCase():'NO JOB DATA',jobStatus==='succeeded'?'var(--ok)':watchJob?'#f0bd58':'var(--danger)');
    setText('wmCronSchedule',watchJob?.schedule||'—');
    setText('wmLastRun',watchJob?.last_run?new Date(watchJob.last_run).toLocaleTimeString():'—');
+   const historyBody=document.getElementById('wmHistoryList');
+   const historyRows=historyResponse.data||[];
+   if(historyBody)historyBody.innerHTML=historyRows.map(x=>{
+     const time=x.observed_at?new Date(x.observed_at).toLocaleString():'—';
+     const stream=x.twitch_stream_id?'LIVE':'OFFLINE';
+     const sync=x.sync_ok===true?'SYNC OK':'SYNC WARNING';
+     const syncColor=x.sync_ok===true?'var(--ok)':'var(--danger)';
+     return '<tr><td>'+escapeHtml(time)+'</td><td>'+stream+'</td><td style="font-weight:700;color:'+syncColor+'">'+sync+'</td><td>'+Number(x.twitch_viewer_count||0).toLocaleString()+'</td><td>'+Number(x.chatters_count||0).toLocaleString()+'</td><td>'+Number(x.matched_accounts_count||0).toLocaleString()+'</td><td>'+Number(x.active_sessions_count||0).toLocaleString()+'</td></tr>';
+   }).join('')||'<tr><td colspan="7">No watch observations have been recorded yet.</td></tr>';
    const rows=sessions.data||[];
    const ids=[...new Set(rows.map(x=>x.user_id))];
    let users=[];
