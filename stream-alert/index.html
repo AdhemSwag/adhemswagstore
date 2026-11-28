@@ -7,22 +7,34 @@
 <style>
 :root{color-scheme:dark}
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:transparent;font-family:Arial,sans-serif}
-#alert{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(.82);width:min(900px,90vw);padding:30px 34px;border:1px solid rgba(17,217,247,.78);background:linear-gradient(135deg,rgba(5,7,10,.97),rgba(7,19,24,.96));box-shadow:0 0 35px rgba(17,217,247,.25),inset 0 0 28px rgba(17,217,247,.045);color:#eaf6f8;opacity:0;visibility:hidden;text-align:center;transition:opacity .3s ease,transform .3s ease}
+#alert{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(.82);width:min(860px,92vw);padding:26px 30px;border:1px solid rgba(17,217,247,.35);border-radius:14px;background:radial-gradient(circle at 18% 50%,rgba(17,217,247,.13),transparent 54%),linear-gradient(135deg,rgba(5,7,10,.97),rgba(11,15,18,.96));box-shadow:0 22px 60px rgba(0,0,0,.75),0 0 36px rgba(17,217,247,.2),inset 0 0 28px rgba(17,217,247,.06);color:#eaf6f8;opacity:0;visibility:hidden;text-align:left;overflow:hidden;transition:opacity .3s ease,transform .3s ease}
 #alert.show{opacity:1;visibility:visible;transform:translate(-50%,-50%) scale(1);animation:pulse 1.35s ease-in-out infinite}
-.kicker{font:700 15px monospace;letter-spacing:.2em;color:#11d9f7;text-transform:uppercase}
-.viewer{margin-top:12px;font:600 16px monospace;color:#9fb6bd}
-.reward{margin-top:8px;font:700 clamp(28px,4vw,54px) Arial;text-transform:uppercase;overflow-wrap:anywhere;text-shadow:0 0 18px rgba(17,217,247,.2)}
-.cost{margin-top:12px;font:700 15px monospace;color:#11d9f7;letter-spacing:.08em}
+.alert-inner{display:flex;align-items:center;gap:26px}.item-frame{position:relative;flex:0 0 148px;width:148px;height:148px;display:flex;align-items:center;justify-content:center;padding:12px;border:1px solid rgba(17,217,247,.35);border-radius:12px;background:radial-gradient(circle at 50% 50%,rgba(17,217,247,.22),rgba(5,7,10,.92) 74%);box-shadow:0 0 28px rgba(17,217,247,.18),inset 0 0 20px rgba(17,217,247,.08);overflow:hidden}.item-img{position:relative;z-index:1;max-width:100%;max-height:100%;object-fit:contain;filter:drop-shadow(0 8px 16px rgba(0,0,0,.7)) drop-shadow(0 0 12px rgba(17,217,247,.28))}.item-img[hidden],.item-fallback[hidden]{display:none}.item-fallback{width:82px;height:82px;color:#11d9f7;position:relative;z-index:1}.alert-body{flex:1;min-width:0}.kicker{font:700 13px monospace;letter-spacing:.2em;color:#11d9f7;text-transform:uppercase}.kicker-dot{display:inline-block;width:8px;height:8px;margin-right:8px;border-radius:50%;background:#11d9f7;box-shadow:0 0 10px #11d9f7}
+.viewer{margin-top:8px;font:600 15px monospace;color:#9fb6bd}
+.reward{margin-top:6px;font:700 clamp(24px,3.6vw,44px) Rajdhani,Arial,sans-serif;text-transform:uppercase;overflow-wrap:anywhere;text-shadow:0 0 18px rgba(17,217,247,.2)}
+.meta-row{margin-top:14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}.cost{display:inline-flex;align-items:center;padding:6px 13px;border:1px solid rgba(17,217,247,.38);border-radius:6px;background:rgba(17,217,247,.14);font:700 14px monospace;color:#11d9f7;letter-spacing:.08em}.brand-tag{font:600 11px monospace;letter-spacing:.12em;color:#6b7a80}
 @keyframes pulse{0%,100%{box-shadow:0 0 25px rgba(17,217,247,.2),inset 0 0 25px rgba(17,217,247,.04)}50%{box-shadow:0 0 60px rgba(17,217,247,.58),inset 0 0 35px rgba(17,217,247,.09)}}
-@media(max-width:600px){#alert{padding:22px 18px}.kicker{font-size:11px}.viewer{font-size:13px}.cost{font-size:12px}}
+@media(max-width:600px){#alert{padding:20px 18px}.alert-inner{flex-direction:column;text-align:center;gap:16px}.alert-body{text-align:center}.meta-row{justify-content:center}.item-frame{flex-basis:112px;width:112px;height:112px}.kicker{font-size:11px}.viewer{font-size:13px}.cost{font-size:12px}}
 </style>
 </head>
 <body>
 <div id="alert" role="status" aria-live="polite">
-  <div class="kicker">NEW STORE PURCHASE</div>
-  <div class="viewer" id="viewer"></div>
-  <div class="reward" id="reward"></div>
-  <div class="cost" id="cost"></div>
+  <div class="alert-inner">
+    <div class="item-frame">
+      <img class="item-img" id="item-img" alt="Claimed reward item" hidden>
+      <svg class="item-fallback" id="item-fallback" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+        <path d="M32 6L54 18.5V45.5L32 58L10 45.5V18.5L32 6Z" stroke="currentColor" stroke-width="2.5" fill="rgba(17,217,247,0.1)"/>
+        <path d="M32 6V32M32 32L54 18.5M32 32L10 18.5M32 32V58" stroke="currentColor" stroke-width="2"/>
+        <circle cx="32" cy="32" r="7" fill="currentColor" fill-opacity=".25" stroke="currentColor" stroke-width="2"/>
+      </svg>
+    </div>
+    <div class="alert-body">
+      <div class="kicker"><span class="kicker-dot"></span>NEW STORE PURCHASE</div>
+      <div class="viewer" id="viewer"></div>
+      <div class="reward" id="reward"></div>
+      <div class="meta-row"><div class="cost" id="cost"></div><div class="brand-tag">ADHEMSWAG.COM/STORE</div></div>
+    </div>
+  </div>
 </div>
 <script>
 const endpoint='https://lpmocfdfpebcaseffugg.supabase.co/functions/v1/stream-reward-alert';
@@ -30,6 +42,8 @@ const box=document.getElementById('alert');
 const viewer=document.getElementById('viewer');
 const reward=document.getElementById('reward');
 const cost=document.getElementById('cost');
+const itemImg=document.getElementById('item-img');
+const itemFallback=document.getElementById('item-fallback');
 // Start at the current time: never replay purchases that happened before OBS loaded.
 let since=new Date().toISOString();
 const seenKey='adhemswag_stream_alert_seen_v1';
@@ -75,6 +89,16 @@ function playSound(){
   }catch(error){}
 }
 
+function setItemImage(item){
+  const src=String(item.image||item.image_url||item.reward_image||item.icon_url||'').trim();
+  if(!src||!/^https?:\\/\\//i.test(src)){
+    itemImg.hidden=true;itemImg.removeAttribute('src');itemFallback.hidden=false;return;
+  }
+  itemImg.onload=()=>{itemImg.hidden=false;itemFallback.hidden=true;};
+  itemImg.onerror=()=>{itemImg.hidden=true;itemFallback.hidden=false;};
+  itemImg.src=src;
+}
+
 function showNext(){
   if(!alertQueue.length){showing=false;return;}
   showing=true;
@@ -82,6 +106,7 @@ function showNext(){
   viewer.textContent='PURCHASED BY '+(item.viewer||'A VIEWER');
   reward.textContent=item.reward||'FNC Reward';
   cost.textContent=Number(item.fnc||0).toLocaleString('en-US')+' FNC';
+  setItemImage(item);
   box.classList.add('show');
   playSound();
   clearTimeout(hideTimer);
