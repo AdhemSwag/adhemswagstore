@@ -91,7 +91,7 @@ function playSound(){
 
 function setItemImage(item){
   const src=String(item.image||item.image_url||item.reward_image||item.icon_url||'').trim();
-  if(!src||!/^https?:\\/\\//i.test(src)){
+  if(!src||!/^https?:\/\//i.test(src)){
     itemImg.hidden=true;itemImg.removeAttribute('src');itemFallback.hidden=false;return;
   }
   itemImg.onload=()=>{itemImg.hidden=false;itemFallback.hidden=true;};
@@ -145,7 +145,7 @@ async function poll(){
 
 const params=new URLSearchParams(location.search);
 if(params.get('test')==='1'){
-  setTimeout(()=>show({id:'overlay-test',viewer:'AdhemSwag Viewer',reward:'StatTrak™ Tec-9 | Snek-9 (Minimal Wear)',fnc:3810}),500);
+  setTimeout(()=>show({id:'overlay-test',viewer:'AdhemSwag Viewer',reward:'USP-S | Bleeding Edge (Battle-Scarred)',fnc:2500,image:'https://lpmocfdfpebcaseffugg.supabase.co/storage/v1/object/public/reward-images/rewards/bf24609a-b058-4dbd-b7a3-d7bea23c6159.png'}),500);
 }
 setInterval(poll,2000);
 poll();
