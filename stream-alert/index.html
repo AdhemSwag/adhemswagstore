@@ -1,154 +1,2280 @@
 <!doctype html>
 <html lang="en">
+
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Stream Alerts | AdhemSwag</title>
-<style>
-:root{color-scheme:dark}
-html,body{margin:0;width:100%;height:100%;overflow:hidden;background:transparent;font-family:Arial,sans-serif}
-#alert{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(.82);width:min(860px,92vw);padding:26px 30px;border:1px solid rgba(17,217,247,.35);border-radius:14px;background:radial-gradient(circle at 18% 50%,rgba(17,217,247,.13),transparent 54%),linear-gradient(135deg,rgba(5,7,10,.97),rgba(11,15,18,.96));box-shadow:0 22px 60px rgba(0,0,0,.75),0 0 36px rgba(17,217,247,.2),inset 0 0 28px rgba(17,217,247,.06);color:#eaf6f8;opacity:0;visibility:hidden;text-align:left;overflow:hidden;transition:opacity .3s ease,transform .3s ease}
-#alert.show{opacity:1;visibility:visible;transform:translate(-50%,-50%) scale(1);animation:pulse 1.35s ease-in-out infinite}
-.alert-inner{display:flex;align-items:center;gap:26px}.item-frame{position:relative;flex:0 0 148px;width:148px;height:148px;display:flex;align-items:center;justify-content:center;padding:12px;border:1px solid rgba(17,217,247,.35);border-radius:12px;background:radial-gradient(circle at 50% 50%,rgba(17,217,247,.22),rgba(5,7,10,.92) 74%);box-shadow:0 0 28px rgba(17,217,247,.18),inset 0 0 20px rgba(17,217,247,.08);overflow:hidden}.item-img{position:relative;z-index:1;max-width:100%;max-height:100%;object-fit:contain;filter:drop-shadow(0 8px 16px rgba(0,0,0,.7)) drop-shadow(0 0 12px rgba(17,217,247,.28))}.item-img[hidden],.item-fallback[hidden]{display:none}.item-fallback{width:82px;height:82px;color:#11d9f7;position:relative;z-index:1}.alert-body{flex:1;min-width:0}.kicker{font:700 13px monospace;letter-spacing:.2em;color:#11d9f7;text-transform:uppercase}.kicker-dot{display:inline-block;width:8px;height:8px;margin-right:8px;border-radius:50%;background:#11d9f7;box-shadow:0 0 10px #11d9f7}
-.viewer{margin-top:8px;font:600 15px monospace;color:#9fb6bd}
-.reward{margin-top:6px;font:700 clamp(24px,3.6vw,44px) Rajdhani,Arial,sans-serif;text-transform:uppercase;overflow-wrap:anywhere;text-shadow:0 0 18px rgba(17,217,247,.2)}
-.meta-row{margin-top:14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}.cost{display:inline-flex;align-items:center;padding:6px 13px;border:1px solid rgba(17,217,247,.38);border-radius:6px;background:rgba(17,217,247,.14);font:700 14px monospace;color:#11d9f7;letter-spacing:.08em}.brand-tag{font:600 11px monospace;letter-spacing:.12em;color:#6b7a80}
-@keyframes pulse{0%,100%{box-shadow:0 0 25px rgba(17,217,247,.2),inset 0 0 25px rgba(17,217,247,.04)}50%{box-shadow:0 0 60px rgba(17,217,247,.58),inset 0 0 35px rgba(17,217,247,.09)}}
-@media(max-width:600px){#alert{padding:20px 18px}.alert-inner{flex-direction:column;text-align:center;gap:16px}.alert-body{text-align:center}.meta-row{justify-content:center}.item-frame{flex-basis:112px;width:112px;height:112px}.kicker{font-size:11px}.viewer{font-size:13px}.cost{font-size:12px}}
-</style>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Stream Alerts | AdhemSwag</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link id="gfonts-link"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Rajdhani:wght@600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            color-scheme: dark;
+            --bg: #05070a;
+            --panel: #0b0f12;
+            --panel-alpha: 0.96;
+            --accent: #11d9f7;
+            --accent-rgb: 17, 217, 247;
+            --muted: #6b7a80;
+            --muted-light: #9fb6bd;
+            --white: #eaf6f8;
+            --danger: #ff3b3b;
+
+            --font-title: 'Rajdhani', Arial, sans-serif;
+            --font-body: 'Inter', Arial, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+
+            --duration: 12000ms;
+            --alert-scale: 1;
+            --alert-radius: 14px;
+            --glow: 1;
+
+            --pos-left: 50%;
+            --pos-top: 50%;
+            --pos-tx: -50%;
+            --pos-ty: -50%;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: transparent;
+            font-family: var(--font-body);
+        }
+
+        /* Dashboard stage backgrounds (only active in ?dashboard=1 or ?test=1) */
+        body.stage-checker {
+            background-color: #0b0f14;
+            background-image:
+                linear-gradient(45deg, rgba(255, 255, 255, .04) 25%, transparent 25%),
+                linear-gradient(-45deg, rgba(255, 255, 255, .04) 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, rgba(255, 255, 255, .04) 75%),
+                linear-gradient(-45deg, transparent 75%, rgba(255, 255, 255, .04) 75%);
+            background-size: 28px 28px;
+            background-position: 0 0, 0 14px, 14px -14px, -14px 0;
+        }
+
+        body.stage-dark {
+            background: radial-gradient(circle at 50% 35%, #111924 0%, #05070a 75%);
+        }
+
+        body.stage-stream {
+            background:
+                radial-gradient(circle at 20% 20%, rgba(17, 217, 247, .12), transparent 45%),
+                radial-gradient(circle at 80% 75%, rgba(255, 59, 59, .10), transparent 45%),
+                linear-gradient(160deg, #0d131a 0%, #070a0e 60%, #0c1016 100%);
+            background-image: url("https://i.imgur.com/7QuZlQb.png");
+            background-size: cover;
+            background-position: center;
+        }
+
+        #stream-mock-bg {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            display: none;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        body.stage-stream #stream-mock-bg {
+            display: block;
+        }
+
+        #stream-mock-bg iframe,
+        #stream-mock-bg video {
+            width: 100%;
+            height: 100%;
+            border: 0;
+            object-fit: cover;
+            pointer-events: none;
+        }
+
+        #stream-mock-note {
+            position: fixed;
+            left: 16px;
+            bottom: 16px;
+            z-index: 5;
+            padding: 6px 10px;
+            border-radius: 7px;
+            background: rgba(5, 7, 10, .86);
+            border: 1px solid rgba(17, 217, 247, .25);
+            color: #9fb6bd;
+            font: 600 11px 'JetBrains Mono', monospace;
+            display: none;
+        }
+
+        /* ================= ALERT OVERLAY ================= */
+        #alert {
+            z-index: 10;
+            position: absolute;
+            left: var(--pos-left);
+            top: var(--pos-top);
+            transform: translate(var(--pos-tx), calc(var(--pos-ty) + 22px)) scale(calc(var(--alert-scale) * .88));
+            width: min(860px, 92vw);
+            padding: 26px 30px;
+            border: 1px solid rgba(var(--accent-rgb), .28);
+            border-radius: var(--alert-radius);
+            background:
+                radial-gradient(circle at 18% 50%, rgba(var(--accent-rgb), .13), transparent 54%),
+                linear-gradient(135deg, rgba(var(--panel-rgb, 5, 7, 10), var(--panel-alpha)) 0%, rgba(11, 15, 18, var(--panel-alpha)) 100%);
+            box-shadow:
+                0 22px 60px rgba(0, 0, 0, .75),
+                0 0 calc(36px * var(--glow)) rgba(var(--accent-rgb), .2),
+                inset 0 0 calc(28px * var(--glow)) rgba(var(--accent-rgb), .06);
+            color: var(--white);
+            opacity: 0;
+            visibility: hidden;
+            overflow: hidden;
+            transition:
+                opacity .42s cubic-bezier(.16, 1, .3, 1),
+                transform .48s cubic-bezier(.16, 1, .3, 1),
+                visibility 0s linear .48s;
+        }
+
+        #alert[data-anim="slide-left"] {
+            transform: translate(calc(var(--pos-tx) + 60px), var(--pos-ty)) scale(var(--alert-scale));
+        }
+
+        #alert[data-anim="slide-down"] {
+            transform: translate(var(--pos-tx), calc(var(--pos-ty) - 40px)) scale(var(--alert-scale));
+        }
+
+        #alert[data-anim="zoom"] {
+            transform: translate(var(--pos-tx), var(--pos-ty)) scale(calc(var(--alert-scale) * .62));
+        }
+
+        #alert.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(var(--pos-tx), var(--pos-ty)) scale(var(--alert-scale));
+            transition:
+                opacity .42s cubic-bezier(.16, 1, .3, 1),
+                transform .48s cubic-bezier(.16, 1, .3, 1),
+                visibility 0s linear 0s;
+            animation: cardPulse 2.2s ease-in-out 2;
+        }
+
+        #alert[data-layout="right"] .alert-inner {
+            flex-direction: row-reverse;
+        }
+
+        #alert[data-layout="center"] .alert-inner {
+            flex-direction: column;
+            text-align: center;
+            gap: 18px;
+        }
+
+        #alert[data-layout="center"] .alert-body {
+            text-align: center;
+        }
+
+        #alert[data-layout="center"] .meta-row {
+            justify-content: center;
+        }
+
+        #alert.hide-image .item-frame,
+        #alert.hide-kicker .kicker,
+        #alert.hide-viewer .viewer,
+        #alert.hide-cost .cost,
+        #alert.hide-brand .brand-tag,
+        #alert.hide-progress .progress-track,
+        #alert.hide-corners .hud-corner,
+        #alert.hide-flash .alert-flash {
+            display: none !important;
+        }
+
+        /* Diagonal cyber shimmer sweep strictly clipped inside the alert box */
+        .alert-flash {
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            overflow: hidden;
+            clip-path: inset(0 round var(--alert-radius));
+            pointer-events: none;
+            z-index: 3;
+        }
+
+        .alert-flash::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(115deg,
+                    transparent 20%,
+                    rgba(var(--accent-rgb), .18) 48%,
+                    rgba(234, 246, 248, .24) 50%,
+                    rgba(var(--accent-rgb), .18) 52%,
+                    transparent 80%);
+            transform: translateX(-130%);
+            pointer-events: none;
+        }
+
+        #alert.show .alert-flash::before {
+            animation: shimmerSweep 1.15s cubic-bezier(.2, .8, .2, 1) .12s 1 forwards;
+        }
+
+        .hud-corner {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            border-color: var(--accent);
+            border-style: solid;
+            pointer-events: none;
+            opacity: .85;
+            z-index: 2;
+        }
+
+        .hud-tl {
+            top: 10px;
+            left: 10px;
+            border-width: 2px 0 0 2px;
+            border-top-left-radius: 4px;
+        }
+
+        .hud-tr {
+            top: 10px;
+            right: 10px;
+            border-width: 2px 2px 0 0;
+            border-top-right-radius: 4px;
+        }
+
+        .hud-bl {
+            bottom: 10px;
+            left: 10px;
+            border-width: 0 0 2px 2px;
+            border-bottom-left-radius: 4px;
+        }
+
+        .hud-br {
+            bottom: 10px;
+            right: 10px;
+            border-width: 0 2px 2px 0;
+            border-bottom-right-radius: 4px;
+        }
+
+        .alert-inner {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            gap: 26px;
+        }
+
+        .item-frame {
+            position: relative;
+            flex: 0 0 148px;
+            width: 148px;
+            height: 148px;
+            border-radius: calc(var(--alert-radius) * .85);
+            border: 1px solid rgba(var(--accent-rgb), .35);
+            background:
+                radial-gradient(circle at 50% 50%, rgba(var(--accent-rgb), .22), rgba(5, 7, 10, .92) 74%);
+            box-shadow:
+                0 0 calc(28px * var(--glow)) rgba(var(--accent-rgb), .18),
+                inset 0 0 20px rgba(var(--accent-rgb), .08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px;
+            overflow: hidden;
+            opacity: 0;
+            transform: scale(.75) rotate(-4deg);
+            transition: opacity .45s ease .08s, transform .55s cubic-bezier(.22, 1.28, .36, 1) .08s;
+        }
+
+        #alert.show .item-frame {
+            opacity: 1;
+            transform: scale(1) rotate(0deg);
+        }
+
+        .item-frame::after {
+            content: '';
+            position: absolute;
+            inset: -40%;
+            background: conic-gradient(from 0deg, transparent 0deg 290deg, rgba(var(--accent-rgb), .26) 330deg, transparent 360deg);
+            animation: spinAura 5s linear infinite;
+            pointer-events: none;
+        }
+
+        .item-img {
+            position: relative;
+            z-index: 1;
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 8px 16px rgba(0, 0, 0, .7)) drop-shadow(0 0 12px rgba(var(--accent-rgb), .28));
+            animation: floatItem 3s ease-in-out infinite;
+        }
+
+        .item-img[hidden] {
+            display: none;
+        }
+
+        .item-fallback {
+            position: relative;
+            z-index: 1;
+            width: 82px;
+            height: 82px;
+            color: var(--accent);
+            filter: drop-shadow(0 0 14px rgba(var(--accent-rgb), .45));
+            animation: floatItem 3s ease-in-out infinite;
+        }
+
+        .item-fallback[hidden] {
+            display: none;
+        }
+
+        .alert-body {
+            flex: 1 1 auto;
+            min-width: 0;
+            text-align: left;
+        }
+
+        .kicker {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font: 700 13px var(--font-mono);
+            letter-spacing: .2em;
+            color: var(--accent);
+            text-transform: uppercase;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity .35s ease .12s, transform .4s ease .12s;
+        }
+
+        #alert.show .kicker {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .kicker-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent);
+            box-shadow: 0 0 10px var(--accent);
+            animation: dotBlink 1.1s ease-in-out infinite;
+        }
+
+        .viewer {
+            margin-top: 8px;
+            font: 600 15px var(--font-mono);
+            letter-spacing: .04em;
+            color: var(--muted-light);
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity .38s ease .18s, transform .42s ease .18s;
+        }
+
+        .viewer strong {
+            color: var(--white);
+            font-weight: 700;
+        }
+
+        #alert.show .viewer {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reward {
+            margin-top: 6px;
+            font: 700 clamp(24px, 3.6vw, 44px)/1.08 var(--font-title);
+            letter-spacing: .02em;
+            text-transform: uppercase;
+            color: var(--white);
+            overflow-wrap: anywhere;
+            text-shadow: 0 0 22px rgba(var(--accent-rgb), .24);
+            opacity: 0;
+            transform: translateY(12px);
+            transition: opacity .42s ease .24s, transform .45s ease .24s;
+        }
+
+        #alert.show .reward {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .meta-row {
+            margin-top: 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity .42s ease .30s, transform .45s ease .30s;
+        }
+
+        #alert.show .meta-row {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .cost {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 6px 13px;
+            border-radius: 6px;
+            background: rgba(var(--accent-rgb), .14);
+            border: 1px solid rgba(var(--accent-rgb), .38);
+            font: 700 14px var(--font-mono);
+            color: var(--accent);
+            letter-spacing: .08em;
+            box-shadow: 0 0 16px rgba(var(--accent-rgb), .14);
+        }
+
+        .brand-tag {
+            font: 600 12px var(--font-mono);
+            letter-spacing: .12em;
+            color: var(--muted);
+            text-transform: uppercase;
+        }
+
+        .progress-track {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 3px;
+            background: rgba(var(--accent-rgb), .12);
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(var(--accent-rgb), .45), var(--accent));
+            box-shadow: 0 0 12px var(--accent);
+            transform-origin: left center;
+            transform: scaleX(0);
+        }
+
+        #alert.show .progress-bar {
+            animation: timerBar var(--duration) linear forwards;
+        }
+
+        /* ================= STUDIO DASHBOARD (?dashboard=1 or ?test=1) ================= */
+        #studio {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 100;
+            display: none;
+            font-family: 'Inter', Arial, sans-serif;
+        }
+
+        #studio.visible {
+            display: block;
+        }
+
+        .studio-topbar {
+            position: fixed;
+            top: 14px;
+            left: 14px;
+            right: 400px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            pointer-events: none;
+            transition: right .25s ease;
+        }
+
+        #studio.panel-hidden .studio-topbar {
+            right: 14px;
+        }
+
+        .studio-pill {
+            pointer-events: auto;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 10px;
+            background: rgba(5, 7, 10, .92);
+            border: 1px solid rgba(17, 217, 247, .28);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, .55);
+            backdrop-filter: blur(12px);
+            color: #eaf6f8;
+            font: 600 12px 'Inter', sans-serif;
+        }
+
+        .obs-link-box {
+            flex: 1 1 280px;
+            max-width: 680px;
+            min-width: 220px;
+        }
+
+        .obs-link-label {
+            font: 700 10px 'JetBrains Mono', monospace;
+            letter-spacing: .1em;
+            color: #11d9f7;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .obs-link-input {
+            flex: 1 1 auto;
+            min-width: 0;
+            background: #0b0f12;
+            border: 1px solid rgba(17, 217, 247, .2);
+            border-radius: 6px;
+            padding: 5px 8px;
+            color: #9fb6bd;
+            font: 500 11px 'JetBrains Mono', monospace;
+            outline: none;
+        }
+
+        .studio-sidebar {
+            pointer-events: auto;
+            position: fixed;
+            top: 14px;
+            right: 14px;
+            bottom: 14px;
+            width: 372px;
+            max-width: calc(100vw - 28px);
+            background: rgba(5, 7, 10, .95);
+            border: 1px solid rgba(17, 217, 247, .3);
+            border-radius: 14px;
+            box-shadow: 0 22px 60px rgba(0, 0, 0, .75), 0 0 28px rgba(17, 217, 247, .12);
+            backdrop-filter: blur(14px);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: transform .25s ease, opacity .25s ease;
+        }
+
+        #studio.panel-hidden .studio-sidebar {
+            transform: translateX(calc(100% + 24px));
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .studio-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 13px 15px;
+            border-bottom: 1px solid rgba(17, 217, 247, .14);
+        }
+
+        .studio-brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font: 700 13px 'JetBrains Mono', monospace;
+            letter-spacing: .12em;
+            color: #11d9f7;
+            text-transform: uppercase;
+        }
+
+        .studio-tabs {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 4px;
+            padding: 8px 12px;
+            background: rgba(11, 15, 18, .7);
+            border-bottom: 1px solid rgba(17, 217, 247, .12);
+        }
+
+        .studio-tab {
+            appearance: none;
+            border: 1px solid transparent;
+            background: transparent;
+            color: #809197;
+            padding: 7px 6px;
+            border-radius: 7px;
+            font: 700 11px 'JetBrains Mono', monospace;
+            letter-spacing: .05em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all .18s ease;
+        }
+
+        .studio-tab.active {
+            color: #11d9f7;
+            background: rgba(17, 217, 247, .12);
+            border-color: rgba(17, 217, 247, .28);
+        }
+
+        .studio-body {
+            flex: 1 1 auto;
+            overflow-y: auto;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .studio-pane {
+            display: none;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .studio-pane.active {
+            display: flex;
+        }
+
+        .sec-label {
+            font: 700 10px 'JetBrains Mono', monospace;
+            letter-spacing: .14em;
+            color: #6b7a80;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+
+        .ctrl-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .ctrl-field {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .ctrl-field.full {
+            grid-column: 1 / -1;
+        }
+
+        .ctrl-field label {
+            display: flex;
+            justify-content: space-between;
+            font: 600 10px 'JetBrains Mono', monospace;
+            letter-spacing: .07em;
+            color: #9fb6bd;
+            text-transform: uppercase;
+        }
+
+        .ctrl-field input[type="text"],
+        .ctrl-field input[type="number"],
+        .ctrl-field select {
+            width: 100%;
+            background: #0b0f12;
+            border: 1px solid rgba(17, 217, 247, .22);
+            border-radius: 7px;
+            padding: 7px 9px;
+            color: #eaf6f8;
+            font: 500 12px 'Inter', sans-serif;
+            outline: none;
+        }
+
+        .ctrl-field input[type="text"]:focus,
+        .ctrl-field input[type="number"]:focus,
+        .ctrl-field select:focus {
+            border-color: #11d9f7;
+        }
+
+        .ctrl-field input[type="color"] {
+            width: 100%;
+            height: 32px;
+            padding: 2px;
+            background: #0b0f12;
+            border: 1px solid rgba(17, 217, 247, .22);
+            border-radius: 7px;
+            cursor: pointer;
+        }
+
+        .ctrl-field input[type="range"] {
+            width: 100%;
+            accent-color: #11d9f7;
+            cursor: pointer;
+        }
+
+        .check-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .ctrl-check {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            padding: 7px 9px;
+            border-radius: 7px;
+            background: rgba(11, 15, 18, .8);
+            border: 1px solid rgba(17, 217, 247, .12);
+            font: 600 11px 'JetBrains Mono', monospace;
+            color: #cde0e5;
+            cursor: pointer;
+        }
+
+        .ctrl-check input {
+            accent-color: #11d9f7;
+            cursor: pointer;
+        }
+
+        .chip-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .s-btn {
+            appearance: none;
+            border: 1px solid rgba(17, 217, 247, .35);
+            background: rgba(11, 15, 18, .92);
+            color: #11d9f7;
+            padding: 7px 11px;
+            border-radius: 8px;
+            font: 700 11px 'JetBrains Mono', monospace;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: background .18s ease, transform .15s ease;
+        }
+
+        .s-btn.sm {
+            padding: 5px 8px;
+            font-size: 10px;
+            border-radius: 6px;
+        }
+
+        .s-btn.primary {
+            background: rgba(17, 217, 247, .18);
+            color: #eaf6f8;
+            border-color: #11d9f7;
+        }
+
+        .s-btn:hover {
+            background: rgba(17, 217, 247, .22);
+            transform: translateY(-1px);
+        }
+
+        .s-btn.needs-unlock {
+            border-color: #11d9f7;
+            background: rgba(17, 217, 247, .24);
+            color: #eaf6f8;
+            animation: cardPulse 1.3s ease-in-out infinite;
+        }
+
+        .studio-footer {
+            padding: 11px 14px;
+            border-top: 1px solid rgba(17, 217, 247, .14);
+            background: rgba(11, 15, 18, .85);
+            display: flex;
+            gap: 7px;
+            flex-wrap: wrap;
+        }
+
+        .studio-footer .s-btn {
+            flex: 1 1 auto;
+            text-align: center;
+        }
+
+        #studio-float-toggle {
+            pointer-events: auto;
+            position: fixed;
+            right: 16px;
+            bottom: 16px;
+            display: none;
+        }
+
+        #studio.panel-hidden #studio-float-toggle {
+            display: inline-flex;
+        }
+
+        /* Store Claim Stats Pop-up Modal */
+        #stats-modal {
+            pointer-events: auto;
+            position: fixed;
+            inset: 0;
+            z-index: 200;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: rgba(3, 5, 8, .78);
+            backdrop-filter: blur(8px);
+        }
+
+        #stats-modal.open {
+            display: flex;
+        }
+
+        .stats-dialog {
+            width: min(760px, 95vw);
+            max-height: 86vh;
+            background: rgba(5, 7, 10, .97);
+            border: 1px solid rgba(17, 217, 247, .35);
+            border-radius: 14px;
+            box-shadow: 0 28px 80px rgba(0, 0, 0, .85), 0 0 36px rgba(17, 217, 247, .16);
+            color: #eaf6f8;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .stats-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 14px 18px;
+            border-bottom: 1px solid rgba(17, 217, 247, .16);
+            background: rgba(11, 15, 18, .85);
+        }
+
+        .stats-title {
+            font: 700 14px 'JetBrains Mono', monospace;
+            letter-spacing: .12em;
+            color: #11d9f7;
+            text-transform: uppercase;
+        }
+
+        .stats-body {
+            padding: 16px 18px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .stats-kpis {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .kpi-card {
+            padding: 12px;
+            border-radius: 10px;
+            background: rgba(11, 15, 18, .9);
+            border: 1px solid rgba(17, 217, 247, .18);
+        }
+
+        .kpi-label {
+            font: 700 10px 'JetBrains Mono', monospace;
+            letter-spacing: .1em;
+            color: #6b7a80;
+            text-transform: uppercase;
+        }
+
+        .kpi-val {
+            margin-top: 6px;
+            font: 700 22px 'Rajdhani', sans-serif;
+            color: #eaf6f8;
+            line-height: 1.1;
+        }
+
+        .kpi-sub {
+            margin-top: 3px;
+            font: 500 11px 'JetBrains Mono', monospace;
+            color: #11d9f7;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .stats-highlights {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .hl-card {
+            padding: 12px 14px;
+            border-radius: 10px;
+            background: radial-gradient(circle at 0% 0%, rgba(17, 217, 247, .12), rgba(11, 15, 18, .92) 70%);
+            border: 1px solid rgba(17, 217, 247, .26);
+        }
+
+        .hl-name {
+            margin-top: 5px;
+            font: 700 18px 'Rajdhani', sans-serif;
+            color: #eaf6f8;
+            text-transform: uppercase;
+            overflow-wrap: anywhere;
+        }
+
+        .hl-meta {
+            margin-top: 4px;
+            font: 600 11px 'JetBrains Mono', monospace;
+            color: #11d9f7;
+        }
+
+        .stats-lists {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .stats-panel {
+            padding: 12px;
+            border-radius: 10px;
+            background: rgba(11, 15, 18, .75);
+            border: 1px solid rgba(17, 217, 247, .14);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .stats-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 6px 8px;
+            border-radius: 6px;
+            background: rgba(5, 7, 10, .65);
+            font: 500 12px 'Inter', sans-serif;
+        }
+
+        .stats-row-name {
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            color: #eaf6f8;
+        }
+
+        .stats-row-val {
+            flex-shrink: 0;
+            font: 700 11px 'JetBrains Mono', monospace;
+            color: #11d9f7;
+        }
+
+        @media (max-width: 660px) {
+            .stats-kpis {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .stats-highlights,
+            .stats-lists {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @keyframes cardPulse {
+
+            0%,
+            100% {
+                box-shadow: 0 22px 60px rgba(0, 0, 0, .75), 0 0 calc(28px * var(--glow)) rgba(var(--accent-rgb), .2), inset 0 0 calc(24px * var(--glow)) rgba(var(--accent-rgb), .04);
+            }
+
+            50% {
+                box-shadow: 0 22px 60px rgba(0, 0, 0, .75), 0 0 calc(56px * var(--glow)) rgba(var(--accent-rgb), .48), inset 0 0 calc(34px * var(--glow)) rgba(var(--accent-rgb), .09);
+            }
+        }
+
+        @keyframes shimmerSweep {
+            0% {
+                transform: translateX(-130%);
+            }
+
+            100% {
+                transform: translateX(130%);
+            }
+        }
+
+        @keyframes floatItem {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-6px);
+            }
+        }
+
+        @keyframes spinAura {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes dotBlink {
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: .4;
+                transform: scale(.75);
+            }
+        }
+
+        @keyframes timerBar {
+            from {
+                transform: scaleX(1);
+            }
+
+            to {
+                transform: scaleX(0);
+            }
+        }
+
+        @media (max-width: 720px) {
+            .studio-topbar {
+                right: 14px;
+            }
+
+            .studio-sidebar {
+                top: auto;
+                height: 55vh;
+                width: calc(100vw - 28px);
+            }
+        }
+
+        @media (max-width: 600px) {
+            #alert {
+                padding: 20px 18px;
+            }
+
+            .alert-inner {
+                flex-direction: column;
+                text-align: center;
+                gap: 16px;
+            }
+
+            .alert-body {
+                text-align: center;
+            }
+
+            .meta-row {
+                justify-content: center;
+            }
+
+            .item-frame {
+                flex: 0 0 112px;
+                width: 112px;
+                height: 112px;
+            }
+
+            .kicker {
+                font-size: 11px;
+            }
+
+            .viewer {
+                font-size: 13px;
+            }
+
+            .cost {
+                font-size: 12px;
+            }
+        }
+    </style>
 </head>
+
 <body>
-<div id="alert" role="status" aria-live="polite">
-  <div class="alert-inner">
-    <div class="item-frame">
-      <img class="item-img" id="item-img" alt="Claimed reward item" hidden>
-      <svg class="item-fallback" id="item-fallback" viewBox="0 0 64 64" fill="none" aria-hidden="true">
-        <path d="M32 6L54 18.5V45.5L32 58L10 45.5V18.5L32 6Z" stroke="currentColor" stroke-width="2.5" fill="rgba(17,217,247,0.1)"/>
-        <path d="M32 6V32M32 32L54 18.5M32 32L10 18.5M32 32V58" stroke="currentColor" stroke-width="2"/>
-        <circle cx="32" cy="32" r="7" fill="currentColor" fill-opacity=".25" stroke="currentColor" stroke-width="2"/>
-      </svg>
+    <div id="stream-mock-bg" aria-hidden="true">
+        <div id="stream-mock-note"></div>
     </div>
-    <div class="alert-body">
-      <div class="kicker"><span class="kicker-dot"></span>NEW STORE PURCHASE</div>
-      <div class="viewer" id="viewer"></div>
-      <div class="reward" id="reward"></div>
-      <div class="meta-row"><div class="cost" id="cost"></div><div class="brand-tag">ADHEMSWAG.COM/STORE</div></div>
+    <div id="alert" role="status" aria-live="polite" data-layout="left" data-anim="pop">
+        <div class="alert-flash" aria-hidden="true"></div>
+        <span class="hud-corner hud-tl"></span>
+        <span class="hud-corner hud-tr"></span>
+        <span class="hud-corner hud-bl"></span>
+        <span class="hud-corner hud-br"></span>
+
+        <div class="alert-inner">
+            <div class="item-frame">
+                <img class="item-img" id="item-img" alt="Claimed reward item" hidden>
+                <svg class="item-fallback" id="item-fallback" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+                    <path d="M32 6L54 18.5V45.5L32 58L10 45.5V18.5L32 6Z" stroke="currentColor" stroke-width="2.5"
+                        fill="rgba(17,217,247,0.1)" />
+                    <path d="M32 6V32M32 32L54 18.5M32 32L10 18.5M32 32V58" stroke="currentColor" stroke-width="2"
+                        stroke-opacity="0.7" />
+                    <circle cx="32" cy="32" r="7" fill="currentColor" fill-opacity="0.25" stroke="currentColor"
+                        stroke-width="2" />
+                </svg>
+            </div>
+
+            <div class="alert-body">
+                <div class="kicker">
+                    <span class="kicker-dot"></span>
+                    <span id="kicker-text">NEW STORE PURCHASE</span>
+                </div>
+                <div class="viewer" id="viewer"></div>
+                <div class="reward" id="reward"></div>
+                <div class="meta-row">
+                    <div class="cost" id="cost"></div>
+                    <div class="brand-tag" id="brand-tag">ADHEMSWAG.COM/STORE</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="progress-track">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
     </div>
-  </div>
-</div>
-<script>
-const endpoint='https://lpmocfdfpebcaseffugg.supabase.co/functions/v1/stream-reward-alert';
-const box=document.getElementById('alert');
-const viewer=document.getElementById('viewer');
-const reward=document.getElementById('reward');
-const cost=document.getElementById('cost');
-const itemImg=document.getElementById('item-img');
-const itemFallback=document.getElementById('item-fallback');
-// Start at the current time: never replay purchases that happened before OBS loaded.
-let since=new Date().toISOString();
-const seenKey='adhemswag_stream_alert_seen_v1';
-let seen=new Set();
-try{seen=new Set(JSON.parse(localStorage.getItem(seenKey)||'[]'));}catch(error){seen=new Set();}
-function alertKey(item){
-  return String(item.id??[item.created_at,item.viewer,item.reward,item.fnc].join('|'));
-}
-function rememberAlert(key){
-  seen.add(key);
-  if(seen.size>300)seen=new Set([...seen].slice(-150));
-  try{localStorage.setItem(seenKey,JSON.stringify([...seen]));}catch(error){}
-}
-let busy=false;
-let audioContext=null;
-let alertQueue=[];
-let showing=false;
-let hideTimer=null;
 
-function playSound(){
-  try{
-    const AudioCtx=window.AudioContext||window.webkitAudioContext;
-    if(!AudioCtx)return;
-    if(!audioContext)audioContext=new AudioCtx();
-    const ctx=audioContext;
-    const start=ctx.currentTime;
-    const notes=[659.25,880,1174.66,880];
-    if(ctx.state==='suspended')ctx.resume().catch(()=>{});
-    notes.forEach((frequency,index)=>{
-      const oscillator=ctx.createOscillator();
-      const gain=ctx.createGain();
-      const at=start+index*.18;
-      oscillator.type='triangle';
-      oscillator.frequency.setValueAtTime(frequency,at);
-      gain.gain.setValueAtTime(.0001,at);
-      gain.gain.exponentialRampToValueAtTime(.20,at+.025);
-      gain.gain.exponentialRampToValueAtTime(.0001,at+.16);
-      oscillator.connect(gain);
-      gain.connect(ctx.destination);
-      oscillator.start(at);
-      oscillator.stop(at+.17);
-    });
-  }catch(error){}
-}
+    <!-- Studio Dashboard (visible only when ?dashboard=1 or ?test=1) -->
+    <div id="studio">
+        <div class="studio-topbar">
+            <div class="studio-pill obs-link-box">
+                <span class="obs-link-label">OBS Link</span>
+                <input type="text" class="obs-link-input" id="obs-url-input" readonly>
+                <button type="button" class="s-btn sm primary" id="copy-obs-btn">Copy Link</button>
+            </div>
+            <div class="studio-pill">
+                <span class="obs-link-label">Stage</span>
+                <select id="stage-bg-select"
+                    style="background:#0b0f12;border:1px solid rgba(17,217,247,.22);border-radius:6px;color:#eaf6f8;padding:4px 7px;font:600 11px Inter,sans-serif">
+                    <option value="checker">Transparent</option>
+                    <option value="dark">Dark</option>
+                    <option value="stream">Stream Mock</option>
+                </select>
+                <button type="button" class="s-btn sm" id="local-video-btn" style="display:none">🎬 Video</button>
+                <input type="file" id="local-video-input" accept="video/*" hidden>
+                <button type="button" class="s-btn sm" id="test-sound-btn">🔊 Replay</button>
+                <button type="button" class="s-btn sm primary" id="open-stats-btn">📊 Stats</button>
+            </div>
+        </div>
 
-function setItemImage(item){
-  const src=String(item.image||item.image_url||item.reward_image||item.icon_url||'').trim();
-  if(!src||!/^https?:\/\//i.test(src)){
-    itemImg.hidden=true;itemImg.removeAttribute('src');itemFallback.hidden=false;return;
-  }
-  itemImg.onload=()=>{itemImg.hidden=false;itemFallback.hidden=true;};
-  itemImg.onerror=()=>{itemImg.hidden=true;itemFallback.hidden=false;};
-  itemImg.src=src;
-}
+        <aside class="studio-sidebar">
+            <div class="studio-head">
+                <span class="studio-brand">⚡ AdhemSwag Studio</span>
+                <div class="chip-row">
+                    <button type="button" class="s-btn sm" id="reset-cfg-btn">Reset</button>
+                    <button type="button" class="s-btn sm" id="hide-panel-btn">Hide UI</button>
+                </div>
+            </div>
 
-function showNext(){
-  if(!alertQueue.length){showing=false;return;}
-  showing=true;
-  const item=alertQueue.shift();
-  viewer.textContent='PURCHASED BY '+(item.viewer||'A VIEWER');
-  reward.textContent=item.reward||'FNC Reward';
-  cost.textContent=Number(item.fnc||0).toLocaleString('en-US')+' FNC';
-  setItemImage(item);
-  box.classList.add('show');
-  playSound();
-  clearTimeout(hideTimer);
-  hideTimer=setTimeout(()=>{
-    box.classList.remove('show');
-    setTimeout(showNext,350);
-  },12000);
-}
+            <div class="studio-tabs">
+                <button type="button" class="studio-tab active" data-tab="design">🎨 Design</button>
+                <button type="button" class="studio-tab" data-tab="general">⚙️ General</button>
+                <button type="button" class="studio-tab" data-tab="test">🧪 Test Data</button>
+            </div>
 
-function show(item){
-  alertQueue.push(item);
-  if(!showing)showNext();
-}
+            <div class="studio-body">
+                <!-- DESIGN PANEL -->
+                <div class="studio-pane active" data-pane="design">
+                    <div class="sec-label">Color Presets</div>
+                    <div class="chip-row">
+                        <button type="button" class="s-btn sm" data-theme="adhem">Adhem Cyan</button>
+                        <button type="button" class="s-btn sm" data-theme="crimson">Crimson</button>
+                        <button type="button" class="s-btn sm" data-theme="gold">Gold</button>
+                        <button type="button" class="s-btn sm" data-theme="emerald">Emerald</button>
+                        <button type="button" class="s-btn sm" data-theme="violet">Violet</button>
+                    </div>
 
-async function poll(){
-  if(busy)return;
-  busy=true;
-  try{
-    const response=await fetch(endpoint+'?since='+encodeURIComponent(since),{cache:'no-store'});
-    if(!response.ok)throw new Error('alert_endpoint_'+response.status);
-    const data=await response.json();
-    for(const item of (data.alerts||[])){
-      const key=alertKey(item);
-      if(!seen.has(key)){
-        rememberAlert(key);
-        show(item);
-      }
-      if(item.created_at&&item.created_at>since)since=item.created_at;
-    }
-  }catch(error){
-    // Keep the last successful cursor so a temporary network error does not lose alerts.
-  }finally{
-    busy=false;
-  }
-}
+                    <div class="ctrl-grid">
+                        <div class="ctrl-field">
+                            <label for="cfg-accent">Accent Color</label>
+                            <input type="color" id="cfg-accent" value="#11d9f7">
+                        </div>
+                        <div class="ctrl-field">
+                            <label for="cfg-panel">Panel Color</label>
+                            <input type="color" id="cfg-panel" value="#05070a">
+                        </div>
+                        <div class="ctrl-field">
+                            <label for="cfg-text">Text Color</label>
+                            <input type="color" id="cfg-text" value="#eaf6f8">
+                        </div>
+                        <div class="ctrl-field">
+                            <label for="cfg-opacity">Panel Opacity <span id="val-opacity">96%</span></label>
+                            <input type="range" id="cfg-opacity" min="40" max="100" step="2" value="96">
+                        </div>
+                    </div>
 
-const params=new URLSearchParams(location.search);
-if(params.get('test')==='1'){
-  setTimeout(()=>show({id:'overlay-test',viewer:'AdhemSwag Viewer',reward:'USP-S | Bleeding Edge (Battle-Scarred)',fnc:2500,image:'https://lpmocfdfpebcaseffugg.supabase.co/storage/v1/object/public/reward-images/rewards/bf24609a-b058-4dbd-b7a3-d7bea23c6159.png'}),500);
-}
-setInterval(poll,2000);
-poll();
-</script>
+                    <div class="sec-label">Google Fonts</div>
+                    <div class="ctrl-grid">
+                        <div class="ctrl-field full">
+                            <label for="cfg-font-title">Title / Reward Font</label>
+                            <select id="cfg-font-title">
+                                <option value="Rajdhani">Rajdhani (AdhemSwag Default)</option>
+                                <option value="Orbitron">Orbitron (Sci-Fi Esports)</option>
+                                <option value="Chakra Petch">Chakra Petch (Tactical)</option>
+                                <option value="Bebas Neue">Bebas Neue (Bold Tall)</option>
+                                <option value="Russo One">Russo One (Heavy Gaming)</option>
+                                <option value="Teko">Teko (Condensed)</option>
+                                <option value="Oswald">Oswald (Clean Display)</option>
+                                <option value="Space Grotesk">Space Grotesk (Modern)</option>
+                                <option value="Syne">Syne (Artistic Bold)</option>
+                                <option value="Poppins">Poppins (Geometric)</option>
+                                <option value="Inter">Inter (Minimal)</option>
+                            </select>
+                        </div>
+                        <div class="ctrl-field full">
+                            <label for="cfg-font-mono">Labels / Cost Font</label>
+                            <select id="cfg-font-mono">
+                                <option value="JetBrains Mono">JetBrains Mono (AdhemSwag Default)</option>
+                                <option value="Share Tech Mono">Share Tech Mono (HUD)</option>
+                                <option value="Fira Code">Fira Code (Tech)</option>
+                                <option value="IBM Plex Mono">IBM Plex Mono (Crisp)</option>
+                                <option value="Space Mono">Space Mono (Retro)</option>
+                                <option value="Inter">Inter (Sans-Serif)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="sec-label">Layout &amp; Effects</div>
+                    <div class="ctrl-grid">
+                        <div class="ctrl-field">
+                            <label for="cfg-layout">Card Layout</label>
+                            <select id="cfg-layout">
+                                <option value="left">Image Left</option>
+                                <option value="right">Image Right</option>
+                                <option value="center">Centered Stack</option>
+                            </select>
+                        </div>
+                        <div class="ctrl-field">
+                            <label for="cfg-anim">Entrance Anim</label>
+                            <select id="cfg-anim">
+                                <option value="pop">Cyber Pop</option>
+                                <option value="slide-left">Slide Left</option>
+                                <option value="slide-down">Drop Down</option>
+                                <option value="zoom">Zoom Burst</option>
+                            </select>
+                        </div>
+                        <div class="ctrl-field">
+                            <label for="cfg-radius">Corners <span id="val-radius">14px</span></label>
+                            <input type="range" id="cfg-radius" min="0" max="26" step="2" value="14">
+                        </div>
+                        <div class="ctrl-field">
+                            <label for="cfg-glow">Glow <span id="val-glow">100%</span></label>
+                            <input type="range" id="cfg-glow" min="0" max="150" step="10" value="100">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GENERAL PANEL -->
+                <div class="studio-pane" data-pane="general">
+                    <div class="sec-label">Position &amp; Timing</div>
+                    <div class="ctrl-grid">
+                        <div class="ctrl-field">
+                            <label for="cfg-pos">Screen Position</label>
+                            <select id="cfg-pos">
+                                <option value="center">Center</option>
+                                <option value="top-center">Top Center</option>
+                                <option value="bottom-center">Bottom Center</option>
+                                <option value="top-left">Top Left</option>
+                                <option value="top-right">Top Right</option>
+                                <option value="bottom-left">Bottom Left</option>
+                                <option value="bottom-right">Bottom Right</option>
+                            </select>
+                        </div>
+                        <div class="ctrl-field">
+                            <label for="cfg-scale">Scale <span id="val-scale">1.00x</span></label>
+                            <input type="range" id="cfg-scale" min="0.55" max="1.45" step="0.05" value="1">
+                        </div>
+                        <div class="ctrl-field full">
+                            <label for="cfg-duration">Display Duration <span id="val-duration">12s</span></label>
+                            <input type="range" id="cfg-duration" min="4" max="25" step="1" value="12">
+                        </div>
+                    </div>
+
+                    <div class="sec-label">What to Show</div>
+                    <div class="check-grid">
+                        <label class="ctrl-check"><input type="checkbox" id="cfg-show-image" checked> Item Image</label>
+                        <label class="ctrl-check"><input type="checkbox" id="cfg-show-kicker" checked> Kicker
+                            Header</label>
+                        <label class="ctrl-check"><input type="checkbox" id="cfg-show-viewer" checked> Viewer
+                            Name</label>
+                        <label class="ctrl-check"><input type="checkbox" id="cfg-show-cost" checked> FNC Badge</label>
+                        <label class="ctrl-check"><input type="checkbox" id="cfg-show-brand" checked> Store Tag</label>
+                        <label class="ctrl-check"><input type="checkbox" id="cfg-show-progress" checked> Timer
+                            Bar</label>
+                        <label class="ctrl-check"><input type="checkbox" id="cfg-show-corners" checked> HUD
+                            Corners</label>
+                        <label class="ctrl-check"><input type="checkbox" id="cfg-show-flash" checked> Flash
+                            Sweep</label>
+                    </div>
+
+                    <div class="ctrl-grid">
+                        <div class="ctrl-field full">
+                            <label for="cfg-kicker-text">Kicker Text</label>
+                            <input type="text" id="cfg-kicker-text" value="NEW STORE PURCHASE">
+                        </div>
+                        <div class="ctrl-field full">
+                            <label for="cfg-brand-text">Store Tag Text</label>
+                            <input type="text" id="cfg-brand-text" value="ADHEMSWAG.COM/STORE">
+                        </div>
+                    </div>
+
+                    <div class="sec-label">Audio</div>
+                    <div class="ctrl-grid">
+                        <div class="ctrl-field">
+                            <label for="cfg-sound">Sound Style</label>
+                            <select id="cfg-sound">
+                                <option value="premium">Premium Chime (Recommended)</option>
+                                <option value="cyber">Cyber Chime</option>
+                                <option value="coin">Arcade Coin</option>
+                                <option value="ping">Subtle Ping</option>
+                                <option value="double">Double Tap</option>
+                            </select>
+                        </div>
+                        <div class="ctrl-field">
+                            <label for="cfg-vol">Volume <span id="val-vol">100%</span></label>
+                            <input type="range" id="cfg-vol" min="0" max="100" step="5" value="100">
+                        </div>
+                    </div>
+                    <div class="chip-row">
+                        <label class="ctrl-check"><input type="checkbox" id="cfg-mute"> Mute Sound</label>
+                        <button type="button" class="s-btn sm" id="sound-only-btn">🔊 Test Sound</button>
+                    </div>
+                </div>
+
+                <!-- TEST DATA PANEL -->
+                <div class="studio-pane" data-pane="test">
+                    <div class="sec-label">Quick Presets</div>
+                    <div class="chip-row">
+                        <button type="button" class="s-btn sm" data-preset="skin">CS2 Skin</button>
+                        <button type="button" class="s-btn sm" data-preset="exitlag">ExitLag 7D</button>
+                        <button type="button" class="s-btn sm" data-preset="deagle">StatTrak Deagle</button>
+                        <button type="button" class="s-btn sm" data-preset="long">Long Text</button>
+                    </div>
+
+                    <div class="sec-label">Fill Test Data</div>
+                    <div class="ctrl-grid">
+                        <div class="ctrl-field">
+                            <label for="tk-viewer">Viewer Name</label>
+                            <input type="text" id="tk-viewer" value="AdhemSwag Viewer">
+                        </div>
+                        <div class="ctrl-field">
+                            <label for="tk-fnc">FNC Cost</label>
+                            <input type="number" id="tk-fnc" value="3810" min="0" step="10">
+                        </div>
+                        <div class="ctrl-field full">
+                            <label for="tk-reward">Reward Name</label>
+                            <input type="text" id="tk-reward" value="StatTrak™ Tec-9 | Snek-9 (Minimal Wear)">
+                        </div>
+                        <div class="ctrl-field full">
+                            <label for="tk-img">Item Image URL (optional)</label>
+                            <input type="text" id="tk-img" placeholder="Leave blank for default SVG preview">
+                        </div>
+                    </div>
+
+                    <label class="ctrl-check"><input type="checkbox" id="tk-pin"> Keep Alert Pinned (don't auto-hide
+                        while editing)</label>
+                </div>
+            </div>
+
+            <div class="studio-footer">
+                <button type="button" class="s-btn primary" id="trigger-test-btn">▶ Trigger Alert</button>
+                <button type="button" class="s-btn" id="hide-alert-btn">Hide Alert</button>
+            </div>
+        </aside>
+
+        <button type="button" class="s-btn primary" id="studio-float-toggle">🛠 Open Studio</button>
+
+        <div id="stats-modal" role="dialog" aria-modal="true" aria-labelledby="stats-modal-title">
+            <div class="stats-dialog">
+                <div class="stats-head">
+                    <span class="stats-title" id="stats-modal-title">📊 Store Claim Stats</span>
+                    <div class="chip-row">
+                        <button type="button" class="s-btn sm" id="refresh-stats-btn">↻ Refresh</button>
+                        <button type="button" class="s-btn sm" id="close-stats-btn">✕ Close</button>
+                    </div>
+                </div>
+                <div class="stats-body" id="stats-body">
+                    <div class="kpi-sub">Loading store claim stats...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const endpoint = 'https://lpmocfdfpebcaseffugg.supabase.co/functions/v1/stream-reward-alert';
+        const CFG_KEY = 'adhemswag_stream_alert_cfg_v2';
+        const DEFAULT_CFG = {
+            accent: '#11d9f7',
+            panel: '#05070a',
+            text: '#eaf6f8',
+            opacity: 96,
+            fontTitle: 'Rajdhani',
+            fontMono: 'JetBrains Mono',
+            layout: 'left',
+            anim: 'pop',
+            radius: 14,
+            glow: 100,
+            pos: 'center',
+            scale: 1,
+            durationSec: 10,
+            showImage: true,
+            showKicker: true,
+            showViewer: true,
+            showCost: true,
+            showBrand: true,
+            showProgress: true,
+            showCorners: true,
+            showFlash: true,
+            kickerText: 'NEW STORE PURCHASE',
+            brandText: 'ADHEMSWAG.COM/STORE',
+            sound: 'premium',
+            volume: 58,
+            mute: false
+        };
+
+        const params = new URLSearchParams(location.search);
+        const isStudio = params.get('dashboard') === '1' || params.get('test') === '1';
+
+        function decodeCfgParam(raw) {
+            try {
+                const b64 = raw.replace(/-/g, '+').replace(/_/g, '/');
+                const json = decodeURIComponent(escape(atob(b64)));
+                const parsed = JSON.parse(json);
+                return parsed && typeof parsed === 'object' ? parsed : null;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function encodeCfgParam(obj) {
+            const diff = {};
+            for (const key of Object.keys(DEFAULT_CFG)) {
+                if (obj[key] !== DEFAULT_CFG[key]) diff[key] = obj[key];
+            }
+            if (!Object.keys(diff).length) return '';
+            const json = JSON.stringify(diff);
+            return btoa(unescape(encodeURIComponent(json))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+        }
+
+        let cfg = { ...DEFAULT_CFG };
+        const urlCfg = params.get('c') ? decodeCfgParam(params.get('c')) : null;
+        if (urlCfg) {
+            cfg = { ...DEFAULT_CFG, ...urlCfg };
+        } else {
+            try {
+                const saved = JSON.parse(localStorage.getItem(CFG_KEY) || '{}');
+                if (saved && typeof saved === 'object') {
+                    cfg = { ...DEFAULT_CFG, ...saved };
+                    if (saved.durationSec === 12) cfg.durationSec = 10;
+                    if (saved.sound === 'cyber' && Number(saved.volume) === 100) {
+                        cfg.sound = 'premium';
+                        cfg.volume = 58;
+                    }
+                }
+            } catch (e) { }
+        }
+
+        const box = document.getElementById('alert');
+        const viewer = document.getElementById('viewer');
+        const reward = document.getElementById('reward');
+        const cost = document.getElementById('cost');
+        const kickerTextEl = document.getElementById('kicker-text');
+        const brandTagEl = document.getElementById('brand-tag');
+        const itemImg = document.getElementById('item-img');
+        const itemFallback = document.getElementById('item-fallback');
+        const progressBar = document.getElementById('progress-bar');
+        const gfontsLink = document.getElementById('gfonts-link');
+
+        function hexToRgb(hex) {
+            const clean = String(hex || '').replace('#', '');
+            if (clean.length !== 6) return '17, 217, 247';
+            const r = parseInt(clean.slice(0, 2), 16);
+            const g = parseInt(clean.slice(2, 4), 16);
+            const b = parseInt(clean.slice(4, 6), 16);
+            return [r, g, b].some(Number.isNaN) ? '17, 217, 247' : `${r}, ${g}, ${b}`;
+        }
+
+        function updateGoogleFonts() {
+            const families = new Set(['Inter:wght@400;500;600;700', 'JetBrains+Mono:wght@500;700', 'Rajdhani:wght@600;700']);
+            [cfg.fontTitle, cfg.fontMono].forEach((f) => {
+                if (!f) return;
+                families.add(f.replace(/ /g, '+') + ':wght@400;500;600;700');
+            });
+            const href = 'https://fonts.googleapis.com/css2?' + [...families].map(f => 'family=' + f).join('&') + '&display=swap';
+            if (gfontsLink.getAttribute('href') !== href) gfontsLink.setAttribute('href', href);
+        }
+
+        const POS_MAP = {
+            'center': ['50%', '50%', '-50%', '-50%'],
+            'top-center': ['50%', '28px', '-50%', '0%'],
+            'bottom-center': ['50%', 'calc(100% - 28px)', '-50%', '-100%'],
+            'top-left': ['28px', '28px', '0%', '0%'],
+            'top-right': ['calc(100% - 28px)', '28px', '-100%', '0%'],
+            'bottom-left': ['28px', 'calc(100% - 28px)', '0%', '-100%'],
+            'bottom-right': ['calc(100% - 28px)', 'calc(100% - 28px)', '-100%', '-100%']
+        };
+
+        function buildObsUrl() {
+            const base = location.origin === 'null' ? location.href.split('?')[0] : (location.origin + location.pathname);
+            const encoded = encodeCfgParam(cfg);
+            return encoded ? `${base}?c=${encoded}` : base;
+        }
+
+        function applyConfig(persist = true) {
+            const root = document.documentElement;
+            root.style.setProperty('--accent', cfg.accent);
+            root.style.setProperty('--accent-rgb', hexToRgb(cfg.accent));
+            root.style.setProperty('--panel', cfg.panel);
+            root.style.setProperty('--panel-rgb', hexToRgb(cfg.panel));
+            root.style.setProperty('--panel-alpha', (cfg.opacity / 100).toFixed(2));
+            root.style.setProperty('--white', cfg.text);
+            root.style.setProperty('--font-title', `'${cfg.fontTitle}', Arial, sans-serif`);
+            root.style.setProperty('--font-mono', `'${cfg.fontMono}', monospace`);
+            root.style.setProperty('--alert-radius', cfg.radius + 'px');
+            root.style.setProperty('--glow', String(cfg.glow / 100));
+            root.style.setProperty('--alert-scale', String(cfg.scale));
+            root.style.setProperty('--duration', (cfg.durationSec * 1000) + 'ms');
+
+            const [left, top, tx, ty] = POS_MAP[cfg.pos] || POS_MAP.center;
+            root.style.setProperty('--pos-left', left);
+            root.style.setProperty('--pos-top', top);
+            root.style.setProperty('--pos-tx', tx);
+            root.style.setProperty('--pos-ty', ty);
+
+            box.dataset.layout = cfg.layout;
+            box.dataset.anim = cfg.anim;
+            box.classList.toggle('hide-image', !cfg.showImage);
+            box.classList.toggle('hide-kicker', !cfg.showKicker);
+            box.classList.toggle('hide-viewer', !cfg.showViewer);
+            box.classList.toggle('hide-cost', !cfg.showCost);
+            box.classList.toggle('hide-brand', !cfg.showBrand);
+            box.classList.toggle('hide-progress', !cfg.showProgress);
+            box.classList.toggle('hide-corners', !cfg.showCorners);
+            box.classList.toggle('hide-flash', !cfg.showFlash);
+
+            kickerTextEl.textContent = cfg.kickerText || 'NEW STORE PURCHASE';
+            brandTagEl.textContent = cfg.brandText || 'ADHEMSWAG.COM/STORE';
+
+            updateGoogleFonts();
+
+            if (persist && !urlCfg) {
+                try { localStorage.setItem(CFG_KEY, JSON.stringify(cfg)); } catch (e) { }
+                if (liveChannel) liveChannel.postMessage(cfg);
+            }
+            const obsInput = document.getElementById('obs-url-input');
+            if (obsInput) obsInput.value = buildObsUrl();
+        }
+
+        const liveChannel = typeof BroadcastChannel !== 'undefined' ? new BroadcastChannel('adhemswag_alert_studio') : null;
+        if (liveChannel && !isStudio && !urlCfg) {
+            liveChannel.onmessage = (e) => {
+                if (e.data && typeof e.data === 'object') {
+                    cfg = { ...DEFAULT_CFG, ...e.data };
+                    applyConfig(false);
+                }
+            };
+        }
+        window.addEventListener('storage', (e) => {
+            if (e.key === CFG_KEY && e.newValue && !isStudio && !urlCfg) {
+                try {
+                    cfg = { ...DEFAULT_CFG, ...JSON.parse(e.newValue) };
+                    applyConfig(false);
+                } catch (err) { }
+            }
+        });
+
+        applyConfig(false);
+
+        // Start at the current time: never replay purchases that happened before OBS loaded.
+        let since = new Date().toISOString();
+        const seenKey = 'adhemswag_stream_alert_seen_v1';
+        let seen = new Set();
+        try { seen = new Set(JSON.parse(localStorage.getItem(seenKey) || '[]')); } catch (error) { seen = new Set(); }
+
+        function alertKey(item) {
+            return String(item.id ?? [item.created_at, item.viewer, item.reward, item.fnc].join('|'));
+        }
+
+        function rememberAlert(key) {
+            seen.add(key);
+            if (seen.size > 300) seen = new Set([...seen].slice(-150));
+            try { localStorage.setItem(seenKey, JSON.stringify([...seen])); } catch (error) { }
+        }
+
+        let busy = false;
+        let audioContext = null;
+        let alertQueue = [];
+        let showing = false;
+        let hideTimer = null;
+        let pendingTestSound = false;
+        let pinAlert = false;
+
+        function getAudioContext() {
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            if (!AudioCtx) return null;
+            if (!audioContext) audioContext = new AudioCtx();
+            return audioContext;
+        }
+
+        function updateTestAudioUI(ctx) {
+            if (!isStudio) return;
+            const btn = document.getElementById('test-sound-btn');
+            if (!btn) return;
+            if (ctx && ctx.state === 'suspended') {
+                btn.textContent = '🔇 Enable Sound';
+                btn.classList.add('needs-unlock');
+            } else {
+                btn.textContent = '🔊 Replay';
+                btn.classList.remove('needs-unlock');
+            }
+        }
+
+        const SOUND_PRESETS = {
+            premium: { notes: [659.25, 830.61, 1046.5], step: 0.18, type: 'sine' },
+            cyber: { notes: [659.25, 880, 1174.66, 1318.51], step: 0.13, type: 'triangle' },
+            coin: { notes: [987.77, 1318.51], step: 0.09, type: 'square' },
+            ping: { notes: [880, 1318.51], step: 0.14, type: 'sine' },
+            double: { notes: [523.25, 659.25, 783.99, 1046.5], step: 0.08, type: 'triangle' }
+        };
+
+        function scheduleNotes(ctx) {
+            if (cfg.mute || cfg.volume <= 0) return;
+            const vol = Math.max(0.01, Math.min(1, cfg.volume / 100));
+            const preset = SOUND_PRESETS[cfg.sound] || SOUND_PRESETS.cyber;
+            const start = ctx.currentTime + 0.02;
+
+            preset.notes.forEach((frequency, index) => {
+                const osc = ctx.createOscillator();
+                const sub = ctx.createOscillator();
+                const gain = ctx.createGain();
+                const at = start + index * preset.step;
+
+                osc.type = preset.type;
+                osc.frequency.setValueAtTime(frequency, at);
+
+                sub.type = 'sine';
+                sub.frequency.setValueAtTime(frequency * 2, at);
+
+                const premium = cfg.sound === 'premium';
+                const peak = premium ? 0.12 * vol : (preset.type === 'square' ? 0.09 * vol : 0.18 * vol);
+                const noteLength = premium ? 0.42 : 0.24;
+                gain.gain.setValueAtTime(0.0001, at);
+                gain.gain.exponentialRampToValueAtTime(peak, at + (premium ? 0.045 : 0.02));
+                gain.gain.exponentialRampToValueAtTime(0.0001, at + noteLength);
+
+                const subGain = ctx.createGain();
+                subGain.gain.setValueAtTime((premium ? 0.022 : 0.04) * vol, at);
+                subGain.gain.exponentialRampToValueAtTime(0.0001, at + (premium ? 0.34 : 0.20));
+
+                osc.connect(gain);
+                sub.connect(subGain);
+                subGain.connect(gain);
+                gain.connect(ctx.destination);
+
+                osc.start(at);
+                sub.start(at);
+                osc.stop(at + (premium ? 0.44 : 0.25));
+                sub.stop(at + (premium ? 0.36 : 0.25));
+            });
+        }
+
+        async function playSound() {
+            try {
+                const ctx = getAudioContext();
+                if (!ctx) return;
+                if (ctx.state === 'suspended') {
+                    try { await ctx.resume(); } catch (e) { }
+                }
+                updateTestAudioUI(ctx);
+                if (ctx.state === 'running') {
+                    pendingTestSound = false;
+                    scheduleNotes(ctx);
+                } else {
+                    pendingTestSound = true;
+                }
+            } catch (error) { }
+        }
+
+        const DEFAULT_TEST_SVG = 'data:image/svg+xml;utf8,' + encodeURIComponent(
+            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 120" fill="none">' +
+            '<defs><linearGradient id="g" x1="0" y1="0" x2="180" y2="120" gradientUnits="userSpaceOnUse">' +
+            '<stop offset="0%" stop-color="#11d9f7"/><stop offset="100%" stop-color="#0b6b82"/>' +
+            '</linearGradient></defs>' +
+            '<path d="M22 44h102l14 10h24v12h-24l-8 8H88l-10 30H54l8-30H34l-12-10V44z" fill="url(#g)" fill-opacity="0.22" stroke="#11d9f7" stroke-width="2.5" stroke-linejoin="round"/>' +
+            '<path d="M98 44V32h22v12M44 54h68M124 54l10 10" stroke="#eaf6f8" stroke-width="2" stroke-linecap="round" stroke-opacity="0.8"/>' +
+            '<rect x="52" y="22" width="44" height="14" rx="3" fill="#0b0f12" stroke="#11d9f7" stroke-width="1.5"/>' +
+            '<text x="74" y="32" fill="#11d9f7" font-family="monospace" font-size="8" font-weight="bold" text-anchor="middle">ST™</text>' +
+            '</svg>'
+        );
+
+        function setItemImage(item) {
+            const src = String(item.image || item.image_url || item.reward_image || item.icon_url || '').trim();
+            if (!src) {
+                itemImg.hidden = true;
+                itemImg.removeAttribute('src');
+                itemFallback.hidden = false;
+                return;
+            }
+            itemImg.onload = () => {
+                itemImg.hidden = false;
+                itemFallback.hidden = true;
+            };
+            itemImg.onerror = () => {
+                itemImg.hidden = true;
+                itemFallback.hidden = false;
+            };
+            itemImg.src = src;
+        }
+
+        function restartProgressBar() {
+            progressBar.style.animation = 'none';
+            progressBar.offsetHeight;
+            progressBar.style.animation = '';
+        }
+
+        function scheduleHide() {
+            clearTimeout(hideTimer);
+            if (isStudio && pinAlert) return;
+            hideTimer = setTimeout(() => {
+                box.classList.remove('show');
+                setTimeout(showNext, 520);
+            }, cfg.durationSec * 1000);
+        }
+
+        function showNext() {
+            if (!alertQueue.length) {
+                showing = false;
+                return;
+            }
+            showing = true;
+            const item = alertQueue.shift();
+
+            viewer.innerHTML = 'PURCHASED BY <strong>' + escapeHtml(item.viewer || 'A VIEWER') + '</strong>';
+            reward.textContent = item.reward || 'FNC Reward';
+            cost.textContent = Number(item.fnc || 0).toLocaleString('en-US') + ' FNC';
+            setItemImage(item);
+            restartProgressBar();
+
+            box.classList.add('show');
+            playSound();
+            scheduleHide();
+        }
+
+        function escapeHtml(value) {
+            return String(value).replace(/[&<>"']/g, (ch) => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;'
+            }[ch]));
+        }
+
+        function show(item) {
+            alertQueue.push(item);
+            if (!showing) showNext();
+        }
+
+        function triggerTestAlert() {
+            const tkViewer = document.getElementById('tk-viewer');
+            const tkReward = document.getElementById('tk-reward');
+            const tkFnc = document.getElementById('tk-fnc');
+            const tkImg = document.getElementById('tk-img');
+
+            const testItem = {
+                id: 'overlay-test',
+                viewer: (tkViewer && tkViewer.value.trim()) || 'AdhemSwag Viewer',
+                reward: (tkReward && tkReward.value.trim()) || 'StatTrak™ Tec-9 | Snek-9 (Minimal Wear)',
+                fnc: tkFnc ? Number(tkFnc.value || 0) : 3810,
+                image_url: (tkImg && tkImg.value.trim()) || DEFAULT_TEST_SVG
+            };
+            if (showing) {
+                clearTimeout(hideTimer);
+                box.classList.remove('show');
+                showing = false;
+                alertQueue = [];
+                setTimeout(() => show(testItem), 120);
+            } else {
+                show(testItem);
+            }
+        }
+
+        // Studio Dashboard wiring
+        if (isStudio) {
+            const studio = document.getElementById('studio');
+            studio.classList.add('visible');
+            document.body.classList.add('stage-checker');
+
+            const stageBgSelect = document.getElementById('stage-bg-select');
+            const streamMockBg = document.getElementById('stream-mock-bg');
+            const streamMockNote = document.getElementById('stream-mock-note');
+            const localVideoBtn = document.getElementById('local-video-btn');
+            const localVideoInput = document.getElementById('local-video-input');
+            let cachedVodId = null;
+            let localVideoUrl = null;
+
+            function mountLocalVideo(url) {
+                clearTwitchMock();
+                const video = document.createElement('video');
+                video.src = url;
+                video.autoplay = true;
+                video.loop = true;
+                video.muted = true;
+                video.playsInline = true;
+                streamMockBg.prepend(video);
+                streamMockNote.style.display = 'none';
+            }
+
+            async function loadTwitchMock() {
+                if (streamMockBg.querySelector('iframe, video')) return;
+                if (localVideoUrl) {
+                    mountLocalVideo(localVideoUrl);
+                    return;
+                }
+                if (location.protocol === 'file:' || !location.hostname) {
+                    streamMockNote.textContent = 'Twitch embed is blocked on file:/// — click "🎬 Video" above to play a local MP4/WebM.';
+                    streamMockNote.style.display = 'block';
+                    return;
+                }
+                streamMockNote.style.display = 'none';
+                try {
+                    if (!cachedVodId) {
+                        const res = await fetch('https://decapi.me/twitch/videos/adhemswag?limit=1', { cache: 'no-store' });
+                        const txt = await res.text();
+                        const match = txt.match(/videos\/(\d+)/);
+                        if (match) cachedVodId = match[1];
+                    }
+                } catch (e) { }
+
+                const parent = encodeURIComponent(location.hostname);
+                const src = cachedVodId
+                    ? `https://player.twitch.tv/?video=${cachedVodId}&parent=${parent}&muted=true&autoplay=true`
+                    : `https://player.twitch.tv/?channel=adhemswag&parent=${parent}&muted=true&autoplay=true`;
+
+                const iframe = document.createElement('iframe');
+                iframe.src = src;
+                iframe.allow = 'autoplay; fullscreen';
+                streamMockBg.prepend(iframe);
+            }
+
+            function clearTwitchMock() {
+                const media = streamMockBg.querySelector('iframe, video');
+                if (media) media.remove();
+                streamMockNote.style.display = 'none';
+            }
+
+            localVideoBtn.addEventListener('click', () => localVideoInput.click());
+            localVideoInput.addEventListener('change', () => {
+                const file = localVideoInput.files && localVideoInput.files[0];
+                if (!file) return;
+                if (localVideoUrl) URL.revokeObjectURL(localVideoUrl);
+                localVideoUrl = URL.createObjectURL(file);
+                if (stageBgSelect.value !== 'stream') {
+                    stageBgSelect.value = 'stream';
+                    document.body.classList.remove('stage-checker', 'stage-dark', 'stage-stream');
+                    document.body.classList.add('stage-stream');
+                    localVideoBtn.style.display = 'inline-flex';
+                }
+                mountLocalVideo(localVideoUrl);
+            });
+
+            stageBgSelect.addEventListener('change', () => {
+                document.body.classList.remove('stage-checker', 'stage-dark', 'stage-stream');
+                document.body.classList.add('stage-' + stageBgSelect.value);
+                localVideoBtn.style.display = stageBgSelect.value === 'stream' ? 'inline-flex' : 'none';
+                if (stageBgSelect.value === 'stream') loadTwitchMock();
+                else clearTwitchMock();
+            });
+
+            document.querySelectorAll('.studio-tab').forEach((tab) => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.studio-tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.studio-pane').forEach(p => p.classList.remove('active'));
+                    tab.classList.add('active');
+                    document.querySelector(`.studio-pane[data-pane="${tab.dataset.tab}"]`).classList.add('active');
+                });
+            });
+
+            document.getElementById('hide-panel-btn').addEventListener('click', () => studio.classList.add('panel-hidden'));
+            document.getElementById('studio-float-toggle').addEventListener('click', () => studio.classList.remove('panel-hidden'));
+
+            const copyObsBtn = document.getElementById('copy-obs-btn');
+            const obsUrlInput = document.getElementById('obs-url-input');
+            obsUrlInput.value = buildObsUrl();
+            copyObsBtn.addEventListener('click', async () => {
+                const url = obsUrlInput.value;
+                try {
+                    await navigator.clipboard.writeText(url);
+                    copyObsBtn.textContent = 'Copied!';
+                    setTimeout(() => { copyObsBtn.textContent = 'Copy Link'; }, 1600);
+                } catch (e) {
+                    obsUrlInput.select();
+                    document.execCommand('copy');
+                    copyObsBtn.textContent = 'Copied!';
+                    setTimeout(() => { copyObsBtn.textContent = 'Copy Link'; }, 1600);
+                }
+            });
+
+            const el = (id) => document.getElementById(id);
+            function syncUI() {
+                el('cfg-accent').value = cfg.accent;
+                el('cfg-panel').value = cfg.panel;
+                el('cfg-text').value = cfg.text;
+                el('cfg-opacity').value = cfg.opacity;
+                el('val-opacity').textContent = cfg.opacity + '%';
+                el('cfg-font-title').value = cfg.fontTitle;
+                el('cfg-font-mono').value = cfg.fontMono;
+                el('cfg-layout').value = cfg.layout;
+                el('cfg-anim').value = cfg.anim;
+                el('cfg-radius').value = cfg.radius;
+                el('val-radius').textContent = cfg.radius + 'px';
+                el('cfg-glow').value = cfg.glow;
+                el('val-glow').textContent = cfg.glow + '%';
+                el('cfg-pos').value = cfg.pos;
+                el('cfg-scale').value = cfg.scale;
+                el('val-scale').textContent = Number(cfg.scale).toFixed(2) + 'x';
+                el('cfg-duration').value = cfg.durationSec;
+                el('val-duration').textContent = cfg.durationSec + 's';
+                el('cfg-show-image').checked = cfg.showImage;
+                el('cfg-show-kicker').checked = cfg.showKicker;
+                el('cfg-show-viewer').checked = cfg.showViewer;
+                el('cfg-show-cost').checked = cfg.showCost;
+                el('cfg-show-brand').checked = cfg.showBrand;
+                el('cfg-show-progress').checked = cfg.showProgress;
+                el('cfg-show-corners').checked = cfg.showCorners;
+                el('cfg-show-flash').checked = cfg.showFlash;
+                el('cfg-kicker-text').value = cfg.kickerText;
+                el('cfg-brand-text').value = cfg.brandText;
+                el('cfg-sound').value = cfg.sound;
+                el('cfg-vol').value = cfg.volume;
+                el('val-vol').textContent = cfg.volume + '%';
+                el('cfg-mute').checked = cfg.mute;
+            }
+            syncUI();
+
+            const bindVal = (id, key, parser = (v) => v, labelId = null, suffix = '') => {
+                el(id).addEventListener('input', () => {
+                    cfg[key] = parser(el(id).value);
+                    if (labelId) el(labelId).textContent = (key === 'scale' ? Number(cfg[key]).toFixed(2) : cfg[key]) + suffix;
+                    applyConfig(true);
+                });
+            };
+            const bindChk = (id, key) => {
+                el(id).addEventListener('change', () => {
+                    cfg[key] = el(id).checked;
+                    applyConfig(true);
+                });
+            };
+
+            bindVal('cfg-accent', 'accent');
+            bindVal('cfg-panel', 'panel');
+            bindVal('cfg-text', 'text');
+            bindVal('cfg-opacity', 'opacity', Number, 'val-opacity', '%');
+            bindVal('cfg-font-title', 'fontTitle');
+            bindVal('cfg-font-mono', 'fontMono');
+            bindVal('cfg-layout', 'layout');
+            bindVal('cfg-anim', 'anim');
+            bindVal('cfg-radius', 'radius', Number, 'val-radius', 'px');
+            bindVal('cfg-glow', 'glow', Number, 'val-glow', '%');
+            bindVal('cfg-pos', 'pos');
+            bindVal('cfg-scale', 'scale', parseFloat, 'val-scale', 'x');
+            bindVal('cfg-duration', 'durationSec', Number, 'val-duration', 's');
+            bindVal('cfg-kicker-text', 'kickerText');
+            bindVal('cfg-brand-text', 'brandText');
+            bindVal('cfg-sound', 'sound');
+            bindVal('cfg-vol', 'volume', Number, 'val-vol', '%');
+
+            bindChk('cfg-show-image', 'showImage');
+            bindChk('cfg-show-kicker', 'showKicker');
+            bindChk('cfg-show-viewer', 'showViewer');
+            bindChk('cfg-show-cost', 'showCost');
+            bindChk('cfg-show-brand', 'showBrand');
+            bindChk('cfg-show-progress', 'showProgress');
+            bindChk('cfg-show-corners', 'showCorners');
+            bindChk('cfg-show-flash', 'showFlash');
+            bindChk('cfg-mute', 'mute');
+
+            const THEMES = {
+                adhem: { accent: '#11d9f7', panel: '#05070a', text: '#eaf6f8' },
+                crimson: { accent: '#ff3b5c', panel: '#0d0508', text: '#fff0f3' },
+                gold: { accent: '#f5b942', panel: '#0c0904', text: '#fff9eb' },
+                emerald: { accent: '#22f59a', panel: '#040c08', text: '#ecfff6' },
+                violet: { accent: '#a855f7', panel: '#09050f', text: '#f6eeff' }
+            };
+            document.querySelectorAll('[data-theme]').forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    const t = THEMES[btn.dataset.theme];
+                    if (!t) return;
+                    Object.assign(cfg, t);
+                    syncUI();
+                    applyConfig(true);
+                });
+            });
+
+            const PRESETS = {
+                skin: { viewer: 'AdhemSwag Viewer', reward: 'StatTrak™ Tec-9 | Snek-9 (Minimal Wear)', fnc: 3810, img: '' },
+                exitlag: { viewer: 'phpkiller', reward: 'EXITLAG CODE 7 DAYS', fnc: 1500, img: '' },
+                deagle: { viewer: 'sailex666', reward: 'StatTrak™ Desert Eagle | Serpent Strike (Factory New)', fnc: 12630, img: '' },
+                long: { viewer: 'a_mal0_algeria_cs2_fan', reward: 'AWP | Printstream (Minimal Wear) + Sticker Bundle', fnc: 45900, img: '' }
+            };
+            document.querySelectorAll('[data-preset]').forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    const p = PRESETS[btn.dataset.preset];
+                    if (!p) return;
+                    el('tk-viewer').value = p.viewer;
+                    el('tk-reward').value = p.reward;
+                    el('tk-fnc').value = p.fnc;
+                    el('tk-img').value = p.img;
+                    triggerTestAlert();
+                });
+            });
+
+            el('tk-pin').addEventListener('change', () => {
+                pinAlert = el('tk-pin').checked;
+                if (pinAlert) clearTimeout(hideTimer);
+                else if (showing) scheduleHide();
+            });
+
+            const unlockAudio = async () => {
+                const ctx = getAudioContext();
+                if (!ctx) return;
+                try { if (ctx.state === 'suspended') await ctx.resume(); } catch (e) { }
+                updateTestAudioUI(ctx);
+                if (ctx.state === 'running' && pendingTestSound) {
+                    pendingTestSound = false;
+                    scheduleNotes(ctx);
+                }
+            };
+            ['pointerdown', 'keydown', 'click'].forEach((evt) => {
+                window.addEventListener(evt, unlockAudio, { passive: true });
+            });
+
+            el('test-sound-btn').addEventListener('click', async (e) => {
+                e.stopPropagation();
+                await unlockAudio();
+                triggerTestAlert();
+            });
+            el('trigger-test-btn').addEventListener('click', async () => {
+                await unlockAudio();
+                triggerTestAlert();
+            });
+            el('sound-only-btn').addEventListener('click', async () => {
+                await unlockAudio();
+                playSound();
+            });
+            el('hide-alert-btn').addEventListener('click', () => {
+                clearTimeout(hideTimer);
+                box.classList.remove('show');
+                showing = false;
+                alertQueue = [];
+            });
+            el('reset-cfg-btn').addEventListener('click', () => {
+                cfg = { ...DEFAULT_CFG };
+                syncUI();
+                applyConfig(true);
+            });
+
+            // Store Claim Stats Pop-up Modal
+            const statsModal = el('stats-modal');
+            const statsBody = el('stats-body');
+
+            function timeAgo(iso) {
+                if (!iso) return '—';
+                const diffMs = Date.now() - new Date(iso).getTime();
+                if (Number.isNaN(diffMs) || diffMs < 0) return 'just now';
+                const mins = Math.floor(diffMs / 60000);
+                if (mins < 1) return 'just now';
+                if (mins < 60) return mins + 'm ago';
+                const hrs = Math.floor(mins / 60);
+                if (hrs < 24) return hrs + 'h ago';
+                const days = Math.floor(hrs / 24);
+                return days + 'd ago';
+            }
+
+            function renderStatsAlerts(rawAlerts) {
+                const alerts = (rawAlerts || []).slice().sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+                if (!alerts.length) {
+                    statsBody.innerHTML = '<div class="kpi-sub">No store claims found in data.</div>';
+                    return;
+                }
+
+                let totalFnc = 0;
+                const byUser = new Map();
+                const byItem = new Map();
+
+                for (const a of alerts) {
+                    const fnc = Number(a.fnc || 0);
+                    totalFnc += fnc;
+                    const user = (a.viewer || 'Unknown').trim();
+                    const item = (a.reward || 'Unknown Reward').trim();
+
+                    const u = byUser.get(user) || { name: user, count: 0, fnc: 0 };
+                    u.count += 1;
+                    u.fnc += fnc;
+                    byUser.set(user, u);
+
+                    const it = byItem.get(item) || { name: item, count: 0, fnc: 0 };
+                    it.count += 1;
+                    it.fnc += fnc;
+                    byItem.set(item, it);
+                }
+
+                const topUsers = [...byUser.values()].sort((a, b) => b.count - a.count || b.fnc - a.fnc);
+                const topItems = [...byItem.values()].sort((a, b) => b.count - a.count || b.fnc - a.fnc);
+                const topBuyer = topUsers[0];
+                const mostBought = topItems[0];
+                const avgFnc = Math.round(totalFnc / alerts.length);
+                const newest = alerts[0];
+                const oldest = alerts[alerts.length - 1];
+                const spanDays = Math.max(1, Math.round((new Date(newest.created_at) - new Date(oldest.created_at)) / 86400000));
+
+                statsBody.innerHTML = `
+                    <div class="stats-kpis">
+                        <div class="kpi-card">
+                            <div class="kpi-label">Total Claims</div>
+                            <div class="kpi-val">${alerts.length.toLocaleString('en-US')}</div>
+                            <div class="kpi-sub">${byUser.size} unique buyers</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-label">Total Coins Used</div>
+                            <div class="kpi-val">${totalFnc.toLocaleString('en-US')}</div>
+                            <div class="kpi-sub">Avg ${avgFnc.toLocaleString('en-US')} FNC</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-label">Last Claim</div>
+                            <div class="kpi-val">${escapeHtml(timeAgo(newest.created_at))}</div>
+                            <div class="kpi-sub">${escapeHtml(new Date(newest.created_at).toLocaleDateString())}</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-label">Active Span</div>
+                            <div class="kpi-val">${spanDays}d</div>
+                            <div class="kpi-sub">Since ${escapeHtml(new Date(oldest.created_at).toLocaleDateString())}</div>
+                        </div>
+                    </div>
+
+                    <div class="stats-highlights">
+                        <div class="hl-card">
+                            <div class="kpi-label">🏆 Top Buyer (Most Claims)</div>
+                            <div class="hl-name">${escapeHtml(topBuyer.name)}</div>
+                            <div class="hl-meta">${topBuyer.count} claims · ${topBuyer.fnc.toLocaleString('en-US')} FNC spent</div>
+                        </div>
+                        <div class="hl-card">
+                            <div class="kpi-label">🔥 Most Bought Item</div>
+                            <div class="hl-name">${escapeHtml(mostBought.name)}</div>
+                            <div class="hl-meta">Bought ${mostBought.count}x · ${mostBought.fnc.toLocaleString('en-US')} FNC total</div>
+                        </div>
+                    </div>
+
+                    <div class="stats-lists">
+                        <div class="stats-panel">
+                            <div class="sec-label">Top Buyers Leaderboard</div>
+                            ${topUsers.slice(0, 6).map((u, i) => `
+                                <div class="stats-row">
+                                    <span class="stats-row-name">${i + 1}. ${escapeHtml(u.name)}</span>
+                                    <span class="stats-row-val">${u.count}x · ${u.fnc.toLocaleString('en-US')} FNC</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div class="stats-panel">
+                            <div class="sec-label">Top Claimed Items</div>
+                            ${topItems.slice(0, 6).map((it, i) => `
+                                <div class="stats-row">
+                                    <span class="stats-row-name">${i + 1}. ${escapeHtml(it.name)}</span>
+                                    <span class="stats-row-val">${it.count}x</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <div class="stats-panel">
+                        <div class="sec-label">Recent Claims (${Math.min(8, alerts.length)})</div>
+                        ${alerts.slice(0, 8).map(a => `
+                            <div class="stats-row">
+                                <span class="stats-row-name"><strong>${escapeHtml(a.viewer || 'Viewer')}</strong> — ${escapeHtml(a.reward || 'Reward')}</span>
+                                <span class="stats-row-val">${Number(a.fnc || 0).toLocaleString('en-US')} FNC · ${escapeHtml(timeAgo(a.created_at))}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
+            async function loadStoreStats() {
+                statsBody.innerHTML = '<div class="kpi-sub">Fetching live store claims...</div>';
+                try {
+                    const res = await fetch(endpoint, { cache: 'no-store' });
+                    if (!res.ok) throw new Error('HTTP ' + res.status);
+                    const data = await res.json();
+                    renderStatsAlerts(data.alerts || []);
+                } catch (err) {
+                    const isLocalOrigin = location.origin !== 'https://adhemswag.com';
+                    const hint = isLocalOrigin
+                        ? 'Blocked by browser CORS on ' + escapeHtml(location.origin || 'file:///') + ' (server only allows https://adhemswag.com).'
+                        : escapeHtml(err.message);
+                    statsBody.innerHTML = `
+                        <div class="kpi-sub" style="color:#ff3b3b;white-space:normal;line-height:1.45">Failed to load live stats: ${hint}</div>
+                        <div class="stats-panel">
+                            <div class="sec-label">Load Local JSON Instead (works on file:///)</div>
+                            <div class="chip-row">
+                                <button type="button" class="s-btn sm primary" id="stats-file-btn">📁 Choose JSON File</button>
+                                <input type="file" id="stats-file-input" accept=".json,application/json" hidden>
+                                <button type="button" class="s-btn sm" id="stats-parse-btn">Analyze Pasted JSON</button>
+                            </div>
+                            <textarea id="stats-json-paste" rows="4" placeholder='Paste JSON from stream-reward-alert here ({"ok":true,"alerts":[...]})' style="width:100%;background:#05070a;border:1px solid rgba(17,217,247,.24);border-radius:7px;padding:8px;color:#eaf6f8;font:11px 'JetBrains Mono',monospace;resize:vertical"></textarea>
+                        </div>
+                    `;
+                    const fileInput = el('stats-file-input');
+                    el('stats-file-btn').addEventListener('click', () => fileInput.click());
+                    fileInput.addEventListener('change', async () => {
+                        const f = fileInput.files && fileInput.files[0];
+                        if (!f) return;
+                        try {
+                            const parsed = JSON.parse(await f.text());
+                            renderStatsAlerts(Array.isArray(parsed) ? parsed : (parsed.alerts || []));
+                        } catch (e) {
+                            alert('Invalid JSON file: ' + e.message);
+                        }
+                    });
+                    el('stats-parse-btn').addEventListener('click', () => {
+                        try {
+                            const parsed = JSON.parse(el('stats-json-paste').value);
+                            renderStatsAlerts(Array.isArray(parsed) ? parsed : (parsed.alerts || []));
+                        } catch (e) {
+                            alert('Invalid JSON: ' + e.message);
+                        }
+                    });
+                }
+            }
+
+            el('open-stats-btn').addEventListener('click', () => {
+                statsModal.classList.add('open');
+                loadStoreStats();
+            });
+            el('refresh-stats-btn').addEventListener('click', loadStoreStats);
+            el('close-stats-btn').addEventListener('click', () => statsModal.classList.remove('open'));
+            statsModal.addEventListener('click', (e) => {
+                if (e.target === statsModal) statsModal.classList.remove('open');
+            });
+            window.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && statsModal.classList.contains('open')) {
+                    statsModal.classList.remove('open');
+                }
+            });
+
+            updateTestAudioUI(getAudioContext());
+            setTimeout(triggerTestAlert, 500);
+        }
+
+        async function poll() {
+            if (busy) return;
+            busy = true;
+            try {
+                const response = await fetch(endpoint + '?since=' + encodeURIComponent(since), { cache: 'no-store' });
+                if (!response.ok) throw new Error('alert_endpoint_' + response.status);
+                const data = await response.json();
+                for (const item of (data.alerts || [])) {
+                    const key = alertKey(item);
+                    if (!seen.has(key)) {
+                        rememberAlert(key);
+                        show(item);
+                    }
+                    if (item.created_at && item.created_at > since) since = item.created_at;
+                }
+            } catch (error) {
+                // Keep the last successful cursor so a temporary network error does not lose alerts.
+            } finally {
+                busy = false;
+            }
+        }
+
+        setInterval(poll, 2000);
+        poll();
+    </script>
 </body>
+
 </html>
